@@ -36,6 +36,7 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
     Catalog catalog;
 
     public WCSServiceDescriptionProvider(GeoServer gs) {
+        super(SERVICE_TYPE);
         this.geoserver = gs;
         catalog = gs.getCatalog();
     }
@@ -76,7 +77,7 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
         WCSInfo info = info(workspaceInfo, layerInfo);
 
         if (workspaceInfo != null || geoserver.getGlobal().isGlobalServices()) {
-            descriptions.add(description(SERVICE_TYPE, info, workspaceInfo, layerInfo));
+            descriptions.add(description(serviceType, info, workspaceInfo, layerInfo));
         }
         return descriptions;
     }
@@ -113,7 +114,7 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
                 if (link != null) {
                     links.add(new ServiceLinkDescription(
-                            SERVICE_TYPE,
+                            serviceType,
                             service.getVersion(),
                             link,
                             workspaceInfo != null ? workspaceInfo.getName() : null,

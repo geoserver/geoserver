@@ -42,8 +42,13 @@ public class DisabledServiceCheck implements DispatcherCallback {
         return request;
     }
 
-    @Override
-    public Service serviceDispatched(Request request, Service service) {
+    /**
+     * Look up ServiceInfo if available.
+     *
+     * @return ServiceInfo, or {@code null} if not available
+     * @throws Exception
+     */
+    public static ServiceInfo lookupServiceInfo(Service service) throws Exception {
         // first get serviceInfo object from service
         Object s = service.getService();
 
@@ -59,56 +64,53 @@ public class DisabledServiceCheck implements DispatcherCallback {
         } else {
             m = OwsUtils.getter(s.getClass(), "serviceInfo", ServiceInfo.class);
         }
-
         if (m != null) {
-            try {
-                ServiceInfo info = (ServiceInfo) m.invoke(s, null);
+            return (ServiceInfo) m.invoke(s, null);
+        }
+        return null;
+    }
 
-                if (info == null) {
-                    // log a warning, we could not perform an important check
-                    LOGGER.warning(
-                            "Could not get a ServiceInfo for service "
-                                    + service.getId()
-                                    + " even if the service implements ServiceInfo, thus could not check if the service is enabled");
-                } else {
-                    // check if the service is enabled
-                    if (!info.isEnabled()) {
-                        throw new ServiceException(
-                                "Service " + info.getName() + " is disabled", ServiceException.SERVICE_UNAVAILABLE);
-                    }
-                    // check if service is disabled for layer
-                    String context = context(request);
-                    if (context != null && context.contains("/")) {
-                        String layerName = context.replace("/", ":");
-                        LayerInfo layerInfo = getLayerByName(layerName);
-                        if (layerInfo != null) {
-                            List<String> disabledServices =
-                                    DisabledServiceResourceFilter.disabledServices(layerInfo.getResource());
-                            boolean disabled = disabledServices.stream()
-                                    .anyMatch(
-                                            serviceType -> StringUtils.equalsIgnoreCase(service.getId(), serviceType));
-                            if (disabled) {
-                                throw new ServiceException(
-                                        "Service " + info.getName() + " is disabled for layer " + layerName,
-                                        ServiceException.SERVICE_UNAVAILABLE);
-                            }
+    @Override
+    public Service serviceDispatched(Request request, Service service) {
+        try {
+            ServiceInfo info = lookupServiceInfo(service);
+            if (info == null) {
+                // log a warning, we could not perform an important check
+                LOGGER.warning(
+                        "Could not get a ServiceInfo for service "
+                                + service.getId()
+                                + " even if the service implements ServiceInfo, thus could not check if the service is enabled");
+            } else {
+                // check if the service is enabled
+                if (!info.isEnabled()) {
+                    throw new ServiceException(
+                            "Service " + info.getName() + " is disabled", ServiceException.SERVICE_UNAVAILABLE);
+                }
+                // check if service is disabled for layer
+                String context = context(request);
+                if (context != null && context.contains("/")) {
+                    String layerName = context.replace("/", ":");
+                    LayerInfo layerInfo = getLayerByName(layerName);
+                    if (layerInfo != null) {
+                        List<String> disabledServices =
+                                DisabledServiceResourceFilter.disabledServices(layerInfo.getResource());
+                        boolean disabled = disabledServices.stream()
+                                .anyMatch(serviceType -> StringUtils.equalsIgnoreCase(service.getId(), serviceType));
+                        if (disabled) {
+                            throw new ServiceException(
+                                    "Service " + info.getName() + " is disabled for layer " + layerName,
+                                    ServiceException.SERVICE_UNAVAILABLE);
                         }
                     }
                 }
-            } catch (Exception e) {
-                // TODO: log this
-                if (e instanceof ServiceException) {
-                    throw (ServiceException) e;
-                }
-                throw new ServiceException(e);
             }
-        } else {
-            // log a warning, we could not perform an important check
-            LOGGER.warning("Could not get a ServiceInfo for service "
-                    + service.getId()
-                    + " thus could not check if the service is enabled");
+        } catch (Exception e) {
+            // TODO: log this
+            if (e instanceof ServiceException) {
+                throw (ServiceException) e;
+            }
+            throw new ServiceException(e);
         }
-
         return service;
     }
 

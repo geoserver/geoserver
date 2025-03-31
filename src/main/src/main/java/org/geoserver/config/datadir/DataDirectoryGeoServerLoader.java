@@ -31,7 +31,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
-import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
@@ -277,7 +276,9 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
         }
 
         // warm up GeoServerExtensions with extensions probably called during catalog loading
-        preLoadExtensions(EntityResolverProvider.class);
+        // EntityResolverProvider is intentionally not preloaded to avoid circular dependency with GeoServer bean
+        // The EntityResolverProvider isn't used during catalog loading, and ResourcePoolInitializer
+        // will properly set it in the ResourcePool after catalog loading is complete
         // CatalogImpl
         preLoadExtensions(CatalogValidator.class);
         // Styles.handlers()

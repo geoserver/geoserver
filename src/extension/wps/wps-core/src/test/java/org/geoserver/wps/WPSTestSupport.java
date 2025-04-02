@@ -51,6 +51,10 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     public static String WCS_PREFIX = "wcs";
     public static String WCS_URI = "http://www.opengis.net/wcs/1.1.1";
     public static QName TASMANIA_DEM = new QName(WCS_URI, "DEM", WCS_PREFIX);
+    public static QName TASMANIA_DEM_NODATA = new QName(WCS_URI, "DEMNODATA", WCS_PREFIX);
+    public static QName HOLE = new QName(WCS_URI, "hole", WCS_PREFIX);
+    public static QName ELSHAPED = new QName(WCS_URI, "ElShaped", WCS_PREFIX);
+    public static QName RAIN = new QName(WCS_URI, "rain", WCS_PREFIX);
     public static QName TASMANIA_BM = new QName(WCS_URI, "BlueMarble", WCS_PREFIX);
     public static QName ROTATED_CAD = new QName(WCS_URI, "RotatedCad", WCS_PREFIX);
     public static QName WORLD = new QName(WCS_URI, "World", WCS_PREFIX);
@@ -177,6 +181,10 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
 
         // wcs 1.1
         testData.addRasterLayer(TASMANIA_DEM, "tazdem.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(TASMANIA_DEM_NODATA, "tazdemNoData2.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(HOLE, "hole.zip", null, props, MockData.class, getCatalog());
+        testData.addRasterLayer(ELSHAPED, "elshaped.zip", null, props, MockData.class, getCatalog());
+        testData.addRasterLayer(RAIN, "rain.zip", "asc", props, MockData.class, getCatalog());
         testData.addRasterLayer(TASMANIA_BM, "tazbm.tiff", TIFF, props, MockData.class, getCatalog());
         testData.addRasterLayer(ROTATED_CAD, "rotated.tiff", TIFF, props, MockData.class, getCatalog());
         testData.addRasterLayer(WORLD, "world.tiff", TIFF, props, MockData.class, getCatalog());

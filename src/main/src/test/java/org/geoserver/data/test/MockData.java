@@ -177,6 +177,9 @@ public class MockData implements TestData {
     public static String WCS_PREFIX = "wcs";
     public static String WCS_URI = "http://www.opengis.net/wcs/1.1.1";
     public static QName TASMANIA_DEM = new QName(WCS_URI, "DEM", WCS_PREFIX);
+    public static QName TASMANIA_DEM_NODATA = new QName(WCS_URI, "DEMNODATA", WCS_PREFIX);
+    public static QName HOLE = new QName(WCS_URI, "hole", WCS_PREFIX);
+    public static QName ELSHAPED = new QName(WCS_URI, "ElShaped", WCS_PREFIX);
     public static QName TASMANIA_BM = new QName(WCS_URI, "BlueMarble", WCS_PREFIX);
     public static QName ROTATED_CAD = new QName(WCS_URI, "RotatedCad", WCS_PREFIX);
     public static QName WORLD = new QName(WCS_URI, "World", WCS_PREFIX);
@@ -479,6 +482,9 @@ public class MockData implements TestData {
 
         // wcs 1.1
         addCoverage(TASMANIA_DEM, TestData.class.getResource("tazdem.tiff"), TIFF, styleName);
+        addCoverage(TASMANIA_DEM_NODATA, TestData.class.getResource("tazdemNoData2.tiff"), TIFF, styleName);
+        addCoverage(HOLE, TestData.class.getResource("hole.zip"), null, styleName);
+        addCoverage(ELSHAPED, TestData.class.getResource("elshaped.zip"), null, styleName);
         addCoverage(TASMANIA_BM, TestData.class.getResource("tazbm.tiff"), TIFF, styleName);
         addCoverage(ROTATED_CAD, TestData.class.getResource("rotated.tiff"), TIFF, styleName);
         addCoverage(WORLD, TestData.class.getResource("world.tiff"), TIFF, styleName);

@@ -85,7 +85,38 @@ public class GeoServerDataDirectory {
     /** resource loader */
     GeoServerResourceLoader resourceLoader;
 
-    EntityResolverProvider entityResolverProvider;
+    /**
+     * Static reference to the EntityResolverProvider to avoid circular dependency issues during startup.
+     *
+     * <p>This static field prevents deadlocks that can occur when accessing the EntityResolverProvider through
+     * GeoServerExtensions during catalog loading (particularly for style group layer groups), as Spring might still be
+     * initializing beans.
+     *
+     * <p>The field must be static because some code (like ResourcePool.dataDir()) directly instantiates a
+     * GeoServerDataDirectory instead of relying on the Spring bean of that type.
+     *
+     * <p>The deadlock occurs in the following call chain:
+     *
+     * <pre>
+     * loadCatalog() ->
+     * CatalogImpl.add(LayerGroup) ->
+     *  validate(LayerGroup) ->
+     *   StyledLayerDescriptor sld = styles.get(i).getSLD() ->
+     *    StyleInfoImpl.getSLD() ->
+     *     ResourcePool.getSld(StyleInfo) ->
+     *      GeoServerDataDirectory.parseSld(StyleInfo) ->
+     *       GeoServerDataDirectory.getEntityResolver() ->
+     *        GeoServerExtensions.bean(EntityResolverProvider.class) ->
+     *         DefaultListableBeanFactory.getSingletonFactoryBeanForTypeCheck()
+     * </pre>
+     *
+     * <p>During catalog loading, a temporary provider is set using
+     * {@link #setEntityResolverProvider(EntityResolverProvider)} and cleared afterwards.
+     *
+     * @see #setEntityResolverProvider(EntityResolverProvider)
+     * @see #getEntityResolver()
+     */
+    private static EntityResolverProvider entityResolverProvider;
 
     GeoServerResourceLocator resourceLocator;
 
@@ -713,12 +744,44 @@ public class GeoServerDataDirectory {
         return style;
     }
 
+    /**
+     * Sets a temporary EntityResolverProvider to be used during catalog loading.
+     *
+     * <p>This method allows setting a temporary provider that doesn't depend on Spring bean initialization, preventing
+     * deadlocks during catalog loading, particularly when loading style group layer groups.
+     *
+     * <p>The provider is used in {@link #getEntityResolver()} if available, falling back to GeoServerExtensions lookup
+     * only if no provider has been explicitly set.
+     *
+     * @param provider the EntityResolverProvider to use, or null to clear the provider
+     * @see #getEntityResolver()
+     */
+    public static void setEntityResolverProvider(EntityResolverProvider provider) {
+        GeoServerDataDirectory.entityResolverProvider = provider;
+    }
+
+    /**
+     * Gets an EntityResolver for parsing XML files.
+     *
+     * <p>This method first checks for a statically set EntityResolverProvider (set via
+     * {@link #setEntityResolverProvider(EntityResolverProvider)}) and only falls back to GeoServerExtensions lookup if
+     * none is available.
+     *
+     * <p>This approach prevents deadlocks during catalog loading when parsing XML in layer groups, as it avoids
+     * circular dependencies with Spring bean initialization.
+     *
+     * @return an EntityResolver, or null if none is available
+     * @see #setEntityResolverProvider(EntityResolverProvider)
+     */
     private EntityResolver getEntityResolver() {
         // would be best injected, but apparently most of the code is
         // actually creating a GeoServerDataDirectory object programmatically and/or on the fly, so
         // we have to resort to a dynamic spring context lookup instead
         EntityResolver resolver = null;
-        EntityResolverProvider provider = GeoServerExtensions.bean(EntityResolverProvider.class);
+        EntityResolverProvider provider = GeoServerDataDirectory.entityResolverProvider;
+        if (provider == null) {
+            provider = GeoServerExtensions.bean(EntityResolverProvider.class);
+        }
         if (provider != null) {
             resolver = provider.getEntityResolver();
         }

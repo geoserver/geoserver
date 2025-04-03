@@ -47,7 +47,7 @@ Configure the HTTP header filter
 #. Fill in the fields of the settings form as follows:
 
    * Set ``Name`` to "proxy"
-   * Set ``Request header attribute to`` to "sdf09rt2s"
+   * Set ``Request header attribute`` to "sdf09rt2s"
    * Set ``Role source`` to "User group service"
    * Set the name of the user group service to "default"
 
@@ -143,3 +143,11 @@ Test a proxy login
     
    The result should be a successful authentication and contain the normal WFS capabilities response.
 
+   .. note::
+      When setting the header ``name: value`` pair, the header ``name`` should match the ``Request Header Attribute`` 
+      that was set when creating the new Authentication Filter, and the ``value`` must match the username for a user
+      who has the correct Role set. The username value is case sensitive. 
+      
+      In the above example, the ``admin`` user is assigned to the ``ADMIN`` role which is the role that was selected in 
+      the service rule we created. If you had a diferent user that was assigned to the ``ADMIN`` role, you could instead
+      use the username for that user as the ``value`` in the header and you should get the correct capabilities response.

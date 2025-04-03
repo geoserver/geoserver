@@ -12,8 +12,8 @@ import org.locationtech.jts.geom.Geometry;
  */
 public class VectorTileEncoderNoClip extends VectorTileEncoder {
 
-    public VectorTileEncoderNoClip(int extent, int polygonClipBuffer, boolean autoScale) {
-        super(extent, polygonClipBuffer, autoScale);
+    public VectorTileEncoderNoClip(int extent, int clipBuffer, boolean autoScale) {
+        super(extent, clipBuffer, autoScale);
     }
 
     /*

@@ -48,17 +48,17 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '2.27'
+version = '2.28'
 
 # The full version, including alpha/beta/rc tags.
-release = '2.27-SNAPSHOT'
+release = '2.28-SNAPSHOT'
 
 # Used in build and documentation links
-branch = '2.27.x'
+branch = '2.28.x'
 
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
-   release = '2.27.x'
+   release = '2.28.x'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:

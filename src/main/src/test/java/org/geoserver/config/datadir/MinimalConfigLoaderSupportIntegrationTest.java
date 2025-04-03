@@ -4,6 +4,7 @@
  */
 package org.geoserver.config.datadir;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -13,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -23,8 +25,12 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.servlet.ServletContext;
+import org.awaitility.Awaitility;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -42,6 +48,7 @@ import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.platform.resource.MemoryLockProvider;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.util.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -272,6 +279,68 @@ public class MinimalConfigLoaderSupportIntegrationTest {
                 .map(ServiceInfo::getId)
                 .collect(Collectors.toSet());
         assertEquals(Set.of(id), service1Ids);
+    }
+
+    @Test
+    public void testNesterLayerGroups() throws IOException {
+        File testDatadir = Path.of("src", "test", "resources", "data_dir", "nested_layer_groups")
+                .toFile();
+        assertTrue(testDatadir.isDirectory());
+        IOUtils.deepCopy(testDatadir, dataDirectory);
+
+        try (XmlWebApplicationContext context = initNewContext()) {
+
+            Catalog catalog = context.getBean("rawCatalog", Catalog.class);
+
+            assertNotNull(catalog.getStyleByName("style"));
+            assertNotNull(catalog.getWorkspaceByName("topp"));
+            assertNotNull(catalog.getLayerByName("topp:layer1"));
+            assertNotNull(catalog.getLayerByName("topp:layer2"));
+
+            assertNotNull(catalog.getLayerGroupByName("simplegroup"));
+            assertNotNull(catalog.getLayerGroupByName("nestedgroup"));
+        }
+    }
+
+    @Test
+    public void testStyleGroup() throws IOException {
+        // prepare datadir
+        File testDatadir = Path.of("src", "test", "resources", "data_dir", "nested_layer_groups")
+                .toFile();
+        assertTrue(testDatadir.isDirectory());
+        IOUtils.deepCopy(testDatadir, dataDirectory);
+
+        try (XmlWebApplicationContext intialContext = initNewContext()) {
+
+            Catalog catalog = intialContext.getBean("rawCatalog", Catalog.class);
+            StyleInfo styleGroup = catalog.getStyleByName("namedstyle");
+            assertNotNull(styleGroup);
+
+            LayerGroupInfo lg = catalog.getLayerGroupByName("simplegroup");
+            lg.getLayers().clear();
+            lg.getStyles().clear();
+            lg.setMode(Mode.SINGLE);
+            lg.getLayers().add(null);
+            lg.getStyles().add(styleGroup);
+            catalog.save(lg);
+
+            support.cleanUp(); // clean up GeoServerExtensions
+        }
+
+        Awaitility.await().atMost(5, SECONDS).untilAsserted(() -> {
+            try (XmlWebApplicationContext context = initNewContext()) {
+                Catalog catalog = context.getBean("rawCatalog", Catalog.class);
+                LayerGroupInfo lg = catalog.getLayerGroupByName("simplegroup");
+                assertNotNull(lg);
+                assertEquals(Mode.SINGLE, lg.getMode());
+                assertEquals(1, lg.getLayers().size());
+                assertEquals(null, lg.getLayers().get(0));
+
+                StyleInfo styleGroup = catalog.getStyleByName("namedstyle");
+                assertNotNull(styleGroup);
+                assertEquals(styleGroup, lg.getStyles().get(0));
+            }
+        });
     }
 
     private void loadConcurrently(List<ConfigLoader> loaders) {

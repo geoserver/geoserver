@@ -156,7 +156,7 @@ class CatalogLoader {
      *
      * <p>The call chain that leads to the deadlock is:
      *
-     * <pre>
+     * <pre>{@code
      * loadCatalog() ->
      * CatalogImpl.add(LayerGroup) ->
      *  validate(LayerGroup) ->
@@ -166,7 +166,7 @@ class CatalogLoader {
      *      GeoServerDataDirectory.parseSld(StyleInfo) ->
      *       GeoServerDataDirectory.getEntityResolver() ->
      *        GeoServerExtensions.bean(EntityResolverProvider.class)
-     * </pre>
+     * }</pre>
      *
      * <p>The temporary provider respects XML external entity settings from global.xml configuration.
      */

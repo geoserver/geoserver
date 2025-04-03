@@ -97,7 +97,7 @@ public class GeoServerDataDirectory {
      *
      * <p>The deadlock occurs in the following call chain:
      *
-     * <pre>
+     * <pre>{@code
      * loadCatalog() ->
      * CatalogImpl.add(LayerGroup) ->
      *  validate(LayerGroup) ->
@@ -108,7 +108,7 @@ public class GeoServerDataDirectory {
      *       GeoServerDataDirectory.getEntityResolver() ->
      *        GeoServerExtensions.bean(EntityResolverProvider.class) ->
      *         DefaultListableBeanFactory.getSingletonFactoryBeanForTypeCheck()
-     * </pre>
+     * }</pre>
      *
      * <p>During catalog loading, a temporary provider is set using
      * {@link #setEntityResolverProvider(EntityResolverProvider)} and cleared afterwards.

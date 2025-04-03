@@ -13,8 +13,10 @@ For help and support:
 
 * [Community Support](https://geoserver.org/comm/)
 
-    Subscribe to the user list [geoserver-users@lists.sourceforge.net](https://lists.sourceforge.net/lists/listinfo/geoserver-users),
-  and be sure to read [post guidelines](https://geoserver.org/comm/userlist-guidelines.html) before sending email.
+    Join the [GeoServer User Forum](https://discourse.osgeo.org/c/geoserver/user/51), and be sure to read
+    the [post guidelines](https://geoserver.org/comm/userlist-guidelines.html).
+
+    The user forum can also be subscribed to as an mailing list.
 
 * [Commercial Support](https://geoserver.org/support/)
   

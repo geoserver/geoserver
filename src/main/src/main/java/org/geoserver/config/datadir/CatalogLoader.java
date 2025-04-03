@@ -31,12 +31,16 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ResolvingProxy;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.datadir.DataDirectoryWalker.LayerDirectory;
 import org.geoserver.config.datadir.DataDirectoryWalker.StoreDirectory;
 import org.geoserver.config.datadir.DataDirectoryWalker.WorkspaceDirectory;
+import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.logging.Logging;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
@@ -116,6 +120,7 @@ class CatalogLoader {
 
         // admin auth set by GeoServerLoader and propagated to the ForkJoinPool threads
         Authentication admin = SecurityContextHolder.getContext().getAuthentication();
+        setTemporaryEntityResolverProvider();
         ForkJoinPool executor = ExecutorFactory.createExecutor(admin);
         try {
             addAll(executor, this::loadGlobalStyles);
@@ -137,8 +142,54 @@ class CatalogLoader {
             throw new IllegalStateException(e);
         } finally {
             this.catalog.setExtendedValidation(extendedValidation);
+            clearTemporaryEntityResolverProvider();
             executor.shutdownNow();
         }
+    }
+
+    /**
+     * Sets up a temporary EntityResolverProvider during catalog loading to avoid Spring bean dependency issues.
+     *
+     * <p>This method creates a temporary EntityResolverProvider that doesn't depend on Spring initialization, instead
+     * using the global.xml configuration if available. This prevents deadlocks when validating XML files that would
+     * otherwise use {@code GeoServerExtensions.bean(EntityResolverProvider.class)}
+     *
+     * <p>The call chain that leads to the deadlock is:
+     *
+     * <pre>{@code
+     * loadCatalog() ->
+     * CatalogImpl.add(LayerGroup) ->
+     *  validate(LayerGroup) ->
+     *   StyledLayerDescriptor sld = styles.get(i).getSLD() ->
+     *    StyleInfoImpl.getSLD() ->
+     *     ResourcePool.getSld(StyleInfo) ->
+     *      GeoServerDataDirectory.parseSld(StyleInfo) ->
+     *       GeoServerDataDirectory.getEntityResolver() ->
+     *        GeoServerExtensions.bean(EntityResolverProvider.class)
+     * }</pre>
+     *
+     * <p>The temporary provider respects XML external entity settings from global.xml configuration.
+     */
+    private void setTemporaryEntityResolverProvider() {
+        Optional<Path> gsGlobalFile = fileWalk.gsGlobal();
+        Optional<GeoServerInfo> info = gsGlobalFile.flatMap(fileWalk.getXStreamLoader()::depersist);
+        GeoServerInfo global = info.orElse(null);
+        GeoServer geoServer = new GeoServerImpl();
+        if (global != null) {
+            geoServer.setGlobal(global);
+        }
+        EntityResolverProvider provider = new EntityResolverProvider(geoServer);
+        fileWalk.getDataDirectory().setEntityResolverProvider(provider);
+    }
+
+    /**
+     * Clears the temporary EntityResolverProvider after catalog loading completes.
+     *
+     * <p>This removes the temporary provider set by {@link #setTemporaryEntityResolverProvider()}, allowing normal
+     * Spring bean resolution to take over after catalog loading is complete.
+     */
+    private void clearTemporaryEntityResolverProvider() {
+        fileWalk.getDataDirectory().setEntityResolverProvider(null);
     }
 
     /**

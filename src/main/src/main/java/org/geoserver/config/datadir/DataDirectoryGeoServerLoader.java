@@ -276,10 +276,6 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
         }
 
         // warm up GeoServerExtensions with extensions probably called during catalog loading
-        // EntityResolverProvider is intentionally not preloaded to avoid circular dependency with GeoServer bean
-        // The EntityResolverProvider isn't used during catalog loading, and ResourcePoolInitializer
-        // will properly set it in the ResourcePool after catalog loading is complete
-        // CatalogImpl
         preLoadExtensions(CatalogValidator.class);
         // Styles.handlers()
         preLoadExtensions(StyleHandler.class);

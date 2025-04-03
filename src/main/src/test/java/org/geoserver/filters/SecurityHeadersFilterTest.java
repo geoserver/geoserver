@@ -67,10 +67,9 @@ public class SecurityHeadersFilterTest {
     @Test
     public void testFilterCSPBlocking() throws Exception {
         setCSPConfig(true, false);
-        String expected = "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; "
-                + "connect-src 'self'; font-src 'self'; img-src 'self' data:; "
-                + "style-src 'self' 'unsafe-inline'; script-src 'self';, "
-                + "frame-ancestors 'self';";
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
+                + "script-src 'self'; form-action 'self'; frame-ancestors 'self';";
         assertEquals(expected, getHeader("Content-Security-Policy"));
         assertNull(getHeader("Content-Security-Policy-Report-Only"));
     }
@@ -78,10 +77,9 @@ public class SecurityHeadersFilterTest {
     @Test
     public void testFilterCSPReporting() throws Exception {
         setCSPConfig(true, true);
-        String expected = "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; "
-                + "connect-src 'self'; font-src 'self'; img-src 'self' data:; "
-                + "style-src 'self' 'unsafe-inline'; script-src 'self';, "
-                + "frame-ancestors 'self';";
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
+                + "script-src 'self'; form-action 'self'; frame-ancestors 'self';";
         assertNull(getHeader("Content-Security-Policy"));
         assertEquals(expected, getHeader("Content-Security-Policy-Report-Only"));
     }

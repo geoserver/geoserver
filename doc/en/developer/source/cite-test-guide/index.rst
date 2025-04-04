@@ -1,6 +1,6 @@
 .. _cite_test_guide:
 
-Cite Test Guide
+CITE Test Guide
 ===============
 
 A step by step guide to the GeoServer Compliance Interoperability Test Engine (CITE).
@@ -720,10 +720,10 @@ GitHub Actions
 
 In order to keep up to date, a `CITE Tests workflow <https://github.com/geoserver/geoserver/actions/workflows/cite.yml>`_  runs automatically on each PR.
 
-Cite Certification
+CITE Certification
 ==================
 
-Shortly before a major (2.xx.0) release, the following process should be followed in order to obtain Cite Certification for the major release.
+Shortly before a major (2.xx.0) release, the following process should be followed in order to obtain CITE Certification for the major release.
 
 .. note:: We appreciate OSGeo providing hosting services for this purpose.
 
@@ -740,7 +740,7 @@ Shortly before a major (2.xx.0) release, the following process should be followe
     cd geoserver-docker/build && git pull && ./release.sh build 2.27-SNAPSHOT
     docker image ls
 
-#. Checkout the latest Cite tests from https://github.com/geoserver/geoserver.git and change the GeoServer Admin password
+#. Checkout the latest CITE tests from https://github.com/geoserver/geoserver.git and change the GeoServer Admin password
 
    .. code-block:: shell
 
@@ -757,7 +757,7 @@ Shortly before a major (2.xx.0) release, the following process should be followe
 
 This will spin up a PostgreSQL service which will be populated with 3 different WFS databases if the database is empty (using the cite init-scripts in build/cite/wfsxx/).
 
-It will also spin up 7 GeoServer services, typically 1 data directory per Cite test (e.g. wfs20), although it is noted that features10, wmts10, wms11 and wms13 all run off the same wms13 data directory, and wcs20 and geotiff11 use the wcs11 data directory.
+It will also spin up 7 GeoServer services, typically 1 data directory per CITE test (e.g. wfs20), although it is noted that features10, wmts10, wms11 and wms13 all run off the same wms13 data directory, and wcs20 and geotiff11 use the wcs11 data directory.
 
 #. Log into https://cite.opengeospatial.org/teamengine and if necessary create Test Sessions for all the tests that GeoServer should pass:
 

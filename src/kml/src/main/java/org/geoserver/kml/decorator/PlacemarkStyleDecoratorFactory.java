@@ -250,11 +250,9 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
             WorkspaceInfo ws =
                     context.getWms().getCatalog().getStyleByName(sld.getName()).getWorkspace();
-            String wsName = null;
-            if (ws != null) wsName = ws.getName();
 
             Icon icon = is.createAndSetIcon();
-            icon.setHref(properties.href(context.getMapContent().getRequest().getBaseUrl(), wsName, sld.getName()));
+            icon.setHref(properties.href(context.getMapContent().getRequest().getBaseUrl(), ws, sld.getName()));
         }
 
         /** Encodes a transparent KML LabelStyle */

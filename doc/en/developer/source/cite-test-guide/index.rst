@@ -129,14 +129,19 @@ automate all the commands, and the second one is running the test through WebUI:
 
      .. note::
 
-        Valid values for the suite parameter are:
+        Valid values for the suite parameter are:    
           * wcs10
           * wcs11
+          * wcs20
           * wfs10
           * wfs11
+          * wfs20
           * wms11
           * wms13
+          * wmts10
           * ogcapi-features10
+          * geotiff11
+          * gpkg12
 
    - Build the ``geoserver.war`` file to test against :
 

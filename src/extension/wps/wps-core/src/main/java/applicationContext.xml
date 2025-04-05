@@ -214,6 +214,8 @@
     <bean id="geoJsonFeatureCollectionPPIO" class="org.geoserver.wps.ppio.GeoJSONPPIO.FeatureCollections">
         <constructor-arg ref="geoServer"/>
     </bean>
+    <bean id="valuesAtPointPPIO" class="org.geoserver.wps.ppio.ValuesAtPointPPIO" />
+    
     <bean id="classificationStatsPPIO" class="org.geoserver.wps.gs.ClassificationStatsPPIO"/>
 
     <!-- Register the GeoServer factory and processes -->
@@ -245,6 +247,10 @@
     
     <bean id="getFullCoverage" class="org.geoserver.wps.gs.GetFullCoverage">
       <constructor-arg index="0" ref="catalog"/>
+    </bean>
+
+    <bean id="getCoveragesValue" class="org.geoserver.wps.gs.GetCoveragesValue">
+        <constructor-arg index="0" ref="catalog"/>
     </bean>
     
     <!--

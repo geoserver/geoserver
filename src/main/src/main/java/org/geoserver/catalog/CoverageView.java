@@ -62,16 +62,20 @@ public class CoverageView implements Serializable {
             public String displayValue() {
                 return BAND_SELECTION_STRING;
             }
-        } /*,
+        },
 
-          FORMULA {
-              @Override
-              public String displayValue() {
-                  return FORMULA_STRING;
-              }
-
-          }
-          */;
+        JIFFLE {
+            @Override
+            public String displayValue() {
+                return JIFFLE_STRING;
+            }
+        },
+        UNSUPPORTED {
+            @Override
+            public String displayValue() {
+                return UNSUPPORTED_STRING;
+            }
+        };
 
         public static CompositionType getDefault() {
             return BAND_SELECT;
@@ -84,16 +88,13 @@ public class CoverageView implements Serializable {
         }
 
         static final String BAND_SELECTION_STRING = "Band Selection";
-        /* final static String FORMULA_STRING = "Formula"; */
+        static final String JIFFLE_STRING = "Jiffle formula";
+        static final String UNSUPPORTED_STRING = "Unsupported";
     }
 
     /**
      * Definition of Input Coverage Bands composing a single {@link CoverageBand} A {@link CoverageBand} may be composed
      * of different {@link InputCoverageBand}s.
-     *
-     * <p>Current implementation only deal with {@link CoverageBand}s made of a single {@link InputCoverageBand}. Once
-     * we allows for Scripts and Math on bands compositions (like WindSpeedBand = SQRT(UBand^2 + VBand^2)) we will have
-     * a {@link CoverageBand} built on top of multiple {@link InputCoverageBand}s
      */
     public static class InputCoverageBand implements Serializable {
 
@@ -165,8 +166,9 @@ public class CoverageView implements Serializable {
      * <ul>
      *   <li>a list of {@link InputCoverageBand}s defining which coverages and which bands have been used to compose
      *       this band
-     *   <li>the type of composition used to configure this band (Currently, only BAND_SELECT is supported)
-     *   <li>the definition of this band (It may contain the script, or the RULE to compose that band)
+     *   <li>the type of composition used to configure this band (Deprecated, since composition type is global per
+     *       coverageView)
+     *   <li>the definition of this band
      *   <li>the index in the output coverage (Wondering if this can be removed)
      * </ul>
      */
@@ -176,6 +178,12 @@ public class CoverageView implements Serializable {
         private static final long serialVersionUID = -7223081117287911988L;
 
         public CoverageBand() {}
+
+        public CoverageBand(List<InputCoverageBand> inputCoverageBands, String definition, int index) {
+            this.inputCoverageBands = inputCoverageBands;
+            this.definition = definition;
+            this.index = index;
+        }
 
         public CoverageBand(
                 List<InputCoverageBand> inputCoverageBands,
@@ -225,24 +233,48 @@ public class CoverageView implements Serializable {
             return sb.toString();
         }
 
-        /** The InputCoverageBands composing this band */
+        /**
+         * The InputCoverageBands composing this output band. When a coverage view is made with Jiffle, it contains the
+         * list of input coverage/band names involved by the script
+         */
         private List<InputCoverageBand> inputCoverageBands;
 
         /**
-         * The definition of this coverage band. Currently it simply contains the name of the input band. Once we
-         * support different compositions, it will contain the maths... something like, as an instance, speed =
-         * sqrt(u_component_of_the_wind@0 ^ 2 + v_component_of_the_wind@0^2).
+         * The definition of this coverage band. When a coverage view is made with Jiffle , it contains the name of the
+         * output variable/band. i.e. result@2 for the 3rd band of a 3 bands result.
          */
         private String definition;
 
-        /** The index of the band in the output. (Is it really needed?) */
+        /** The index of the band in the output */
+        @Deprecated
         private int index;
 
         /**
-         * Type of composition used to define this band. Currently, only {@link CompositionType#BAND_SELECT} is
-         * supported.
+         * Type of composition used to define this band. @Deprecated since the compositionType is global per
+         * coverageView.
          */
+        @Deprecated
         private CompositionType compositionType;
+
+        @Deprecated
+        public int getIndex() {
+            return index;
+        }
+
+        @Deprecated
+        public void setIndex(int index) {
+            this.index = index;
+        }
+
+        @Deprecated
+        public CompositionType getCompositionType() {
+            return compositionType;
+        }
+
+        @Deprecated
+        public void setCompositionType(CompositionType compositionType) {
+            this.compositionType = compositionType;
+        }
 
         public String getDefinition() {
             return definition;
@@ -250,22 +282,6 @@ public class CoverageView implements Serializable {
 
         public void setDefinition(String definition) {
             this.definition = definition;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-        public CompositionType getCompositionType() {
-            return compositionType;
-        }
-
-        public void setCompositionType(CompositionType compositionType) {
-            this.compositionType = compositionType;
         }
 
         public List<InputCoverageBand> getInputCoverageBands() {
@@ -283,7 +299,14 @@ public class CoverageView implements Serializable {
     public CoverageView() {}
 
     public CoverageView(String name, List<CoverageBand> coverageBands) {
-        this(name, coverageBands, EnvelopeCompositionType.UNION, SelectedResolution.BEST);
+        this(
+                name,
+                coverageBands,
+                EnvelopeCompositionType.UNION,
+                SelectedResolution.BEST,
+                CompositionType.BAND_SELECT,
+                null,
+                null);
     }
 
     public CoverageView(
@@ -291,10 +314,24 @@ public class CoverageView implements Serializable {
             List<CoverageBand> coverageBands,
             EnvelopeCompositionType envelopeCompositionType,
             SelectedResolution selectedResolution) {
+        this(name, coverageBands, envelopeCompositionType, selectedResolution, CompositionType.BAND_SELECT, null, null);
+    }
+
+    public CoverageView(
+            String name,
+            List<CoverageBand> coverageBands,
+            EnvelopeCompositionType envelopeCompositionType,
+            SelectedResolution selectedResolution,
+            CompositionType compositionType,
+            String definition,
+            String outputName) {
         this.name = name;
         this.coverageBands = coverageBands;
         this.envelopeCompositionType = envelopeCompositionType;
         this.selectedResolution = selectedResolution;
+        this.compositionType = compositionType;
+        this.definition = definition;
+        this.outputName = outputName;
     }
 
     /** The list of {@link CoverageBand}s composing this {@link CoverageView} */
@@ -309,8 +346,33 @@ public class CoverageView implements Serializable {
     /** Requested resolution type (worst vs best vs imposed vs index) */
     private SelectedResolution selectedResolution;
 
+    /** The coverage view composition type */
+    private CompositionType compositionType;
+
     /** This will be != -1 when {@link SelectedResolution} is INDEX */
     private int selectedResolutionIndex = -1;
+
+    /** Optional outputBand Name, only to be used with Jiffle */
+    private String outputName;
+
+    /** Coverage View definition, only to be used with Jiffle */
+    private String definition;
+
+    public String getOutputName() {
+        return outputName;
+    }
+
+    public void setOutputName(String outputName) {
+        this.outputName = outputName;
+    }
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
+    }
 
     public String getName() {
         return name;
@@ -344,6 +406,14 @@ public class CoverageView implements Serializable {
 
     public void setSelectedResolutionIndex(int selectedResolutionIndex) {
         this.selectedResolutionIndex = selectedResolutionIndex;
+    }
+
+    public CompositionType getCompositionType() {
+        return compositionType;
+    }
+
+    public void setCompositionType(CompositionType compositionType) {
+        this.compositionType = compositionType;
     }
 
     public List<CoverageBand> getCoverageBands() {

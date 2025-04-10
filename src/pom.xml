@@ -1449,6 +1449,11 @@
         <artifactId>jt-concurrent-tile-cache</artifactId>
         <version>${jaiext.version}</version>
       </dependency>
+      <dependency>
+        <groupId>it.geosolutions.jaiext.jiffle</groupId>
+        <artifactId>jt-jiffle-op</artifactId>
+        <version>${jaiext.version}</version>
+      </dependency>
 
       <!-- Text -->
       <dependency>

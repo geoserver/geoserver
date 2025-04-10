@@ -237,8 +237,9 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                     dimensions = new ArrayList<>();
                     List<CoverageBand> coverageBands = coverageView.getCoverageBands();
                     for (CoverageBand band : coverageBands) {
+                        String dimensionName = band.getDefinition();
                         CoverageDimensionInfo dimensionInfo = new CoverageDimensionImpl();
-                        dimensionInfo.setName(band.getDefinition());
+                        dimensionInfo.setName(dimensionName);
                         dimensions.add(dimensionInfo);
                     }
                 }

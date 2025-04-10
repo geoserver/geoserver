@@ -57,6 +57,10 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
 
     String definition;
 
+    String outputName;
+
+    CoverageView.CompositionType compositionType;
+
     String name;
 
     boolean newCoverage;
@@ -69,9 +73,9 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
 
     List<CoverageBand> outputBands;
 
-    EnvelopeCompositionType envelopeCompositionType = EnvelopeCompositionType.INTERSECTION;
+    EnvelopeCompositionType envelopeCompositionType;
 
-    SelectedResolution selectedResolution = SelectedResolution.BEST;
+    SelectedResolution selectedResolution;
 
     String resolutionReferenceCoverage;
 
@@ -88,7 +92,6 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                 .getId();
         Catalog catalog = getCatalog();
         CoverageStoreInfo store = catalog.getStore(storeId, CoverageStoreInfo.class);
-
         GridCoverage2DReader reader =
                 (GridCoverage2DReader) catalog.getResourcePool().getGridCoverageReader(store, null);
         String[] coverageNames = reader.getGridCoverageNames();
@@ -128,7 +131,12 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                         "The specified coverage does not have a coverage view attached to it");
             }
             outputBands = new ArrayList<>(coverageView.getCoverageBands());
+
+            compositionType = Optional.ofNullable(coverageView.getCompositionType())
+                    .orElse(CoverageView.CompositionType.BAND_SELECT);
             name = coverageView.getName();
+            definition = coverageView.getDefinition();
+            outputName = coverageView.getOutputName();
             envelopeCompositionType = Optional.ofNullable(coverageView.getEnvelopeCompositionType())
                     .orElse(EnvelopeCompositionType.INTERSECTION);
             selectedResolution =
@@ -139,9 +147,9 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             coverageViewInfo = null;
             envelopeCompositionType = EnvelopeCompositionType.INTERSECTION;
             selectedResolution = SelectedResolution.BEST;
+            compositionType = CoverageView.CompositionType.BAND_SELECT;
         }
         selectedCoverages = new ArrayList<>(availableCoverages);
-
         // build the form and the text area
         Form<CoverageViewAbstractPage> form = new Form<>("form", new CompoundPropertyModel<>(this));
         add(form);
@@ -158,13 +166,22 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                 new PropertyModel<>(this, "envelopeCompositionType"),
                 new PropertyModel<>(this, "selectedResolution"),
                 new PropertyModel<>(this, "resolutionReferenceCoverage"),
-                availableCoverages);
+                new PropertyModel<>(this, "compositionType"),
+                availableCoverages,
+                definition,
+                outputName,
+                storeId);
         form.add(coverageEditor);
 
         // save and cancel at the bottom of the page
         form.add(new SubmitLink("save") {
             @Override
             public void onSubmit() {
+                String error = coverageEditor.validateAndSave();
+                if (error != null) {
+                    error(error);
+                    return;
+                }
                 onSave();
             }
         });
@@ -177,10 +194,13 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
         });
     }
 
-    protected CoverageView buildCoverageView() throws IOException {
+    protected CoverageView buildCoverageView() {
         CoverageView view = new CoverageView(name, coverageEditor.currentOutputBands);
         view.setEnvelopeCompositionType(envelopeCompositionType);
         view.setSelectedResolution(selectedResolution);
+        view.setCompositionType(compositionType);
+        view.setDefinition(coverageEditor.jiffleFormulaModel.getObject());
+        view.setOutputName(coverageEditor.jiffleOutputNameModel.getObject());
         if (resolutionReferenceCoverage != null) {
             final int referenceCoverageIndex = getReferenceCoverageIndex();
             view.setSelectedResolutionIndex(referenceCoverageIndex);

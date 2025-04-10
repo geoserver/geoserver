@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,6 +61,9 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     private static final String RGB_IR_VIEW = "RgbIrView";
     private static final String BANDS_FLAGS_VIEW = "BandsFlagsView";
+    private static final String NDVI_VIEW = "NDVI";
+    private static final String BGR_VIEW = "BGR";
+    private static final double ERROR = 1E-5;
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static QName S2REDUCED = new QName(MockData.SF_URI, "s2reduced", MockData.SF_PREFIX);
     protected static QName IR_RGB = new QName(MockData.SF_URI, "ir-rgb", MockData.SF_PREFIX);
@@ -91,6 +95,8 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         final Catalog cat = getCatalog();
         configureIROnCatalog(cat);
         configureBandsFlagsOnCatalog(cat);
+        configureNDVIonCatalog(cat);
+        configureBGRonCatalogWithJiffle(cat);
     }
 
     private void configureIROnCatalog(Catalog cat) throws Exception {
@@ -116,6 +122,42 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(BANDS_FLAGS_VIEW, storeInfo, builder);
         coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        cat.add(coverageInfo);
+    }
+
+    private void configureNDVIonCatalog(Catalog cat) throws Exception {
+        final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("s2reduced");
+        final InputCoverageBand b04 = new InputCoverageBand("B04", "0");
+        final InputCoverageBand b08 = new InputCoverageBand("B08", "1");
+        List<InputCoverageBand> inputCoverageBands = new ArrayList<>(2);
+        inputCoverageBands.add(b04);
+        inputCoverageBands.add(b08);
+
+        final CoverageBand ndvi =
+                new CoverageBand(inputCoverageBands, "(B08 - B04) / (B04 + B08)", 0, CompositionType.JIFFLE, "NDVI");
+        final CoverageView coverageView = new CoverageView(NDVI_VIEW, Collections.singletonList(ndvi));
+        coverageView.setCompositionType(CompositionType.JIFFLE);
+        final CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(storeInfo);
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(NDVI_VIEW, storeInfo, builder);
+        cat.add(coverageInfo);
+    }
+
+    private void configureBGRonCatalogWithJiffle(Catalog cat) throws Exception {
+        // Let's do bands swap with jiffle
+        final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("ir-rgb");
+        final CoverageBand b = new CoverageBand(
+                Arrays.asList(new InputCoverageBand("rgb", "2")), "rgb[2]", 0, CompositionType.JIFFLE, "bgr@0");
+        final CoverageBand g = new CoverageBand(
+                Arrays.asList(new InputCoverageBand("rgb", "1")), "rgb[1]", 1, CompositionType.JIFFLE, "bgr@1");
+        final CoverageBand r = new CoverageBand(
+                Arrays.asList(new InputCoverageBand("rgb", "0")), "rgb[0]", 2, CompositionType.JIFFLE, "bgr@2");
+
+        final CoverageView coverageView = new CoverageView(BGR_VIEW, Arrays.asList(b, g, r));
+        coverageView.setCompositionType(CompositionType.JIFFLE);
+        final CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(storeInfo);
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(BGR_VIEW, storeInfo, builder);
         cat.add(coverageInfo);
     }
 
@@ -271,6 +313,79 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testNDVIJiffle() throws Exception {
+        Catalog cat = getCatalog();
+        CoverageInfo coverageInfo = cat.getCoverageByName(NDVI_VIEW);
+        final ResourcePool rp = cat.getResourcePool();
+        GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, NDVI_VIEW, null);
+        GridCoverage2D solidCoverage = (GridCoverage2D) reader.read(NDVI_VIEW, null);
+
+        GridCoverageReader rb04 = rp.getGridCoverageReader(cat.getCoverageByName("B04"), "B04", null);
+        GridCoverageReader rb08 = rp.getGridCoverageReader(cat.getCoverageByName("B08"), "B08", null);
+        GridCoverage b04Coverage = rb04.read("B04", null);
+        GridCoverage b08Coverage = rb08.read("B08", null);
+
+        try {
+            assertBandNames(solidCoverage, "NDVI");
+            RenderedImage ri = solidCoverage.getRenderedImage();
+            Raster raster = ri.getData();
+            Raster b04 = b04Coverage.getRenderedImage().getData();
+            Raster b08 = b08Coverage.getRenderedImage().getData();
+            double d;
+            double ndvi;
+            double b04v;
+            double b08v;
+            for (int j = ri.getMinY(); j < raster.getHeight(); j++) {
+                for (int i = ri.getMinX(); i < raster.getWidth(); i++) {
+                    d = raster.getSampleDouble(i, j, 0);
+                    b04v = b04.getSample(i, j, 0) & 0xFF;
+                    b08v = b08.getSample(i, j, 0) & 0xFF;
+                    ndvi = (b08v - b04v) / (b08v + b04v);
+                    assertEquals(d, ndvi, ERROR);
+                }
+            }
+
+        } finally {
+            disposeCoverage(solidCoverage);
+            disposeCoverage(b04Coverage);
+            disposeCoverage(b08Coverage);
+        }
+    }
+
+    @Test
+    public void testBGRBandSwapWithJiffle() throws Exception {
+        Catalog cat = getCatalog();
+        CoverageInfo coverageInfo = cat.getCoverageByName(BGR_VIEW);
+        final ResourcePool rp = cat.getResourcePool();
+        GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, BGR_VIEW, null);
+        GridCoverage solidCoverage = reader.read(BGR_VIEW, null);
+        coverageInfo = cat.getCoverageByName("rgb");
+        GridCoverageReader rgbReader = rp.getGridCoverageReader(coverageInfo, "rgb", null);
+        GridCoverage rgbCoverage = rgbReader.read("rgb", null);
+        try {
+            assertBandNames(solidCoverage, "bgr@0", "bgr@1", "bgr@2");
+            RenderedImage ri = solidCoverage.getRenderedImage();
+            Raster raster = solidCoverage.getRenderedImage().getData();
+            Raster rgb = rgbCoverage.getRenderedImage().getData();
+            double rgbArray[] = new double[3];
+            double bgrArray[] = new double[3];
+            for (int j = ri.getMinY(); j < raster.getHeight(); j++) {
+                for (int i = ri.getMinX(); i < raster.getWidth(); i++) {
+                    raster.getPixel(i, j, bgrArray);
+                    rgb.getPixel(i, j, rgbArray);
+                    // Assert the bands get swapped
+                    assertEquals(rgbArray[0], bgrArray[2], ERROR);
+                    assertEquals(rgbArray[1], bgrArray[1], ERROR);
+                    assertEquals(rgbArray[2], bgrArray[0], ERROR);
+                }
+            }
+        } finally {
+            disposeCoverage(solidCoverage);
+            disposeCoverage(rgbCoverage);
+        }
+    }
+
+    @Test
     public void testRGBIrToRGB() throws IOException {
         Catalog cat = getCatalog();
         CoverageInfo coverageInfo = cat.getCoverageByName(RGB_IR_VIEW);
@@ -294,7 +409,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(txCoverage);
             assertBandNames(txCoverage, "Red", "Green", "Blue", "ALPHA_BAND");
         } finally {
-            disposeCoverage(solidCoverage);
+            disposeCoverage(txCoverage);
         }
     }
 
@@ -322,7 +437,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(txCoverage);
             assertBandNames(txCoverage, "Infrared", "ALPHA_BAND");
         } finally {
-            disposeCoverage(solidCoverage);
+            disposeCoverage(txCoverage);
         }
     }
 
@@ -350,7 +465,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(txCoverage);
             assertBandNames(txCoverage, "Infrared", "Green", "Blue", "ALPHA_BAND");
         } finally {
-            disposeCoverage(solidCoverage);
+            disposeCoverage(txCoverage);
         }
     }
 
@@ -378,7 +493,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(txCoverage);
             assertBandNames(txCoverage, "Red", "ALPHA_BAND");
         } finally {
-            disposeCoverage(solidCoverage);
+            disposeCoverage(txCoverage);
         }
     }
 

@@ -16,7 +16,13 @@ A link :guilabel:`Configure new Coverage view...` also appears:
 .. figure:: images/coverageviewnewlayer.png
    :align: center
 
-Selecting the :guilabel:`Configure new Coverage view...` link opens a new page where you can configure the coverage view:
+Selecting the :guilabel:`Configure new Coverage view...` link opens a new page where you can configure the coverage view.
+By default, the CoverageView are composed in Band select mode.
+
+.. figure:: images/coverageviewbandselect.png
+   :align: center
+
+Allowing the user to select certain coverages/bands from the provided list to be part of the output.
 
 .. figure:: images/newcoverageview.png
    :align: center
@@ -58,6 +64,72 @@ Once all the properties of the layer have been configured, by selecting the :gui
 
 .. figure:: images/coverageviewavailablelayers.png
    :align: center
+
+JIFFLE expressions to create coverage views
+-------------------------------------------
+As of GeoServer 2.28, a new dropdown selector has been introduced to allow users to choose an alternative band composition mode: Jiffle.
+
+.. figure:: images/coverageviewjiffleselect.png
+   :align: center
+
+This mode enables support for Jiffle expressions in the coverage view setup. When this mode is selected, a summary of all available coverages and bands is displayed.
+
+For instance, an ImageMosaic based on Sentinel-2 coverages would produce a summary similar to the example below:
+
+.. figure:: images/coverageviewsentinelbands.png
+   :align: center
+
+
+Whilst a simple True Marble Image stored on a world.tif file, with 3 RGB bands will be reported like this:
+
+.. figure:: images/coverageviewworldbands.png
+   :align: center
+
+Defining the Jiffle Expression
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The text area allows to define a Jiffle expression to produce the output band.
+
+For example, using the Sentinel-2 dataset, an NDVI single output band can be defined by combining the B04 and B08 bands using the following formula
+
+.. figure:: images/coverageviewndvijiffle.png
+   :align: center
+
+
+Once saving, the output band will be reported in the coverage band details:
+
+.. figure:: images/coverageviewndvidetails.png
+   :align: center
+
+
+If the output needs to consist of multiple bands, an index-based syntax should be used, as shown below:
+
+.. figure:: images/coverageview3bandsout.png
+   :align: center
+
+Where the same output name is used for all the bands (i.e. result) and bands are specified by index.
+
+In that case, the band details of the coverage view will look like this:
+
+.. figure:: images/coverageview3bandsdetails.png
+   :align: center
+
+
+
+There are validation checks in place that verify that output bands start from zero and are 
+
+Validation
+^^^^^^^^^^
+
+The Jiffle formula editor includes built-in validation logic. The following validation rules are enforced:
+
+- **Output Variable Consistency**: All assignments must target the same output variable (e.g., ``res[0]``, ``res[1]``, etc.). Mixing variables like ``ndvi = ...`` and ``res[1] = ...`` is not allowed.
+- **Output Band Index Continuity**: When using indexed output (e.g., ``res[0] = ...``), indices must start at ``0`` and increase without gaps (i.e., ``res[0]``, ``res[1]``, ``res[2]`` is valid; ``res[0]``, ``res[2]`` is not).
+- **Assignment Detection**: The script must contain at least one valid output assignment, either indexed (e.g., ``res[0] = ...``) or non-indexed (e.g., ``res = ...``).
+- **Semicolon Handling**: Each assignment line is expected to end with a semicolon (``;``). If omitted, missing semicolons are automatically appended during save.
+- **Input Band Extraction**: All referenced input bands (e.g., ``world[0]``, ``B04``) are parsed. Both indexed and single-band references are supported.
+- **Reserved Keyword Filtering**: Any identifiers matching Jiffle reserved keywords or function names (e.g., ``sin``, ``pow``, ``if``) are excluded from being interpreted as input coverage names.
+
 
 Heterogeneous coverage views
 ----------------------------

@@ -133,6 +133,10 @@
       <artifactId>jt-concurrent-tile-cache</artifactId>
     </dependency>
     <dependency>
+      <groupId>it.geosolutions.jaiext.jiffle</groupId>
+      <artifactId>jt-jiffle-op</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.sun.activation</groupId>
       <artifactId>jakarta.activation</artifactId>
     </dependency>

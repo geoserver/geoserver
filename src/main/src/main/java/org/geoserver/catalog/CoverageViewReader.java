@@ -11,6 +11,9 @@ import com.sun.media.imageioimpl.common.BogusColorSpace;
 import it.geosolutions.imageio.maskband.DatasetLayout;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 import it.geosolutions.jaiext.JAIExt;
+import it.geosolutions.jaiext.jiffleop.JiffleDescriptor;
+import it.geosolutions.jaiext.range.NoDataContainer;
+import it.geosolutions.jaiext.range.Range;
 import it.geosolutions.jaiext.utilities.ImageLayout2;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
@@ -24,6 +27,7 @@ import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,15 +38,21 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javax.media.jai.ColorModelFactory;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
+import javax.media.jai.ROI;
 import javax.media.jai.RasterFactory;
+import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.ConstantDescriptor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.CoverageViewHandler.CoveragesConsistencyChecker;
+import org.geotools.api.coverage.SampleDimensionType;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.api.coverage.grid.GridCoverageReader;
@@ -63,6 +73,8 @@ import org.geotools.api.referencing.datum.PixelInCell;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.CoverageFactoryFinder;
+import org.geotools.coverage.GridSampleDimension;
+import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -75,6 +87,8 @@ import org.geotools.coverage.grid.io.PAMResourceInfo;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.coverage.processing.CoverageProcessor;
+import org.geotools.coverage.processing.operation.GridCoverage2DRIA;
+import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.data.DefaultResourceInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -85,6 +99,8 @@ import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.NumberRange;
+import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 
@@ -230,9 +246,13 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
 
         List<CoverageBand> bands = coverageView.getCoverageBands();
-        List<GridCoverage2D> coverages = new ArrayList<>();
+        CoverageView.CompositionType compositionType = coverageView.getCompositionType();
+        if (compositionType == null) {
+            // Fallback on the legacy behavior where compositionType was tied to the band
+            // and the only possible value at that time was BandSelect
+            compositionType = CoverageView.CompositionType.BAND_SELECT;
+        }
         CoveragesConsistencyChecker checker = null;
-
         ArrayList<Integer> selectedBandIndices = getBandIndices(parameters, bands);
 
         // Since composition of a raster band using a formula applied on individual bands has not
@@ -245,13 +265,30 @@ public class CoverageViewReader implements GridCoverage2DReader {
         // cached to be used for its other bands that possibly take part in the CoverageView
         // definition
         ViewInputs inputAlphaNonNull =
-                getInputAlphaNonNullCoverages(parameters, selectedBandIndices, bands, checker, true);
+                getInputAlphaNonNullCoverages(parameters, selectedBandIndices, bands, checker, true, compositionType);
         if (inputAlphaNonNull == null) return null;
 
         // all readers returned null?
         if (inputAlphaNonNull.nonNullCoverages == 0 || inputAlphaNonNull.inputCoverages.isEmpty()) {
             return null;
         }
+
+        if (compositionType == CoverageView.CompositionType.BAND_SELECT) {
+            return readUsingBandSelect(inputAlphaNonNull, bands, selectedBandIndices, requestedGridGeometry);
+        } else if (compositionType == CoverageView.CompositionType.JIFFLE) {
+            return readUsingJiffle(inputAlphaNonNull);
+        } else {
+            throw new UnsupportedOperationException("Unsupported composition type: " + compositionType);
+        }
+    }
+
+    public GridCoverage2D readUsingBandSelect(
+            ViewInputs inputAlphaNonNull,
+            List<CoverageBand> bands,
+            ArrayList<Integer> selectedBandIndices,
+            GridGeometry2D requestedGridGeometry)
+            throws IOException {
+        List<GridCoverage2D> coverages = new ArrayList<>();
 
         // some returned null?
         if (inputAlphaNonNull.nonNullCoverages < inputAlphaNonNull.inputCoverages.size()) {
@@ -388,12 +425,94 @@ public class CoverageViewReader implements GridCoverage2DReader {
         return result;
     }
 
+    private GridCoverage2D readUsingJiffle(ViewInputs viewInputs) {
+        HashMap<String, GridCoverage2D> inputCoverages = viewInputs.getInputCoverages();
+        GridCoverage2D[] coverages = inputCoverages.values().toArray(new GridCoverage2D[0]);
+        GridCoverage2D reference = coverages[0];
+
+        String destName = coverageView.getOutputName();
+        String script = coverageView.getDefinition();
+        List<CoverageBand> outputBands = coverageView.getCoverageBands();
+        List<InputCoverageBand> inputBands = outputBands.get(0).getInputCoverageBands();
+        List<String> sourceBands =
+                inputBands.stream().map(icb -> icb.getCoverageName()).collect(Collectors.toList());
+
+        RenderedImage[] sources = new RenderedImage[inputCoverages.size()];
+        sources[0] = reference.getRenderedImage();
+        for (int i = 1; i < sources.length; i++) {
+            GridCoverage2D coverage = coverages[i];
+            if (coverage.getGridGeometry().equals(reference.getGridGeometry())) {
+                sources[i] = coverage.getRenderedImage();
+            } else {
+                double[] nodata = CoverageUtilities.getBackgroundValues(coverage);
+                ROI roi = CoverageUtilities.getROIProperty(coverage);
+                sources[i] = GridCoverage2DRIA.create(coverage, reference, nodata, GeoTools.getDefaultHints(), roi);
+            }
+        }
+
+        String[] sourceNames = sourceBands.toArray(new String[0]);
+        int outputBandCount = outputBands.size();
+        Range[] nodatas = new Range[sources.length];
+        nodatas = getNodatas(nodatas, coverages);
+        RenderedOp result = JiffleDescriptor.create(
+                sources,
+                sourceNames,
+                destName,
+                script,
+                null,
+                null,
+                outputBandCount,
+                null,
+                null,
+                nodatas,
+                GeoTools.getDefaultHints());
+
+        GridSampleDimension[] sampleDimensions = getSampleDimensions(result, destName);
+        GridCoverageFactory factory = new GridCoverageFactory(GeoTools.getDefaultHints());
+        return factory.create("jiffle", result, reference.getEnvelope(), sampleDimensions, coverages, null);
+    }
+
+    private GridSampleDimension[] getSampleDimensions(RenderedOp result, String destName) {
+        SampleModel sm = result.getSampleModel();
+        Stream<String> names = getBandNames(sm.getNumBands(), destName);
+        SampleDimensionType sourceType = TypeMap.getSampleDimensionType(sm, 0);
+        NumberRange<? extends Number> range = TypeMap.getRange(sourceType);
+        double[] nodata = null; // {Double.NaN};
+        double min = range.getMinimum();
+        double max = range.getMaximum();
+        return names.map(n -> new GridSampleDimension(n, sourceType, null, nodata, min, max, 1, 0, null))
+                .toArray(n -> new GridSampleDimension[n]);
+    }
+
+    private Stream<String> getBandNames(int numBands, String destName) {
+        if (numBands == 1) {
+            return Stream.of(destName);
+        } else {
+            return IntStream.range(1, numBands + 1).mapToObj(n -> destName + n);
+        }
+    }
+
+    private Range[] getNodatas(Range[] nodatas, GridCoverage2D[] coverages) {
+        for (int i = 0; i < coverages.length; i++) {
+            GridCoverage2D coverage = coverages[i];
+            NoDataContainer coverageNoData = CoverageUtilities.getNoDataProperty(coverage);
+            if (coverageNoData != null) {
+                nodatas[i] = coverageNoData.getAsRange();
+            }
+        }
+        if (Arrays.stream(nodatas).filter(n -> n != null).count() == 0) {
+            nodatas = null;
+        }
+        return nodatas;
+    }
+
     private ViewInputs getInputAlphaNonNullCoverages(
             GeneralParameterValue[] parameters,
             ArrayList<Integer> selectedBandIndices,
             List<CoverageBand> bands,
             CoveragesConsistencyChecker checker,
-            Boolean includeCoverages)
+            Boolean includeCoverages,
+            CoverageView.CompositionType compositionType)
             throws IOException {
         HashMap<String, GridCoverage2D> inputCoverages = new HashMap<>();
         HashMap<String, GridCoverage2DReader> inputReaders = new HashMap<>();
@@ -420,17 +539,21 @@ public class CoverageViewReader implements GridCoverage2DReader {
         for (int bIdx : selectedBandIndices) {
             CoverageBand band = bands.get(bIdx);
             List<InputCoverageBand> selectedBands = band.getInputCoverageBands();
-
+            List<InputCoverageBand> inputBands = compositionType == CoverageView.CompositionType.BAND_SELECT
+                    ? Collections.singletonList(selectedBands.get(0))
+                    : selectedBands;
             // Peek for coverage name
-            String coverageName = selectedBands.get(0).getCoverageName();
-            if (!inputCoverages.containsKey(coverageName)) {
-                GridCoverage2DReader reader = SingleGridCoverage2DReader.wrap(delegate, coverageName);
-                inputReaders.put(coverageName, reader);
-                // Remove this when removing constraints
-                if (checker == null) {
-                    checker = new CoveragesConsistencyChecker(reader, canSupportHeterogeneousCoverages);
-                } else {
-                    checker.checkConsistency(reader);
+            for (InputCoverageBand inputBand : inputBands) {
+                String coverageName = inputBand.getCoverageName();
+                if (!inputCoverages.containsKey(coverageName)) {
+                    GridCoverage2DReader reader = SingleGridCoverage2DReader.wrap(delegate, coverageName);
+                    inputReaders.put(coverageName, reader);
+                    // Remove this when removing constraints
+                    if (checker == null) {
+                        checker = new CoveragesConsistencyChecker(reader, canSupportHeterogeneousCoverages);
+                    } else {
+                        checker.checkConsistency(reader);
+                    }
                 }
             }
         }
@@ -1007,7 +1130,11 @@ public class CoverageViewReader implements GridCoverage2DReader {
         List<CoverageBand> bands = coverageView.getCoverageBands();
         ArrayList<Integer> selectedBandIndices = getBandIndices(null, bands);
         try {
-            ViewInputs viewInputs = getInputAlphaNonNullCoverages(null, selectedBandIndices, bands, null, false);
+            CoverageView.CompositionType compositionType = coverageView.getCompositionType() != null
+                    ? coverageView.getCompositionType()
+                    : CoverageView.CompositionType.BAND_SELECT;
+            ViewInputs viewInputs =
+                    getInputAlphaNonNullCoverages(null, selectedBandIndices, bands, null, false, compositionType);
 
             if (viewHasPAM(viewInputs)) {
                 return new CoverageViewPamResourceInfo(viewInputs);

@@ -4,6 +4,8 @@
  */
 package org.geoserver.catalog;
 
+import static java.util.Collections.emptyList;
+
 import java.awt.RenderingHints;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -939,7 +941,8 @@ public class ResourcePool {
             List<XSDSchemaLocator> locators = Arrays.asList(GML.getInstance().createSchemaLocator());
             XSDSchema schema = null;
             try {
-                schema = Schemas.parse(schemaFile.getAbsolutePath(), locators, null);
+                schema = Schemas.parse(
+                        schemaFile.getAbsolutePath(), locators, emptyList(), emptyList(), getEntityResolver());
             } catch (Exception e) {
                 LOGGER.warning("Unable to parse "
                         + schemaFile.getAbsolutePath()

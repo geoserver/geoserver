@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.xml;
 
+import static java.util.Collections.emptyList;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
@@ -53,6 +54,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.Schema;
+import org.xml.sax.EntityResolver;
 
 /**
  * XSD for an application schema of a geoserver feature type.
@@ -97,7 +99,7 @@ public class ApplicationSchemaXSD extends XSD {
         this.types = types;
 
         if (this.types == null) {
-            types = Collections.emptyList();
+            types = emptyList();
         }
 
         if (this.ns == null) {
@@ -288,7 +290,14 @@ public class ApplicationSchemaXSD extends XSD {
             XSDSchema ftSchema = null;
 
             try {
-                ftSchema = Schemas.parse(schemaFile.file().getAbsolutePath(), locators, null);
+                EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
+                ftSchema =
+                        Schemas.parse(
+                                schemaFile.file().getAbsolutePath(),
+                                locators,
+                                emptyList(),
+                                emptyList(),
+                                entityResolver);
             } catch (IOException e) {
                 LOGGER.log(
                         Level.WARNING,

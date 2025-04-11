@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.xml;
 
+import static java.util.Collections.emptyList;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
@@ -649,7 +650,13 @@ public abstract class FeatureTypeSchemaBuilder {
 
             XSDSchema ftSchema = null;
             try {
-                ftSchema = Schemas.parse(schemaFile.file().getAbsolutePath(), locators, resolvers);
+                ftSchema =
+                        Schemas.parse(
+                                schemaFile.file().getAbsolutePath(),
+                                locators,
+                                resolvers,
+                                emptyList(),
+                                catalog.getResourcePool().getEntityResolver());
             } catch (IOException e) {
                 logger.log(
                         Level.WARNING,

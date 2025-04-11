@@ -15,6 +15,7 @@ import org.geoserver.ows.KvpParser;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  * @deprecated Use URIKvpParser
  */
+@Deprecated
 public class URLKvpParser extends KvpParser {
     /**
      * Creates the parser specifying the name of the key to latch to.

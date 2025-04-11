@@ -145,6 +145,7 @@ public class Paths {
      * @return path Path used to identify a Resource
      * @deprecated Please use {@link #path(String...)} as strictPath no longer supported
      */
+    @Deprecated
     public static String path(boolean strictPath, String... path) {
         return path(path);
     }

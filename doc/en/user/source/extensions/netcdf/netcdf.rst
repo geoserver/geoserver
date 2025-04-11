@@ -238,6 +238,26 @@ To permit access to NetCDF files in read-only directories, specify an alternate 
 
     -DNETCDF_DATA_DIR=/path/to/writeable/index/file/directory
 
+All the sidecar hidden directories will end up being located at the top level of the NETCDF_DATA_DIR.
+In case you're managing a large number of NetCDF files, it's best to spread them out in subdirectories, so that the number of files in each directory is kept low.
+For that to happen, configure also the following:
+
+    -DNETCDF_DATA_DIR_TREE=true
+
+Set up this way, the contents of the NetCDF data directory will mimick the absolute position of the
+NetCDF files, e.g.:
+
+* A source file is in ``/opt/data/meteo/2024/01/02/file.nc``
+* The NETCDF_DATA_DIR points at ``/opt/netcdf_dd/``
+* The support files will be created in ``/opt/netcdf_dd/opt/data/meteo/2024/01/02/.file_<digest>``
+
+If the extra directory structure is not needed, then the ``NETCDF_ROOT`` property can be configured, to indicate
+where the tree of NetCDF files starts, e.g.:
+
+    -DNETCDF_ROOT=/opt/data
+
+In this case, the support files will be created in ``/opt/netcdf_dd/meteo/2024/01/02/.file_<digest>``
+
 Supporting Custom NetCDF Units
 ------------------------------
 

@@ -4,6 +4,7 @@
  */
 package org.geoserver.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
@@ -11,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -175,7 +177,13 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
                     LOGGER.finest("resolveEntity proxy base: " + uri);
                     return null;
                 }
+
+                if (isDataDirectorySchema(systemId, geoServer)) {
+                    LOGGER.finest("resolveEntity data directory: " + uri);
+                    return null;
+                }
             }
+
             if (baseURL != null && uri_lowercase.startsWith(baseURL.toLowerCase())) {
                 LOGGER.finest("resolveEntity proxy base: " + uri);
                 return null;
@@ -186,6 +194,14 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
 
         // do not allow external entities
         throw new SAXException(ERROR_MESSAGE_BASE + systemId);
+    }
+
+    private boolean isDataDirectorySchema(String systemId, GeoServer geoServer) throws IOException {
+        GeoServerResourceLoader resourceLoader = geoServer.getCatalog().getResourceLoader();
+        String path = resourceLoader.get("workspaces").dir().getCanonicalPath();
+        if (systemId.startsWith("file:")) systemId = systemId.substring(5);
+        String canonicalSystemId = new File(systemId).getCanonicalPath();
+        return canonicalSystemId.startsWith(path) && canonicalSystemId.endsWith(".xsd");
     }
 
     @Override

@@ -31,6 +31,7 @@ public class CapabilitiesHomePagePanel extends Panel {
      *
      * @deprecated Please use {@link ServiceDescription} and {@link ServiceLinkDescription}
      */
+    @Deprecated
     public static class CapsInfo implements Serializable {
 
         /** Service type. */

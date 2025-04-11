@@ -5,9 +5,14 @@
  */
 package org.geoserver.catalog;
 
+import java.awt.image.DataBuffer;
+import java.awt.image.SampleModel;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import javax.media.jai.ImageLayout;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.Utilities;
 
@@ -62,16 +67,20 @@ public class CoverageView implements Serializable {
             public String displayValue() {
                 return BAND_SELECTION_STRING;
             }
-        } /*,
+        },
 
-          FORMULA {
-              @Override
-              public String displayValue() {
-                  return FORMULA_STRING;
-              }
-
-          }
-          */;
+        JIFFLE {
+            @Override
+            public String displayValue() {
+                return JIFFLE_STRING;
+            }
+        },
+        UNSUPPORTED {
+            @Override
+            public String displayValue() {
+                return UNSUPPORTED_STRING;
+            }
+        };
 
         public static CompositionType getDefault() {
             return BAND_SELECT;
@@ -84,7 +93,8 @@ public class CoverageView implements Serializable {
         }
 
         static final String BAND_SELECTION_STRING = "Band Selection";
-        /* final static String FORMULA_STRING = "Formula"; */
+        static final String JIFFLE_STRING = "Jiffle formula";
+        static final String UNSUPPORTED_STRING = "Unsupported";
     }
 
     /**
@@ -182,10 +192,20 @@ public class CoverageView implements Serializable {
                 String definition,
                 int index,
                 CompositionType compositionType) {
+            this(inputCoverageBands, definition, index, compositionType, null);
+        }
+
+        public CoverageBand(
+                List<InputCoverageBand> inputCoverageBands,
+                String definition,
+                int index,
+                CompositionType compositionType,
+                String outputBandName) {
             this.inputCoverageBands = inputCoverageBands;
             this.definition = definition;
             this.index = index;
             this.compositionType = compositionType;
+            this.outputName = outputBandName;
         }
 
         @Override
@@ -194,6 +214,7 @@ public class CoverageView implements Serializable {
             int result = 1;
             result = prime * result + ((compositionType == null) ? 0 : compositionType.hashCode());
             result = prime * result + ((definition == null) ? 0 : definition.hashCode());
+            result = prime * result + ((outputName == null) ? 0 : outputName.hashCode());
             return result;
         }
 
@@ -207,6 +228,9 @@ public class CoverageView implements Serializable {
             if (definition == null) {
                 if (other.definition != null) return false;
             } else if (!definition.equals(other.definition)) return false;
+            if (outputName == null) {
+                if (other.outputName != null) return false;
+            } else if (!outputName.equals(other.outputName)) return false;
             return true;
         }
 
@@ -243,6 +267,17 @@ public class CoverageView implements Serializable {
          * supported.
          */
         private CompositionType compositionType;
+
+        /** Optional outputBand Name, to be used with JIFFLE */
+        private String outputName;
+
+        public String getOutputName() {
+            return outputName;
+        }
+
+        public void setOutputName(String outputName) {
+            this.outputName = outputName;
+        }
 
         public String getDefinition() {
             return definition;
@@ -283,7 +318,7 @@ public class CoverageView implements Serializable {
     public CoverageView() {}
 
     public CoverageView(String name, List<CoverageBand> coverageBands) {
-        this(name, coverageBands, EnvelopeCompositionType.UNION, SelectedResolution.BEST);
+        this(name, coverageBands, EnvelopeCompositionType.UNION, SelectedResolution.BEST, CompositionType.BAND_SELECT);
     }
 
     public CoverageView(
@@ -291,10 +326,20 @@ public class CoverageView implements Serializable {
             List<CoverageBand> coverageBands,
             EnvelopeCompositionType envelopeCompositionType,
             SelectedResolution selectedResolution) {
+        this(name, coverageBands, envelopeCompositionType, selectedResolution, CompositionType.BAND_SELECT);
+    }
+
+    public CoverageView(
+            String name,
+            List<CoverageBand> coverageBands,
+            EnvelopeCompositionType envelopeCompositionType,
+            SelectedResolution selectedResolution,
+            CompositionType compositionType) {
         this.name = name;
         this.coverageBands = coverageBands;
         this.envelopeCompositionType = envelopeCompositionType;
         this.selectedResolution = selectedResolution;
+        this.compositionType = compositionType;
     }
 
     /** The list of {@link CoverageBand}s composing this {@link CoverageView} */
@@ -308,6 +353,9 @@ public class CoverageView implements Serializable {
 
     /** Requested resolution type (worst vs best vs imposed vs index) */
     private SelectedResolution selectedResolution;
+
+    /** The coverage view composition type */
+    private CompositionType compositionType;
 
     /** This will be != -1 when {@link SelectedResolution} is INDEX */
     private int selectedResolutionIndex = -1;
@@ -344,6 +392,14 @@ public class CoverageView implements Serializable {
 
     public void setSelectedResolutionIndex(int selectedResolutionIndex) {
         this.selectedResolutionIndex = selectedResolutionIndex;
+    }
+
+    public CompositionType getCompositionType() {
+        return compositionType;
+    }
+
+    public void setCompositionType(CompositionType compositionType) {
+        this.compositionType = compositionType;
     }
 
     public List<CoverageBand> getCoverageBands() {
@@ -450,5 +506,73 @@ public class CoverageView implements Serializable {
         if (selectedResolution != other.selectedResolution) return false;
         if (selectedResolutionIndex != other.selectedResolutionIndex) return false;
         return true;
+    }
+
+    /**
+     * Builds coverage bands for a given catalog store based on the specified composition type.
+     *
+     * @param catalog The catalog containing the coverage store
+     * @param storeId The ID of the coverage store to process
+     * @param compositionType The type of band composition to apply
+     * @param coverageBands List to populate with generated coverage band names
+     * @param inputCoverageBands Map to track input coverage band information
+     * @throws IOException If there is an error reading the coverage store
+     */
+    public static void buildCoverageBands(
+            Catalog catalog,
+            String storeId,
+            CompositionType compositionType,
+            List<String> coverageBands,
+            Map<String, Integer> inputCoverageBands)
+            throws IOException {
+        CoverageStoreInfo store = catalog.getStore(storeId, CoverageStoreInfo.class);
+        GridCoverage2DReader reader =
+                (GridCoverage2DReader) catalog.getResourcePool().getGridCoverageReader(store, null);
+        String[] coverageNames = reader.getGridCoverageNames();
+
+        for (String coverage : coverageNames) {
+            ImageLayout layout = reader.getImageLayout(coverage);
+            SampleModel sampleModel = layout.getSampleModel(null);
+            final int numBands = sampleModel.getNumBands();
+            if (CompositionType.JIFFLE.equals(compositionType)) {
+                inputCoverageBands.put(coverage, numBands);
+            }
+
+            switch (compositionType) {
+                case BAND_SELECT:
+                    if (numBands == 1) {
+                        // simple syntax for simple case
+                        coverageBands.add(coverage);
+                    } else {
+                        for (int i = 0; i < numBands; i++) {
+                            coverageBands.add(coverage + BAND_SEPARATOR + i);
+                        }
+                    }
+                    break;
+                case JIFFLE:
+                    String coverageBand = String.format(
+                            "%s (%d band, %s)", coverage, numBands, getDataTypeName(sampleModel.getDataType()));
+                    coverageBands.add(coverageBand);
+            }
+        }
+    }
+
+    private static String getDataTypeName(int dataType) {
+        switch (dataType) {
+            case DataBuffer.TYPE_BYTE:
+                return "Byte";
+            case DataBuffer.TYPE_SHORT:
+                return "Int16";
+            case DataBuffer.TYPE_USHORT:
+                return "UInt16";
+            case DataBuffer.TYPE_INT:
+                return "Int32";
+            case DataBuffer.TYPE_FLOAT:
+                return "Float32";
+            case DataBuffer.TYPE_DOUBLE:
+                return "Float64";
+            default:
+                return "Unknown";
+        }
     }
 }

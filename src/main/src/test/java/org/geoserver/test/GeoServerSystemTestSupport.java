@@ -221,7 +221,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     public static final EntityResolver RESOLVE_DISABLED_PROVIDER_DEVMODE = new PreventLocalEntityResolver() {
         @Override
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-            if (isLocalGeoToolsSchema(null, systemId)) {
+            if (isLocalGeoToolsSchema(null, systemId) || isDataDirectory(systemId)) {
                 return null;
             }
 
@@ -231,7 +231,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         @Override
         public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
                 throws SAXException, IOException {
-            if (isLocalGeoToolsSchema(baseURI, systemId)) {
+            if (isLocalGeoToolsSchema(baseURI, systemId) || isDataDirectory(systemId)) {
                 return null;
             }
 
@@ -254,6 +254,21 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             // Match the GeoTools locations having schemas we resolve against
             return path.matches(".*modules[\\\\/]extension[\\\\/]xsd[\\\\/].*\\.xsd")
                     || path.matches(".*modules[\\\\/]ogc[\\\\/].*\\.xsd");
+        }
+
+        private boolean isDataDirectory(String systemId) {
+            if (applicationContext != null) {
+                GeoServerDataDirectory dd = applicationContext.getBean(GeoServerDataDirectory.class);
+                try {
+                    String path = dd.getRoot("workspaces").dir().getCanonicalPath();
+                    if (systemId.startsWith("file:")) systemId = systemId.substring(5);
+                    String canonicalSystemId = new File(systemId).getCanonicalPath();
+                    return canonicalSystemId.startsWith(path);
+                } catch (IOException e) {
+                    return false;
+                }
+            }
+            return false;
         }
 
         @Override

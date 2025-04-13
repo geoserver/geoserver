@@ -272,7 +272,7 @@ There are three options:
 
 * **In-process locking**: Used to ensure individual configuration files cannot be modified by two web administration or REST sessions at the same time.
 
-* **Disable Locking**: No file locking is used.
+* **Disable Locking**: No file locking is used (default).
 
 WebUI Settings
 ^^^^^^^^^^^^^^

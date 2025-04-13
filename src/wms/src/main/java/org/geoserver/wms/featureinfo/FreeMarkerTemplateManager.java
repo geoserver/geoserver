@@ -177,6 +177,7 @@ public abstract class FreeMarkerTemplateManager {
      * @deprecated Use {@link #write(List, OutputStream)}
      */
     @SuppressWarnings("unchecked")
+    @Deprecated
     public boolean write(FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
             throws ServiceException, IOException {
         return write(results.getFeature(), out);

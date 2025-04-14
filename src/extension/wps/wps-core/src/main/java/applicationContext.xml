@@ -236,6 +236,9 @@
     <bean id="storeCoverageProcess" class="org.geoserver.wps.gs.StoreCoverage" >
       <constructor-arg index="0" ref="wpsResourceManager"></constructor-arg>
     </bean>
+    <bean id="spatioTemporalStatisticsProcess" class="org.geoserver.wps.gs.SpatioTemporalZonalStatistics">
+        <constructor-arg index="0" ref="catalog"/>
+    </bean>
 
     <bean id="georectifyConfiguration" class="org.geoserver.wps.gs.GeorectifyConfiguration" /> 
     <bean id="georectifyCoverage" class="org.geoserver.wps.gs.GeorectifyCoverage">

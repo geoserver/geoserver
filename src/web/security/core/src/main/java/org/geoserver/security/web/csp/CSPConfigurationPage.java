@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.csp;
 
+import com.google.common.base.Preconditions;
 import com.google.common.net.HttpHeaders;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -71,6 +72,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
         form.add(new CheckBox("allowOverride", new PropertyModel<>(model, "allowOverride")));
         form.add(new CheckBox("injectProxyBase", new PropertyModel<>(model, "injectProxyBase")));
         form.add(new TextArea<>("remoteResources", new PropertyModel<>(model, "remoteResources")));
+        form.add(new TextArea<>("formAction", new PropertyModel<>(model, "formAction")));
         form.add(new TextArea<>("frameAncestors", new PropertyModel<>(model, "frameAncestors")));
         form.add(new CSPPolicyPanel("policies", this.config));
         form.add(new TextArea<>("testUrl", new PropertyModel<>(this, "testUrl")));
@@ -122,6 +124,9 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
      */
     private void saveConfiguration(boolean doReturn) {
         try {
+            Preconditions.checkArgument(
+                    !this.config.getFormAction().contains("'none'"),
+                    "form-action containing 'none' is not allowed here");
             getCSPHeaderDAO().setConfig(new CSPConfiguration(this.config));
             if (doReturn) {
                 doReturn();

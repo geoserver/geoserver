@@ -51,6 +51,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
@@ -572,6 +573,8 @@ public class MapMLDocumentBuilder {
         boolean useTiles = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_TILES, Boolean.class));
         boolean useRemote = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_REMOTE, Boolean.class));
         boolean useFeatures = useFeatures(layer, layerMeta);
+        String legendURL =
+                calculateLegendURL(isLayerGroup, layerInfo, layerGroupInfo, workspace, layerName, styleName, useRemote);
 
         return new MapMLLayerMetadata(
                 layerInfo,
@@ -591,9 +594,109 @@ public class MapMLDocumentBuilder {
                 useRemote,
                 useFeatures,
                 cqlFilter,
-                defaultMimeType);
+                defaultMimeType,
+                legendURL);
+    }
+    /**
+     * Calculates the legend URL for a layer or layer group.
+     *
+     * @param isLayerGroup Whether this is a layer group
+     * @param layerInfo Layer information (null if this is a layer group)
+     * @param layerGroupInfo Layer group information (null if this is a regular layer)
+     * @param workspace Workspace name
+     * @param layerName Layer or layer group name
+     * @param styleName Style name
+     * @param useRemote true if URL should be cascaded when available
+     * @return The legend URL, or null if one cannot be generated
+     */
+    private String calculateLegendURL(
+            boolean isLayerGroup,
+            LayerInfo layerInfo,
+            LayerGroupInfo layerGroupInfo,
+            String workspace,
+            String layerName,
+            String styleName,
+            boolean useRemote) {
+
+        String baseUrl = ResponseUtils.baseURL(request);
+        String workspacePrefix = workspace.isEmpty() ? "" : workspace + ":";
+
+        if (isLayerGroup && layerGroupInfo != null) {
+            return createLayerGroupLegendURL(baseUrl, workspacePrefix + layerName, styleName);
+        } else if (!isLayerGroup && layerInfo != null) {
+            return createLayerLegendURL(baseUrl, layerInfo, workspacePrefix + layerName, styleName, useRemote);
+        }
+
+        return null;
     }
 
+    /** Creates a legend URL for a layer group. */
+    private String createLayerGroupLegendURL(String baseUrl, String fullLayerName, String styleName) {
+        Map<String, String> params = createBaseWMSParams(fullLayerName, styleName);
+        return ResponseUtils.buildURL(baseUrl, "ows", params, URLMangler.URLType.SERVICE);
+    }
+
+    /** Creates a legend URL for a regular layer. */
+    private String createLayerLegendURL(
+            String baseUrl, LayerInfo layerInfo, String fullLayerName, String styleName, boolean useRemote) {
+        Catalog catalog = layerInfo.getResource().getCatalog();
+
+        // Find the appropriate style
+        StyleInfo styleInfo = findStyleInfo(catalog, layerInfo, styleName);
+
+        // Check for user-defined legend
+        if (styleInfo != null) {
+            LegendInfo legend = styleInfo.getLegend();
+            if (legend != null && legend.getOnlineResource() != null && useRemote) {
+                return legend.getOnlineResource();
+            }
+
+            // No user-defined legend, generate WMS URL
+            Map<String, String> params = createBaseWMSParams(
+                    fullLayerName, (styleName != null && !styleName.isEmpty()) ? styleName : styleInfo.getName());
+            return ResponseUtils.buildURL(baseUrl, "ows", params, URLMangler.URLType.SERVICE);
+        }
+
+        // Fallback to basic legend URL
+        Map<String, String> params = createBaseWMSParams(fullLayerName, styleName);
+        return ResponseUtils.buildURL(baseUrl, "ows", params, URLMangler.URLType.SERVICE);
+    }
+
+    /** Creates base WMS parameters for legend requests. */
+    private Map<String, String> createBaseWMSParams(String fullLayerName, String styleName) {
+        Map<String, String> params = new HashMap<>();
+        params.put("service", "WMS");
+        params.put("version", "1.3.0");
+        params.put("request", "GetLegendGraphic");
+        params.put("format", "image/png");
+        params.put("layer", fullLayerName);
+
+        if (styleName != null && !styleName.isEmpty()) {
+            params.put("style", styleName);
+        }
+
+        return params;
+    }
+
+    /** Finds the appropriate StyleInfo for a layer. */
+    private StyleInfo findStyleInfo(Catalog catalog, LayerInfo layerInfo, String styleName) {
+        if (styleName == null || styleName.isEmpty()) {
+            return layerInfo.getDefaultStyle();
+        }
+
+        StyleInfo styleInfo = catalog.getStyleByName(styleName);
+
+        // If not in catalog, check the layer's style collection
+        if (styleInfo == null && layerInfo.getStyles() != null) {
+            for (StyleInfo si : layerInfo.getStyles()) {
+                if (si != null && styleName.equals(si.getName())) {
+                    return si;
+                }
+            }
+        }
+
+        return styleInfo != null ? styleInfo : layerInfo.getDefaultStyle();
+    }
     /**
      * Check if layer should be represented as a feature
      *
@@ -711,18 +814,18 @@ public class MapMLDocumentBuilder {
         meta.setContent(projType.value());
         List<Link> links = head.getLinks();
 
-        String licenseLink = layerMeta.get(MapMLConstants.LICENSE_LINK, String.class);
+        String licenseUrl = layerMeta.get(MapMLConstants.LICENSE_LINK, String.class);
         String licenseTitle = layerMeta.get(MapMLConstants.LICENSE_TITLE, String.class);
-        if (licenseLink != null || licenseTitle != null) {
-            Link titleLink = new Link();
-            titleLink.setRel(RelType.LICENSE);
+        if (licenseUrl != null || licenseTitle != null) {
+            Link licenseLink = new Link();
+            licenseLink.setRel(RelType.LICENSE);
             if (licenseTitle != null) {
-                titleLink.setTitle(licenseTitle);
+                licenseLink.setTitle(licenseTitle);
             }
-            if (licenseLink != null) {
-                titleLink.setHref(licenseLink);
+            if (licenseUrl != null) {
+                licenseLink.setHref(licenseUrl);
             }
-            links.add(titleLink);
+            links.add(licenseLink);
         }
         // only create style links for single layer requests
         if (mapMLLayerMetadataList.size() == 1 && layers.size() == 1) {
@@ -734,6 +837,13 @@ public class MapMLDocumentBuilder {
                 String effectiveStyleName = mapMLLayerMetadata.getStyleName();
                 if (effectiveStyleName == null || effectiveStyleName.isEmpty()) {
                     effectiveStyleName = layerInfo.getDefaultStyle().getName();
+                }
+                Link legendLink = new Link();
+                legendLink.setRel(RelType.LEGEND);
+                String legendUrl = mapMLLayerMetadata.getLegendURL();
+                legendLink.setHref(legendUrl);
+                if (legendUrl != null && !legendUrl.isBlank()) {
+                    links.add(legendLink);
                 }
 
                 // style links
@@ -756,6 +866,13 @@ public class MapMLDocumentBuilder {
                 }
             } else {
                 LayerGroupInfo layerGroupInfo = mapMLLayerMetadata.getLayerGroupInfo();
+                Link legendLink = new Link();
+                legendLink.setRel(RelType.LEGEND);
+                String legendUrl = mapMLLayerMetadata.getLegendURL();
+                legendLink.setHref(legendUrl);
+                if (legendUrl != null && !legendUrl.isBlank()) {
+                    links.add(legendLink);
+                }
                 String effectiveStyleName = mapMLLayerMetadata.getStyleName();
                 if (effectiveStyleName == null || effectiveStyleName.isEmpty()) {
                     effectiveStyleName = "default-style-" + mapMLLayerMetadata.getLayerName();
@@ -2196,6 +2313,7 @@ public class MapMLDocumentBuilder {
 
         private String layerLabel;
         private String defaultMimeType;
+        private String legendURL;
 
         /**
          * get if the layer uses features
@@ -2252,7 +2370,8 @@ public class MapMLDocumentBuilder {
                 boolean useRemote,
                 boolean useFeatures,
                 String cqFilter,
-                String defaultMimeType) {
+                String defaultMimeType,
+                String legendURL) {
             this.layerInfo = layerInfo;
             this.bbox = bbox;
             this.isLayerGroup = isLayerGroup;
@@ -2271,6 +2390,7 @@ public class MapMLDocumentBuilder {
             this.useFeatures = useFeatures;
             this.cqlFilter = cqFilter;
             this.defaultMimeType = defaultMimeType;
+            this.legendURL = legendURL;
         }
 
         /** Constructor */
@@ -2681,6 +2801,14 @@ public class MapMLDocumentBuilder {
          */
         public void setDefaultMimeType(String defaultMimeType) {
             this.defaultMimeType = defaultMimeType;
+        }
+
+        public String getLegendURL() {
+            return legendURL;
+        }
+
+        public void setLegendURL(String legendURL) {
+            this.legendURL = legendURL;
         }
     }
 

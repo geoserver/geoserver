@@ -1685,6 +1685,16 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         String title = mapml.getHead().getTitle();
         assertTrue("MapML document title must equal layer title", title.equalsIgnoreCase(layerTitle));
+        List<Link> links = mapml.getHead().getLinks();
+        Link legendLink = null;
+        for (Link link : links) {
+            if (link.getRel() == RelType.LEGEND) {
+                legendLink = link;
+                break;
+            }
+        }
+        assertNotNull(legendLink);
+        assertTrue("legend link href has http scheme", legendLink.getHref().startsWith("http"));
         BodyContent b = mapml.getBody();
         assertNotNull("mapML method must return MapML body in response", b);
         List<Extent> es = b.getExtents();

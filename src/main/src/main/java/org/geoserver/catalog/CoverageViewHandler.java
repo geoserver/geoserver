@@ -448,7 +448,6 @@ class CoverageViewHandler {
             case WORST:
                 return new WorstReaderResolutionComposer();
             case BEST:
-                return new BestReaderResolutionComposer();
             default:
                 return new BestReaderResolutionComposer();
         }
@@ -460,7 +459,6 @@ class CoverageViewHandler {
             case INTERSECTION:
                 return new IntersectionEnvelopeComposer();
             case UNION:
-                return new UnionEnvelopeComposer();
             default:
                 return new UnionEnvelopeComposer();
         }

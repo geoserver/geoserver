@@ -52,6 +52,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -80,7 +81,9 @@ import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geoserver.wms.WMSInfo;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -1538,6 +1541,110 @@ public class MapMLWMSTest extends MapMLTestSupport {
         testAlternateBounds(alternateLinks, ProjType.OSMTILE, new Envelope(-2E7, 2E7, -2E7, 2E7), 5e6);
         testAlternateBounds(alternateLinks, ProjType.APSTILE, new Envelope(-1E7, 1.4E7, -1E7, 1.4E7), 1e6);
         testAlternateBounds(alternateLinks, ProjType.CBMTILE, new Envelope(-8.1E6, 8.3E6, -3.6E6, 1.23E7), 1e5);
+    }
+
+    @Test
+    public void testMapMLViewerPreviewLocationHTMLWGS84() throws Exception {
+        // Set up a layer with specific bounds
+        Catalog catalog = getCatalog();
+        LayerInfo layerInfo = catalog.getLayerByName(MockData.POLYGONS.getLocalPart());
+        ResourceInfo resourceInfo = layerInfo.getResource();
+
+        double minx = -175.64837790528588;
+        double maxx = -10.721894124467468;
+        double miny = 34.35220514390023;
+        double maxy = 84.22690498087752;
+        // Define specific bounds for testing
+        ReferencedEnvelope customBounds = new ReferencedEnvelope(minx, maxx, miny, maxy, DefaultGeographicCRS.WGS84);
+        resourceInfo.setLatLonBoundingBox(customBounds);
+        catalog.save(resourceInfo);
+
+        // Request path with HTML format
+        String path = "wms?LAYERS=" + MockData.POLYGONS.getLocalPart() + "&STYLES=&FORMAT="
+                + MapMLConstants.MAPML_HTML_MIME_TYPE + "&SERVICE=WMS&VERSION=1.3.0"
+                + "&REQUEST=GetMap"
+                + "&SRS=MapML:WGS84"
+                + "&BBOX=-175.64837790528588,34.35220514390023,-10.721894124467468,84.22690498087752"
+                + "&WIDTH=600"
+                + "&HEIGHT=400"
+                + "&format_options="
+                + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png";
+
+        // Get the HTML response and parse it
+        Document doc = getAsJSoup(path);
+
+        Element viewer = doc.select("mapml-viewer").first();
+        assertNotNull("mapml-viewer element should be present", viewer);
+        String lat = Double.toString(customBounds.getCenterY());
+        String lon = Double.toString(customBounds.getCenterX());
+
+        String viewerLat = viewer.attr("lat");
+        String viewerLon = viewer.attr("lon");
+        assertTrue("Viewer lat should equal centre of bounds of input layer", lat.equalsIgnoreCase(viewerLat));
+        assertTrue("Viewer lon should equal centre bounds of input layer", lon.equalsIgnoreCase(viewerLon));
+    }
+
+    @Test
+    public void testMapMLViewerPreviewLocationHTMLCBMTILE() throws Exception {
+        // Set up a layer with the problematic bounds
+        Catalog catalog = getCatalog();
+        LayerInfo layerInfo = catalog.getLayerByName(MockData.POLYGONS.getLocalPart());
+        ResourceInfo resourceInfo = layerInfo.getResource();
+
+        // Define the specific problematic bounds
+        double minx = -175.64837790528588;
+        double maxx = -10.721894124467468;
+        double miny = 34.35220514390023;
+        double maxy = 84.22690498087752;
+        ReferencedEnvelope geographicBounds =
+                new ReferencedEnvelope(minx, maxx, miny, maxy, DefaultGeographicCRS.WGS84);
+        resourceInfo.setLatLonBoundingBox(geographicBounds);
+
+        // Configure the layer to use CBMTILE and force reprojection
+        resourceInfo.setSRS("MapML:CBMTILE");
+        resourceInfo.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+
+        CoordinateReferenceSystem cbmTileCRS = CRS.decode("MapML:CBMTILE");
+        ReferencedEnvelope cbmBounds = geographicBounds.transform(cbmTileCRS, true);
+        resourceInfo.setNativeBoundingBox(cbmBounds);
+        catalog.save(resourceInfo);
+
+        MathTransform transform = CRS.findMathTransform(cbmTileCRS, DefaultGeographicCRS.WGS84, true);
+        Position2D expectedViewerLocationWGS84 = new Position2D();
+        Position2D projectedBboxCentre = new Position2D(cbmTileCRS, cbmBounds.getCenterX(), cbmBounds.getCenterY());
+        transform.transform(projectedBboxCentre, expectedViewerLocationWGS84);
+
+        // Request path with HTML format specifying CBMTILE projection
+        String path = "wms?LAYERS=" + MockData.POLYGONS.getLocalPart() + "&STYLES=&FORMAT="
+                + MapMLConstants.MAPML_HTML_MIME_TYPE + "&SERVICE=WMS&VERSION=1.3.0"
+                + "&REQUEST=GetMap"
+                + "&SRS=MapML:CBMTILE"
+                + "&BBOX="
+                + cbmBounds.getMinX()
+                + "," + cbmBounds.getMinY()
+                + "," + cbmBounds.getMaxX()
+                + "," + cbmBounds.getMaxY()
+                + "&WIDTH=768"
+                + "&HEIGHT=387"
+                + "&format_options="
+                + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png";
+
+        // Get the HTML response and parse it
+        Document doc = getAsJSoup(path);
+
+        // Validate the mapml-viewer element
+        Element viewer = doc.select("mapml-viewer").first();
+        assertNotNull("mapml-viewer element should be present", viewer);
+        // Check that the projection attribute is set correctly
+        assertEquals("Projection should be set to CBMTILE", "CBMTILE", viewer.attr("projection"));
+
+        String expectedLon = Double.toString(expectedViewerLocationWGS84.getX());
+        String expectedLat = Double.toString(expectedViewerLocationWGS84.getY());
+
+        String viewerLat = viewer.attr("lat");
+        String viewerLon = viewer.attr("lon");
+        assertTrue("Viewer lat should equal centre of bounds of input layer", expectedLat.equalsIgnoreCase(viewerLat));
+        assertTrue("Viewer lon should equal centre bounds of input layer", expectedLon.equalsIgnoreCase(viewerLon));
     }
 
     @Test

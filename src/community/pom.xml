@@ -177,6 +177,7 @@
         <module>wfs-freemarker</module>
         <module>stac-datastore</module>
         <module>acl</module>
+        <module>geoparquet</module>
       </modules>
     </profile>
     <profile>
@@ -544,6 +545,12 @@
       <id>wfs-freemarker</id>
       <modules>
         <module>wfs-freemarker</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>geoparquet</id>
+      <modules>
+        <module>geoparquet</module>
       </modules>
     </profile>
     <profile>

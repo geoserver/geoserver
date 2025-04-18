@@ -1,0 +1,30 @@
+<assembly>
+  <id>geoparquet-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>${artifactId}-${project.version}.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+<!-- [INFO] +- org.geotools:gt-geoparquet:jar:34-SNAPSHOT:compile -->
+<!-- [INFO] |  +- org.duckdb:duckdb_jdbc:jar:1.2.2.0:compile -->
+<!-- [INFO] |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.18.2:compile -->
+<!-- [INFO] |  |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.18.2:compile -->
+<!-- [INFO] |  |  \- com.fasterxml.jackson.core:jackson-core:jar:2.18.2:compile -->
+      <directory>target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gt-geoparquet*.jar</include>
+        <include>duckdb_jdbc*.jar</include>
+        <!-- jackson-databind is already provided by gs-ows -->
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  (c) 2019 Open Source Geospatial Foundation - all rights reserved
+  ~  This code is licensed under the GPL 2.0 license, available at the root
+  ~  application directory.
+  ~
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+             http://www.springframework.org/schema/beans
+             http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+<!-- Configure GeoParquet UI components -->
+  <bean id="geoParquetDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="geoParquetDataStorePanel"/>
+    <property name="factoryClass" value="org.geotools.data.geoparquet.GeoParquetDataStoreFactory"/>
+    <property name="iconBase" value="org.geoserver.web.data.store.geoparquet.GeoParquetDataStoreEditPanel"/>
+    <property name="icon" value="geoparquet-icon.svg" />
+    <property name="componentClass" value="org.geoserver.web.data.store.geoparquet.GeoParquetDataStoreEditPanel"/>
+  </bean>
+</beans>

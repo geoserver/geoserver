@@ -1927,5 +1927,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>geoparquet</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-geoparquet</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>

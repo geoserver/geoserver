@@ -81,7 +81,7 @@ ifndef suite
 	@$(MAKE) help
 	@exit 1
 endif
-ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13 wmts10 wfs10 wfs20 wcs11 wcs20 geotiff11 gpkg12))
+ifneq (,$(filter $(suite),ogcapi-features10 ogcapi-tiles10 wms11 wms13 wmts10 wfs10 wfs20 wcs11 wcs20 geotiff11 gpkg12))
 	@$(MAKE) test-rest suite=$(suite)
 else
 	@$(MAKE) test-cli suite=$(suite)
@@ -142,7 +142,7 @@ endif
 		echo "Error: Using 'host.docker.internal' as the iut value is not supported on Linux. Please use '172.17.0.1'."; \
 		exit 1; \
 	fi
-ifeq ($(suite), ogcapi-features10)
+ifeq ($(filter $(suite), ogcapi-features10 ogcapi-tiles10),$(suite))
 	@echo "Running REST-based tests for suite: $(suite) with iut: $(iut)"
 	@$(MAKE) test-rest suite=$(suite) iut=$(iut)
 else
@@ -267,7 +267,7 @@ pull: $(suite)
 
 .PHONY: build-war
 build-war:
-	@mvn -Pogcapi-features,geopkg-output \
+	@mvn -Pogcapi-features,ogcapi-tiles,geopkg-output \
 	clean package -f ../../src/pom.xml \
 	-DskipTests  -B -ntp -U -T1C -fae -pl :gs-web-app -am
 

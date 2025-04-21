@@ -121,6 +121,10 @@ ogcapi-features10() {
     run_rest_test_suite "ogcapi-features-1.0" "testng" "iut=http://geoserver:8080/geoserver/ogc/features/v1" "noofcollections=-1"
 }
 
+ogcapi-tiles10() {
+    run_rest_test_suite "ogcapi-tiles-1.0" "testng" "iut=http://geoserver:8080/geoserver/cite/ogc/tiles/v1" "tilematrixsetdefinitionuri=http://www.opengis.net/def/tilematrixset/OGC/1.0/WebMercatorQuad" "urltemplatefortiles=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fcite%2Fogc%2Ftiles%2Fv1%2Fcollections%2FBuildings%2Fmap%2Ftiles%2FWebMercatorQuad%2F%7BtileMatrix%7D%2F%7BtileRow%7D%2F%7BtileCol%7D%3Ff%3Dimage%2Fpng" "tilematrix=17" "mintilerow=65535" "maxtilerow=65535" "mintilecol=65536" "maxtilecol=65536"
+}
+
 geotiff11() {
   # RGB WMS
   run_rest_test_suite_prefix "geotiff11" "01-wms-" "testng" "iut=http:%2F%2Fgeoserver:8080%2Fgeoserver%2Fwms?service%3DWMS%26version%3D1.1.0%26request%3DGetMap%26layers%3Dtopp%3Atazbm%26bbox%3D146.49999999999477%2C-44.49999999999785%2C147.99999999999474%2C-42.99999999999787%26width%3D767%26height%3D768%26srs%3DEPSG%3A4326%26styles%3D%26format%3Dimage%2Fgeotiff"

@@ -100,7 +100,6 @@ import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.NumberRange;
-import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 
@@ -427,6 +426,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
     private GridCoverage2D readUsingJiffle(ViewInputs viewInputs) {
         HashMap<String, GridCoverage2D> inputCoverages = viewInputs.getInputCoverages();
+        List<String> coverageOrder = new ArrayList<>(inputCoverages.keySet());
         GridCoverage2D[] coverages = inputCoverages.values().toArray(new GridCoverage2D[0]);
         GridCoverage2D reference = coverages[0];
 
@@ -434,8 +434,12 @@ public class CoverageViewReader implements GridCoverage2DReader {
         String script = coverageView.getDefinition();
         List<CoverageBand> outputBands = coverageView.getCoverageBands();
         List<InputCoverageBand> inputBands = outputBands.get(0).getInputCoverageBands();
+        Set<String> usedBandNames =
+                inputBands.stream().map(InputCoverageBand::getCoverageName).collect(Collectors.toSet());
+
+        // Make sure sourceBands are sorted the same way as the coverages
         List<String> sourceBands =
-                inputBands.stream().map(icb -> icb.getCoverageName()).collect(Collectors.toList());
+                coverageOrder.stream().filter(usedBandNames::contains).collect(Collectors.toList());
 
         RenderedImage[] sources = new RenderedImage[inputCoverages.size()];
         sources[0] = reference.getRenderedImage();
@@ -446,7 +450,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
             } else {
                 double[] nodata = CoverageUtilities.getBackgroundValues(coverage);
                 ROI roi = CoverageUtilities.getROIProperty(coverage);
-                sources[i] = GridCoverage2DRIA.create(coverage, reference, nodata, GeoTools.getDefaultHints(), roi);
+                sources[i] = GridCoverage2DRIA.create(coverage, reference, nodata, hints, roi);
             }
         }
 
@@ -455,20 +459,10 @@ public class CoverageViewReader implements GridCoverage2DReader {
         Range[] nodatas = new Range[sources.length];
         nodatas = getNodatas(nodatas, coverages);
         RenderedOp result = JiffleDescriptor.create(
-                sources,
-                sourceNames,
-                destName,
-                script,
-                null,
-                null,
-                outputBandCount,
-                null,
-                null,
-                nodatas,
-                GeoTools.getDefaultHints());
+                sources, sourceNames, destName, script, null, null, outputBandCount, null, null, nodatas, hints);
 
         GridSampleDimension[] sampleDimensions = getSampleDimensions(result, destName);
-        GridCoverageFactory factory = new GridCoverageFactory(GeoTools.getDefaultHints());
+        GridCoverageFactory factory = new GridCoverageFactory(hints);
         return factory.create("jiffle", result, reference.getEnvelope(), sampleDimensions, coverages, null);
     }
 

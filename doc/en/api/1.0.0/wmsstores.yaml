@@ -247,7 +247,7 @@ parameters:
         ```
         <wmsStore>
           <name>remote</name>
-          <capabilitiesUrl>http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities</capabilitiesUrl>
+          <capabilitiesURL>http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities</capabilitiesURL>
         </wmsStore>
         ```
 
@@ -257,7 +257,7 @@ parameters:
         {
           "wmsStore": {
             "name": "remote",
-            "capabilitiesUrl": "http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities"
+            "capabilitiesURL": "http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities"
           }
         }
         ```
@@ -281,7 +281,7 @@ parameters:
           <description>A wms store</description>
           <enabled>true</enabled>
           <__default>true</__default>
-          <capabilitiesUrl>http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities</capabilitiesUrl>
+          <capabilitiesURL>http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities</capabilitiesURL>
           <user>admin</user>
           <password>geoserver</password>
           <maxConnections>6</maxConnections>
@@ -298,7 +298,7 @@ parameters:
             "description": "A wms store",
             "enabled": "true",
             "_default": "true",
-            "capabilitiesUrl": "http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities",
+            "capabilitiesURL": "http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities",
             "user": "admin",
             "password": "geoserver",
             "maxConnections": "6",

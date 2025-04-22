@@ -62,6 +62,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     private static final String RGB_IR_VIEW = "RgbIrView";
     private static final String BANDS_FLAGS_VIEW = "BandsFlagsView";
     private static final String NDVI_VIEW = "NDVI";
+    private static final String NDVI_VIEW2 = "NDVI2";
     private static final String BGR_VIEW = "BGR";
     private static final double ERROR = 1E-5;
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
@@ -96,6 +97,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         configureIROnCatalog(cat);
         configureBandsFlagsOnCatalog(cat);
         configureNDVIonCatalog(cat);
+        configureNDVI2(cat);
         configureBGRonCatalogWithJiffle(cat);
     }
 
@@ -129,7 +131,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("s2reduced");
         InputCoverageBand ib04 = new InputCoverageBand("B04", "0");
         InputCoverageBand ib08 = new InputCoverageBand("B08", "0");
-        final CoverageBand ndvi = new CoverageBand(Arrays.asList(ib04, ib08), "ndvi", 0, CompositionType.JIFFLE);
+        final CoverageBand ndvi = new CoverageBand(Arrays.asList(ib04, ib08), "NDVI", 0, CompositionType.JIFFLE);
         final CoverageView coverageView = new CoverageView(NDVI_VIEW, Collections.singletonList(ndvi));
         coverageView.setOutputName("NDVI");
         coverageView.setDefinition("NDVI = (B08 - B04) / (B04 + B08);");
@@ -137,6 +139,22 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(NDVI_VIEW, storeInfo, builder);
+        cat.add(coverageInfo);
+    }
+
+    private void configureNDVI2(Catalog cat) throws Exception {
+        final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("s2reduced");
+        InputCoverageBand ib04 = new InputCoverageBand("B04", "0");
+        InputCoverageBand ib08 = new InputCoverageBand("B08", "0");
+        // set bands in a different order
+        final CoverageBand ndvi = new CoverageBand(Arrays.asList(ib08, ib04), "NDVI2", 0, CompositionType.JIFFLE);
+        final CoverageView coverageView = new CoverageView(NDVI_VIEW2, Collections.singletonList(ndvi));
+        coverageView.setOutputName("NDVI2");
+        coverageView.setDefinition("A=B08; B=B04; NDVI2=(A-B)/(B+A);");
+        coverageView.setCompositionType(CompositionType.JIFFLE);
+        final CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(storeInfo);
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(NDVI_VIEW2, storeInfo, builder);
         cat.add(coverageInfo);
     }
 
@@ -250,12 +268,14 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     }
 
     private void disposeCoverage(GridCoverage coverage) {
-        RenderedImage ri = coverage.getRenderedImage();
-        if (coverage instanceof GridCoverage2D) {
-            ((GridCoverage2D) coverage).dispose(true);
-        }
-        if (ri instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+        if (coverage != null) {
+            RenderedImage ri = coverage.getRenderedImage();
+            if (coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if (ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
         }
     }
 
@@ -309,19 +329,30 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testNDVIJiffle() throws Exception {
-        Catalog cat = getCatalog();
-        CoverageInfo coverageInfo = cat.getCoverageByName(NDVI_VIEW);
-        final ResourcePool rp = cat.getResourcePool();
-        GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, NDVI_VIEW, null);
-        GridCoverage2D solidCoverage = (GridCoverage2D) reader.read(NDVI_VIEW, null);
+        assertNdvi("NDVI");
+    }
 
-        GridCoverageReader rb04 = rp.getGridCoverageReader(cat.getCoverageByName("B04"), "B04", null);
-        GridCoverageReader rb08 = rp.getGridCoverageReader(cat.getCoverageByName("B08"), "B08", null);
-        GridCoverage b04Coverage = rb04.read("B04", null);
-        GridCoverage b08Coverage = rb08.read("B08", null);
+    @Test
+    public void testNDVI2Jiffle() throws Exception {
+        assertNdvi("NDVI2");
+    }
 
+    private void assertNdvi(String viewName) throws Exception {
+        GridCoverage2D solidCoverage = null;
+        GridCoverage b04Coverage = null;
+        GridCoverage b08Coverage = null;
         try {
-            assertBandNames(solidCoverage, "NDVI");
+            Catalog cat = getCatalog();
+            CoverageInfo coverageInfo = cat.getCoverageByName(viewName);
+            final ResourcePool rp = cat.getResourcePool();
+            GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, viewName, null);
+            solidCoverage = (GridCoverage2D) reader.read(viewName, null);
+            assertBandNames(solidCoverage, viewName);
+            GridCoverageReader rb04 = rp.getGridCoverageReader(cat.getCoverageByName("B04"), "B04", null);
+            GridCoverageReader rb08 = rp.getGridCoverageReader(cat.getCoverageByName("B08"), "B08", null);
+            b04Coverage = rb04.read("B04", null);
+            b08Coverage = rb08.read("B08", null);
+
             RenderedImage ri = solidCoverage.getRenderedImage();
             Raster raster = ri.getData();
             Raster b04 = b04Coverage.getRenderedImage().getData();
@@ -339,7 +370,6 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
                     assertEquals(d, ndvi, ERROR);
                 }
             }
-
         } finally {
             disposeCoverage(solidCoverage);
             disposeCoverage(b04Coverage);

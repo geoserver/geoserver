@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -100,6 +101,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
@@ -108,6 +111,7 @@ import si.uom.SI;
 
 public class XStreamPersisterTest {
 
+    private static final Logger log = LoggerFactory.getLogger(XStreamPersisterTest.class);
     GeoServerFactory factory;
     CatalogFactory cfactory;
     XStreamPersister persister;
@@ -862,6 +866,9 @@ public class XStreamPersisterTest {
         wl.setAbstract("abstract");
         wl.setSRS("EPSG:4326");
         wl.setNativeCRS(CRS.decode("EPSG:4326"));
+        Map<String, String> vendorParameters = new HashMap<>();
+        vendorParameters.put("foo", "bar");
+        wl.setVendorParameters(vendorParameters);
 
         ByteArrayOutputStream out = out();
         persister.save(wl, out);
@@ -877,6 +884,60 @@ public class XStreamPersisterTest {
         assertEquals(ns, wl.getNamespace());
         assertEquals("EPSG:4326", wl.getSRS());
         assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), wl.getNativeCRS()));
+        assertEquals(vendorParameters, wl.getVendorParameters());
+
+        Document dom = dom(in(out));
+        assertEquals("wmsLayer", dom.getDocumentElement().getNodeName());
+    }
+
+    @Test
+    public void testWMSLayer_EmptyVendorProperties() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName("foo");
+        catalog.add(ws);
+
+        NamespaceInfo ns = cFactory.createNamespace();
+        ns.setPrefix("acme");
+        ns.setURI("http://acme.org");
+        catalog.add(ns);
+
+        WMSStoreInfo wms = cFactory.createWebMapServer();
+        wms.setWorkspace(ws);
+        wms.setName("foo");
+        wms.setCapabilitiesURL("http://fake.host/wms?request=getCapabilities");
+        catalog.add(wms);
+
+        WMSLayerInfo wl = cFactory.createWMSLayer();
+        wl.setStore(wms);
+        wl.setNamespace(ns);
+        wl.setName("wmsLayer");
+        wl.setAbstract("abstract");
+        wl.setSRS("EPSG:4326");
+        wl.setNativeCRS(CRS.decode("EPSG:4326"));
+        Map<String, String> vendorParameters = new HashMap<>();
+        wl.setVendorParameters(vendorParameters);
+
+        ByteArrayOutputStream out = out();
+        persister.save(wl, out);
+
+        // System.out.println( new String(out.toByteArray()) );
+
+        persister.setCatalog(catalog);
+        wl = persister.load(in(out), WMSLayerInfo.class);
+        assertNotNull(wl);
+
+        assertEquals("wmsLayer", wl.getName());
+        assertEquals(wms, wl.getStore());
+        assertEquals(ns, wl.getNamespace());
+        assertEquals("EPSG:4326", wl.getSRS());
+        assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), wl.getNativeCRS()));
+        // Unmarshall writes direct to the bean without invoking the setter check the
+        // vendorParameters is not null and that the map is empty
+        assertNotNull(wl.getVendorParameters());
+        assertEquals(0, wl.getVendorParameters().size());
 
         Document dom = dom(in(out));
         assertEquals("wmsLayer", dom.getDocumentElement().getNodeName());
@@ -914,6 +975,13 @@ public class XStreamPersisterTest {
         s.setName("style");
         s.setFilename("style.sld");
         catalog.add(s);
+
+        Map<String, String> vendorParameters = new HashMap<>();
+        vendorParameters.put("OBJECTFILTERNEGATION", "TRUE");
+        vendorParameters.put(
+                "OBJECT",
+                "DEPARE,MAGVAR,LIGHTS,LITFLT,LITVES,CBLARE,CBLOHD,CBLSUB,PIPARE,PIPOHD,PIPSOL,RADLNE,RADRNG,RADRFL,RADSTA,RTPBCN,FERYRT");
+        vendorParameters.put("tileSize", "512");
 
         LayerInfo l = cFactory.createLayer();
         // TODO: reinstate when layer/publish slipt is actually in place

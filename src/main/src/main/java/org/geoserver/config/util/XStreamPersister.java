@@ -53,6 +53,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -446,6 +447,8 @@ public class XStreamPersister {
         xs.registerLocalConverter(impl(LayerInfo.class), "defaultStyle", new ReferenceConverter(StyleInfo.class));
         xs.registerLocalConverter(impl(LayerInfo.class), "styles", new ReferenceCollectionConverter(StyleInfo.class));
         xs.registerLocalConverter(impl(LayerInfo.class), "metadata", new MetadataMapConverter());
+
+        xs.registerLocalConverter(impl(WMSLayerInfo.class), "vendorParameters", new VendorParameters());
 
         // LayerGroupInfo
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
@@ -1054,6 +1057,31 @@ public class XStreamPersister {
                 map = new MetadataMap(map);
             }
             return map;
+        }
+    }
+
+    /** Custom converter for the special metadata map. */
+    class VendorParameters extends BreifMapConverter {
+
+        @Override
+        public boolean canConvert(Class type) {
+            return Map.class.isAssignableFrom(type) || super.canConvert(type);
+        }
+
+        @Override
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            super.marshal(source, writer, context);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+            Map<String, String> map = (Map<String, String>) super.unmarshal(reader, context);
+            if (Objects.nonNull(map)) {
+                return map;
+            } else {
+                return Collections.emptyMap();
+            }
         }
     }
 
@@ -2549,6 +2577,9 @@ public class XStreamPersister {
         @Override
         public Object doUnmarshal(Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
             WMSLayerInfoImpl obj = (WMSLayerInfoImpl) super.doUnmarshal(result, reader, context);
+            if (obj.getVendorParameters() == null) {
+                obj.setVendorParameters(new HashMap<>());
+            }
             // setting the minimal defaults and clean object with no NULL values
             if (obj.getPreferredFormat() == null) {
                 obj.setPreferredFormat(WMSLayerInfoImpl.DEFAULT_FORMAT);

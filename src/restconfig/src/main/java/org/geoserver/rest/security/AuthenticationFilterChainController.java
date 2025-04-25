@@ -1,0 +1,280 @@
+package org.geoserver.rest.security;
+
+import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.catalog.SequentialExecutionController;
+import org.geoserver.rest.security.xml.AuthFilter;
+import org.geoserver.rest.security.xml.AuthFilterList;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.config.SecurityFilterConfig;
+import org.geoserver.security.validation.FilterConfigException;
+import org.geoserver.security.validation.FilterConfigValidator;
+import org.geoserver.security.validation.SecurityConfigException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Logger;
+
+import static java.lang.String.format;
+
+@RestController("authenticationFilterChainController")
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/security/authFilters")
+public class AuthenticationFilterChainController implements SequentialExecutionController {
+    private final static Logger LOGGER = Logger.getLogger(AuthenticationFilterChainController.class.getName());
+
+    private final GeoServerSecurityManager securityManager;
+    private final FilterConfigValidator filterConfigValidator;
+
+    private static final Set<String> DELETE_BLACK_LIST = Set.of("anonymous", "basic", "form", "rememberme");
+
+    public AuthenticationFilterChainController(GeoServerSecurityManager securityManager) {
+        this.securityManager = securityManager;
+        this.filterConfigValidator = new FilterConfigValidator(securityManager);
+    }
+
+    /// ///////////////////////////////////////////////////////////////////////
+    /// REST API methods
+
+    @GetMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<AuthFilterList> list() throws IOException {
+        return ResponseEntity.ok(loadAuthFilters());
+    }
+
+    // 200
+    // 404
+    @GetMapping(
+            value = "/{filterName}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public ResponseEntity<AuthFilter> get(@PathVariable("filterName") String filterName) throws IOException {
+        return new ResponseEntity<>(loadAuthFilter(filterName), HttpStatus.OK);
+    }
+
+    // FilterConfigValidator to check if filter is valid
+    // 201
+    // 400
+    @PostMapping(
+            value = "",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public ResponseEntity<AuthFilter> post(@RequestBody AuthFilter authFilterRequest) throws IOException, SecurityConfigException {
+        AuthFilter authFilterResponse = saveAuthFilter(authFilterRequest);
+        return new ResponseEntity<>(authFilterResponse, HttpStatus.CREATED);
+    }
+
+    // 200
+    // 400
+    // 404
+    @PutMapping(
+            value = "/{filterName}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public ResponseEntity<AuthFilter> put(@PathVariable("filterName") String filterName, @RequestBody AuthFilter authFilterRequest) throws IOException, SecurityConfigException {
+        AuthFilter updated = updateAuthFilter(filterName, authFilterRequest);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
+    }
+
+    // 200 when deleted
+    // 402 if already deleted
+    @DeleteMapping(
+            value = "/{filterName}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public HttpStatus delete(@PathVariable("filterName") String filterName) throws IOException, SecurityConfigException {
+        boolean deleted = removeAuthFilter(filterName);
+        return deleted ? HttpStatus.OK : HttpStatus.GONE;
+    }
+
+    /// ///////////////////////////////////////////////////////////////////////
+    /// Internal logic
+
+    protected AuthFilterList loadAuthFilters() throws IOException {
+        Set<String> authFilterNames = securityManager.listFilters();
+        List<AuthFilter> jaxbAuthFilters = new ArrayList<>();
+        for (String filterName : authFilterNames) {
+            SecurityFilterConfig securityFilterConfig = securityManager.loadFilterConfig(filterName, true);
+            if (securityFilterConfig != null) {
+                jaxbAuthFilters.add(new AuthFilter(securityFilterConfig));
+            }
+        }
+        return new AuthFilterList(jaxbAuthFilters);
+    }
+
+    protected AuthFilter loadAuthFilter(String filterName) throws IOException {
+        SecurityFilterConfig authFilter = securityManager.loadFilterConfig(filterName, true);
+        if (authFilter == null) {
+            LOGGER.warning(format("Cannot find %s because it does not exist", filterName));
+            throw new IllegalArgumentException(format("Cannot find %s because it does not exist", filterName));
+        }
+        return new AuthFilter(authFilter);
+    }
+
+    protected AuthFilter saveAuthFilter(AuthFilter newFilter) throws IOException, SecurityConfigException {
+        if (newFilter.getId() != null || newFilter.getConfig().getId() != null) {
+            LOGGER.warning(format("Cannot create the filter %s because client has provided an id %s", newFilter.getName(), newFilter.getId()));
+            throw new IdSetByServerException(newFilter);
+        }
+
+        if (newFilter.getName() == null || newFilter.getConfig().getName() == null) {
+            LOGGER.warning(format("Cannot create the filter %s because client has not provided a name", newFilter.getName()));
+            throw new MissingNameException();
+        }
+
+        if(securityManager.loadFilterConfig(newFilter.getName(), true) != null) {
+            LOGGER.warning(format("Cannot create the filter %s because a filter with the name already exists", newFilter.getName()));
+            throw new DuplicateNameException(newFilter.getName());
+        }
+
+        filterConfigValidator.validateFilterConfig(newFilter.getConfig());
+        securityManager.saveFilter(newFilter.getConfig());
+        securityManager.reload();
+
+        SecurityFilterConfig authFilter = securityManager.loadFilterConfig(newFilter.getName(), true);
+        return new AuthFilter(authFilter);
+    }
+
+    protected AuthFilter updateAuthFilter(String filterName, AuthFilter authFilterRequest) throws IOException, SecurityConfigException {
+        if (!filterName.equals(authFilterRequest.getName())) {
+            LOGGER.warning(format("Cannot modify the config %s because the name %s in the body does not match", filterName, authFilterRequest.getName()));
+            throw new NameMismatchException(filterName, authFilterRequest.getName());
+        }
+        SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, true);
+        if (filter == null) {
+            LOGGER.warning(format("Cannot update %s because it does not exist", filterName));
+            throw new IllegalArgumentException(format("Cannot update %s because it does not exist", filterName));
+        }
+        if (authFilterRequest.getId() != null && !authFilterRequest.getId().equals(filter.getId())) {
+            LOGGER.warning(format("Cannot modify the config with %s because the id %s in the body does not match", authFilterRequest.getId(), filter.getId()));
+            throw new IdMismatchException(authFilterRequest.getId(), filter.getId());
+        }
+
+        filterConfigValidator.validateFilterConfig(authFilterRequest.getConfig());
+        securityManager.saveFilter(authFilterRequest.getConfig());
+        securityManager.reload();
+
+        return new AuthFilter(securityManager.loadFilterConfig(filterName, true));
+    }
+
+    protected boolean removeAuthFilter(String filterName) throws IOException, SecurityConfigException {
+        if (DELETE_BLACK_LIST.contains(filterName)) {
+            LOGGER.warning(format("Cannot delete %s because it is a required authentication filter", filterName));
+            throw new DeleteBlackListException(filterName);
+        }
+        SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, true);
+        if (filter == null) {
+            LOGGER.warning(format("Cannot delete %s because it does not exist", filterName));
+            return false;
+        }
+        securityManager.removeFilter(filter);
+        securityManager.reload();
+        return true;
+    }
+
+    /// ///////////////////////////////////////////////////////////////////////
+    /// Exception handlers
+    @ExceptionHandler(IllegalArgumentException.class)
+    public void somethingNotFound(IllegalArgumentException exception, HttpServletResponse response) throws IOException {
+        response.sendError(404, exception.getMessage());
+    }
+
+    @ExceptionHandler(DeleteBlackListException.class)
+    public void cannotDelete(DeleteBlackListException exception, HttpServletResponse response) throws IOException {
+        response.sendError(404, exception.getMessage());
+    }
+
+    @ExceptionHandler(IdSetByServerException.class)
+    public void idSetByServerException(IdSetByServerException exception, HttpServletResponse response) throws IOException {
+        response.sendError(400, exception.getMessage());
+    }
+
+    @ExceptionHandler(NameMismatchException.class)
+    public void nameMismatch(NameMismatchException exception, HttpServletResponse response) throws IOException {
+        response.sendError(400, exception.getMessage());
+    }
+
+    @ExceptionHandler(MissingNameException.class)
+    public void missingName(MissingNameException exception, HttpServletResponse response) throws IOException {
+        response.sendError(400, exception.getMessage());
+    }
+
+    @ExceptionHandler(IdMismatchException.class)
+    public void idMismatch(IdMismatchException exception, HttpServletResponse response) throws IOException {
+        response.sendError(400, exception.getMessage());
+    }
+
+    @ExceptionHandler(SecurityConfigException.class)
+    public void securityConfigException(SecurityConfigException exception, HttpServletResponse response) throws IOException {
+        response.sendError(400, exception.getMessage());
+    }
+
+    @ExceptionHandler(IOException.class)
+    public void readWriteFailure(IOException exception, HttpServletResponse response) throws IOException {
+        response.sendError(500, exception.getMessage());
+    }
+
+    @ExceptionHandler(FilterConfigException.class)
+    public void validationError(FilterConfigException exception, HttpServletResponse response) throws IOException {
+        response.sendError(400, exception.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateNameException.class)
+    public void duplicateNameException(FilterConfigException exception, HttpServletResponse response) throws IOException {
+        response.sendError(400, exception.getMessage());
+    }
+
+
+    /// ///////////////////////////////////////////////////////////////////////
+    /// Bespoke Exceptions
+
+    public static class DeleteBlackListException extends RuntimeException {
+        public DeleteBlackListException(String name) {
+            super(format("Cannot delete %s because it is a required authentication filter", name));
+        }
+    }
+
+    public static class IdSetByServerException extends RuntimeException {
+        public IdSetByServerException(AuthFilter newConfig) {
+            super(format("Cannot create the filter %s because client has provided an id %s", newConfig.getName(), newConfig.getId()));
+        }
+    }
+
+    public static class NameMismatchException extends RuntimeException {
+        public NameMismatchException(String pathName, String configName) {
+            super(format("Cannot modify the config %s because the name %s in the body does not match", pathName, configName));
+        }
+    }
+
+    public static class DuplicateNameException extends RuntimeException {
+        public DuplicateNameException(String configName) {
+            super(format("Cannot create the config %s because the name is already in use", configName));
+        }
+    }
+
+    public static class MissingNameException extends RuntimeException {
+        public MissingNameException() {
+            super("Cannot create the config has no name parameter");
+        }
+    }
+
+    public static class IdMismatchException extends RuntimeException {
+        public IdMismatchException(String requestBodyId, String id) {
+            super(format("Cannot modify the config with %s because the id %s in the body does not match", requestBodyId, id));
+        }
+    }
+
+}

@@ -75,11 +75,11 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     static {
         try {
-            var demo_request_js = CharStreams.toString(new InputStreamReader(
+            String demo_request_js = CharStreams.toString(new InputStreamReader(
                     DemoRequestsPage.class.getResourceAsStream("/org/geoserver/web/demo/demo-requests.js"), UTF_8));
-            var xml_pretty_print_js = CharStreams.toString(new InputStreamReader(
+            String xml_pretty_print_js = CharStreams.toString(new InputStreamReader(
                     DemoRequestsPage.class.getResourceAsStream("/org/geoserver/web/demo/xml-pretty-print.js"), UTF_8));
-            var js = demo_request_js + "\n" + xml_pretty_print_js;
+            String js = demo_request_js + "\n" + xml_pretty_print_js;
             demoRequestsJavascript = js;
 
             demoRequestsCSS = CharStreams.toString(new InputStreamReader(

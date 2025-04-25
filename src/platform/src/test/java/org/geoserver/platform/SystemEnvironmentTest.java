@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.easymock.EasyMock;
@@ -44,7 +45,7 @@ public class SystemEnvironmentTest {
      */
     @Test
     public void testEnabled() {
-        final var VALUE = new ArrayList<String>();
+        final List<String> VALUE = new ArrayList<>();
 
         // create subclass of SystemEnvironmentStatus so we can change the value of the environment
         // variable.

@@ -105,7 +105,7 @@ public class ServicesPanel extends Panel {
             String serviceName = service.getServiceType();
             if (serviceMap.containsKey(serviceName)) {
                 // use the "highest priority" service description
-                var otherServiceDescription = serviceMap.get(serviceName);
+                ServiceDescription otherServiceDescription = serviceMap.get(serviceName);
                 if (service.getDescriptionPriority() > otherServiceDescription.getDescriptionPriority()) {
                     serviceMap.put(serviceName, service);
                 }

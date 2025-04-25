@@ -61,12 +61,12 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
         this.serviceName = serviceName;
         this.specificServiceType = specificServiceType;
         @SuppressWarnings("unchecked")
-        var infoClass = (Class<SERVICEINFOTYPE>)
+        Class<SERVICEINFOTYPE> infoClass = (Class<SERVICEINFOTYPE>)
                 ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         this.infoClass = infoClass;
 
         @SuppressWarnings("unchecked")
-        var serviceClass = (Class<SERVICETYPE>)
+        Class<SERVICETYPE> serviceClass = (Class<SERVICETYPE>)
                 ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
         this.serviceClass = serviceClass;
     }
@@ -131,7 +131,7 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
         InternationalString description = InternationalStringUtils.growable(
                 info.getInternationalAbstract(), Strings.isEmpty(info.getAbstract()) ? null : info.getAbstract());
 
-        var serviceDesc = new ServiceDescription(
+        ServiceDescription serviceDesc = new ServiceDescription(
                 serviceType,
                 title,
                 description,
@@ -182,10 +182,10 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
             String customLink, WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         if (workspaceInfo == null) return customLink;
         // add in WS info
-        var wsName = UriUtils.encodePath(workspaceInfo.getName(), "UTF-8");
+        String wsName = UriUtils.encodePath(workspaceInfo.getName(), "UTF-8");
         customLink = customLink.replace("/ogc/", "/" + wsName + "/ogc/");
         if (layerInfo != null) {
-            var layerName = UriUtils.encodePath(layerInfo.getName(), "UTF-8");
+            String layerName = UriUtils.encodePath(layerInfo.getName(), "UTF-8");
             customLink = customLink.replace("/ogc/", "/" + layerName + "/ogc/");
         }
         return customLink;

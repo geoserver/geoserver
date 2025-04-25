@@ -103,7 +103,8 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
 
         tester.clickLink("form:execute", true);
 
-        var model = (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
+        DemoRequest model =
+                (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
 
         assertEquals("http://localhost/context/ows?strict=true", model.getRequestUrl());
         assertTrue(model.getRequestBody().contains("wps:Execute"));

@@ -176,8 +176,8 @@ public class WPSRequestBuilderPanel extends Panel {
                 processChoice.processInput();
                 if (execute.processName != null) {
 
-                    var xmlText = getDescribeXML(execute.processName);
-                    var xml = (TextField) form.get("xml");
+                    String xmlText = getDescribeXML(execute.processName);
+                    TextField xml = (TextField) form.get("xml");
                     xml.setModelObject(xmlText);
                     target.add(xml);
                     target.appendJavaScript("executeWPS()");

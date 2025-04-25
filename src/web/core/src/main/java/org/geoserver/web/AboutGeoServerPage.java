@@ -19,10 +19,10 @@ public class AboutGeoServerPage extends GeoServerBasePage {
 
     public AboutGeoServerPage() {
         // hide info based on if the user is admin or not
-        var privateInfo = new WebMarkupContainer("privateInfo");
+        WebMarkupContainer privateInfo = new WebMarkupContainer("privateInfo");
         add(privateInfo);
 
-        var isAdmin = getSession().isAdmin();
+        boolean isAdmin = getSession().isAdmin();
         if (isAdmin) {
             privateInfo.add(new Label("geotoolsVersion", GeoTools.getVersion().toString()));
             privateInfo.add(new Label("geotoolsRevision", GeoTools.getBuildRevision()));

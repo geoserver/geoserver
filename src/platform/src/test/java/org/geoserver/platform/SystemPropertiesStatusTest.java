@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
 
 public class SystemPropertiesStatusTest {
@@ -36,7 +37,7 @@ public class SystemPropertiesStatusTest {
     /** Tests the SystemPropertyStatusEnabledEnvironmentVar so it turns on/off the message (list of property vars). */
     @Test
     public void testEnabled() {
-        final var VALUE = new ArrayList<String>();
+        List<String> VALUE = new ArrayList<>();
 
         // create subclass of SystemPropertyStatus so we can change the value of the environment
         // variable.

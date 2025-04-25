@@ -289,7 +289,7 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         logout();
         tester.startPage(GeoServerHomePage.class);
 
-        var version = new StringResourceModel("version", null, null).getString();
+        String version = new StringResourceModel("version", null, null).getString();
 
         String responseTxt = tester.getLastResponse().getDocument();
         assertFalse(responseTxt.contains(version));

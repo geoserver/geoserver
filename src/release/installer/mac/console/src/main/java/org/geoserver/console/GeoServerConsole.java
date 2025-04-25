@@ -122,14 +122,10 @@ public class GeoServerConsole {
 
         public boolean isStarted() throws Exception {
             // attempt a connection
-            Socket s = null;
-            try {
-                s = new Socket(InetAddress.getLocalHost(), 8080);
+            try (Socket s = new Socket(InetAddress.getLocalHost(), 8080)) {
                 return s.isConnected();
             } catch (ConnectException e) {
                 return false;
-            } finally {
-                if (s != null) s.close();
             }
         }
 

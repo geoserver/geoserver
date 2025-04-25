@@ -50,7 +50,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         Form form = new Form<>("form");
         add(form);
 
-        var model = new Model<>(new WCSRequestModel());
+        Model<WCSRequestModel> model = new Model<>(new WCSRequestModel());
         form.setDefaultModel(model);
 
         xml = new TextField<>("xml", new PropertyModel<>(model, "xml"));
@@ -76,7 +76,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                         "ows",
                         Collections.singletonMap("strict", "true"),
                         URLType.SERVICE);
-                var xml = getRequestXML();
+                String xml = getRequestXML();
 
                 PageParameters parameters = new PageParameters();
                 parameters.add("url", url);
@@ -116,7 +116,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
-                    var xmlText = getRequestXML();
+                    String xmlText = getRequestXML();
                     xml.setModelObject(xmlText);
                     target.add(xml);
                 } catch (Exception e) {

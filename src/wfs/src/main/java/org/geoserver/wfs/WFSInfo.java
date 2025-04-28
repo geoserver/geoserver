@@ -321,5 +321,9 @@ public interface WFSInfo extends ServiceInfo {
      *
      * @param csvDateFormat Date Format pattern
      */
-    public void setCsvDateFormat(String csvDateFormat);
+    void setCsvDateFormat(String csvDateFormat);
+
+    boolean isDisableStoredQueriesManagement();
+
+    void setDisableStoredQueriesManagement(boolean disableStoredQueriesManagement);
 }

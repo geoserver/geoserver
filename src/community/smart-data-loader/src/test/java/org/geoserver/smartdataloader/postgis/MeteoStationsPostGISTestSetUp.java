@@ -10,7 +10,7 @@ public class MeteoStationsPostGISTestSetUp extends PostGISTestSetUp {
     protected final String meteoSqlScriptFileName;
 
     public MeteoStationsPostGISTestSetUp() {
-        this.meteoSqlScriptFileName = "meteo_db.sql";
+        this("meteo_db.sql");
     }
 
     public MeteoStationsPostGISTestSetUp(String sqlScriptFileName) {

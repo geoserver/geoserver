@@ -8,13 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import org.geoserver.smartdataloader.domain.DomainModelVisitorImpl;
+import org.geoserver.smartdataloader.domain.IndexedDomainModelVisitorImpl;
 import org.geoserver.smartdataloader.domain.entities.DomainEntity;
 import org.geoserver.smartdataloader.domain.entities.DomainEntitySimpleAttribute;
 import org.geoserver.smartdataloader.domain.entities.DomainRelation;
 
 /** DomainModelVisitor that translates DomainModel representation into the required structure for NestedTree. */
-public class NestedTreeDomainModelVisitor extends DomainModelVisitorImpl {
+public class NestedTreeDomainModelVisitor extends IndexedDomainModelVisitorImpl {
 
     private DefaultTreeModel treeModel;
     private DefaultMutableTreeNode root;
@@ -25,6 +25,7 @@ public class NestedTreeDomainModelVisitor extends DomainModelVisitorImpl {
 
     @Override
     public void visitDomainRootEntity(DomainEntity entity) {
+        this.visitedEntities.add(entity);
         String de = entity.getName();
         if (treeModel == null) {
             root = new DefaultMutableTreeNode(de);
@@ -36,6 +37,7 @@ public class NestedTreeDomainModelVisitor extends DomainModelVisitorImpl {
 
     @Override
     public void visitDomainChainedEntity(DomainEntity entity) {
+        this.visitedEntities.add(entity);
         String de = entity.getName();
         DefaultMutableTreeNode chainedEntity = addNodes(currentTreeNode, de);
         entities.put(entity.getName(), chainedEntity);

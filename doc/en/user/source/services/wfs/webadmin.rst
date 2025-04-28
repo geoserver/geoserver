@@ -227,6 +227,10 @@ Stored Queries
 
 Selecting the :guilabel:`Allow Global Stored Queries` checkbox determines if global stored queries will included for usage in workspace virtual services, or not. When disabled, only stored queries created inside the workspace will be visible.
 
+.. figure:: img/disable-stored-queries.png
+
+Selecting the :guilabel:`Disable stored queries management` checkbox will disable stored queries write operations from being present in GetCapabilities response. Attempting to triggering one of operations related to stored queries will result in exception.
+
 i18n Settings
 -------------
 

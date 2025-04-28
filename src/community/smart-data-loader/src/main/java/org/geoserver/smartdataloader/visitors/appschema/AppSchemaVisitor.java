@@ -22,7 +22,7 @@ import static org.geoserver.smartdataloader.visitors.appschema.AppSchemaUtils.ge
 import static org.geoserver.smartdataloader.visitors.appschema.AppSchemaUtils.getTypeMappingsNode;
 import static org.geoserver.smartdataloader.visitors.appschema.AppSchemaUtils.updateAttributeMappingIdExpression;
 
-import org.geoserver.smartdataloader.domain.DomainModelVisitorImpl;
+import org.geoserver.smartdataloader.domain.IndexedDomainModelVisitorImpl;
 import org.geoserver.smartdataloader.domain.entities.DomainEntity;
 import org.geoserver.smartdataloader.domain.entities.DomainEntitySimpleAttribute;
 import org.geoserver.smartdataloader.domain.entities.DomainModel;
@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /** This visitor generates a valid AppSchema xml document for the domain model it will visit. */
-public final class AppSchemaVisitor extends DomainModelVisitorImpl {
+public final class AppSchemaVisitor extends IndexedDomainModelVisitorImpl {
 
     private final String targetNamespacePrefix;
 
@@ -73,17 +73,19 @@ public final class AppSchemaVisitor extends DomainModelVisitorImpl {
 
     @Override
     public void visitDomainRootEntity(DomainEntity entity) {
+        visitedEntities.add(entity);
         currentFeatureTypeMapping = handleEntity(entity);
     }
 
     @Override
     public void visitDomainChainedEntity(DomainEntity entity) {
+        visitedEntities.add(entity);
         currentFeatureTypeMapping = handleEntity(entity);
     }
 
     @Override
     public void visitDomainRelation(DomainRelation relation) {
-
+        visitedEntities.add(relation);
         String containingTargetElementValue = this.targetNamespacePrefix
                 + ":"
                 + relation.getContainingEntity().getGmlInfo().featureTypeName();
@@ -119,6 +121,7 @@ public final class AppSchemaVisitor extends DomainModelVisitorImpl {
 
     @Override
     public void visitDomainEntitySimpleAttribute(DomainEntitySimpleAttribute attribute) {
+        visitedEntities.add(attribute);
         Node featureTypeMapping = currentFeatureTypeMapping;
         // append AttributeMapping to the FeatureTypeMapping
         Node attributeMappings = getChildByName(featureTypeMapping, "attributeMappings");

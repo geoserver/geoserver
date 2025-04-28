@@ -5,6 +5,7 @@
 package org.geoserver.smartdataloader.domain.entities;
 
 import org.geoserver.smartdataloader.domain.DomainModelVisitor;
+import org.geoserver.smartdataloader.domain.IndexedDomainModelVisitor;
 
 /**
  * Represents a relation between two entities fo the domain model. Entities are rleated by a key attribute and there is
@@ -52,6 +53,8 @@ public final class DomainRelation {
     /** Will visit this domain relation with the provided visitor. */
     public void accept(DomainModelVisitor visitor) {
         visitor.visitDomainRelation(this);
-        destinationEntity.accept(visitor, false);
+        if (!IndexedDomainModelVisitor.isIndexedAndVisited(visitor, destinationEntity)) {
+            destinationEntity.accept(visitor, false);
+        }
     }
 }

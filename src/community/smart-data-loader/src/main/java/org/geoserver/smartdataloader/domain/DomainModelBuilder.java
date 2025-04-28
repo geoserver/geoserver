@@ -68,10 +68,7 @@ public final class DomainModelBuilder {
     }
 
     private DomainEntity buildDomainEntity(String entityName, DomainRelation fromRelation) {
-        if (visitedEntities.contains(entityName)) {
-            // we are dealing with a cyclic dependency, we currently don't support this
-            throw new RuntimeException("Cyclic dependency detected for entity '" + entityName + "'");
-        }
+        boolean isVisited = visitedEntities.contains(entityName);
         visitedEntities.add(entityName);
         // retrieve the metadata for our entity
         EntityMetadata entityMetadata = dataStoreMetadata.getEntityMetadata(entityName);
@@ -81,23 +78,25 @@ public final class DomainModelBuilder {
         }
         // let's try to retrieve the domain entity or create it if needed
         DomainEntity entity = indexEntity(entityMetadata);
-        // let's add the relations of our entity
-        entityMetadata.getRelations().forEach(relation -> {
-            if (fromRelation == null
-                    || !relation.participatesInRelation(
-                            fromRelation.getContainingEntity().getName())) {
-                DomainRelation domainRelation = buildDomainRelation(entity, relation, fromRelation);
-                entity.add(domainRelation);
-            }
-        });
-        // let's add attributes of our entity, excluding all attributes that are foreign keys
-        entityMetadata.getAttributes().forEach(attribute -> {
-            // exclude external attributes references
-            if (!attribute.isExternalReference()) {
-                DomainEntitySimpleAttribute domainAttribute = buildDomainEntitySimpleAttribute(attribute);
-                entity.add(domainAttribute);
-            }
-        });
+        if (!isVisited) {
+            // let's add the relations of our entity
+            entityMetadata.getRelations().forEach(relation -> {
+                if (fromRelation == null
+                        || !relation.participatesInRelation(
+                                fromRelation.getContainingEntity().getName())) {
+                    DomainRelation domainRelation = buildDomainRelation(entity, relation, fromRelation);
+                    entity.add(domainRelation);
+                }
+            });
+            // let's add attributes of our entity, excluding all attributes that are foreign keys
+            entityMetadata.getAttributes().forEach(attribute -> {
+                // exclude external attributes references
+                if (!attribute.isExternalReference()) {
+                    DomainEntitySimpleAttribute domainAttribute = buildDomainEntitySimpleAttribute(attribute);
+                    entity.add(domainAttribute);
+                }
+            });
+        }
         visitedEntities.remove(entityName);
         return entity;
     }

@@ -423,6 +423,13 @@ GeoServer Property Reference
      - x
      - x
 
+   * - WORKSPACE_ADMIN_SERVICE_ACCESS
+
+       :ref:`Workspaces <data_webadmin_workspaces_service_settings>`
+     - x
+     - x
+     - x
+
 .. _application_properties_setting:
 
 Setting Application property

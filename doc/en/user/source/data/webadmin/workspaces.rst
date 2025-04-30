@@ -166,9 +166,9 @@ The Security tab allows to set data access rules at workspace level.
 To create/edit the workspace's data access rules, check/uncheck checkboxes according to the desired role. 
 The Grant access to any role checkbox grant each role for any access mode.
 
-A new parameter has been introduced to override the security feature that is restricting access
+The property ``WORKSPACE_ADMIN_SERVICE_ACCESS`` is used override the security feature that is restricting access
 to the configuration of OCG services for a workspace. To enable this feature set the
-Application Property WORKSPACE_ADMIN_SERVICE_ACCESS to true. Only Workspace administrators
+Application Property ``WORKSPACE_ADMIN_SERVICE_ACCESS`` to true. Only Workspace administrators
 and administrators will be able to see and edit this information. See :ref:`Settings<application_properties>`
 
 .. note:: Some of the settings need to be managed with care as they can affect the performance and operations of the application.

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
@@ -156,6 +157,7 @@ public class TemplateConfigurationPage extends GeoServerSecuredPage {
                 TemplateInfo templateInfo = (TemplateInfo) form.getModelObject();
                 target.add(topFeedbackPanel);
                 target.add(bottomFeedbackPanel);
+                target.add(editor);
                 if (!validateAndReport(templateInfo)) return;
                 String rawTemplate = TemplateConfigurationPage.this.rawTemplate;
                 saveTemplateInfo(templateInfo, rawTemplate);
@@ -171,6 +173,12 @@ public class TemplateConfigurationPage extends GeoServerSecuredPage {
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 super.onError(target, form);
                 addFeedbackPanels(target);
+            }
+
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(editor.getSaveDecorator());
             }
         };
         return submitLink;

@@ -39,7 +39,9 @@ import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A process that returns values from a coverage at a given location */
-@DescribeProcess(title = "GetCoveragesValue", description = "Returns values from a coverage at a given location")
+@DescribeProcess(
+        title = "GetCoveragesValue",
+        description = "Returns values from one or more coverages at a given location")
 public class GetCoveragesValue implements GeoServerProcess {
     private final Catalog catalog;
 

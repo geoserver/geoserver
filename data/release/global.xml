@@ -12,21 +12,6 @@
       <contactPosition>Chief Geographer</contactPosition>
       <onlineResource>https://www.osgeo.org/</onlineResource>
       <welcome>Designed for interoperability, GeoServer publishes data from any major spatial data source using open standards.</welcome>
-      <internationalAddress class="org.geotools.util.GrowableInternationalString"/>
-      <internationalAddressCity class="org.geotools.util.GrowableInternationalString"/>
-      <internationalAddressCountry class="org.geotools.util.GrowableInternationalString"/>
-      <internationalAddressDeliveryPoint class="org.geotools.util.GrowableInternationalString"/>
-      <internationalAddressPostalCode class="org.geotools.util.GrowableInternationalString"/>
-      <internationalAddressState class="org.geotools.util.GrowableInternationalString"/>
-      <internationalAddressType class="org.geotools.util.GrowableInternationalString"/>
-      <internationalContactEmail class="org.geotools.util.GrowableInternationalString"/>
-      <internationalContactFacsimile class="org.geotools.util.GrowableInternationalString"/>
-      <internationalContactOrganization class="org.geotools.util.GrowableInternationalString"/>
-      <internationalContactPerson class="org.geotools.util.GrowableInternationalString"/>
-      <internationalContactPosition class="org.geotools.util.GrowableInternationalString"/>
-      <internationalContactVoice class="org.geotools.util.GrowableInternationalString"/>
-      <internationalOnlineResource class="org.geotools.util.GrowableInternationalString"/>
-      <internationalWelcome class="org.geotools.util.GrowableInternationalString"/>
     </contact>
     <charset>UTF-8</charset>
     <numDecimals>8</numDecimals>
@@ -35,6 +20,13 @@
     <verboseExceptions>false</verboseExceptions>
     <metadata>
       <map>
+        <entry>
+          <string>CogSettings.Key</string>
+          <cogSettings>
+            <useCachingStream>false</useCachingStream>
+            <rangeReaderSettings>HTTP</rangeReaderSettings>
+          </cogSettings>
+        </entry>
         <entry>
           <string>quietOnNotFound</string>
           <boolean>false</boolean>

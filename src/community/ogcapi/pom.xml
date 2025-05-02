@@ -32,12 +32,15 @@
     <module>dggs</module>
     <module>ogcapi-coverages</module>
     <module>ogcapi-coverages-assembly</module>
+    <module>ogcapi-processes</module>
+    <module>ogcapi-processes-assembly</module>
 
     <module>web-coverages</module>
     <module>web-images</module>
     <module>web-maps</module>
     <module>web-styles</module>
     <module>web-tiles</module>
+    <module>web-processes</module>
 
   </modules>
 

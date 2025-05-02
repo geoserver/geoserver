@@ -9,6 +9,7 @@ import static org.geotools.data.complex.util.ComplexFeatureConstants.FEATURE_CHA
 import io.swagger.v3.oas.models.media.Schema;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -120,6 +121,15 @@ public class QueryablesBuilder {
      * @return the schema
      */
     public static Schema<?> getAlphanumericSchema(Class<?> binding) {
+        if (binding.isEnum()) {
+            Schema<String> schema = new Schema<>();
+            schema.setType("string");
+            schema.setTitle("string");
+            Arrays.stream(binding.getEnumConstants()).map(Object::toString).forEach(n -> schema.addEnumItemObject(n));
+            return schema;
+        }
+
+        // other types
         Schema<?> schema = new Schema<>();
 
         schema.setType(org.geoserver.ogcapi.AttributeType.fromClass(binding).getType());
@@ -137,6 +147,12 @@ public class QueryablesBuilder {
             schema.setFormat("uuid");
         } else if (URL.class.isAssignableFrom(binding)) {
             schema.setTitle("uri");
+        } else if (binding.isAssignableFrom(String.class)) {
+            schema.setFormat("string");
+        } else if (binding.isAssignableFrom(Boolean.class)) {
+            schema.setFormat("boolean");
+        } else if (binding.isAssignableFrom(Number.class)) {
+            schema.setFormat("number");
         }
         return schema;
     }

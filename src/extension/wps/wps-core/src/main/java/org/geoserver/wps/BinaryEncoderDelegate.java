@@ -40,4 +40,8 @@ public class BinaryEncoderDelegate implements EncoderDelegate {
     public void encode(OutputStream os) throws Exception {
         ppio.encode(object, os);
     }
+
+    public BinaryPPIO getPPIO() {
+        return ppio;
+    }
 }

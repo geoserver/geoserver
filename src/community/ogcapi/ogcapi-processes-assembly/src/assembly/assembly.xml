@@ -1,0 +1,43 @@
+<assembly>
+  <id>ogcapi-processes-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>	
+        <include>gs-ogcapi-processes-*.jar</include>
+        <include>gs-ogcapi-core-*.jar</include>
+        <include>gs-web-ogcapi-*.jar</include>
+        <include>gt-cql2-*.jar</include>
+        <include>swagger-core-*.jar</include>
+        <include>jackson-dataformat-*.jar</include>
+        <include>jackson-module-jaxb*.jar</include>
+        <include>swagger-models-*.jar</include>
+        <include>snakeyaml-*.jar</include>
+        <include>validation-api*.jar</include>
+        <include>gs-web-processes-*.jar</include>
+        <!-- must include WPS too -->
+        <include>gs-wps-core*</include>
+        <include>gs-web-wps*</include>
+        <include>gt-process-geometry*</include>
+        <include>gt-xsd-wps*</include>
+        <include>net.opengis.wps*</include>
+        <include>gt-csv*</include>
+        <include>opencsv*</include>
+        <include>gs-wps-kml-ppio*</include>
+        <include>gt-xsd-kml*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${geoserverBaseDir}/community/target/html/licenses</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>GPL.html</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

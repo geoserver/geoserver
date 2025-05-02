@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  (c) 2019 Open Source Geospatial Foundation - all rights reserved
+  ~  This code is licensed under the GPL 2.0 license, available at the root
+  ~  application directory.
+  ~  
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-ogcapi</artifactId>
+    <version>2.28-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-ogcapi-processes-assembly</artifactId>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-ogcapi-processes</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-web-ogcapi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${gs.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-web-processes</artifactId>
+      <version>${gs.version}</version>
+    </dependency>
+
+  </dependencies>
+</project>

@@ -120,6 +120,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                         target.add(ReorderableTablePanel.this);
                     }
                 }.dropCenter("tr"));
+        add(new GeoServerDNDBehavior());
     }
 
     @Override

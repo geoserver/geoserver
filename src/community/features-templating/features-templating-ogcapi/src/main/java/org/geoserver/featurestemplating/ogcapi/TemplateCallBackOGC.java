@@ -92,14 +92,13 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
                     if (typeInfo == null) return operation;
                     RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
                     String filterLang = (String) request.getKvp().get("FILTER-LANG");
-                    if (filterLang == null || filterLang.equalsIgnoreCase("CQL-TEXT")) {
-                        String filter = (String) request.getKvp().get("FILTER");
-                        if (filter != null) replaceTemplatePathWithFilter(filter, root, typeInfo, operation);
+                    String filter = (String) request.getKvp().get("FILTER");
+                    if (filter != null && (filterLang == null || filterLang.equalsIgnoreCase("CQL-TEXT"))) {
+                        replaceTemplatePathWithFilter(filter, root, typeInfo, operation);
                     }
                     String envParam = request.getRawKvp().get("ENV") != null
                             ? request.getRawKvp().get("ENV").toString()
                             : null;
-
                     setEnvParameter(envParam);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -150,13 +149,19 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
 
     private void replaceFilter(String strFilter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
             throws IOException, CQLException {
+        // Get filter from string in order to make it accept the visitor
+        Filter filter = XCQL.toFilter(strFilter);
+        replaceFilter(filter, root, typeInfo, operation);
+    }
+
+    private void replaceFilter(Filter filter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
+            throws IOException, CQLException {
         TemplatePathVisitor visitor = new TemplatePathVisitor(typeInfo.getFeatureType());
         // Get filter from string in order to make it accept the visitor
-        Filter old = XCQL.toFilter(strFilter);
-        Filter f = (Filter) old.accept(visitor, root);
-        if (old.equals(f))
+        Filter f = (Filter) filter.accept(visitor, root);
+        if (filter.equals(f))
             LOGGER.warning("Failed to resolve filter "
-                    + strFilter
+                    + filter
                     + " against the template. If the property name was intended to be a template path, "
                     + "check that the path specified in the cql filter is correct.");
         List<Filter> templateFilters = new ArrayList<>();
@@ -169,13 +174,9 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
         // OGC API get a string cql filter from query string
         String newFilter = fixPropertyNames(ECQL.toCQL(f));
         newFilter = TemplateCQLManager.quoteXpathAttribute(newFilter);
-        for (int i = 0; i < operation.getParameters().length; i++) {
-            Object p = operation.getParameters()[i];
-            if (p != null && ((String.valueOf(p)).trim().equals(strFilter.trim()))) {
-                operation.getParameters()[i] = newFilter;
-                break;
-            }
-        }
+        // replace the filter in the operation
+        Object[] operationParameters = operation.getParameters();
+        operationParameters[6] = newFilter;
     }
 
     // since the toCQL method quotes the propertynames and that

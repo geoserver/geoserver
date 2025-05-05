@@ -8,6 +8,7 @@ package org.geoserver.web.data.layergroup;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -25,6 +28,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.tester.TagTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -1045,5 +1049,25 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
                 getCatalog().save(groupInfo);
             }
         }
+    }
+
+    @Test
+    public void testWicketDNDPatch() {
+        // This only tests that the wicket-dnd patch is properly added to the page and does not verify that the
+        // JavaScript actually works properly in a web browser.
+        tester.startPage(new LayerGroupEditPage(new PageParameters().add("group", "lakes")));
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+        List<String> scripts =
+                TagTester.createTags(tester.getLastResponseAsString(), tag -> "script".equals(tag.getName()), false)
+                        .stream()
+                        .map(tag -> tag.getAttribute("src"))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+        int dndIndex = ListUtils.indexOf(scripts, script -> script.contains("wicketdnd.Transfer/wicket-dnd"));
+        int gsIndex = ListUtils.indexOf(
+                scripts, script -> script.contains("org.geoserver.web.wicket.GeoServerDNDBehavior/gs-wicket-dnd"));
+        assertThat("Missing wicket-dnd.js", dndIndex, greaterThan(-1));
+        assertThat("Missing gs-wicket-dnd.js", gsIndex, greaterThan(-1));
+        assertThat("gs-wicket-dnd.js is not after wicket-dnd.js", gsIndex, greaterThan(dndIndex));
     }
 }

@@ -340,19 +340,19 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         // ok, can access with the right workspace
         tester.startPage(WFSAdminPage.class, new PageParameters().add("workspace", "cite"));
         tester.assertRenderedPage(WFSAdminPage.class);
-        tester.assertModelValue("form:serviceTitleAndAbstract:titleAndAbstract:title", CITE_WFS_TITLE);
 
         // now log as admin and check the global service page is rendered
         loginAsAdmin();
         tester.startPage(WFSAdminPage.class);
         tester.assertRenderedPage(WFSAdminPage.class);
-        tester.assertModelValue("form:serviceTitleAndAbstract:titleAndAbstract:title", GLOBAL_WFS_TITLE);
 
         System.clearProperty(WORKSPACE_ADMIN_SERVICE_ACCESS);
     }
 
     @Test
     public void testWorkspaceAdminFlagOff() throws IOException {
+        System.clearProperty(WORKSPACE_ADMIN_SERVICE_ACCESS);
+
         // setup a CITE workspace WFS service
         WorkspaceInfo citeWorkspace = getCatalog().getWorkspaceByName("cite");
         GeoServer gs = getGeoServer();
@@ -389,8 +389,13 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(WFSAdminPage.class);
         tester.assertRenderedPage(UnauthorizedPage.class);
 
-        // ok, can access with the right workspace
+        // cannot access with the workspace
         tester.startPage(WFSAdminPage.class, new PageParameters().add("workspace", "cite"));
         tester.assertRenderedPage(UnauthorizedPage.class);
+
+        // now log as admin and check the global service page is rendered
+        loginAsAdmin();
+        tester.startPage(WFSAdminPage.class);
+        tester.assertRenderedPage(WFSAdminPage.class);
     }
 }

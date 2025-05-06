@@ -73,6 +73,7 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  */
 // TODO WICKET8 - Verify this page (and derived pages?) work OK
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
+    /** Allows workspace admins access to the workspace service configuration too * */
     public static final String WORKSPACE_ADMIN_SERVICE_ACCESS = "WORKSPACE_ADMIN_SERVICE_ACCESS";
 
     protected GeoServerDialog dialog;

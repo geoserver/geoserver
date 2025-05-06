@@ -98,7 +98,7 @@ The beginning sections—Basic Resource Info, Keywords and Metadata link—are a
 These sections provide "data about the data," specifically textual information that make the layer data easier to understand and work with.
 The metadata information will appear in the capabilities documents which refer to the layer.
 
-* **Name**—Identifier used to reference the layer in WMS requests.  (Note that for a new layer for an already-published resource, the name must be changed to avoid conflict.)
+* **Name**—Identifier used to reference the layer in WMS requests.  (Note that for a new layer for an already-published resource, the name must be changed to avoid conflict. When enabling WFS capabilities, ensure no special characters are present.)
 * **Enabled**—A layer that is not enabled won't be available to any kind of request, it will just show up in the configuration (and in REST config)
 * **Advertised**—A layer is advertised by default. A non-advertised layer will be available in all data access requests (for example, WMS GetMap, WMS GetFeature) but won't appear in any capabilities document or in the layer preview.
 * **Title**—Human-readable description to briefly identify the layer to clients (required)
@@ -195,7 +195,6 @@ The :guilabel:`Customize attributes` checkbox opens an attribute editor allowing
 
    Attribute customization
 
-
 It is possible to:
 
 * Change the order of attributes, using either the up/down arrows, or dragging the attribute row.
@@ -213,6 +212,11 @@ It is possible to:
 
 Some of the feature type edits might result in the layer not being editable anymore, for example,
 by removing an attribute that is marked as mandatory in the data source.
+
+.. note::
+
+      When publishing a layer that will have :ref:`WFS capabilities <wfs_basics>`enabled, it is 
+      necessary to ensure any 'non-word' (special) characters are removed from the Attribute names.
 
 Restricting features showing up in the layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

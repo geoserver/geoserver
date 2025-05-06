@@ -3,7 +3,7 @@
 Sphinx Syntax
 =============
 
-This page contains syntax rules, tips, and tricks for using Sphinx and reStructuredText.  For more information, please see this  `comprehensive guide to reStructuredText <https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html>`_, as well as the `Sphinx reStructuredText Primer <http://sphinx.pocoo.org/rest.html>`_.
+This page contains syntax rules, tips, and tricks for using Sphinx and reStructuredText.  For more information, please see this  `comprehensive guide to reStructuredText <https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html>`_, as well as the `Sphinx reStructuredText Primer <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_.
 
 Basic markup
 ------------

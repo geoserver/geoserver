@@ -10,8 +10,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import com.google.common.collect.Ordering;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.xml.namespace.QName;
 import net.sf.json.JSONArray;
@@ -438,9 +440,15 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
         JSONArray values = json.getJSONArray("values");
 
-        // Assert descending order
+        // **convert to a List<String>** so that isOrdered can be checked at compile time
+        List<String> list = new ArrayList<>();
+        for (Object o : values) {
+            list.add((String) o);
+        }
+
+        // now no unchecked warning
         assertTrue(
                 "Values should be in descending order",
-                Ordering.natural().reverse().isOrdered(values));
+                Ordering.<String>natural().reverse().isOrdered(list));
     }
 }

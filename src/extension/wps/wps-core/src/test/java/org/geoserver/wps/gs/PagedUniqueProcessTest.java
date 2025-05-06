@@ -7,6 +7,7 @@ package org.geoserver.wps.gs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import com.google.common.collect.Ordering;
 import java.util.Arrays;
@@ -31,6 +32,10 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
     private static final String FIELD_NAME = "state_name";
 
     private static final int TOTAL_DISTINCT = 4;
+
+    // reads ENABLE_POSTGIS_TESTS (default "false")
+    private static final boolean ENABLE_POSTGIS =
+            Boolean.parseBoolean(System.getenv().getOrDefault("ENABLE_POSTGIS_TESTS", "false"));
 
     public PagedUniqueProcessTest() {
         super();
@@ -363,5 +368,79 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
                 + "  </wps:ResponseForm>\n"
                 + "</wps:Execute>";
         return xml;
+    }
+
+    @Test
+    public void testPostGISDescOrder() throws Exception {
+        // skip unless user explicitly opts in
+        assumeTrue("PostGIS tests are disabled; set ENABLE_POSTGIS_TESTS=true to run", ENABLE_POSTGIS);
+
+        // Build the WPS Execute request payload, pointing at your PostGIS-backed layer
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute service=\"WPS\" version=\"1.0.0\"\n"
+                + "    xmlns=\"http://www.opengis.net/wps/1.0.0\"\n"
+                + "    xmlns:wps=\"http://www.opengis.net/wps/1.0.0\"\n"
+                + "    xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
+                + "    xmlns:wfs=\"http://www.opengis.net/wfs\"\n"
+                + "    xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
+                + "    xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
+                + "    xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 "
+                + "http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>gs:PagedUnique</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>features</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"text/xml\"\n"
+                + "                     xlink:href=\"http://geoserver/wfs\"\n"
+                + "                     method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\">\n"
+                + "            <wfs:Query typeName=\"" + MockData.SF_PREFIX + ":states\">\n"
+                + "              <ogc:SortBy>\n"
+                + "                <ogc:SortProperty>\n"
+                + "                  <ogc:PropertyName>" + FIELD_NAME + "</ogc:PropertyName>\n"
+                + "                  <ogc:SortOrder>DESC</ogc:SortOrder>\n"
+                + "                </ogc:SortProperty>\n"
+                + "              </ogc:SortBy>\n"
+                + "            </wfs:Query>\n"
+                + "          </wfs:GetFeature>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>fieldName</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>" + FIELD_NAME + "</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>startIndex</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>0</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>maxFeatures</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>100</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>\n"
+                + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput mimeType=\"application/json\">\n"
+                + "      <ows:Identifier>result</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n"
+                + "  </wps:ResponseForm>\n"
+                + "</wps:Execute>";
+
+        // POST to the GeoServer WPS endpoint and parse JSON response
+        String jsonString = string(post(root(), xml));
+        JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
+        JSONArray values = json.getJSONArray("values");
+
+        // Assert descending order
+        assertTrue(
+                "Values should be in descending order",
+                Ordering.natural().reverse().isOrdered(values));
     }
 }

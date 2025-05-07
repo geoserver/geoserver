@@ -216,7 +216,8 @@ by removing an attribute that is marked as mandatory in the data source.
 .. note::
 
       When publishing a layer that will have :ref:`WFS capabilities <wfs_basics>` enabled, it is 
-      necessary to ensure any 'non-word' (special) characters are removed from the Attribute names.
+      essential to ensure any only `supported characters <https://www.w3.org/TR/REC-xml/#charsets>`_
+      are present in the layer and attribute names.
 
 Restricting features showing up in the layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

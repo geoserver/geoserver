@@ -10,13 +10,9 @@ GeoServer is the reference implementation of all three versions of the standard,
 Layer and attribute naming considerations
 -----------------------------------------
 
-When fetching WFS data as GML, the XML encoder cannot handle layer or attribute names that contain 'non-word' (special) characters - e.g. comma ['], at [@], colon [:].
+When fetching WFS data as GML, the XML encoder follows the `W3C Recommendation for XML <https://www.w3.org/TR/REC-xml/#charsets>`_ which implements specific requirements for the characters which may be passed. When data is to be made available via WFS, it is important that the Layer and Attribute names contain only permitted characters.
 
-GeoServer does not prohibit layer or attributes names with these characters, as for other services such as WMS, WCS, or OGC Features API these can be used.
-
-It is important to ensure that layer and attribute names which may (in the future) be used for WFS services do not contain these characters.
-
-.. note:: It is possible to identify these characters using the RegEx `character groups <https://docs.oracle.com/javase/tutorial/essential/regex/pre_char_classes.html>`_ ``\w`` / ``\W``
+GeoServer does not prohibit or warn when creating layer or attribute names containing these characters, as for other services such as WMS, WCS, or OGC Features API these may be present.
 
 Differences between WFS versions
 --------------------------------

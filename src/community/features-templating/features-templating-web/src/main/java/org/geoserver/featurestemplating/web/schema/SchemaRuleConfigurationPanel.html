@@ -1,0 +1,83 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <legend>
+        <span><label wicket:id="schemaRuleConfigurationLabel" class="fontWeightBold"></label></span>
+    </legend>
+            <form name="theForm" wicket:id="theForm" id="theForm">
+                <div class="clearfix">
+                <fieldset  class="float-start features-templating-rule-fieldset-1">
+                    <div wicket:id="ruleFeedback" id="ruleFeedback"/>
+                    <ul>
+                        <li>
+                            <label for="priority">
+                                <wicket:message key="priority"></wicket:message>
+                            </label>
+                            <input type="number" id="priority" wicket:id="priority"/>
+                        </li>
+                        <li>
+                            <label for="schemaIdentifier">
+                                <wicket:message key="schemaIdentifier"></wicket:message>
+                            </label>
+                            <select id="schemaIdentifier" wicket:id="schemaIdentifier"/>
+                        </li>
+                        <li>
+                            <label for="outputFormats">
+                                <wicket:message key="outputFormats"></wicket:message>
+                            </label>
+                            <select wicket:id="outputFormats" id="outputFormats"/>
+                        </li>
+                        <li>
+                            <label for="profileFilter">
+                                <wicket:message key="profileFilter"></wicket:message>
+                            </label>
+                            <textarea wicket:id="profileFilter" id="profileFilter" class="w-200px h-100px"/>
+                        </li>
+                        <li>
+                            <label for="cqlFilter">
+                                <wicket:message key="cqlFilter"></wicket:message>
+                            </label>
+                            <textarea wicket:id="cqlFilter" id="cqlFilter" class="w-200px h-100px"/>
+                        </li>
+                    </ul>
+                </fieldset>
+                    <fieldset class="float-end features-templating-rule-fieldset-2">
+                        <legend>
+                            <wicket:message key="cqlFunctions">Available CQL functions</wicket:message>
+                        </legend>
+                        <ul>
+                            <li>
+                                <label>
+                                    <wicket:message key="mimeTypeFunction"/>
+                                </label>
+                            </li>
+                            <li>
+                                <label>
+                                    <wicket:message key="requestParamFunction"/>
+                                </label>
+                            </li>
+                            <li>
+                                <label>
+                                    <wicket:message key="headerFunction"/>
+                                </label>
+                            </li>
+                            <li>
+                                <label>
+                                    <wicket:message key="requestMatchRegexFunction"/>
+                                </label>
+                            </li>
+                        </ul>
+                    </fieldset>
+                </div>
+                <div class="button-group toolbar-sticky clearfix">
+                    <a href="#" class="form-button-save" wicket:id="save">
+                        <label wicket:id="submitLabel" class="features-templating-rule-save"></label>
+                    </a>
+                    <a href="#" class="form-button-cancel" wicket:id="cancel">
+                        <wicket:message key="cancel">Cancel</wicket:message>
+                    </a>
+                </div>
+            </form>
+</wicket:panel>
+</body>
+</html>

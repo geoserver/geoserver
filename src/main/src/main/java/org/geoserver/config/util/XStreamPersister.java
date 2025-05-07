@@ -448,7 +448,7 @@ public class XStreamPersister {
         xs.registerLocalConverter(impl(LayerInfo.class), "styles", new ReferenceCollectionConverter(StyleInfo.class));
         xs.registerLocalConverter(impl(LayerInfo.class), "metadata", new MetadataMapConverter());
 
-        xs.registerLocalConverter(impl(WMSLayerInfo.class), "vendorParameters", new VendorParameters());
+        xs.registerLocalConverter(impl(WMSLayerInfo.class), "vendorParameters", new VendorParametersConvertor());
 
         // LayerGroupInfo
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
@@ -1061,7 +1061,7 @@ public class XStreamPersister {
     }
 
     /** Custom converter for the special metadata map. */
-    class VendorParameters extends BreifMapConverter {
+    class VendorParametersConvertor extends BreifMapConverter {
 
         @Override
         public boolean canConvert(Class type) {
@@ -1074,7 +1074,6 @@ public class XStreamPersister {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             Map<String, String> map = (Map<String, String>) super.unmarshal(reader, context);
             if (Objects.nonNull(map)) {

@@ -265,6 +265,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
                         if (Map.class.isAssignableFrom(type)) {
+                            // The cast is safe because we explicitly check that the type is assignable from Map.
                             return (IConverter<C>) new VendorParametersConvertor();
                         }
                         return super.getConverter(type);

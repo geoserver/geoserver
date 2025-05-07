@@ -2,14 +2,15 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.featurestemplating.configuration;
+package org.geoserver.featurestemplating.configuration.schema;
 
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.apache.commons.lang3.StringUtils;
+import org.geoserver.featurestemplating.configuration.SupportedFormat;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.ows.Request;
 import org.geoserver.util.XCQL;
 import org.geotools.api.filter.Filter;
@@ -20,15 +21,15 @@ import org.geotools.filter.text.cql2.CQLException;
  * for a Request.
  */
 @XmlRootElement(name = "Rule")
-public class TemplateRule implements Serializable {
+public class SchemaRule implements Serializable {
 
     private String ruleId;
 
     private Integer priority;
 
-    private String templateIdentifier;
+    private String schemaIdentifier;
 
-    private String templateName;
+    private String schemaName;
 
     private String outputFormat;
 
@@ -42,25 +43,25 @@ public class TemplateRule implements Serializable {
     // currently used only from the preview mechanism in the web module.
     private boolean forceRule;
 
-    public TemplateRule() {
+    public SchemaRule() {
         this.priority = 0;
         this.ruleId = UUID.randomUUID().toString();
     }
 
-    public TemplateRule(TemplateRule rule) {
+    public SchemaRule(SchemaRule rule) {
         this.ruleId = rule.ruleId == null ? UUID.randomUUID().toString() : rule.ruleId;
         this.priority = rule.priority;
         this.outputFormat = rule.outputFormat;
         this.cqlFilter = rule.cqlFilter;
         this.service = rule.service;
         this.forceRule = rule.forceRule;
-        this.templateName = rule.templateName;
-        this.templateIdentifier = rule.templateIdentifier;
+        this.schemaName = rule.schemaName;
+        this.schemaIdentifier = rule.schemaIdentifier;
         this.profileFilter = rule.profileFilter;
     }
 
-    public String getTemplateName() {
-        return templateName;
+    public String getSchemaName() {
+        return schemaName;
     }
 
     /**
@@ -71,24 +72,14 @@ public class TemplateRule implements Serializable {
      */
     public boolean applyRule(Request request) {
         boolean result = true;
-        if (outputFormat != null) {
-            result = matchOutputFormatCommaSeparated(getOutputFormat(request));
-        }
+        if (outputFormat != null) result = matchOutputFormat(getOutputFormat(request));
+
         if (result && cqlFilter != null) {
             result = evaluateCQLFilter(cqlFilter, request);
         }
         if (result && profileFilter != null) result = evaluateCQLFilter(profileFilter, request);
 
         return result;
-    }
-
-    private boolean matchOutputFormatCommaSeparated(String outputFormatExpression) {
-        if (StringUtils.isBlank(outputFormatExpression)) return false;
-        String[] outputFormats = outputFormatExpression.split(",");
-        for (String outputFormat : outputFormats) {
-            if (matchOutputFormat(outputFormat.trim())) return true;
-        }
-        return false;
     }
 
     private boolean evaluateCQLFilter(String filter, Request request) {
@@ -103,8 +94,8 @@ public class TemplateRule implements Serializable {
         }
     }
 
-    public void setTemplateName(String templateName) {
-        this.templateName = templateName;
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
     }
 
     public SupportedFormat getOutputFormat() {
@@ -132,12 +123,12 @@ public class TemplateRule implements Serializable {
         this.cqlFilter = cqlFilter;
     }
 
-    public String getTemplateIdentifier() {
-        return templateIdentifier;
+    public String getSchemaIdentifier() {
+        return schemaIdentifier;
     }
 
-    public void setTemplateIdentifier(String templateIdentifier) {
-        this.templateIdentifier = templateIdentifier;
+    public void setSchemaIdentifier(String schemaIdentifier) {
+        this.schemaIdentifier = schemaIdentifier;
     }
 
     private boolean matchOutputFormat(String outputFormat) {
@@ -153,10 +144,10 @@ public class TemplateRule implements Serializable {
         else return nameIdentifier.equals(this.outputFormat);
     }
 
-    public void setTemplateInfo(TemplateInfo templateInfo) {
-        if (templateInfo != null) {
-            this.templateName = templateInfo.getFullName();
-            this.templateIdentifier = templateInfo.getIdentifier();
+    public void setSchemaInfo(SchemaInfo schemaInfo) {
+        if (schemaInfo != null) {
+            this.schemaName = schemaInfo.getFullName();
+            this.schemaIdentifier = schemaInfo.getIdentifier();
         }
     }
 
@@ -165,20 +156,20 @@ public class TemplateRule implements Serializable {
      *
      * @return the TemplateInfo associated to the rule.
      */
-    public TemplateInfo getTemplateInfo() {
-        TemplateInfo ti = new TemplateInfo();
-        if (templateName != null && templateName.indexOf(":") != -1) {
-            String[] nameSplit = templateName.split(":");
+    public SchemaInfo getSchemaInfo() {
+        SchemaInfo ti = new SchemaInfo();
+        if (schemaName != null && schemaName.indexOf(":") != -1) {
+            String[] nameSplit = schemaName.split(":");
             if (nameSplit.length == 3) {
                 ti.setWorkspace(nameSplit[0]);
                 ti.setFeatureType(nameSplit[1]);
-                ti.setTemplateName(nameSplit[2]);
+                ti.setSchemaName(nameSplit[2]);
             } else {
                 ti.setWorkspace(nameSplit[0]);
-                ti.setTemplateName(nameSplit[1]);
+                ti.setSchemaName(nameSplit[1]);
             }
         }
-        ti.setIdentifier(templateIdentifier);
+        ti.setIdentifier(schemaIdentifier);
         return ti;
     }
 
@@ -188,7 +179,6 @@ public class TemplateRule implements Serializable {
             outputFormat = request.getKvp() != null ? (String) request.getKvp().get("f") : null;
         if (outputFormat == null)
             outputFormat = request.getKvp() != null ? (String) request.getKvp().get("INFO_FORMAT") : null;
-        if (outputFormat == null) outputFormat = request.getHttpRequest().getHeader("accept");
         return outputFormat;
     }
 
@@ -228,9 +218,9 @@ public class TemplateRule implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TemplateRule that = (TemplateRule) o;
-        return Objects.equals(templateIdentifier, that.templateIdentifier)
-                && Objects.equals(templateName, that.templateName)
+        SchemaRule that = (SchemaRule) o;
+        return Objects.equals(schemaIdentifier, that.schemaIdentifier)
+                && Objects.equals(schemaName, that.schemaName)
                 && Objects.equals(outputFormat, that.outputFormat)
                 && Objects.equals(service, that.service)
                 && Objects.equals(profileFilter, that.profileFilter)
@@ -240,16 +230,16 @@ public class TemplateRule implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(templateIdentifier, templateName, outputFormat, service, cqlFilter, priority);
+        return Objects.hash(schemaIdentifier, schemaName, outputFormat, service, priority);
     }
 
     /**
      * Rule comparator to sort the TemplateRules in order to get the one with higher priority or the one that is forced.
      */
-    public static class TemplateRuleComparator implements Comparator<TemplateRule> {
+    public static class SchemaRuleComparator implements Comparator<SchemaRule> {
 
         @Override
-        public int compare(TemplateRule o1, TemplateRule o2) {
+        public int compare(SchemaRule o1, SchemaRule o2) {
             int result;
             if (o1.isForceRule()) result = -1;
             else if (o2.isForceRule()) result = 1;

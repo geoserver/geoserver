@@ -36,15 +36,15 @@ import org.xml.sax.SAXException;
  *
  * @param <T> the type of the object to which apply changes.
  */
-class PatchMergeHandler<T> {
+public class PatchMergeHandler<T> {
 
     private Class<T> patchType;
 
-    PatchMergeHandler(Class<T> patchType) {
+    public PatchMergeHandler(Class<T> patchType) {
         this.patchType = patchType;
     }
 
-    <T> T applyPatch(String patch, T toPatch, String contentType) {
+    public <T> T applyPatch(String patch, T toPatch, String contentType) {
         try {
             if (isJSON(contentType)) patchJSON((JSONObject) JSONSerializer.toJSON(patch), toPatch);
             else patchXML(toXMLDocument(patch), toPatch);

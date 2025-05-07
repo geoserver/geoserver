@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
@@ -64,6 +65,9 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
      * @return
      */
     protected Expression mapPropertyThroughBuilder(String propertyName, TemplateBuilder builder) {
+        if (StringUtils.isBlank(propertyName)) {
+            return null;
+        }
         String[] elements;
         if (propertyName.indexOf(".") != -1) {
             elements = propertyName.split("\\.");

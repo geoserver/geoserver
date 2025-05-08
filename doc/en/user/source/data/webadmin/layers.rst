@@ -98,7 +98,13 @@ The beginning sections—Basic Resource Info, Keywords and Metadata link—are a
 These sections provide "data about the data," specifically textual information that make the layer data easier to understand and work with.
 The metadata information will appear in the capabilities documents which refer to the layer.
 
-* **Name**—Identifier used to reference the layer in WMS requests.  (Note that for a new layer for an already-published resource, the name must be changed to avoid conflict. When enabling WFS capabilities, ensure no special characters are present.)
+* **Name**—Identifier used to reference the layer in service requests.
+  
+   Names are required to be unique within a workspace. If two DataStores have resources with the same name, or when creating a new layer for an already-published resource, the layer name must be changed to avoid conflict.
+
+  .. note::
+     
+     Each protocol has different restrictions on the layer names supported. WFS FeatureType uses the layer name as an XML Element Type: start with a letter or underscore, then continue with letters, digits, hyphens, underscores, and periods. 
 * **Enabled**—A layer that is not enabled won't be available to any kind of request, it will just show up in the configuration (and in REST config)
 * **Advertised**—A layer is advertised by default. A non-advertised layer will be available in all data access requests (for example, WMS GetMap, WMS GetFeature) but won't appear in any capabilities document or in the layer preview.
 * **Title**—Human-readable description to briefly identify the layer to clients (required)

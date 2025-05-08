@@ -101,8 +101,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
@@ -111,9 +109,7 @@ import si.uom.SI;
 
 public class XStreamPersisterTest {
 
-    private static final Logger log = LoggerFactory.getLogger(XStreamPersisterTest.class);
     GeoServerFactory factory;
-    CatalogFactory cfactory;
     XStreamPersister persister;
 
     @Before

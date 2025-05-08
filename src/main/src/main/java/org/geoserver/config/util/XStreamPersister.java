@@ -53,7 +53,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -448,7 +447,7 @@ public class XStreamPersister {
         xs.registerLocalConverter(impl(LayerInfo.class), "styles", new ReferenceCollectionConverter(StyleInfo.class));
         xs.registerLocalConverter(impl(LayerInfo.class), "metadata", new MetadataMapConverter());
 
-        xs.registerLocalConverter(impl(WMSLayerInfo.class), "vendorParameters", new VendorParametersConvertor());
+        xs.registerLocalConverter(impl(WMSLayerInfo.class), "vendorParameters", new BreifMapConverter());
 
         // LayerGroupInfo
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
@@ -1061,28 +1060,31 @@ public class XStreamPersister {
     }
 
     /** Custom converter for the special metadata map. */
-    class VendorParametersConvertor extends BreifMapConverter {
-
-        @Override
-        public boolean canConvert(Class type) {
-            return Map.class.isAssignableFrom(type) || super.canConvert(type);
-        }
-
-        @Override
-        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            super.marshal(source, writer, context);
-        }
-
-        @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-            Map<String, String> map = (Map<String, String>) super.unmarshal(reader, context);
-            if (Objects.nonNull(map)) {
-                return map;
-            } else {
-                return Collections.emptyMap();
-            }
-        }
-    }
+    //    class VendorParametersConvertor extends BreifMapConverter {
+    //
+    //        @Override
+    //        public boolean canConvert(Class type) {
+    //            return Map.class.isAssignableFrom(type) || super.canConvert(type);
+    //        }
+    //
+    //        @Override
+    //        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+    //            super.marshal(source, writer, context);
+    //        }
+    //
+    //        @Override
+    //        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+    //            // Cannot be anything other than a map otherwise it would not have passed the
+    //            // canConvert check.
+    //            //noinspection unchecked
+    //            Map<String, String> map = (Map<String, String>) super.unmarshal(reader, context);
+    //            if (Objects.nonNull(map)) {
+    //                return map;
+    //            } else {
+    //                return Collections.emptyMap();
+    //            }
+    //        }
+    //    }
 
     /** Converter for Google {@link Multimap} objects */
     public static class MultimapConverter extends AbstractCollectionConverter {

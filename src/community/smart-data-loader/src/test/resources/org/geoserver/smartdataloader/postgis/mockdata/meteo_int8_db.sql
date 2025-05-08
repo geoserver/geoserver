@@ -22,7 +22,7 @@ SET search_path = smartappschematest, pg_catalog;
 SET default_tablespace = '';
 SET default_with_oids = false;
 
-CREATE TABLE smartappschematest.meteo_observations (id integer NOT NULL,parameter_id integer NOT NULL,station_id integer NOT NULL,"time" timestamp without time zone,value double PRECISION, decimal_value float4);
+CREATE TABLE smartappschematest.meteo_observations (id integer NOT NULL,parameter_id integer NOT NULL,station_id integer NOT NULL,"time" timestamp without time zone,value double PRECISION, decimal_value float4, unsupported_column xml);
 ALTER TABLE smartappschematest.meteo_observations OWNER TO postgres;
 CREATE SEQUENCE meteo_observations_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 ALTER TABLE smartappschematest.meteo_observations_id_seq OWNER TO postgres;

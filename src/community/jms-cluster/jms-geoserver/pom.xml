@@ -14,7 +14,7 @@
   <name>GeoServer JMS clustering module</name>
 
   <properties>
-    <amq.version>5.15.16</amq.version>
+    <amq.version>5.16.8</amq.version>
 
   </properties>
 

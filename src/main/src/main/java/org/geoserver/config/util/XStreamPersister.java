@@ -1059,33 +1059,6 @@ public class XStreamPersister {
         }
     }
 
-    /** Custom converter for the special metadata map. */
-    //    class VendorParametersConvertor extends BreifMapConverter {
-    //
-    //        @Override
-    //        public boolean canConvert(Class type) {
-    //            return Map.class.isAssignableFrom(type) || super.canConvert(type);
-    //        }
-    //
-    //        @Override
-    //        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-    //            super.marshal(source, writer, context);
-    //        }
-    //
-    //        @Override
-    //        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-    //            // Cannot be anything other than a map otherwise it would not have passed the
-    //            // canConvert check.
-    //            //noinspection unchecked
-    //            Map<String, String> map = (Map<String, String>) super.unmarshal(reader, context);
-    //            if (Objects.nonNull(map)) {
-    //                return map;
-    //            } else {
-    //                return Collections.emptyMap();
-    //            }
-    //        }
-    //    }
-
     /** Converter for Google {@link Multimap} objects */
     public static class MultimapConverter extends AbstractCollectionConverter {
 

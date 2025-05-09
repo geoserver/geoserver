@@ -260,8 +260,13 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         minScale.add(new ScalesValidator(minScale, maxScale));
 
+        addVendorParametersTextarea(wmsLayerInfo);
+    }
+
+    private TextArea<Object> addVendorParametersTextarea(WMSLayerInfo wmsLayerInfo) {
         TextArea<Object> vendorParameters =
                 new TextArea<>("vendorParameters", new PropertyModel<>(wmsLayerInfo, "vendorParameters")) {
+                    @SuppressWarnings("unchecked")
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
                         if (Map.class.isAssignableFrom(type)) {
@@ -272,7 +277,8 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                     }
                 };
         vendorParameters.setConvertEmptyInputStringToNull(false);
-        vendorParametersContainer.add(vendorParameters);
+        vendorParameters.add(vendorParameters);
+        return vendorParameters;
     }
 
     private Set<String> getRemoteStyleNames(final List<StyleInfo> styleInfoList) {
@@ -314,6 +320,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     static class VendorParametersConvertor implements IConverter<Map<String, String>> {
 
         @Override

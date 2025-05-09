@@ -401,10 +401,14 @@ public class GetMap {
             // if the format is not selected then fall back to preffered
             if (!wmsLayer.isFormatValid(imageFormat)) imageFormat = wmsLayer.getPreferredFormat();
 
-            WMSLayer Layer = new WMSLayer(wms, gt2Layer, style, imageFormat);
+            // gt2Layer is the basis for the request and it comes from the capabilities
+            // therefore it needs to have the configured vendor parameters copied from the
+            // wmsLayer
+            WMSLayer layer = new WMSLayer(wms, gt2Layer, style, imageFormat);
+            gt2Layer.setVendorParameters(wmsLayer.getVendorParameters());
+            layer.setTitle(wmsLayer.prefixedName());
 
-            Layer.setTitle(wmsLayer.prefixedName());
-            mapContent.addLayer(Layer);
+            mapContent.addLayer(layer);
         }
     }
 

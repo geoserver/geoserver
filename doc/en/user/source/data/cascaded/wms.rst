@@ -82,6 +82,8 @@ Making use of Remotely advertised styles and supported image formats.
 
 * **Respect Advertised Bounds**. It is possible to ignore remote WMS requests with bounding box completely outside the advertised bounds of remote WMS layer. Some external WMS providers might respond with error instead of empty transparent image for WMS requests outside their advertised bounds, in such cases enable the check box to bar Geoserver from making empty WMS requests to WMS provider. 
 
+* **Vendor Parameters**. If the external WMS vendor supports vendor specific parameters enter them here. The format is key value pairs separated by an '=' *ie. key=value or key=value1,value2,,value4*  . The key cannot contain an '=' character. Values can be strings, numbers or booleans. The Vendor parameters will be included in the request made to the external WMS server.
+
 
 .. figure:: images/cascaded_wms.png
    :align: center
@@ -94,7 +96,5 @@ Layers served through an external WMS have some, but not all of the functionalit
 * Layers cannot be styled with SLD.
 
 * Alternate (local) styles cannot be used.
-
-* Extra request parameters (``time``, ``elevation``, ``cql_filter``, etc.) cannot be used.
 
 * Image format cannot be specified.  GeoServer will attempt to request PNG images, and if that fails will use the remote server's default image format.

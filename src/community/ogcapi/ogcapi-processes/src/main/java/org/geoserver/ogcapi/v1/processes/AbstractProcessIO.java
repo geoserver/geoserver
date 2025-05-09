@@ -38,6 +38,7 @@ public class AbstractProcessIO {
         this.description = p.getDescription().toString();
 
         // look up the PPIOs, this should always work
+        // TODO: favour JSON like PPIOs over XML ones (re-sort list)... shoud be done in Process
         List<ProcessParameterIO> ppios = ProcessParameterIO.findDecoder(p, context);
         if (ppios.isEmpty()) {
             throw new IllegalArgumentException("Could not find process parameter for type " + p.key + "," + p.type);

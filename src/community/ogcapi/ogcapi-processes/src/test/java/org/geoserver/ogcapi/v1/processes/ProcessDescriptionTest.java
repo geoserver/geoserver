@@ -76,7 +76,7 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         checkGeometrySchema(resultSchema);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PMD.ForLoopCanBeForeach"})
     private static void checkGeometrySchema(JSONArray geomSchema) {
         Set<String> expectedTypes =
                 new HashSet<>(Set.of("application/json", "application/gml-2.1.2", "application/gml-3.1.1"));

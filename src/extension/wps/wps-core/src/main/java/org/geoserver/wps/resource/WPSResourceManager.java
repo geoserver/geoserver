@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
+import net.opengis.wps10.ExecuteResponseType;
 import net.opengis.wps10.ExecuteType;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Dispatcher;
@@ -239,6 +240,22 @@ public class WPSResourceManager extends ProcessListenerAdapter
     /** Gets the stored response file for the specified execution id */
     public Resource getStoredResponse(String executionId) {
         return artifactsStore.getArtifact(executionId, ArtifactType.Response, null);
+    }
+
+    /** Gets the stored response as a parsed object, for the given execution id */
+    public ExecuteResponseType getStoredResponseObject(String executionId) throws IOException {
+        Resource resource = getStoredResponse(executionId);
+        if (resource == null || resource.getType() == Type.UNDEFINED) {
+            return null;
+        } else {
+            try (InputStream in = resource.in()) {
+                WPSConfiguration config = new WPSConfiguration();
+                Parser parser = new Parser(config);
+                return (ExecuteResponseType) parser.parse(in);
+            } catch (SAXException | ParserConfigurationException e) {
+                throw new WPSException("Could not parse the stored WPS response", e);
+            }
+        }
     }
 
     /**

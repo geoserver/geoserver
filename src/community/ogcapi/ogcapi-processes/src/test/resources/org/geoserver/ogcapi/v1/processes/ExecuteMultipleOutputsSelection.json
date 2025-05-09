@@ -1,0 +1,12 @@
+{
+  "inputs": {
+    "id": "text",
+    "binaryMimeType" : "application/zip"
+  },
+  "outputs": {
+    "text": {
+      "transmissionMode": "value"
+    }
+  },
+  "response": "document"
+}

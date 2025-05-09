@@ -260,10 +260,6 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         minScale.add(new ScalesValidator(minScale, maxScale));
 
-        addVendorParametersTextarea(wmsLayerInfo);
-    }
-
-    private TextArea<Object> addVendorParametersTextarea(WMSLayerInfo wmsLayerInfo) {
         TextArea<Object> vendorParameters =
                 new TextArea<>("vendorParameters", new PropertyModel<>(wmsLayerInfo, "vendorParameters")) {
                     @SuppressWarnings("unchecked")
@@ -277,8 +273,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                     }
                 };
         vendorParameters.setConvertEmptyInputStringToNull(false);
-        vendorParameters.add(vendorParameters);
-        return vendorParameters;
+        vendorParametersContainer.add(vendorParameters);
     }
 
     private Set<String> getRemoteStyleNames(final List<StyleInfo> styleInfoList) {

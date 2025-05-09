@@ -3,18 +3,20 @@
 OGC API - Processes
 ===================
 
-A `OGC API - Maps <https://github.com/opengeospatial/ogcapi-processes>`_ based on the current specification draft, delivering partial functionality:
+A `OGC API - Processes <https://github.com/opengeospatial/ogcapi-processes>`_ based on the current specification draft, delivering the following functionality:
 
 - Process listing
 - Process description
-- Synchronous execution via KVP invocation
+- Execution via JSON POST (OGC API 1.0 core)
+- Execution via KVP invocation (from OGC API 1.1 DRAFT specification)
+- Asynchronous execution and dismissal
+- The same wealth of input/output options as in WPS (inline, reference, simple and complex, etc.)
 
 Missing functionality at the time of writing, and known issues:
 
 - API definition is not fully aligned yet
-- Exection via POST
-- Remote URL inputs
-- Asynchronous exectuion
+- Conformance class configuration is not available
+- Process chaining (not part of Core, see the Workflows DRAFT extension)
 
 OGC API - Processes Implementation status
 -----------------------------------------

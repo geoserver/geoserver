@@ -23,7 +23,7 @@ public class ProcessListDocument extends AbstractDocument {
         Set<ProcessFactory> pfs = GeoServerProcessors.getProcessFactories();
         for (ProcessFactory pf : pfs) {
             for (Name name : pf.getNames()) {
-                ProcessSummaryDocument summary = new ProcessSummaryDocument(pf, name);
+                ProcessSummaryDocument summary = new ProcessSummaryDocument(new Process(pf, name));
                 processes.add(summary);
             }
         }

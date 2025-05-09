@@ -1,0 +1,18 @@
+{
+  "inputs": {
+    "geom": {
+      "value": "POINT(0 0)",
+      "mediaType": "application/wkt"
+    },
+    "distance": 10,
+    "capStyle": "Square"
+  },
+  "outputs": {
+    "result": {
+      "format": {
+        "mediaType": "application/wkt"
+      }
+    }
+  },
+  "response": "document"
+}

@@ -117,6 +117,7 @@ public class PagedUniqueProcess implements GeoServerProcess {
                 return true;
             }
         };
+        visitor.setPreserveOrder(true);
 
         Integer listSize = 0;
         List<String> list = new ArrayList<>();
@@ -140,7 +141,6 @@ public class PagedUniqueProcess implements GeoServerProcess {
                 if (maxFeatures != null) {
                     visitor.setMaxFeatures(maxFeatures);
                 }
-                visitor.setPreserveOrder(true);
 
                 features.accepts(visitor, null);
                 if (visitor.getResult() == null || visitorAsList(visitor) == null) {

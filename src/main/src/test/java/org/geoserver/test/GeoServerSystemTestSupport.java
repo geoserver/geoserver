@@ -2608,4 +2608,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         }
         assertTrue("Module " + moduleId + " not found", requiredModuleWasFound);
     }
+
+    /**
+     * Checks if the current build is running as a Github action, using the <code>GITHUB_ACTIONS</code> environment
+     * variable. See the <a
+     * href="https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables">
+     * default variables available in Github</a> too.
+     *
+     * @return
+     */
+    public static final boolean isGitHubAction() {
+        return Boolean.getBoolean("GITHUB_ACTIONS");
+    }
 }

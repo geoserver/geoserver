@@ -7,6 +7,13 @@ GeoServer provides support for the `Open Geospatial Consortium (OGC) <http://www
 
 GeoServer is the reference implementation of all three versions of the standard, completely implementing every part of the protocol. This includes the basic operations of :ref:`wfs_getcap`, :ref:`wfs_dft`, and :ref:`wfs_getfeature`, as well as more advanced options such as :ref:`wfs_wfst`. GeoServer WFS is also integrated with its :ref:`security` system to limit access to data and transactions, and supports a variety of :ref:`wfs_output_formats`, making the raw data more widely available.
 
+Layer and attribute naming considerations
+-----------------------------------------
+
+When fetching WFS data as GML, the XML encoder follows the `W3C Recommendation for XML <https://www.w3.org/TR/REC-xml/#charsets>`_ which implements specific requirements for the characters which may be passed. When data is to be made available via WFS, it is important that the Layer and Attribute names contain only permitted characters.
+
+GeoServer does not prohibit or warn when creating layer or attribute names containing these characters, as for other services such as WMS, WCS, or OGC Features API these may be present.
+
 Differences between WFS versions
 --------------------------------
 

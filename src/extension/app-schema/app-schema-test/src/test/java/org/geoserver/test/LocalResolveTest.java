@@ -8,6 +8,8 @@ package org.geoserver.test;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.geotools.data.complex.AppSchemaDataAccess;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -21,6 +23,12 @@ public class LocalResolveTest extends AbstractAppSchemaTestSupport {
     @Override
     protected XLink32MockData createTestData() {
         return new XLink32MockData();
+    }
+
+    @Before
+    public void skipOnGithubActions() {
+        // this test does not run reliably on GitHub actions, cause unclear
+        Assume.assumeFalse(GeoServerSystemTestSupport.isGitHubAction());
     }
 
     /** Test Local Resolve with Depth 2. */

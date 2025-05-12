@@ -72,6 +72,10 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         Processors.addProcessFactory(MultiOutputEchoProcess.getFactory());
     }
 
+    protected void setUpInternal(SystemTestData testData) throws Exception {}
+
+    protected void setUpNamespaces(Map<String, String> namespaces) {}
+
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);

@@ -986,7 +986,7 @@ public class MapMLDocumentBuilder {
     private String buildStyles() throws IOException {
         List<String> cssStyles = new ArrayList<>();
         for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadataList) {
-            if (!mapMLLayerMetadata.isLayerGroup()) {
+            if (!mapMLLayerMetadata.isLayerGroup() && !isLayerGroup(mapMLLayerMetadata.getLayerName())) {
                 String styleNames = mapMLLayerMetadata.getStyleName();
                 String[] styleNameArray = styleNames.split(",");
                 for (String styleName : styleNameArray) {
@@ -1001,10 +1001,54 @@ public class MapMLDocumentBuilder {
                         LOGGER.log(Level.INFO, "Could not find style named " + styleName);
                     }
                 }
+            } else if (isLayerGroup(mapMLLayerMetadata.getLayerName())) {
+                String styleNames = mapMLLayerMetadata.getStyleName();
+                String[] styleNameArray = styleNames.split(",");
+                for (String styleName : styleNameArray) {
+                    if (styleName == null || styleName.isEmpty()) continue;
+                    List<Style> styles = getLayerGroupStyle(
+                            mapMLLayerMetadata.getLayerGroupInfo() != null
+                                    ? mapMLLayerMetadata.getLayerGroupInfo()
+                                    : getLayerGroupInfo(mapMLLayerMetadata.getLayerName()),
+                            styleName);
+                    for (Style style : styles) {
+                        Map<String, MapMLStyle> mapMLstyles =
+                                MapMLFeatureUtil.getMapMLStyleMap(style, mapContent.getScaleDenominator());
+                        String css = MapMLFeatureUtil.getCSSStyles(mapMLstyles);
+                        cssStyles.add(css);
+                    }
+                }
             }
         }
         if (cssStyles.isEmpty()) return null;
         return MapMLFeatureUtil.BBOX_DISPLAY_NONE + " " + String.join(" ", cssStyles);
+    }
+
+    private boolean isLayerGroup(String layerName) {
+        return wms.getLayerGroupByName(layerName) != null;
+    }
+
+    private LayerGroupInfo getLayerGroupInfo(String layerName) {
+        LayerGroupInfo layerGroupInfo = wms.getLayerGroupByName(layerName);
+        if (layerGroupInfo == null) {
+            throw new ServiceException("Layer group " + layerName + " not found");
+        }
+        return layerGroupInfo;
+    }
+
+    private List<Style> getLayerGroupStyle(LayerGroupInfo layerGroupInfo, String styleName) throws IOException {
+        List<Style> styles = new ArrayList<>();
+        for (LayerGroupStyle layerGroupStyle : layerGroupInfo.getLayerGroupStyles()) {
+            if (layerGroupStyle.getName().getName().equalsIgnoreCase(styleName)) {
+                List<StyleInfo> styleInfos = layerGroupStyle.getStyles();
+                for (StyleInfo styleInfo : styleInfos) {
+                    if (styleInfo != null) {
+                        styles.add(styleInfo.getStyle());
+                    }
+                }
+            }
+        }
+        return styles;
     }
 
     /**

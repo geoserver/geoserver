@@ -984,22 +984,12 @@ public class MapMLDocumentBuilder {
     private String buildStyles() throws IOException {
         List<String> cssStyles = new ArrayList<>();
         for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadataList) {
-            if (!mapMLLayerMetadata.isLayerGroup() && !isLayerGroup(mapMLLayerMetadata.getLayerName())) {
+            if (!mapMLLayerMetadata.isLayerGroup()
+                    && !isLayerGroup(mapMLLayerMetadata.getLayerName())
+                    && mapMLLayerMetadata.getLayerInfo() != null) {
                 Style style = null;
                 String styleNames = mapMLLayerMetadata.getStyleName();
-                String[] styleNameArray = styleNames.split(",");
-                for (String styleName : styleNameArray) {
-                    if (styleName == null || styleName.isEmpty()) continue;
-                    style = wms.getStyleByName(styleName);
-                    if (style != null) {
-                        Map<String, MapMLStyle> styles =
-                                MapMLFeatureUtil.getMapMLStyleMap(style, mapContent.getScaleDenominator());
-                        String css = MapMLFeatureUtil.getCSSStyles(styles);
-                        cssStyles.add(css);
-                    } else {
-                        LOGGER.log(Level.INFO, "Could not find style named " + styleName);
-                    }
-                }
+                style = getStyleFromName(styleNames, style, cssStyles);
                 if (style == null) {
                     // No style found, get default
                     getDefaultStyle(mapMLLayerMetadata, style, cssStyles);
@@ -1025,10 +1015,47 @@ public class MapMLDocumentBuilder {
                         || Arrays.stream(styleNameArray).allMatch(String::isEmpty)) {
                     getDefaultLayerGroupStyles(layerGroupInfo, cssStyles);
                 }
+            } else {
+                // neither layer nor layer group, probably merged extent from multiple layer names
+                if (mapMLLayerMetadata.getLayerName().contains(",")) {
+                    String styleNames = mapMLLayerMetadata.getStyleName();
+                    String[] styleNameArray = styleNames.split(",");
+                    Style style = null;
+                    style = getStyleFromName(styleNames, style, cssStyles);
+                    for (String layerName : mapMLLayerMetadata.getLayerName().split(",")) {
+                        LayerInfo layerInfo = wms.getLayerByName(layerName);
+                        if (layerInfo != null) {
+                            StyleInfo styleInfo = layerInfo.getDefaultStyle();
+                            addCSS(cssStyles, styleInfo);
+                        } else {
+                            LayerGroupInfo layerGroupInfo = wms.getLayerGroupByName(layerName);
+                            if (layerGroupInfo != null) {
+                                getDefaultLayerGroupStyles(layerGroupInfo, cssStyles);
+                            }
+                        }
+                    }
+                }
             }
         }
         if (cssStyles.isEmpty()) return null;
         return MapMLFeatureUtil.BBOX_DISPLAY_NONE + " " + String.join(" ", cssStyles);
+    }
+
+    private Style getStyleFromName(String styleNames, Style style, List<String> cssStyles) throws IOException {
+        String[] styleNameArray = styleNames.split(",");
+        for (String styleName : styleNameArray) {
+            if (styleName == null || styleName.isEmpty()) continue;
+            style = wms.getStyleByName(styleName);
+            if (style != null) {
+                Map<String, MapMLStyle> styles =
+                        MapMLFeatureUtil.getMapMLStyleMap(style, mapContent.getScaleDenominator());
+                String css = MapMLFeatureUtil.getCSSStyles(styles);
+                cssStyles.add(css);
+            } else {
+                LOGGER.log(Level.INFO, "Could not find style named " + styleName);
+            }
+        }
+        return style;
     }
 
     private void getDefaultLayerGroupStyles(LayerGroupInfo layerGroupInfo, List<String> cssStyles) throws IOException {

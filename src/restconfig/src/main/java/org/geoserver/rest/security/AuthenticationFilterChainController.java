@@ -1,5 +1,19 @@
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.rest.security;
 
+import static java.lang.String.format;
+
+import com.google.common.base.Strings;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.SequentialExecutionController;
 import org.geoserver.rest.security.xml.AuthFilter;
@@ -22,20 +36,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Logger;
-
-import static java.lang.String.format;
-
 @RestController("authenticationFilterChainController")
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/authFilters")
 public class AuthenticationFilterChainController implements SequentialExecutionController {
-    private final static Logger LOGGER = Logger.getLogger(AuthenticationFilterChainController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AuthenticationFilterChainController.class.getName());
 
     private final GeoServerSecurityManager securityManager;
     private final FilterConfigValidator filterConfigValidator;
@@ -59,8 +63,7 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
     // 404
     @GetMapping(
             value = "/{filterName}",
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<AuthFilter> get(@PathVariable("filterName") String filterName) throws IOException {
         return new ResponseEntity<>(loadAuthFilter(filterName), HttpStatus.OK);
     }
@@ -70,9 +73,10 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
     // 400
     @PostMapping(
             value = "",
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
-    public ResponseEntity<AuthFilter> post(@RequestBody AuthFilter authFilterRequest) throws IOException, SecurityConfigException {
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<AuthFilter> post(@RequestBody AuthFilter authFilterRequest)
+            throws IOException, SecurityConfigException {
         AuthFilter authFilterResponse = saveAuthFilter(authFilterRequest);
         return new ResponseEntity<>(authFilterResponse, HttpStatus.CREATED);
     }
@@ -82,9 +86,11 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
     // 404
     @PutMapping(
             value = "/{filterName}",
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
-    public ResponseEntity<AuthFilter> put(@PathVariable("filterName") String filterName, @RequestBody AuthFilter authFilterRequest) throws IOException, SecurityConfigException {
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<AuthFilter> put(
+            @PathVariable("filterName") String filterName, @RequestBody AuthFilter authFilterRequest)
+            throws IOException, SecurityConfigException {
         AuthFilter updated = updateAuthFilter(filterName, authFilterRequest);
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
@@ -93,9 +99,9 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
     // 402 if already deleted
     @DeleteMapping(
             value = "/{filterName}",
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
-    public HttpStatus delete(@PathVariable("filterName") String filterName) throws IOException, SecurityConfigException {
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public HttpStatus delete(@PathVariable("filterName") String filterName)
+            throws IOException, SecurityConfigException {
         boolean deleted = removeAuthFilter(filterName);
         return deleted ? HttpStatus.OK : HttpStatus.GONE;
     }
@@ -125,22 +131,27 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
     }
 
     protected AuthFilter saveAuthFilter(AuthFilter newFilter) throws IOException, SecurityConfigException {
-        if (newFilter.getId() != null || newFilter.getConfig().getId() != null) {
-            LOGGER.warning(format("Cannot create the filter %s because client has provided an id %s", newFilter.getName(), newFilter.getId()));
+        if (newFilter.getId() != null) {
+            LOGGER.warning(format(
+                    "Cannot create the filter %s because client has provided an id %s",
+                    newFilter.getName(), newFilter.getId()));
             throw new IdSetByServerException(newFilter);
         }
 
-        if (newFilter.getName() == null || newFilter.getConfig().getName() == null) {
-            LOGGER.warning(format("Cannot create the filter %s because client has not provided a name", newFilter.getName()));
+        if (Strings.isNullOrEmpty(newFilter.getName())) {
+            LOGGER.warning(
+                    format("Cannot create the filter %s because client has not provided a name", newFilter.getName()));
             throw new MissingNameException();
         }
 
-        if(securityManager.loadFilterConfig(newFilter.getName(), true) != null) {
-            LOGGER.warning(format("Cannot create the filter %s because a filter with the name already exists", newFilter.getName()));
+        if (securityManager.loadFilterConfig(newFilter.getName(), true) != null) {
+            LOGGER.warning(format(
+                    "Cannot create the filter %s because a filter with the name already exists", newFilter.getName()));
             throw new DuplicateNameException(newFilter.getName());
         }
 
         filterConfigValidator.validateFilterConfig(newFilter.getConfig());
+        newFilter.getConfig().setName(newFilter.getName());
         securityManager.saveFilter(newFilter.getConfig());
         securityManager.reload();
 
@@ -148,9 +159,12 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
         return new AuthFilter(authFilter);
     }
 
-    protected AuthFilter updateAuthFilter(String filterName, AuthFilter authFilterRequest) throws IOException, SecurityConfigException {
+    protected AuthFilter updateAuthFilter(String filterName, AuthFilter authFilterRequest)
+            throws IOException, SecurityConfigException {
         if (!filterName.equals(authFilterRequest.getName())) {
-            LOGGER.warning(format("Cannot modify the config %s because the name %s in the body does not match", filterName, authFilterRequest.getName()));
+            LOGGER.warning(format(
+                    "Cannot modify the config %s because the name %s in the body does not match",
+                    filterName, authFilterRequest.getName()));
             throw new NameMismatchException(filterName, authFilterRequest.getName());
         }
         SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, true);
@@ -158,12 +172,17 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
             LOGGER.warning(format("Cannot update %s because it does not exist", filterName));
             throw new IllegalArgumentException(format("Cannot update %s because it does not exist", filterName));
         }
-        if (authFilterRequest.getId() != null && !authFilterRequest.getId().equals(filter.getId())) {
-            LOGGER.warning(format("Cannot modify the config with %s because the id %s in the body does not match", authFilterRequest.getId(), filter.getId()));
-            throw new IdMismatchException(authFilterRequest.getId(), filter.getId());
+        if (authFilterRequest.getId() == null) {
+            LOGGER.warning(format(
+                    "Cannot modify the config with %s because the id %s is not set",
+                    authFilterRequest.getId(), filter.getId()));
+            throw new IdNotSet(authFilterRequest.getId(), filter.getId());
         }
 
         filterConfigValidator.validateFilterConfig(authFilterRequest.getConfig());
+        authFilterRequest.getConfig().setName(authFilterRequest.getName());
+        authFilterRequest.getConfig().setId(authFilterRequest.getId());
+
         securityManager.saveFilter(authFilterRequest.getConfig());
         securityManager.reload();
 
@@ -198,7 +217,8 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
     }
 
     @ExceptionHandler(IdSetByServerException.class)
-    public void idSetByServerException(IdSetByServerException exception, HttpServletResponse response) throws IOException {
+    public void idSetByServerException(IdSetByServerException exception, HttpServletResponse response)
+            throws IOException {
         response.sendError(400, exception.getMessage());
     }
 
@@ -212,13 +232,14 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
         response.sendError(400, exception.getMessage());
     }
 
-    @ExceptionHandler(IdMismatchException.class)
-    public void idMismatch(IdMismatchException exception, HttpServletResponse response) throws IOException {
+    @ExceptionHandler(IdNotSet.class)
+    public void idMismatch(IdNotSet exception, HttpServletResponse response) throws IOException {
         response.sendError(400, exception.getMessage());
     }
 
     @ExceptionHandler(SecurityConfigException.class)
-    public void securityConfigException(SecurityConfigException exception, HttpServletResponse response) throws IOException {
+    public void securityConfigException(SecurityConfigException exception, HttpServletResponse response)
+            throws IOException {
         response.sendError(400, exception.getMessage());
     }
 
@@ -233,10 +254,10 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
     }
 
     @ExceptionHandler(DuplicateNameException.class)
-    public void duplicateNameException(FilterConfigException exception, HttpServletResponse response) throws IOException {
+    public void duplicateNameException(FilterConfigException exception, HttpServletResponse response)
+            throws IOException {
         response.sendError(400, exception.getMessage());
     }
-
 
     /// ///////////////////////////////////////////////////////////////////////
     /// Bespoke Exceptions
@@ -249,13 +270,17 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
 
     public static class IdSetByServerException extends RuntimeException {
         public IdSetByServerException(AuthFilter newConfig) {
-            super(format("Cannot create the filter %s because client has provided an id %s", newConfig.getName(), newConfig.getId()));
+            super(format(
+                    "Cannot create the filter %s because client has provided an id %s",
+                    newConfig.getName(), newConfig.getId()));
         }
     }
 
     public static class NameMismatchException extends RuntimeException {
         public NameMismatchException(String pathName, String configName) {
-            super(format("Cannot modify the config %s because the name %s in the body does not match", pathName, configName));
+            super(format(
+                    "Cannot modify the config %s because the name %s in the body does not match",
+                    pathName, configName));
         }
     }
 
@@ -271,10 +296,11 @@ public class AuthenticationFilterChainController implements SequentialExecutionC
         }
     }
 
-    public static class IdMismatchException extends RuntimeException {
-        public IdMismatchException(String requestBodyId, String id) {
-            super(format("Cannot modify the config with %s because the id %s in the body does not match", requestBodyId, id));
+    public static class IdNotSet extends RuntimeException {
+        public IdNotSet(String requestBodyId, String id) {
+            super(format(
+                    "Cannot modify the config with %s because the id %s in the body does not match",
+                    requestBodyId, id));
         }
     }
-
 }

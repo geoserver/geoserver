@@ -1,25 +1,36 @@
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.rest.security.xml;
 
-import org.geoserver.security.config.SecurityFilterConfig;
-
+import com.fasterxml.jackson.annotation.JsonRootName;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import org.geoserver.security.config.SecurityFilterConfig;
 
+@XmlRootElement
+@JsonRootName(value = "authFilter")
 public class AuthFilter {
+    @XmlTransient
     private String id;
+
+    @XmlTransient
     private String name;
-    private String className;
+
     private SecurityFilterConfig config;
 
     public AuthFilter() {}
 
     public AuthFilter(SecurityFilterConfig securityFilterConfig) {
-        this.name = securityFilterConfig.getName();
-        this.className = securityFilterConfig.getClass().getName();
-        this.config = securityFilterConfig;
         this.id = securityFilterConfig.getId();
+        this.name = securityFilterConfig.getName();
+        this.config = securityFilterConfig;
     }
 
+    @XmlElement(name = "id")
     public String getId() {
         return id;
     }
@@ -28,6 +39,7 @@ public class AuthFilter {
         this.id = id;
     }
 
+    @XmlElement(name = "name")
     public String getName() {
         return name;
     }
@@ -36,16 +48,9 @@ public class AuthFilter {
         this.name = name;
     }
 
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    @XmlElement
     public SecurityFilterConfig getConfig() {
+        config.setId(id);
+        config.setName(name);
         return config;
     }
 

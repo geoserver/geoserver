@@ -226,6 +226,9 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         tester.assertVisible("form:panel:scaleDenominatorContainer:minScale");
         tester.assertVisible("form:panel:scaleDenominatorContainer:maxScale");
 
+        tester.assertVisible("form:panel:vendorParametersContainer");
+        tester.assertVisible("form:panel:vendorParametersContainer:vendorParameters");
+
         // validation check, setting min scale above max
         FormTester ft = tester.newFormTester("form");
         ft.setValue("panel:scaleDenominatorContainer:minScale", "100");

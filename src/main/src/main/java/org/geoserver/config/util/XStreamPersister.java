@@ -447,6 +447,8 @@ public class XStreamPersister {
         xs.registerLocalConverter(impl(LayerInfo.class), "styles", new ReferenceCollectionConverter(StyleInfo.class));
         xs.registerLocalConverter(impl(LayerInfo.class), "metadata", new MetadataMapConverter());
 
+        xs.registerLocalConverter(impl(WMSLayerInfo.class), "vendorParameters", new BreifMapConverter());
+
         // LayerGroupInfo
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "rootLayer", new ReferenceConverter(LayerInfo.class));
@@ -2549,6 +2551,9 @@ public class XStreamPersister {
         @Override
         public Object doUnmarshal(Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
             WMSLayerInfoImpl obj = (WMSLayerInfoImpl) super.doUnmarshal(result, reader, context);
+            if (obj.getVendorParameters() == null) {
+                obj.setVendorParameters(new HashMap<>());
+            }
             // setting the minimal defaults and clean object with no NULL values
             if (obj.getPreferredFormat() == null) {
                 obj.setPreferredFormat(WMSLayerInfoImpl.DEFAULT_FORMAT);

@@ -987,11 +987,12 @@ public class MapMLDocumentBuilder {
         List<String> cssStyles = new ArrayList<>();
         for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadataList) {
             if (!mapMLLayerMetadata.isLayerGroup() && !isLayerGroup(mapMLLayerMetadata.getLayerName())) {
+                Style style = null;
                 String styleNames = mapMLLayerMetadata.getStyleName();
                 String[] styleNameArray = styleNames.split(",");
                 for (String styleName : styleNameArray) {
                     if (styleName == null || styleName.isEmpty()) continue;
-                    Style style = wms.getStyleByName(styleName);
+                    style = wms.getStyleByName(styleName);
                     if (style != null) {
                         Map<String, MapMLStyle> styles =
                                 MapMLFeatureUtil.getMapMLStyleMap(style, mapContent.getScaleDenominator());
@@ -1001,16 +1002,19 @@ public class MapMLDocumentBuilder {
                         LOGGER.log(Level.INFO, "Could not find style named " + styleName);
                     }
                 }
+                if (style == null) {
+                    // No style found, get default
+                    getDefaultStyle(mapMLLayerMetadata, style, cssStyles);
+                }
             } else if (isLayerGroup(mapMLLayerMetadata.getLayerName())) {
                 String styleNames = mapMLLayerMetadata.getStyleName();
                 String[] styleNameArray = styleNames.split(",");
+                LayerGroupInfo layerGroupInfo = mapMLLayerMetadata.getLayerGroupInfo() != null
+                        ? mapMLLayerMetadata.getLayerGroupInfo()
+                        : getLayerGroupInfo(mapMLLayerMetadata.getLayerName());
                 for (String styleName : styleNameArray) {
                     if (styleName == null || styleName.isEmpty()) continue;
-                    List<Style> styles = getLayerGroupStyle(
-                            mapMLLayerMetadata.getLayerGroupInfo() != null
-                                    ? mapMLLayerMetadata.getLayerGroupInfo()
-                                    : getLayerGroupInfo(mapMLLayerMetadata.getLayerName()),
-                            styleName);
+                    List<Style> styles = getLayerGroupStyle(layerGroupInfo, styleName);
                     for (Style style : styles) {
                         Map<String, MapMLStyle> mapMLstyles =
                                 MapMLFeatureUtil.getMapMLStyleMap(style, mapContent.getScaleDenominator());
@@ -1018,10 +1022,38 @@ public class MapMLDocumentBuilder {
                         cssStyles.add(css);
                     }
                 }
+                if (styleNameArray == null
+                        || styleNameArray.length < 1
+                        || Arrays.stream(styleNameArray).allMatch(String::isEmpty)) {
+                    getDefaultLayerGroupStyles(layerGroupInfo, cssStyles);
+                }
             }
         }
         if (cssStyles.isEmpty()) return null;
         return MapMLFeatureUtil.BBOX_DISPLAY_NONE + " " + String.join(" ", cssStyles);
+    }
+
+    private void getDefaultLayerGroupStyles(LayerGroupInfo layerGroupInfo, List<String> cssStyles) throws IOException {
+        for (LayerInfo layerInfo : layerGroupInfo.layers()) {
+            StyleInfo styleInfo = layerInfo.getDefaultStyle();
+            addCSS(cssStyles, styleInfo);
+        }
+    }
+
+    private void getDefaultStyle(MapMLLayerMetadata mapMLLayerMetadata, Style style, List<String> cssStyles)
+            throws IOException {
+        StyleInfo styleInfo = mapMLLayerMetadata.getLayerInfo().getDefaultStyle();
+        addCSS(cssStyles, styleInfo);
+    }
+
+    private void addCSS(List<String> cssStyles, StyleInfo styleInfo) throws IOException {
+        Style style;
+        if (styleInfo != null) {
+            style = styleInfo.getStyle();
+            Map<String, MapMLStyle> styles = MapMLFeatureUtil.getMapMLStyleMap(style, mapContent.getScaleDenominator());
+            String css = MapMLFeatureUtil.getCSSStyles(styles);
+            cssStyles.add(css);
+        }
     }
 
     private boolean isLayerGroup(String layerName) {

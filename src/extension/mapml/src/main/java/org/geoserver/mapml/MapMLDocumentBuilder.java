@@ -394,8 +394,6 @@ public class MapMLDocumentBuilder {
             baseUrl = ResponseUtils.baseURL(request);
             baseUrlPattern = baseUrl;
             forceYX = isYX();
-            useFeatures = mapMLLayerMetadata.isUseFeatures();
-            useTiles = mapMLLayerMetadata.isUseTiles();
         }
     }
 
@@ -450,7 +448,7 @@ public class MapMLDocumentBuilder {
     private MapMLLayerMetadata layersToOneMapMLLayerMetadata(List<RawLayer> layers) {
         MapMLLayerMetadata mapMLLayerMetadata = new MapMLLayerMetadata();
         mapMLLayerMetadata.setLayerMeta(new MetadataMap());
-        mapMLLayerMetadata.setUseTiles(false);
+        mapMLLayerMetadata.setUseTiles(useTiles);
         mapMLLayerMetadata.setUseFeatures(useFeatures);
         mapMLLayerMetadata.setLayerName(layersCommaDelimited);
         mapMLLayerMetadata.setStyleName(stylesCommaDelimited);

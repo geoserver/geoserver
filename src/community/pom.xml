@@ -193,6 +193,7 @@
         <module>wfs-freemarker</module>
         <module>stac-datastore</module>
         <module>acl</module>
+        <module>wps-download-netcdf</module>
       </modules>
     </profile>
     <profile>
@@ -613,6 +614,12 @@
       <id>wfs-freemarker</id>
       <modules>
         <module>wfs-freemarker</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wps-download-netcdf</id>
+      <modules>
+        <module>wps-download-netcdf</module>
       </modules>
     </profile>
     <profile>

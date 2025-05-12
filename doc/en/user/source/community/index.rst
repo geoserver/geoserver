@@ -79,3 +79,4 @@ officially part of the GeoServer releases. They are however built along with the
    wfs-freemarker/index
    wps-longitudinal-profile/index
    datadir-catalog-loader/index
+   wps-download-netcdf/index

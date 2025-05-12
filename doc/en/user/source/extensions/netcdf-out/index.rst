@@ -1,4 +1,4 @@
-.. _netcdf-out:
+.. _netcdf_out:
 
 NetCDF Output Format
 ====================

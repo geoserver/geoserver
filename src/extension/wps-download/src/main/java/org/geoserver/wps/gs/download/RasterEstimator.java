@@ -215,6 +215,14 @@ class RasterEstimator {
         long rasterSizeInBytes = targetArea * accumulatedPixelSizeInBits / 8;
 
         final long writeLimits = downloadServiceConfiguration.getWriteLimits();
+        SpatioTemporalCoverageSlicer slicer = new SpatioTemporalCoverageSlicer(reader, coverageInfo, filter);
+        slicer.initialize();
+        if (slicer.hasMultipleSlices()) {
+            // Rough assumption: the size of the raster to be written is multiplied by the number of slices
+            rasterSizeInBytes *= slicer.getNumSlices();
+        }
+        // Let's re-use the slicer to avoid having it re-initialized by the actual download machinery
+        SpatioTemporalCoverageSlicer.SpatioTemporalCoverageSlicerHolder.set(slicer);
 
         // If size exceeds the write limits, false is returned
         if (writeLimits > DownloadServiceConfiguration.NO_LIMIT && rasterSizeInBytes > writeLimits) {
@@ -228,6 +236,7 @@ class RasterEstimator {
                                 + writeLimits
                                 + ")");
             }
+            SpatioTemporalCoverageSlicer.SpatioTemporalCoverageSlicerHolder.clear();
             return false;
         }
         if (LOGGER.isLoggable(Level.FINE)) {

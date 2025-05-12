@@ -19,7 +19,7 @@ builds, pick the zip file form ``main/community-latest``).
 To install the module, unpack the zip file contents into GeoServer own ``WEB-INF/lib`` directory and
 restart GeoServer.
 
-For the module to work, the :ref:`netcdf` and :ref:`netcdf-out` extensions must also be installed.
+For the module to work, the :ref:`netcdf` and :ref:`netcdf_out` extensions must also be installed.
 
 Input preparation
 -----------------

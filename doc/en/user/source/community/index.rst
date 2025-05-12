@@ -74,4 +74,6 @@ officially part of the GeoServer releases. They are however built along with the
    web-service-auth/index
    webp/index
    wfs-freemarker/index
+   wps-download-netcdf/index
    wps-longitudinal-profile/index
+

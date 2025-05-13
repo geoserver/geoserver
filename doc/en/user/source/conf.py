@@ -58,7 +58,7 @@ version = '2.27'
 # check environmental variable to see if ant build.xml passed in project.version
 project_version = os.getenv("project.version")
 if project_version == None: 
-  release = '2.27-SNAPSHOT'
+  release = '2.27.1'
 else:
   release = project_version
 

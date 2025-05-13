@@ -1059,9 +1059,43 @@ public class MapMLDocumentBuilder {
     }
 
     private void getDefaultLayerGroupStyles(LayerGroupInfo layerGroupInfo, List<String> cssStyles) throws IOException {
-        for (LayerInfo layerInfo : layerGroupInfo.layers()) {
-            StyleInfo styleInfo = layerInfo.getDefaultStyle();
-            addCSS(cssStyles, styleInfo);
+        List<LayerGroupStyle> layerGroupStyles = layerGroupInfo.getLayerGroupStyles();
+        if (layerGroupStyles == null || layerGroupStyles.isEmpty()) {
+            List<StyleInfo> styleInfos = layerGroupInfo.getStyles();
+            List<PublishedInfo> publishedInfos = layerGroupInfo.getLayers();
+            getStyles(cssStyles, styleInfos, publishedInfos);
+        } else {
+            for (LayerGroupStyle layerGroupStyle : layerGroupStyles) {
+                List<StyleInfo> styleInfos = layerGroupStyle.getStyles();
+                List<PublishedInfo> layerInfos = layerGroupStyle.getLayers();
+                getStyles(cssStyles, styleInfos, layerInfos);
+            }
+        }
+    }
+
+    private void getStyles(List<String> cssStyles, List<StyleInfo> styleInfos, List<PublishedInfo> publishedInfos)
+            throws IOException {
+        for (int i = 0; i < styleInfos.size(); i++) {
+            StyleInfo styleInfo = styleInfos.get(i);
+            Style style = null;
+            if (styleInfo != null) {
+                style = styleInfo.getStyle();
+            } else {
+                // if the style is null, get the default style from the layer
+                LayerInfo layerInfo = (LayerInfo) publishedInfos.get(i);
+                if (layerInfo != null) {
+                    StyleInfo defaultStyle = layerInfo.getDefaultStyle();
+                    style = defaultStyle.getStyle();
+                } else {
+                    LOGGER.log(Level.INFO, "Could not find style for layer " + publishedInfos.get(i));
+                }
+            }
+            if (style != null) {
+                Map<String, MapMLStyle> styles =
+                        MapMLFeatureUtil.getMapMLStyleMap(style, mapContent.getScaleDenominator());
+                String css = MapMLFeatureUtil.getCSSStyles(styles);
+                cssStyles.add(css);
+            }
         }
     }
 

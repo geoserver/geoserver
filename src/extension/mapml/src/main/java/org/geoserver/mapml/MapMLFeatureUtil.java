@@ -270,7 +270,11 @@ public class MapMLFeatureUtil {
                         BoundingBox bbox = new BoundingBox(
                                 clipBounds.getMinX(), clipBounds.getMinY(), clipBounds.getMaxX(), clipBounds.getMaxY());
                         MapMLProjection projType = parseProjType(getMapRequest);
-                        int zoomLevel = MapMLHTMLOutput.computeZoom(projType, (ReferencedEnvelope) clipBounds);
+                        int zoomLevel = MapMLHTMLOutput.computeZoom(
+                                projType,
+                                (ReferencedEnvelope) clipBounds,
+                                getMapRequest.getWidth(),
+                                getMapRequest.getHeight());
                         GridSubset gridSubset = GridSubsetFactory.createGridSubSet(chosen, bbox, zoomLevel, zoomLevel);
                         long[][] tileRangeLevels = gridSubset.getWMTSCoverages();
                         long[] tileRange = tileRangeLevels[0];

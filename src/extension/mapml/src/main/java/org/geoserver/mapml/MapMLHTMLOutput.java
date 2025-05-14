@@ -234,7 +234,8 @@ public class MapMLHTMLOutput {
         return ResponseUtils.buildURL(base, "/mapml/" + path, null, URLMangler.URLType.RESOURCE);
     }
 
-    public static int computeZoom(MapMLProjection projType, ReferencedEnvelope projectedBbox) {
+    public static int computeZoom(
+            MapMLProjection projType, ReferencedEnvelope projectedBbox, double pixelWidth, double pixelHeight) {
         TiledCRS tcrs = projType.getTiledCRS();
         boolean flipAxis =
                 CRS.getAxisOrder(projectedBbox.getCoordinateReferenceSystem()).equals(CRS.AxisOrder.NORTH_EAST);
@@ -246,6 +247,13 @@ public class MapMLHTMLOutput {
         // allowing for the data to be displayed at a certain size (WxH) in pixels,
         // figure out the zoom level at which the projected bounds fits into that,
         // in both dimensions
-        return tcrs.fitProjectedBoundsToDisplay(pb, MapMLConstants.DISPLAY_BOUNDS_DESKTOP_LANDSCAPE);
+        Bounds displayBounds = new Bounds(new Point(0, 0), new Point(pixelWidth, pixelHeight));
+        return tcrs.fitProjectedBoundsToDisplay(pb, displayBounds);
+    }
+
+    public static int computeZoom(MapMLProjection projType, ReferencedEnvelope projectedBbox) {
+        double width = MapMLConstants.DISPLAY_BOUNDS_DESKTOP_LANDSCAPE.getMax().getX();
+        double height = MapMLConstants.DISPLAY_BOUNDS_DESKTOP_LANDSCAPE.getMax().getY();
+        return computeZoom(projType, projectedBbox, width, height);
     }
 }

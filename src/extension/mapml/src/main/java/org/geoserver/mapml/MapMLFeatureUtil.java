@@ -254,85 +254,98 @@ public class MapMLFeatureUtil {
                     }
                 }
             } else if (featureCollectionInfoSimplifier.getCoverageInfo() != null && request != null) {
-                if (getMapRequest != null && useTiles(getMapRequest)) {
-                    String crs = extractCRS(getMapRequest.getRawKvp());
-                    useTileLinks = gwc.hasTileLayer(featureCollectionInfoSimplifier.getCoverageInfo())
-                            && gwc.getTileLayer(featureCollectionInfoSimplifier.getCoverageInfo())
-                                            .getGridSubset(crs)
-                                    != null;
-                }
-                try {
-                    if (getMapRequest != null) {
-                        GridSet chosen = getGridSet(requestCRS);
-                        if (chosen == null) {
-                            throw new ServiceException("No MapML gridset found for CRS: " + requestCRS);
+                String crs = extractCRS(getMapRequest.getRawKvp());
+                MapMLProjection projType = parseProjType(getMapRequest);
+                int zoomLevel = MapMLHTMLOutput.computeZoom(
+                        projType, (ReferencedEnvelope) clipBounds, getMapRequest.getWidth(), getMapRequest.getHeight());
+                List<Tile> tiles = new ArrayList<>();
+                String format = getMapRequest.getFormatOptions().get(MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION) != null
+                        ? getMapRequest
+                                .getFormatOptions()
+                                .get(MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION)
+                                .toString()
+                        : "image/png";
+                if (useTiles(getMapRequest)) {
+                    String link = getWMSLink(
+                            clipBounds,
+                            request,
+                            getMapRequest,
+                            featureCollectionInfoSimplifier,
+                            getMapRequest.getWidth(),
+                            getMapRequest.getHeight());
+                    Tile tile = new Tile();
+                    tile.setZoom(BigInteger.valueOf(zoomLevel));
+                    tile.setSrc(link);
+                    tiles.add(tile);
+                } else {
+                    try {
+                        if (getMapRequest != null) {
+                            useTileLinks = gwc.hasTileLayer(featureCollectionInfoSimplifier.getCoverageInfo())
+                                    && gwc.getTileLayer(featureCollectionInfoSimplifier.getCoverageInfo())
+                                                    .getGridSubset(crs)
+                                            != null;
                         }
                         BoundingBox bbox = new BoundingBox(
                                 clipBounds.getMinX(), clipBounds.getMinY(), clipBounds.getMaxX(), clipBounds.getMaxY());
-                        MapMLProjection projType = parseProjType(getMapRequest);
-                        int zoomLevel = MapMLHTMLOutput.computeZoom(
-                                projType,
-                                (ReferencedEnvelope) clipBounds,
-                                getMapRequest.getWidth(),
-                                getMapRequest.getHeight());
-                        GridSubset gridSubset = GridSubsetFactory.createGridSubSet(chosen, bbox, zoomLevel, zoomLevel);
-                        long[][] tileRangeLevels = gridSubset.getWMTSCoverages();
-                        long[] tileRange = tileRangeLevels[0];
-                        long minTileX = tileRange[0];
-                        long minTileY = tileRange[1];
-                        long maxTileX = tileRange[2];
-                        long maxTileY = tileRange[3];
-                        List<Tile> tiles = new ArrayList<>();
-                        for (long tileX = minTileX; tileX <= maxTileX; tileX++) {
-                            for (long tileY = minTileY; tileY <= maxTileY; tileY++) {
-                                long[] tile1 = {tileX, tileY, zoomLevel};
-                                BoundingBox tileBbox = boundsFromIndex(tile1, gridSubset);
-                                Envelope tileEnvelope = new Envelope(
-                                        tileBbox.getMinX(), tileBbox.getMaxX(), tileBbox.getMinY(), tileBbox.getMaxY());
-                                String link = null;
-                                if (useTileLinks) {
-                                    String format = getMapRequest
-                                                            .getFormatOptions()
-                                                            .get(MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION)
-                                                    != null
-                                            ? getMapRequest
-                                                    .getFormatOptions()
-                                                    .get(MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION)
-                                                    .toString()
-                                            : "image/png";
-                                    link = getWMTSLink(
-                                            featureCollectionInfoSimplifier,
-                                            chosen.getSrs().toString(),
-                                            request,
-                                            String.valueOf(zoomLevel),
-                                            String.valueOf(tileX),
-                                            String.valueOf(tileY),
-                                            format);
-                                } else {
-                                    link = getWMSLink(
-                                            tileEnvelope,
-                                            request,
-                                            getMapRequest,
-                                            featureCollectionInfoSimplifier,
-                                            chosen.getTileWidth(),
-                                            chosen.getTileHeight());
-                                }
-                                Tile tile = new Tile();
-                                tile.setRow(BigInteger.valueOf(tileY));
-                                tile.setCol(BigInteger.valueOf(tileX));
-                                tile.setZoom(BigInteger.valueOf(zoomLevel));
-                                tile.setSrc(link);
-                                tile.setDistance(JTS.orthodromicDistance(
-                                        clipBounds.centre(), tileEnvelope.centre(), requestCRS));
-                                tiles.add(tile);
+                        if (getMapRequest != null) {
+                            GridSet chosen = getGridSet(requestCRS);
+                            if (chosen == null) {
+                                throw new ServiceException("No MapML gridset found for CRS: " + requestCRS);
                             }
+
+                            GridSubset gridSubset =
+                                    GridSubsetFactory.createGridSubSet(chosen, bbox, zoomLevel, zoomLevel);
+                            long[][] tileRangeLevels = gridSubset.getWMTSCoverages();
+                            long[] tileRange = tileRangeLevels[0];
+                            long minTileX = tileRange[0];
+                            long minTileY = tileRange[1];
+                            long maxTileX = tileRange[2];
+                            long maxTileY = tileRange[3];
+                            for (long tileX = minTileX; tileX <= maxTileX; tileX++) {
+                                for (long tileY = minTileY; tileY <= maxTileY; tileY++) {
+                                    long[] tile1 = {tileX, tileY, zoomLevel};
+                                    BoundingBox tileBbox = boundsFromIndex(tile1, gridSubset);
+                                    Envelope tileEnvelope = new Envelope(
+                                            tileBbox.getMinX(),
+                                            tileBbox.getMaxX(),
+                                            tileBbox.getMinY(),
+                                            tileBbox.getMaxY());
+                                    String link = null;
+                                    if (useTileLinks) {
+                                        link = getWMTSLink(
+                                                featureCollectionInfoSimplifier,
+                                                chosen.getSrs().toString(),
+                                                request,
+                                                String.valueOf(zoomLevel),
+                                                String.valueOf(tileX),
+                                                String.valueOf(tileY),
+                                                format);
+                                    } else {
+                                        link = getWMSLink(
+                                                tileEnvelope,
+                                                request,
+                                                getMapRequest,
+                                                featureCollectionInfoSimplifier,
+                                                chosen.getTileWidth(),
+                                                chosen.getTileHeight());
+                                    }
+                                    Tile tile = new Tile();
+                                    tile.setRow(BigInteger.valueOf(tileY));
+                                    tile.setCol(BigInteger.valueOf(tileX));
+                                    tile.setZoom(BigInteger.valueOf(zoomLevel));
+                                    tile.setSrc(link);
+                                    tile.setDistance(JTS.orthodromicDistance(
+                                            clipBounds.centre(), tileEnvelope.centre(), requestCRS));
+                                    tiles.add(tile);
+                                }
+                            }
+                            Collections.sort(tiles);
                         }
-                        Collections.sort(tiles);
-                        featuresOrTiles.addAll(tiles);
+                    } catch (FactoryException | GeoWebCacheException | TransformException e) {
+                        throw new ServiceException("Error while looking up MapML gridset", e);
                     }
-                } catch (FactoryException | GeoWebCacheException | TransformException e) {
-                    throw new ServiceException("Error while looking up MapML gridset", e);
                 }
+                featuresOrTiles.addAll(tiles);
             }
         }
         return mapml;

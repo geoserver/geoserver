@@ -520,4 +520,16 @@ public class CSVOutputFormatTest extends WFSTestSupport {
 
         assertEquals(date, lines.get(1)[3]);
     }
+
+    @Test
+    public void testCountZero() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                "wfs?version=2.0.0&request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv&count=0",
+                UTF_8.name());
+        assertEquals(CSV, getBaseMimeType(response.getContentType()));
+        assertEquals(UTF_8.name(), response.getCharacterEncoding());
+        assertEquals("attachment; filename=PrimitiveGeoFeature.csv", response.getHeader("Content-Disposition"));
+        List<String[]> lines = readLines(response.getContentAsString(), ',');
+        assertEquals(1, lines.size());
+    }
 }

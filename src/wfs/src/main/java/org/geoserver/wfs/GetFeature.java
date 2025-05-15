@@ -331,7 +331,7 @@ public class GetFeature {
         List<FeatureCollection<? extends FeatureType, ? extends Feature>> results = new ArrayList<>();
         final List<CountExecutor> totalCountExecutors = new ArrayList<>();
         try {
-            for (int i = 0; (i < queries.size()) && (count < maxFeatures); i++) {
+            for (int i = 0; (i < queries.size()) && ((i == 0) || (count < maxFeatures)); i++) {
 
                 Query query = queries.get(i);
                 try {
@@ -1227,11 +1227,13 @@ public class GetFeature {
 
         String wfsVersion = request.getVersion();
 
-        if (maxFeatures <= 0) {
+        if (maxFeatures < 0) {
             maxFeatures = org.geotools.api.data.Query.DEFAULT_MAX;
         }
 
-        if (filter == null) {
+        if (maxFeatures == 0) {
+            filter = Filter.EXCLUDE;
+        } else if (filter == null) {
             filter = Filter.INCLUDE;
         } else {
             // Gentlemen, we can rebuild it. We have the technology!

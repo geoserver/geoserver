@@ -1957,6 +1957,8 @@ public class MapMLDocumentBuilder {
         Double latitude = 0.0;
         Double longitude = 0.0;
         ReferencedEnvelope projectedBbox = this.projectedBox;
+        String transparent = this.transparent.map(Object::toString).orElse("true");
+
         ReferencedEnvelope geographicBox = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
         List<String> headerContent = getPreviewTemplates(MAPML_PREVIEW_HEAD_FTL, getFeatureTypes());
         for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadataList) {
@@ -2007,6 +2009,7 @@ public class MapMLDocumentBuilder {
                         escapeHtml4(proj),
                         styleName,
                         format,
+                        transparent,
                         cqlFilter,
                         useTiles,
                         useFeatures))
@@ -2102,6 +2105,7 @@ public class MapMLDocumentBuilder {
             String proj,
             String styleName,
             Optional<Object> format,
+            String transparent,
             String cqlFilter,
             boolean useTiles,
             boolean useFeatures) {
@@ -2116,6 +2120,7 @@ public class MapMLDocumentBuilder {
             kvp.put("CQL_FILTER", cqlFilter);
         }
         kvp.put("FORMAT", MAPML_MIME_TYPE);
+        kvp.put("TRANSPARENT", transparent);
         boolean skipAttributes = useTiles && useFeatures;
         String formatOptions =
                 MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":" + escapeHtml4((String) format.orElse(imageFormat)) + ";"

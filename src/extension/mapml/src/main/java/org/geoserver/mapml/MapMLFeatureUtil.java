@@ -437,6 +437,7 @@ public class MapMLFeatureUtil {
         kvp.put("WIDTH", String.valueOf(tileWidth));
         kvp.put("CRS", escapeHtml4(extractCRS(getMapRequest.getRawKvp())));
         kvp.put("FORMAT", "image/png");
+        kvp.put("TRANSPARENT", String.valueOf(getMapRequest.isTransparent()));
         kvp.put("SERVICE", "WMS");
         kvp.put("REQUEST", "GetMap");
         kvp.put("VERSION", "1.3.0");

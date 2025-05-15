@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.http.HttpStatus;
 import org.geoserver.rest.security.xml.AuthFilter;
 import org.geoserver.rest.security.xml.AuthFilterList;
+import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
@@ -57,9 +58,16 @@ public class AuthenticationFilterChainControllerTest extends GeoServerTestSuppor
 
     @Test
     public void testList() throws IOException {
-        ResponseEntity<AuthFilterList> result = controller.list();
+        ResponseEntity<RestWrapper<AuthFilterList>> result = controller.list();
         int status = result.getStatusCode().value();
         assertEquals("Expected an OK response", HttpStatus.SC_OK, status);
+        assertNotNull(Objects.requireNonNull(result.getBody()).getObject());
+        AuthFilterList authFilterList = (AuthFilterList) result.getBody().getObject();
+        authFilterList.getFilters().forEach(filter -> {
+            assertNotNull(filter.getId());
+            assertNotNull(filter.getName());
+            assertNotNull(filter.getConfig());
+        });
     }
 
     @Test
@@ -67,36 +75,28 @@ public class AuthenticationFilterChainControllerTest extends GeoServerTestSuppor
         String name = TEST_FILTER_PREFIX + "create-" + UUID.randomUUID();
         BasicAuthenticationFilterConfig newConfig = securityConfigFilterHelper.createBasciAuthFilterConfig(name, true);
 
-        ResponseEntity<AuthFilter> result = controller.get(newConfig.getName());
+        ResponseEntity<RestWrapper<AuthFilter>> result = controller.get(newConfig.getName());
         int status = result.getStatusCode().value();
         assertEquals("Expected an OK response", HttpStatus.SC_OK, status);
-        assertEquals(
-                "The config name should be the same",
-                newConfig.getName(),
-                Objects.requireNonNull(result.getBody()).getConfig().getName());
-        assertEquals(
-                "The config className should be the same",
-                newConfig.getClassName(),
-                result.getBody().getConfig().getClassName());
-        assertEquals(
-                "The config id should be the same",
-                newConfig.getId(),
-                result.getBody().getConfig().getId());
+        assertNotNull(Objects.requireNonNull(result.getBody()).getObject());
+        SecurityFilterConfig config = ((AuthFilter) result.getBody().getObject()).getConfig();
+        assertEquals("The config name should be the same", newConfig.getName(), config.getName());
+        assertEquals("The config className should be the same", newConfig.getClassName(), config.getClassName());
+        assertEquals("The config id should be the same", newConfig.getId(), config.getId());
 
-        BasicAuthenticationFilterConfig actualConfig =
-                (BasicAuthenticationFilterConfig) result.getBody().getConfig();
+        BasicAuthenticationFilterConfig actualConfig = (BasicAuthenticationFilterConfig) config;
         assertFalse("Remember me should be false", actualConfig.isUseRememberMe());
     }
 
     @Test
     public void testListReturnAllTheFilters() throws IOException {
-        ResponseEntity<AuthFilterList> result = controller.list();
+        ResponseEntity<RestWrapper<AuthFilterList>> result = controller.list();
         int status = result.getStatusCode().value();
         assertEquals("Expected a OK response", HttpStatus.SC_OK, status);
 
-        List<String> names = Objects.requireNonNull(result.getBody()).getFilters().stream()
-                .map(AuthFilter::getName)
-                .collect(Collectors.toList());
+        AuthFilterList list = (AuthFilterList)
+                Objects.requireNonNull(Objects.requireNonNull(result.getBody()).getObject());
+        List<String> names = list.getFilters().stream().map(AuthFilter::getName).collect(Collectors.toList());
         SortedSet<String> filters = getSecurityManager().listFilters();
         assertEquals("Expected all the filters to be returned", filters.size(), names.size());
         filters.stream()
@@ -118,22 +118,22 @@ public class AuthenticationFilterChainControllerTest extends GeoServerTestSuppor
         AuthFilter authFilter = new AuthFilter(newConfig);
         BasicAuthenticationFilterConfig actualConfig;
 
-        ResponseEntity<AuthFilter> postResult = controller.post(authFilter);
+        ResponseEntity<RestWrapper<AuthFilter>> postResult = controller.post(authFilter);
         int status = postResult.getStatusCode().value();
         assertEquals("Expected a CREATED response", HttpStatus.SC_CREATED, status);
-        assertNotNull(
-                "An Id should be returned",
-                Objects.requireNonNull(postResult.getBody()).getId());
-        actualConfig = (BasicAuthenticationFilterConfig) postResult.getBody().getConfig();
+        AuthFilter postFilter = (AuthFilter) Objects.requireNonNull(
+                Objects.requireNonNull(postResult.getBody()).getObject());
+        assertNotNull("An Id should be returned", postFilter.getId());
+        actualConfig = (BasicAuthenticationFilterConfig) postFilter.getConfig();
         assertFalse("Remember me should be false", actualConfig.isUseRememberMe());
 
-        ResponseEntity<AuthFilter> getResult = controller.get(authFilter.getName());
+        ResponseEntity<RestWrapper<AuthFilter>> getResult = controller.get(newConfig.getName());
         int getStatus = getResult.getStatusCode().value();
         assertEquals("Expected a OK response", HttpStatus.SC_OK, getStatus);
-        assertNotNull(
-                "An Id should be returned",
-                Objects.requireNonNull(getResult.getBody()).getId());
-        actualConfig = (BasicAuthenticationFilterConfig) getResult.getBody().getConfig();
+        AuthFilter getFilter = (AuthFilter) Objects.requireNonNull(
+                Objects.requireNonNull(getResult.getBody()).getObject());
+        assertNotNull("An Id should be returned", getFilter.getId());
+        actualConfig = (BasicAuthenticationFilterConfig) getFilter.getConfig();
         assertFalse("Remember me should be false", actualConfig.isUseRememberMe());
     }
 
@@ -177,32 +177,33 @@ public class AuthenticationFilterChainControllerTest extends GeoServerTestSuppor
         String name = TEST_FILTER_PREFIX + "create" + UUID.randomUUID();
         BasicAuthenticationFilterConfig newConfig = securityConfigFilterHelper.createBasciAuthFilterConfig(name, false);
         AuthFilter authFilter = new AuthFilter(newConfig);
-        AuthFilter createdFilter = controller.post(authFilter).getBody();
+        AuthFilter createdFilter =
+                (AuthFilter) controller.post(authFilter).getBody().getObject();
 
-        ResponseEntity<AuthFilter> result = controller.put(name, createdFilter);
+        ResponseEntity<RestWrapper<AuthFilter>> result = controller.put(name, createdFilter);
         int status = result.getStatusCode().value();
         assertEquals("Expected a CREATED response", HttpStatus.SC_OK, status);
-        assertNotNull(
-                "An Id should be returned",
-                Objects.requireNonNull(result.getBody()).getId());
+        AuthFilter putFilter = (AuthFilter)
+                Objects.requireNonNull(Objects.requireNonNull(result.getBody()).getObject());
+        assertNotNull("An Id should be returned", putFilter.getId());
 
-        ResponseEntity<AuthFilter> getResult = controller.get(createdFilter.getName());
+        ResponseEntity<RestWrapper<AuthFilter>> getResult = controller.get(newConfig.getName());
         int getStatus = getResult.getStatusCode().value();
         assertEquals("Expected a OK response", HttpStatus.SC_OK, getStatus);
-        assertNotNull(
-                "An Id should be returned",
-                Objects.requireNonNull(getResult.getBody()).getId());
-        BasicAuthenticationFilterConfig actualConfig =
-                (BasicAuthenticationFilterConfig) getResult.getBody().getConfig();
+        AuthFilter getFilter = (AuthFilter)
+                Objects.requireNonNull(Objects.requireNonNull(result.getBody()).getObject());
+        assertNotNull("An Id should be returned", getFilter.getId());
+        BasicAuthenticationFilterConfig actualConfig = (BasicAuthenticationFilterConfig) getFilter.getConfig();
         assertNotNull(actualConfig);
     }
 
     @Test
     public void testFind() throws IOException {
-        ResponseEntity<AuthFilter> result = controller.get("anonymous");
-        int status = result.getStatusCode().value();
+        ResponseEntity<RestWrapper<AuthFilter>> getResult = controller.get("anonymous");
+        int status = getResult.getStatusCode().value();
         assertEquals("Expected a OK response", HttpStatus.SC_OK, status);
-        AuthFilter body = result.getBody();
+        AuthFilter body = (AuthFilter) Objects.requireNonNull(
+                Objects.requireNonNull(getResult.getBody()).getObject());
         assertNotNull("A body should be returned", body);
         assertEquals("Expected the anonymous filter", "anonymous", body.getName());
         assertNotNull("Expected the id to be set", body.getId());

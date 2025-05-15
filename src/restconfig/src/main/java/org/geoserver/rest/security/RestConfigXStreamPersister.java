@@ -6,7 +6,6 @@ package org.geoserver.rest.security;
 
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
-import org.geoserver.rest.security.xml.AuthFilter;
 import org.geoserver.rest.security.xml.JaxbUser;
 
 /**
@@ -21,6 +20,5 @@ public class RestConfigXStreamPersister implements XStreamPersisterInitializer {
     public void init(XStreamPersister persister) {
         persister.getXStream().allowTypesByWildcard(new String[] {"org.geoserver.rest.security.xml.*"});
         persister.getXStream().alias("user", JaxbUser.class);
-        persister.getXStream().alias("authFilter", AuthFilter.class);
     }
 }

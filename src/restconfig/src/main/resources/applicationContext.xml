@@ -12,7 +12,6 @@
         http://www.springframework.org/schema/context/spring-context.xsd">
 
   <!-- <mvc:annotation-driven/> -->
-  <context:component-scan base-package="jaxb.org.geoserver.jaxb.rest"/>
   <context:component-scan base-package="org.geoserver.catalog.rest"/>
   <context:component-scan base-package="org.geoserver.security.rest"/>
   <context:component-scan base-package="org.geoserver.catalog.rest"/>

@@ -5,21 +5,16 @@
  */
 package org.geoserver.rest.security.xml;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.geoserver.security.config.SecurityFilterConfig;
 
-@XmlRootElement
-@JsonRootName(value = "authFilter")
+@XStreamAlias("AuthFilter")
 public class AuthFilter {
-    @XmlTransient
     private String id;
 
-    @XmlTransient
     private String name;
 
+    @XStreamAlias("config")
     private SecurityFilterConfig config;
 
     public AuthFilter() {}
@@ -30,7 +25,6 @@ public class AuthFilter {
         this.config = securityFilterConfig;
     }
 
-    @XmlElement(name = "id")
     public String getId() {
         return id;
     }
@@ -39,7 +33,6 @@ public class AuthFilter {
         this.id = id;
     }
 
-    @XmlElement(name = "name")
     public String getName() {
         return name;
     }

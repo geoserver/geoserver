@@ -6,10 +6,6 @@
 
 package org.geoserver.security.config;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlTransient;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
@@ -34,9 +30,7 @@ import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilterConfig
         implements SecurityAuthFilterConfig {
 
-    @XmlTransient
     private RoleSource roleSource;
-
     private String rolesHeaderAttribute;
     private String userGroupServiceName;
     private String roleConverterName;
@@ -47,13 +41,9 @@ public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilte
      *
      * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
      */
-    @XmlEnum
     public static enum PreAuthenticatedUserNameRoleSource implements RoleSource {
-        @XmlEnumValue("Header")
         Header,
-        @XmlEnumValue("UserGroupService")
         UserGroupService,
-        @XmlEnumValue("RoleService")
         RoleService;
 
         @Override
@@ -64,7 +54,6 @@ public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilte
 
     private static final long serialVersionUID = 1L;
 
-    @XmlElement
     public RoleSource getRoleSource() {
         return roleSource;
     }

@@ -5,8 +5,6 @@
  */
 package org.geoserver.security.config;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
@@ -41,15 +39,10 @@ public class J2eeAuthenticationBaseFilterConfig extends PreAuthenticatedUserName
      *
      * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
      */
-    @XmlEnum
     public static enum J2EERoleSource implements RoleSource {
-        @XmlEnumValue("Header")
         Header,
-        @XmlEnumValue("UserGroupService")
         UserGroupService,
-        @XmlEnumValue("RoleService")
         RoleService,
-        @XmlEnumValue("J2EE")
         J2EE;
 
         @Override

@@ -6,8 +6,6 @@
 
 package org.geoserver.security.config;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang3.SerializationUtils;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
@@ -31,8 +29,6 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
         className = other.getClassName();
     }
 
-    @XmlTransient
-    @JsonIgnore
     @Override
     public String getId() {
         return id;
@@ -43,8 +39,6 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
         this.id = id;
     }
 
-    @XmlTransient
-    @JsonIgnore
     /** @return the name of the service */
     @Override
     public String getName() {

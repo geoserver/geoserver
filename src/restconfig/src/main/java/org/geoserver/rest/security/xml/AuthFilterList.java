@@ -6,15 +6,12 @@
 
 package org.geoserver.rest.security.xml;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "authFilters")
-@JsonRootName(value = "authFilters")
 public class AuthFilterList {
+    @XStreamImplicit
     private List<AuthFilter> filters = new ArrayList<>();
 
     public AuthFilterList() {}
@@ -23,7 +20,6 @@ public class AuthFilterList {
         this.filters = jaxbAuthFilters;
     }
 
-    @XmlElement(name = "authFilter")
     public List<AuthFilter> getFilters() {
         return filters;
     }

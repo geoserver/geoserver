@@ -449,6 +449,30 @@ public class SearchTest extends OSEOTestSupport {
         assertFirstPageSentinel2Products(dom);
     }
 
+    @Test
+    public void testDispatcherCallBackAliasAndParamsCleanup() throws Exception {
+        Document dom = getAsDOM("oseo/search?parentIdentifier=SENTINEL2&searchTerms=&startIndex=&count=1&uid=&box="
+                + "&name=&lat=&lon=&radius=&geometry=&geoRelation="
+                + "&timeStart=&timeEnd=&timeRelation=&illuminationAzimuthAngle="
+                + "&illuminationZenithAngle=&illuminationElevationAngle=&resolution=&identifier="
+                + "&productQualityDegradationStatus=&archivingCenter="
+                + "&productionStatus=&acquisitionSubtype=&acquisitionType=&productQualityStatus="
+                + "&processorName=&orbitDirection=&processingCenter=&sensorMode=&processingMode="
+                + "&swathIdentifier=&creationDate=&modificationDate=&processingDate="
+                + "&availabilityTime=&acquisitionStation=&orbitNumber=&track=&frame="
+                + "&startTimeFromAscendingNode=&completionTimeFromAscendingNode="
+                // Note here we are repeating the parentIdentifier with empty value
+                // we are also requesting "atom" alias instead of the mimeType
+                + "&cloudCover=&snowCover=&parentIdentifier=&parentIdentifier=&httpAccept=atom");
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("19")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry/at:link[@rel='self' and  @type='application/atom+xml']/@href",
+                        equalTo(
+                                "http://localhost:8080/geoserver/oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fatom%2Bxml")));
+    }
+
     private void assertFirstPageSentinel2Products(Document dom) {
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("19")));
 

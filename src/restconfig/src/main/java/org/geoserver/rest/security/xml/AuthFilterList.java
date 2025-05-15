@@ -6,10 +6,12 @@
 
 package org.geoserver.rest.security.xml;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
 
+@XStreamAlias("authFilterList")
 public class AuthFilterList {
     @XStreamImplicit
     private List<AuthFilter> filters = new ArrayList<>();

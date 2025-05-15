@@ -25,11 +25,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 
-public class AuthenticationFilterChainControllerTest extends GeoServerTestSupport {
+public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
 
     private static final String TEST_FILTER_PREFIX = "TEST-";
 
-    private AuthenticationFilterChainController controller;
+    private AuthenticationFilterController controller;
     private SecurityConfigFilterHelper securityConfigFilterHelper;
 
     @Override
@@ -37,7 +37,7 @@ public class AuthenticationFilterChainControllerTest extends GeoServerTestSuppor
     public void oneTimeSetUp() throws Exception {
         setValidating(true);
         super.oneTimeSetUp();
-        controller = applicationContext.getBean(AuthenticationFilterChainController.class);
+        controller = applicationContext.getBean(AuthenticationFilterController.class);
         securityConfigFilterHelper = new SecurityConfigFilterHelper(getSecurityManager());
     }
 
@@ -137,7 +137,7 @@ public class AuthenticationFilterChainControllerTest extends GeoServerTestSuppor
         assertFalse("Remember me should be false", actualConfig.isUseRememberMe());
     }
 
-    @Test(expected = AuthenticationFilterChainController.MissingNameException.class)
+    @Test(expected = AuthenticationFilterController.MissingNameException.class)
     public void testCreate_BasicAuthenticationFilter_MissingName() throws SecurityConfigException, IOException {
         String name = TEST_FILTER_PREFIX + "create-" + UUID.randomUUID();
         BasicAuthenticationFilterConfig newConfig = securityConfigFilterHelper.createBasciAuthFilterConfig(name, false);
@@ -147,7 +147,7 @@ public class AuthenticationFilterChainControllerTest extends GeoServerTestSuppor
         controller.post(authFilter);
     }
 
-    @Test(expected = AuthenticationFilterChainController.DuplicateNameException.class)
+    @Test(expected = AuthenticationFilterController.DuplicateNameException.class)
     public void testCreate_BasicAuthenticationFilter_ErrorsWithTheSameName()
             throws SecurityConfigException, IOException {
         String name = TEST_FILTER_PREFIX + "create" + UUID.randomUUID();
@@ -162,7 +162,7 @@ public class AuthenticationFilterChainControllerTest extends GeoServerTestSuppor
         controller.post(authFilter);
     }
 
-    @Test(expected = AuthenticationFilterChainController.IdSetByServerException.class)
+    @Test(expected = AuthenticationFilterController.IdSetByServerException.class)
     public void testCreate_BasicAuthenticationFilter_IdSetByClient() throws SecurityConfigException, IOException {
         String name = TEST_FILTER_PREFIX + "create" + UUID.randomUUID();
         BasicAuthenticationFilterConfig newConfig = securityConfigFilterHelper.createBasciAuthFilterConfig(name, false);
@@ -177,14 +177,14 @@ public class AuthenticationFilterChainControllerTest extends GeoServerTestSuppor
         String name = TEST_FILTER_PREFIX + "create" + UUID.randomUUID();
         BasicAuthenticationFilterConfig newConfig = securityConfigFilterHelper.createBasciAuthFilterConfig(name, false);
         AuthFilter authFilter = new AuthFilter(newConfig);
-        AuthFilter createdFilter =
-                (AuthFilter) controller.post(authFilter).getBody().getObject();
+        AuthFilter createdFilter = (AuthFilter)
+                Objects.requireNonNull(controller.post(authFilter).getBody()).getObject();
 
         ResponseEntity<RestWrapper<AuthFilter>> result = controller.put(name, createdFilter);
         int status = result.getStatusCode().value();
         assertEquals("Expected a CREATED response", HttpStatus.SC_OK, status);
-        AuthFilter putFilter = (AuthFilter)
-                Objects.requireNonNull(Objects.requireNonNull(result.getBody()).getObject());
+        AuthFilter putFilter =
+                (AuthFilter) (Objects.requireNonNull(result.getBody()).getObject());
         assertNotNull("An Id should be returned", putFilter.getId());
 
         ResponseEntity<RestWrapper<AuthFilter>> getResult = controller.get(newConfig.getName());

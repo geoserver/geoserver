@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestBaseController;
-import org.geoserver.rest.catalog.SequentialExecutionController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.security.xml.AuthFilter;
 import org.geoserver.rest.security.xml.AuthFilterList;
@@ -44,17 +43,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController("authenticationFilterChainController")
-@ControllerAdvice
+@ControllerAdvice(assignableTypes = {AuthenticationFilterController.class})
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/authFilters")
-public class AuthenticationFilterChainController extends RestBaseController implements SequentialExecutionController {
-    private static final Logger LOGGER = Logger.getLogger(AuthenticationFilterChainController.class.getName());
+public class AuthenticationFilterController extends RestBaseController {
+    private static final Logger LOGGER = Logger.getLogger(AuthenticationFilterController.class.getName());
 
     private final GeoServerSecurityManager securityManager;
     private final FilterConfigValidator filterConfigValidator;
 
     private static final Set<String> DELETE_BLACK_LIST = Set.of("anonymous", "basic", "form", "rememberme");
 
-    public AuthenticationFilterChainController(GeoServerSecurityManager securityManager) {
+    public AuthenticationFilterController(GeoServerSecurityManager securityManager) {
         this.securityManager = securityManager;
         this.filterConfigValidator = new FilterConfigValidator(securityManager);
     }
@@ -63,7 +62,7 @@ public class AuthenticationFilterChainController extends RestBaseController impl
     /// REST API methods
 
     @GetMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthFilterList>> list() throws IOException {
+    public ResponseEntity<RestWrapper<AuthFilterList>> list() {
         AuthFilterList result = loadAuthFilters();
         return ResponseEntity.ok(wrapObject(result, AuthFilterList.class));
     }
@@ -73,8 +72,7 @@ public class AuthenticationFilterChainController extends RestBaseController impl
     @GetMapping(
             value = "/{filterName}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthFilter>> get(@PathVariable("filterName") String filterName)
-            throws IOException {
+    public ResponseEntity<RestWrapper<AuthFilter>> get(@PathVariable("filterName") String filterName) {
         AuthFilter authFilter = loadAuthFilter(filterName);
         return ResponseEntity.ok(wrapObject(authFilter, AuthFilter.class));
     }
@@ -125,21 +123,22 @@ public class AuthenticationFilterChainController extends RestBaseController impl
     /// ///////////////////////////////////////////////////////////////////////
     /// Controller Advice
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         persister.getXStream().allowTypesByWildcard(new String[] {
             "org.geoserver.security.**", "org.geoserver.security.config.**", "org.geoserver.rest.security.xml.**"
         });
 
-        persister.getXStream().alias("AuthFilterList", AuthFilterList.class);
-        persister.getXStream().alias("AuthFilter", AuthFilter.class);
+        persister.getXStream().alias("authFilterList", AuthFilterList.class);
+        persister.getXStream().alias("authFilter", AuthFilter.class);
         persister.getXStream().processAnnotations(new Class[] {AuthFilter.class, AuthFilterList.class});
 
         super.configurePersister(persister, converter);
     }
 
     @Override
-    /**
+    /*
      * Any subclass that implements {@link #configurePersister(XStreamPersister, XStreamMessageConverter)} and require
      * this configuration for reading objects from incoming requests should override this method to return true when
      * called from the appropriate controller, and should also be annotated with
@@ -147,40 +146,43 @@ public class AuthenticationFilterChainController extends RestBaseController impl
      */
     public boolean supports(
             MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
-        if (AuthFilter.class.isAssignableFrom(methodParameter.getParameterType())) {
-            return true;
-        } else if (AuthFilterList.class.isAssignableFrom(methodParameter.getParameterType())) {
-            return true;
-        }
-
-        return false;
+        return AuthFilter.class.isAssignableFrom(methodParameter.getParameterType())
+                || AuthFilterList.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     /// ///////////////////////////////////////////////////////////////////////
     /// Internal logic
 
-    protected AuthFilterList loadAuthFilters() throws IOException {
-        Set<String> authFilterNames = securityManager.listFilters();
-        List<AuthFilter> jaxbAuthFilters = new ArrayList<>();
-        for (String filterName : authFilterNames) {
-            SecurityFilterConfig securityFilterConfig = securityManager.loadFilterConfig(filterName, true);
-            if (securityFilterConfig != null) {
-                jaxbAuthFilters.add(new AuthFilter(securityFilterConfig));
+    protected AuthFilterList loadAuthFilters() {
+        try {
+            Set<String> authFilterNames = securityManager.listFilters();
+            List<AuthFilter> jaxbAuthFilters = new ArrayList<>();
+            for (String filterName : authFilterNames) {
+                SecurityFilterConfig securityFilterConfig = securityManager.loadFilterConfig(filterName, true);
+                if (securityFilterConfig != null) {
+                    jaxbAuthFilters.add(new AuthFilter(securityFilterConfig));
+                }
             }
+            return new AuthFilterList(jaxbAuthFilters);
+        } catch (IOException ex) {
+            throw new IllegalStateException("Cannot load provider filters", ex);
         }
-        return new AuthFilterList(jaxbAuthFilters);
     }
 
-    protected AuthFilter loadAuthFilter(String filterName) throws IOException {
-        SecurityFilterConfig authFilter = securityManager.loadFilterConfig(filterName, true);
-        if (authFilter == null) {
-            LOGGER.warning(format("Cannot find %s because it does not exist", filterName));
-            throw new IllegalArgumentException(format("Cannot find %s because it does not exist", filterName));
+    protected AuthFilter loadAuthFilter(String filterName) {
+        try {
+            SecurityFilterConfig authFilter = securityManager.loadFilterConfig(filterName, true);
+            if (authFilter == null) {
+                LOGGER.warning(format("Cannot find %s because it does not exist", filterName));
+                throw new IllegalArgumentException(format("Cannot find %s because it does not exist", filterName));
+            }
+            return new AuthFilter(authFilter);
+        } catch (IOException ex) {
+            throw new IllegalStateException("Cannot load provider filter", ex);
         }
-        return new AuthFilter(authFilter);
     }
 
-    protected AuthFilter saveAuthFilter(AuthFilter newFilter) throws IOException, SecurityConfigException {
+    protected AuthFilter saveAuthFilter(AuthFilter newFilter) {
         if (newFilter.getId() != null) {
             LOGGER.warning(format(
                     "Cannot create the filter %s because client has provided an id %s",
@@ -194,64 +196,88 @@ public class AuthenticationFilterChainController extends RestBaseController impl
             throw new MissingNameException();
         }
 
-        if (securityManager.loadFilterConfig(newFilter.getName(), true) != null) {
-            LOGGER.warning(format(
-                    "Cannot create the filter %s because a filter with the name already exists", newFilter.getName()));
-            throw new DuplicateNameException(newFilter.getName());
+        try {
+            if (securityManager.loadFilterConfig(newFilter.getName(), true) != null) {
+                LOGGER.warning(format(
+                        "Cannot create the filter %s because a filter with the name already exists",
+                        newFilter.getName()));
+                throw new DuplicateNameException(newFilter.getName());
+            }
+        } catch (IOException ex) {
+            throw new IllegalStateException("Cannot access filter provider config", ex);
         }
 
-        filterConfigValidator.validateFilterConfig(newFilter.getConfig());
-        newFilter.getConfig().setName(newFilter.getName());
-        securityManager.saveFilter(newFilter.getConfig());
-        securityManager.reload();
+        try {
+            filterConfigValidator.validateFilterConfig(newFilter.getConfig());
+            newFilter.getConfig().setName(newFilter.getName());
 
-        SecurityFilterConfig authFilter = securityManager.loadFilterConfig(newFilter.getName(), true);
-        return new AuthFilter(authFilter);
+            securityManager.saveFilter(newFilter.getConfig());
+            securityManager.reload();
+        } catch (IOException | SecurityConfigException ex) {
+            throw new IllegalStateException("Cannot save filter provider config" + newFilter.getName(), ex);
+        }
+
+        try {
+            SecurityFilterConfig authFilter = securityManager.loadFilterConfig(newFilter.getName(), true);
+            return new AuthFilter(authFilter);
+        } catch (IOException ex) {
+            throw new IllegalStateException(
+                    "Cannot access filter provider  " + newFilter.getName() + " it has been saved", ex);
+        }
     }
 
-    protected AuthFilter updateAuthFilter(String filterName, AuthFilter authFilterRequest)
-            throws IOException, SecurityConfigException {
+    protected AuthFilter updateAuthFilter(String filterName, AuthFilter authFilterRequest) {
         if (!filterName.equals(authFilterRequest.getName())) {
             LOGGER.warning(format(
                     "Cannot modify the config %s because the name %s in the body does not match",
                     filterName, authFilterRequest.getName()));
             throw new NameMismatchException(filterName, authFilterRequest.getName());
         }
-        SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, true);
-        if (filter == null) {
-            LOGGER.warning(format("Cannot update %s because it does not exist", filterName));
-            throw new IllegalArgumentException(format("Cannot update %s because it does not exist", filterName));
+
+        try {
+            SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, true);
+            if (filter == null) {
+                LOGGER.warning(format("Cannot update %s because it does not exist", filterName));
+                throw new IllegalArgumentException(format("Cannot update %s because it does not exist", filterName));
+            }
+            if (authFilterRequest.getId() == null) {
+                LOGGER.warning(format(
+                        "Cannot modify the config with %s because the id %s is not set",
+                        authFilterRequest.getId(), filter.getId()));
+                throw new IdNotSet(authFilterRequest.getId(), filter.getId());
+            }
+
+            filterConfigValidator.validateFilterConfig(authFilterRequest.getConfig());
+            authFilterRequest.getConfig().setName(authFilterRequest.getName());
+            authFilterRequest.getConfig().setId(authFilterRequest.getId());
+
+            securityManager.saveFilter(authFilterRequest.getConfig());
+            securityManager.reload();
+
+            return new AuthFilter(securityManager.loadFilterConfig(filterName, true));
+        } catch (IOException | SecurityConfigException ex) {
+            throw new IllegalStateException("Cannot access filter provider configs", ex);
         }
-        if (authFilterRequest.getId() == null) {
-            LOGGER.warning(format(
-                    "Cannot modify the config with %s because the id %s is not set",
-                    authFilterRequest.getId(), filter.getId()));
-            throw new IdNotSet(authFilterRequest.getId(), filter.getId());
-        }
-
-        filterConfigValidator.validateFilterConfig(authFilterRequest.getConfig());
-        authFilterRequest.getConfig().setName(authFilterRequest.getName());
-        authFilterRequest.getConfig().setId(authFilterRequest.getId());
-
-        securityManager.saveFilter(authFilterRequest.getConfig());
-        securityManager.reload();
-
-        return new AuthFilter(securityManager.loadFilterConfig(filterName, true));
     }
 
-    protected AuthFilter removeAuthFilter(String filterName) throws IOException, SecurityConfigException {
+    protected AuthFilter removeAuthFilter(String filterName) {
         if (DELETE_BLACK_LIST.contains(filterName)) {
             LOGGER.warning(format("Cannot delete %s because it is a required authentication filter", filterName));
             throw new DeleteBlackListException(filterName);
         }
-        SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, true);
-        if (filter == null) {
-            LOGGER.warning(format("Cannot delete %s because it does not exist", filterName));
-            return null;
+
+        try {
+            SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, true);
+            if (filter == null) {
+                LOGGER.warning(format("Cannot delete %s because it does not exist", filterName));
+                return null;
+            }
+            securityManager.removeFilter(filter);
+            securityManager.reload();
+            return new AuthFilter(securityManager.loadFilterConfig(filterName, true));
+        } catch (IOException | SecurityConfigException ex) {
+            throw new IllegalStateException("Cannot access filter provider config " + filterName, ex);
         }
-        securityManager.removeFilter(filter);
-        securityManager.reload();
-        return new AuthFilter(filter);
     }
 
     /// ///////////////////////////////////////////////////////////////////////

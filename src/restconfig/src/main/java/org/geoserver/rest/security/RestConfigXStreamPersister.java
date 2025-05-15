@@ -4,9 +4,11 @@
  */
 package org.geoserver.rest.security;
 
+import java.util.logging.Logger;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
 import org.geoserver.rest.security.xml.JaxbUser;
+import org.geotools.util.logging.Logging;
 
 /**
  * XStreamPersisterInitializer implementation for gs-rest-config
@@ -16,8 +18,11 @@ import org.geoserver.rest.security.xml.JaxbUser;
 public class RestConfigXStreamPersister implements XStreamPersisterInitializer {
 
     /** logging instance */
+    static Logger LOGGER = Logging.getLogger(RestConfigXStreamPersister.class);
+
     @Override
     public void init(XStreamPersister persister) {
+
         persister.getXStream().allowTypesByWildcard(new String[] {"org.geoserver.rest.security.xml.*"});
         persister.getXStream().alias("user", JaxbUser.class);
     }

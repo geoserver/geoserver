@@ -8,10 +8,10 @@ package org.geoserver.rest.security.xml;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.geoserver.security.config.SecurityFilterConfig;
 
-@XStreamAlias("AuthFilter")
+@XStreamAlias("authFilter")
 public class AuthFilter {
     private String id;
-
+    private String className;
     private String name;
 
     @XStreamAlias("config")
@@ -20,9 +20,11 @@ public class AuthFilter {
     public AuthFilter() {}
 
     public AuthFilter(SecurityFilterConfig securityFilterConfig) {
-        this.id = securityFilterConfig.getId();
+
         this.name = securityFilterConfig.getName();
+        this.className = securityFilterConfig.getClass().getName();
         this.config = securityFilterConfig;
+        this.id = securityFilterConfig.getId();
     }
 
     public String getId() {
@@ -39,6 +41,14 @@ public class AuthFilter {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     public SecurityFilterConfig getConfig() {

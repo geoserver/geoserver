@@ -45,7 +45,7 @@ public abstract class ImageAjaxLink<T> extends Panel {
             }
         };
         add(link);
-        link.add(image = new Image("image", imageRef));
+        link.add(image = new CachingImage("image", imageRef));
         link.add(new Label("label", label));
     }
 

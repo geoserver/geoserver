@@ -11,7 +11,6 @@ import static org.geoserver.web.data.store.StoreProvider.WORKSPACE;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -25,6 +24,7 @@ import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.ConfirmationAjaxLink;
 import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GSModalWindow;
@@ -73,7 +73,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
             PackageResourceReference storeIcon = icons.getStoreIcon(storeInfo);
 
             Fragment f = new Fragment(id, "iconFragment", this);
-            f.add(new Image("storeIcon", storeIcon));
+            f.add(new CachingImage("storeIcon", storeIcon));
 
             return f;
         } else if (property == WORKSPACE) {
@@ -89,7 +89,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
                 enabledIcon = icons.getDisabledIcon();
             }
             Fragment f = new Fragment(id, "iconFragment", this);
-            f.add(new Image("storeIcon", enabledIcon));
+            f.add(new CachingImage("storeIcon", enabledIcon));
             return f;
         } else if (property == StoreProvider.MODIFIED_TIMESTAMP) {
             return new DateTimeLabel(id, StoreProvider.MODIFIED_TIMESTAMP.getModel(itemModel));

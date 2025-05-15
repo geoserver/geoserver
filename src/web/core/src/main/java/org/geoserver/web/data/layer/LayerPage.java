@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
@@ -38,6 +37,7 @@ import org.geoserver.web.data.store.CoverageStoreEditPage;
 import org.geoserver.web.data.store.DataAccessEditPage;
 import org.geoserver.web.data.store.WMSStoreEditPage;
 import org.geoserver.web.data.store.WMTSStoreEditPage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -63,7 +63,7 @@ public class LayerPage extends GeoServerSecuredPage {
                     String id, IModel<LayerInfo> itemModel, Property<LayerInfo> property) {
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
-                    f.add(new Image("layerIcon", icons.getSpecificLayerIcon(itemModel.getObject())));
+                    f.add(new CachingImage("layerIcon", icons.getSpecificLayerIcon(itemModel.getObject())));
                     return f;
                 } else if (property == STORE) {
                     return storeLink(id, itemModel);
@@ -76,7 +76,7 @@ public class LayerPage extends GeoServerSecuredPage {
                     boolean enabled = layerInfo.enabled();
                     PackageResourceReference icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
                     Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
-                    f.add(new Image("layerIcon", icon));
+                    f.add(new CachingImage("layerIcon", icon));
                     return f;
                 } else if (property == SRS) {
                     return new Label(id, SRS.getModel(itemModel));

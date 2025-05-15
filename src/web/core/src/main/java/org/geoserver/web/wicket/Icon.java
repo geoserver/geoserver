@@ -36,8 +36,7 @@ public class Icon extends Panel {
 
     /** Constructs an Icon from a model. */
     public Icon(String id, IModel<?> model) {
-        super(id);
-        add(new Image("img", model));
+        this(id, model, null);
     }
 
     /**
@@ -46,6 +45,12 @@ public class Icon extends Panel {
      */
     public Icon(String id, IModel<?> model, IModel<String> title) {
         super(id);
-        add(new Image("img", model).add(new AttributeModifier("title", title)));
+        Image image = model.getObject() instanceof PackageResourceReference
+                ? new CachingImage("img", model)
+                : new Image("img", model);
+        if (title != null) {
+            image.add(new AttributeModifier("title", title));
+        }
+        add(image);
     }
 }

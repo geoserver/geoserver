@@ -401,6 +401,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         JDBCDataStore jdbcDataStore = null;
         DataStoreMetadata dsm = null;
         try {
+            ds = getCatalog().getResourcePool().clone(ds, true);
             jdbcDataStore = factory.createDataStore(ds.getConnectionParameters());
             DataStoreMetadataConfig config = new JdbcDataStoreMetadataConfig(
                     jdbcDataStore, ds.getConnectionParameters().get("passwd").toString());

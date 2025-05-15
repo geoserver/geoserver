@@ -1081,13 +1081,18 @@ public class MapMLDocumentBuilder {
             if (styleInfo != null) {
                 style = styleInfo.getStyle();
             } else {
-                // if the style is null, get the default style from the layer
-                LayerInfo layerInfo = (LayerInfo) publishedInfos.get(i);
-                if (layerInfo != null) {
-                    StyleInfo defaultStyle = layerInfo.getDefaultStyle();
-                    style = defaultStyle.getStyle();
-                } else {
-                    LOGGER.log(Level.INFO, "Could not find style for layer " + publishedInfos.get(i));
+                PublishedInfo publishedInfo = publishedInfos.get(i);
+                if (publishedInfo instanceof LayerInfo) {
+                    // if the style is null, get the default style from the layer
+                    LayerInfo layerInfo = (LayerInfo) publishedInfos.get(i);
+                    if (layerInfo != null) {
+                        StyleInfo defaultStyle = layerInfo.getDefaultStyle();
+                        style = defaultStyle.getStyle();
+                    } else {
+                        LOGGER.log(Level.INFO, "Could not find style for layer " + publishedInfos.get(i));
+                    }
+                } else if (publishedInfo instanceof LayerGroupInfo) {
+                    getDefaultLayerGroupStyles((LayerGroupInfo) publishedInfos.get(i), cssStyles);
                 }
             }
             if (style != null) {

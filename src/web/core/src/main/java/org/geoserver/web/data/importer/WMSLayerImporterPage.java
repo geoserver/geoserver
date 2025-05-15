@@ -13,7 +13,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -31,6 +30,7 @@ import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.importer.LayerResource.LayerStatus;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -82,7 +82,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
                     return new Label(id, property.getModel(itemModel));
                 } else if (property == WMSLayerProvider.STATUS) {
                     Fragment f = new Fragment(id, "labelIcon", WMSLayerImporterPage.this);
-                    f.add(new Image("icon", new IconModel(itemModel)));
+                    f.add(new CachingImage("icon", new IconModel(itemModel)));
                     f.add(new Label("label", new StatusModel(itemModel)));
                     return f;
                 } else if (property == WMSLayerProvider.ACTION) {

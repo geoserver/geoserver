@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -30,7 +29,6 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -39,7 +37,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.resource.DynamicImageResource;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
@@ -47,6 +44,7 @@ import org.geoserver.gwc.web.GWCIconFactory;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -89,8 +87,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", CachedLayersPage.this);
-                    DynamicImageResource dynamicImage = new DelayedImageResource(itemModel);
-                    f.add(new Image("layerIcon", dynamicImage));
+                    TileLayer layer = itemModel.getObject();
+                    PackageResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
+                    f.add(new CachingImage("layerIcon", layerIcon));
                     return f;
                 } else if (property == NAME) {
                     return nameLink(id, itemModel);
@@ -110,7 +109,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                         icon = GWCIconFactory.getDisabledIcon();
                     }
                     Fragment f = new Fragment(id, "iconFragment", CachedLayersPage.this);
-                    f.add(new Image("layerIcon", icon));
+                    f.add(new CachingImage("layerIcon", icon));
                     return f;
                 } else if (property == PREVIEW_LINKS) {
                     return previewLinks(id, itemModel);
@@ -318,27 +317,6 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         header.add(new TruncateAllLink("clearGwcLink"));
 
         return header;
-    }
-
-    private static class DelayedImageResource extends DynamicImageResource {
-        private final IModel<TileLayer> itemModel;
-
-        public DelayedImageResource(IModel<TileLayer> itemModel) {
-            super("image/png");
-            this.itemModel = itemModel;
-        }
-
-        @Override
-        protected byte[] getImageData(Attributes attributes) {
-            TileLayer layer = itemModel.getObject();
-            PackageResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
-            try {
-                return IOUtils.toByteArray(
-                        layerIcon.getResource().getResourceStream().getInputStream());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     private class CachedLayerSelectionRemovalLink extends AjaxLink<TileLayer> {

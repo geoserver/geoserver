@@ -15,7 +15,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -28,6 +27,7 @@ import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.web.GWCIconFactory;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -68,7 +68,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                     Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
                     TileLayer layer = itemModel.getObject();
                     PackageResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
-                    f.add(new Image("layerIcon", layerIcon));
+                    f.add(new CachingImage("layerIcon", layerIcon));
                     return f;
                 } else if (property == NAME) {
                     return nameLink(id, itemModel);
@@ -82,7 +82,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                         icon = GWCIconFactory.getDisabledIcon();
                     }
                     Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
-                    f.add(new Image("layerIcon", icon));
+                    f.add(new CachingImage("layerIcon", icon));
                     return f;
                 }
                 throw new IllegalArgumentException("Don't know a property named " + property.getName());

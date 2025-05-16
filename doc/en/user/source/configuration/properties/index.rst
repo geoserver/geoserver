@@ -442,6 +442,20 @@ GeoServer Property Reference
      - x
      - x
 
+   * - GEOSERVER_DATA_DIR_LOADER_ENABLED
+
+       :ref:`Data directory loader <datadirectory_settings>`
+     - x
+     - 
+     - x
+
+   * - GEOSERVER_DATA_DIR_LOADER_THREADS
+
+       :ref:`Data directory loader <datadirectory_settings>`
+     - x
+     - 
+     - x
+
 .. _application_properties_setting:
 
 Setting Application property

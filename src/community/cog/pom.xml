@@ -38,7 +38,6 @@
     <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-cog-reader</artifactId>
-      <version>${imageio-ext.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

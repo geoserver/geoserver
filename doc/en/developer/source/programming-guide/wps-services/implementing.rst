@@ -46,19 +46,32 @@ For this example the project will be called "hello_wps".
        <groupId>org.geoserver</groupId>  
        <artifactId>hello_wps</artifactId>
        <packaging>jar</packaging>
-       <version>2.8-SNAPSHOT</version>
+       <version>2.28-SNAPSHOT</version>
        <name>hello_wps</name>
        
        <properties>
          <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-         <gt.version>14-SNAPSHOT</gt.version>  <!-- change to GeoTools version -->
-         <gs.version>2.8-SNAPSHOT</gs.version>  <!-- change to GeoServer version -->
+         <gt.version>34-SNAPSHOT</gt.version>  <!-- change to GeoTools version -->
+         <gs.version>2.28-SNAPSHOT</gs.version>  <!-- change to GeoServer version -->
        </properties>
+
+       <dependencyManagement>
+         <dependencies>
+           <!-- Import the GeoTools BOM -->
+           <dependency>
+             <groupId>org.geotools</groupId>
+             <artifactId>gt-bom</artifactId>
+             <version>${gt.version}</version>
+             <type>pom</type>
+             <scope>import</scope>
+           </dependency>
+         </dependencies>
+       </dependencyManagement>
+
        <dependencies>
          <dependency>
            <groupId>org.geotools</groupId>
            <artifactId>gt-process</artifactId>
-           <version>${gt.version}</version>
          </dependency>
          <dependency>
            <groupId>org.geoserver.extension</groupId>
@@ -98,19 +111,30 @@ For this example the project will be called "hello_wps".
         </plugins>
        </build>
 
-        <repositories>
-            <repository>
-                <id>boundless</id>
-                <name>Boundless Maven Repository</name>
-                <url>https://repo.boundlessgeo.com/main</url>
-            </repository>
-	    <repository>
-                <id>osgeo</id>
-                <name>Open Source Geospatial Foundation Repository</name>
-                <url>https://download.osgeo.org/webdav/geotools</url>
-            </repository>
-        </repositories>
-
+       <repositories>
+         <repository>
+           <releases>
+             <enabled>true</enabled>
+           </releases>
+           <snapshots>
+             <enabled>false</enabled>
+           </snapshots>
+           <id>osgeo-releases</id>
+           <name>OSGeo Nexus Release Repository</name>
+           <url>https://repo.osgeo.org/repository/release/</url>
+         </repository>
+         <repository>
+           <releases>
+             <enabled>false</enabled>
+           </releases>
+           <snapshots>
+             <enabled>true</enabled>
+           </snapshots>
+           <id>osgeo-snapshots</id>
+           <name>OSGeo Nexus Snapshot Repository</name>
+           <url>https://repo.osgeo.org/repository/snapshot/</url>
+         </repository>
+       </repositories>
     </project>  
 
 #. Create the directory ``src/main/java`` under the root of the new module::

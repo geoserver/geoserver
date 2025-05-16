@@ -444,14 +444,14 @@ GeoServer Property Reference
 
    * - GEOSERVER_DATA_DIR_LOADER_ENABLED
 
-       :doc:`/datadirectory/settings`
+       :doc:`/datadirectory/setting`
      - x
      - 
      - x
 
    * - GEOSERVER_DATA_DIR_LOADER_THREADS
 
-       :doc:`/datadirectory/settings`
+       :doc:`/datadirectory/setting`
      - x
      - 
      - x

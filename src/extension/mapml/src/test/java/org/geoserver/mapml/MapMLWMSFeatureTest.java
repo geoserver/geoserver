@@ -703,7 +703,6 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 .srs("EPSG:3857")
                 .feature(true)
                 .getAsString();
-
         assertTrue("MapML response contains a map tile", response.contains("map-tile col=\"65536\" row=\"65535\""));
     }
 

@@ -901,18 +901,18 @@ public class MapMLDocumentBuilder {
         meta.setContent(projType.value());
         List<Link> links = head.getLinks();
 
-        String licenseUrl = layerMeta.get(MapMLConstants.LICENSE_LINK, String.class);
+        String licenseLink = layerMeta.get(MapMLConstants.LICENSE_LINK, String.class);
         String licenseTitle = layerMeta.get(MapMLConstants.LICENSE_TITLE, String.class);
-        if (licenseUrl != null || licenseTitle != null) {
-            Link licenseLink = new Link();
-            licenseLink.setRel(RelType.LICENSE);
+        if (licenseLink != null || licenseTitle != null) {
+            Link titleLink = new Link();
+            titleLink.setRel(RelType.LICENSE);
             if (licenseTitle != null) {
-                licenseLink.setTitle(licenseTitle);
+                titleLink.setTitle(licenseTitle);
             }
-            if (licenseUrl != null) {
-                licenseLink.setHref(licenseUrl);
+            if (licenseLink != null) {
+                titleLink.setHref(licenseLink);
             }
-            links.add(licenseLink);
+            links.add(titleLink);
         }
         // only create style links for single layer requests
         if (mapMLLayerMetadataList.size() == 1 && layers.size() == 1) {
@@ -953,13 +953,6 @@ public class MapMLDocumentBuilder {
                 }
             } else {
                 LayerGroupInfo layerGroupInfo = mapMLLayerMetadata.getLayerGroupInfo();
-                Link legendLink = new Link();
-                legendLink.setRel(RelType.LEGEND);
-                String legendUrl = mapMLLayerMetadata.getLegendURL();
-                legendLink.setHref(legendUrl);
-                if (legendUrl != null && !legendUrl.isBlank()) {
-                    links.add(legendLink);
-                }
                 String effectiveStyleName = mapMLLayerMetadata.getStyleName();
                 if (effectiveStyleName == null || effectiveStyleName.isEmpty()) {
                     effectiveStyleName = "default-style-" + mapMLLayerMetadata.getLayerName();

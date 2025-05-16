@@ -85,13 +85,11 @@
       <!-- Match jackson version used by GeoServer -->
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-smile</artifactId>
-      <version>${jackson2.version}</version>
     </dependency>
     <dependency>
       <!-- Match jackson version used by GeoServer -->
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>${jackson2.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

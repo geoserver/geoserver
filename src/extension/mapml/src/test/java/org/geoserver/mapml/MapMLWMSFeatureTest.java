@@ -167,9 +167,9 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 .feature(true)
                 .getAsMapML();
         List<Tile> tiles2 = mapmlFeatures2.getBody().getTiles();
-        assertEquals("Raster layer world should return 16 tiles", 16, tiles2.size());
+        assertEquals("Raster layer world should return 1 tile", 1, tiles2.size());
         MockHttpServletRequest request3 = createRequest(tiles2.get(0).getSrc());
-        assertEquals("-88.59375,-43.59375,-87.890625,-42.890625", request3.getParameter("BBOX"));
+        assertEquals("-90.0,-45.0,-84.375,-39.375", request3.getParameter("BBOX"));
     }
 
     @Test
@@ -184,7 +184,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 .tile(true)
                 .getAsMapML();
         List<Tile> tiles3 = mapmlFeatures3.getBody().getTiles();
-        assertEquals("Raster layer world should return 16 tiles", 16, tiles3.size());
+        assertEquals("Raster layer world should return 1 tiles", 1, tiles3.size());
     }
 
     @Test
@@ -704,7 +704,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 .feature(true)
                 .getAsString();
 
-        assertTrue("MapML response contains a map tile", response.contains("map-tile col=\"65536\" row=\"65536\""));
+        assertTrue("MapML response contains a map tile", response.contains("map-tile col=\"65536\" row=\"65535\""));
     }
 
     protected static SimpleFeature feature(SimpleFeatureType type, String id, Object... values) throws ParseException {

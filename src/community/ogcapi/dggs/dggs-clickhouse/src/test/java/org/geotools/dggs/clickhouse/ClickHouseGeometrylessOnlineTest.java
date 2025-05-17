@@ -21,7 +21,7 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.JDBCGeometrylessOnlineTest;
 import org.geotools.jdbc.JDBCGeometrylessTestSetup;
 
-@SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") // JUnit 3 tests here
+@SuppressWarnings("PMD.UnitTestShouldUseTestAnnotation") // JUnit 3 tests here
 public class ClickHouseGeometrylessOnlineTest extends JDBCGeometrylessOnlineTest {
     @Override
     protected JDBCGeometrylessTestSetup createTestSetup() {

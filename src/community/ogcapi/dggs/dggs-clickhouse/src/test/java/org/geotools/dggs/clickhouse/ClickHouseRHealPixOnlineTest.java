@@ -45,7 +45,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Polygon;
 
-@SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") // JUnit 3 tests here
+@SuppressWarnings("PMD.UnitTestShouldUseTestAnnotation") // JUnit 3 tests here
 public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
 
     private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();

@@ -1713,7 +1713,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         return doc;
     }
 
-    @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation")
+    @SuppressWarnings("PMD.UnitTestShouldUseTestAnnotation")
     public Mapml testLayersAndGroupsMapML(Object l, Locale locale) throws Exception {
 
         MockRequestResponse requestResponse =

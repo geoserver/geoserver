@@ -14,7 +14,6 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -41,6 +40,7 @@ import org.geoserver.web.data.importer.WMTSLayerImporterPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.data.store.StoreListChoiceRenderer;
 import org.geoserver.web.data.store.StoreListModel;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -120,7 +120,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                     if (resource.isPublished()) {
                         PackageResourceReference icon = icons.getEnabledIcon();
                         Fragment f = new Fragment(id, "iconFragment", selectLayers);
-                        f.add(new Image("layerIcon", icon));
+                        f.add(new CachingImage("layerIcon", icon));
                         return f;
                     } else {
                         return new Label(id);

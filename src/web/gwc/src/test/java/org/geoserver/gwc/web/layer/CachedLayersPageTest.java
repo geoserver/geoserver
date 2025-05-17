@@ -5,6 +5,12 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -177,5 +183,19 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("dialog:dialog:modal:overlay:dialog:content:content:form:submit", true);
 
         tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testCachingImages() {
+        // test that the "?antiCache=###" query string is not appended to the img src
+        tester.startPage(CachedLayersPage.class);
+        tester.assertRenderedPage(CachedLayersPage.class);
+        tester.clickLink("table:navigatorBottom:navigator:next", true);
+        List<TagTester> images = TagTester.createTags(
+                tester.getLastResponseAsString(), tag -> tag.getName().equalsIgnoreCase("img"), false);
+        assertThat(images, not(empty()));
+        images.stream()
+                .map(image -> image.getAttribute("src"))
+                .forEach(src -> assertThat(src, allOf(containsString("/img/icons/"), endsWith(".png"))));
     }
 }

@@ -8,7 +8,6 @@ package org.geoserver.web.data.layergroup;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
@@ -20,6 +19,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -67,7 +67,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
                             boolean enabled = layerGroupInfo.isEnabled();
                             PackageResourceReference icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
                             Fragment f = new Fragment(id, "iconFragment", LayerGroupPage.this);
-                            f.add(new Image("layerIcon", icon));
+                            f.add(new CachingImage("layerIcon", icon));
                             return f;
                         }
                         return null;

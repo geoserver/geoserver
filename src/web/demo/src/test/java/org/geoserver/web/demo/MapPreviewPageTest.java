@@ -5,13 +5,18 @@
  */
 package org.geoserver.web.demo;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -312,5 +317,19 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         } finally {
             LocalWorkspace.remove();
         }
+    }
+
+    @Test
+    public void testCachingImages() throws Exception {
+        // test that the "?antiCache=###" query string is not appended to the img src
+        tester.startPage(MapPreviewPage.class);
+        tester.assertRenderedPage(MapPreviewPage.class);
+        tester.clickLink("table:navigatorBottom:navigator:next", true);
+        List<TagTester> images = TagTester.createTags(
+                tester.getLastResponseAsString(), tag -> tag.getName().equalsIgnoreCase("img"), false);
+        assertThat(images, not(empty()));
+        images.stream()
+                .map(image -> image.getAttribute("src"))
+                .forEach(src -> assertThat(src, allOf(containsString("/img/icons/"), endsWith(".png"))));
     }
 }

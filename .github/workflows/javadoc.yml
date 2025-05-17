@@ -43,7 +43,7 @@ jobs:
     - name: Build GeoServer modules and extensions without tests
       run: |
         mvn --version
-        mvn -B -ntp -U -T3 -DskipTests -Prelease -f src/pom.xml install
+        mvn -B -ntp -U -T1C -DskipTests -Prelease -f src/pom.xml install
     - name: Build aggregate javadocs
       run: |
         mvn -B -ntp -fae -f src/pom.xml javadoc:aggregate

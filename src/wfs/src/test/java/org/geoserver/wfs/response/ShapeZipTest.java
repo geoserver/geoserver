@@ -993,4 +993,14 @@ public class ShapeZipTest extends WFSTestSupport {
             FileUtils.deleteQuietly(tempFolder);
         }
     }
+
+    @Test
+    public void testCountZero() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wfs?version=2.0.0&request=GetFeature&typeName="
+                + getLayerId(SystemTestData.BASIC_POLYGONS) + "&outputFormat=SHAPE-ZIP&count=0");
+        assertEquals("application/zip", response.getContentType());
+        assertEquals("attachment; filename=BasicPolygons.zip", response.getHeader("Content-Disposition"));
+        checkShapefileIntegrity(
+                new String[] {"BasicPolygons"}, new ByteArrayInputStream(response.getContentAsByteArray()));
+    }
 }

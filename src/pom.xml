@@ -1328,13 +1328,24 @@
       </dependency>
       <dependency>
         <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-crypto</artifactId>
+        <artifactId>spring-security-oauth2-client</artifactId>
         <version>${spring.security.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-oauth2-resource-server</artifactId>
+        <version>${spring.security.version}</version>
+      </dependency>
+      <dependency>
+        <!-- deprecated, successors are above -->
         <groupId>org.springframework.security.oauth</groupId>
         <artifactId>spring-security-oauth2</artifactId>
         <version>${spring.security.oauth2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-crypto</artifactId>
+        <version>${spring.security.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jasypt</groupId>

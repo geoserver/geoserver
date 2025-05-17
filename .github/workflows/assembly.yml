@@ -40,13 +40,13 @@ jobs:
     - name: Build GeoServer modules and extensions without tests
       run: |
         mvn --version
-        mvn -B -ntp -U -T3 -DskipTests -Prelease -f src/pom.xml install
+        mvn -B -ntp -U -T1C -DskipTests -Prelease -f src/pom.xml install
     - name: Package GeoServer modules and extensions
       run: |
         mvn -B -ntp -nsu -N -f src/pom.xml assembly:single
     - name: Build and package community modules (without tests)
       run: |
-        mvn -B -ntp -nsu -U -T3 -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
+        mvn -B -ntp -nsu -U -T1C -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
     - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

@@ -288,8 +288,9 @@ public class MapMLDocumentBuilder {
     }
 
     private Optional<Boolean> getMultiExtent(GetMapRequest getMapRequest) {
-        return Optional.ofNullable(Boolean.parseBoolean(
-                (String) getMapRequest.getFormatOptions().get(MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT)));
+        return Optional.ofNullable(
+                        (String) getMapRequest.getFormatOptions().get(MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT))
+                .map(Boolean::parseBoolean);
     }
 
     /**

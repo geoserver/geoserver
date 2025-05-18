@@ -87,7 +87,7 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
         JSONArray metrics =
                 ((JSONObject) json(response)).getJSONObject("metrics").getJSONArray("metric");
         for (Object metric : metrics) {
-            assertNotNull(((JSONObject) metric).containsKey("value"));
+            assertTrue(((JSONObject) metric).containsKey("value"));
         }
     }
 

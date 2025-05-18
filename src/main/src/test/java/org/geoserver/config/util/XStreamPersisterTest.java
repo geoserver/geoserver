@@ -1173,7 +1173,7 @@ public class XStreamPersisterTest {
         String geometryName = vt2.getGeometries().iterator().next();
         assertEquals("geometry", geometryName);
         assertNotNull(vt2.getGeometryType(geometryName));
-        assertNotNull(vt2.getNativeSrid(geometryName));
+        assertNotEquals(-1, vt2.getNativeSrid(geometryName));
     }
 
     /* Test for GEOS-8929 */

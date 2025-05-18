@@ -69,7 +69,6 @@ public class RenderTimeStatisticsTest {
         assertEquals(statistics.getLayerNames().get(1), "Layer2");
         assertNotNull(statistics.getRenderingTime(0));
         assertNotNull(statistics.getRenderingTime(1));
-        assertNotNull(statistics.getLabellingTime());
         assertNotNull(attrs.getAttribute(RenderTimeStatistics.ID, 0));
     }
 

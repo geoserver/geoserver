@@ -1297,8 +1297,10 @@ public class MapMLDocumentBuilder {
      */
     private BodyContent prepareBody() {
         BodyContent body = new BodyContent();
+        List<Extent> extents = new ArrayList<>();
         try {
-            body.setExtents(prepareExtents());
+            prepareExtents(mapMLLayerMetadataList, extents);
+            body.setExtents(extents);
         } catch (IOException ioe) {
 
         }
@@ -1308,55 +1310,97 @@ public class MapMLDocumentBuilder {
     /**
      * Create and return a Mapml Extent JAXB object
      *
-     * @return Extent
      * @throws IOException In the event of an I/O error.
      */
-    private List<Extent> prepareExtents() throws IOException {
-        List<Extent> extents = new ArrayList<>();
-        for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadataList) {
-            Extent extent = new Extent();
-            TiledCRS tiledCRS = projType.getTiledCRS();
-            extent.setUnits(tiledCRS.getName());
-            extentList = extent.getInputOrDatalistOrLink();
-
-            // zoom
-            NumberRange<Double> scaleDenominators = null;
-            // layerInfo is null when layer is a layer group or multi layer request for multi-extent
-            if (!mapMLLayerMetadata.isLayerGroup() && mapMLLayerMetadata.getLayerInfo() != null) {
-                scaleDenominators = CapabilityUtil.searchMinMaxScaleDenominator(mapMLLayerMetadata.getLayerInfo());
-            } else if (mapMLLayerMetadata.getLayerGroupInfo() != null) {
-                scaleDenominators = CapabilityUtil.searchMinMaxScaleDenominator(mapMLLayerMetadata.getLayerGroupInfo());
+    private void prepareExtents(List<MapMLLayerMetadata> mapMLLayerMetadatas, List<Extent> extents) throws IOException {
+        for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadatas) {
+            if (!mapMLLayerMetadata.isLayerGroup() || !isMultiExtent) {
+                metadataToExtent(mapMLLayerMetadata, extents);
+            } else {
+                List<MapMLLayerMetadata> metadataListFromGroup = groupMetadataToList(mapMLLayerMetadata);
+                prepareExtents(metadataListFromGroup, extents);
             }
+        }
+    }
 
-            Input extentZoomInput = new Input();
-            extentZoomInput.setName("z");
-            extentZoomInput.setType(InputType.ZOOM);
-            // passing in max sld denominator to get min zoom
-            extentZoomInput.setMin(
-                    scaleDenominators != null
-                            ? String.valueOf(tiledCRS.getMinZoomForDenominator(
-                                    scaleDenominators.getMaxValue().intValue()))
-                            : "0");
-            int mxz = tiledCRS.getScales().length - 1;
-            // passing in min sld denominator to get max zoom
-            String maxZoom = scaleDenominators != null
-                    ? String.valueOf(tiledCRS.getMaxZoomForDenominator(
-                            scaleDenominators.getMinValue().intValue()))
-                    : String.valueOf(mxz);
-            extentZoomInput.setMax(maxZoom);
-            extentList.add(extentZoomInput);
-
-            String dimension = layerMeta.get("mapml.dimension", String.class);
-            prepareExtentForLayer(mapMLLayerMetadata, dimension);
-            generateTemplatedLinks(mapMLLayerMetadata);
-            if (isMultiExtent || isSingleLayerWithDimensionOptions(mapMLLayerMetadataList)) {
-                extent.setHidden(null); // not needed for multi-extent
-                extent.setLabel(mapMLLayerMetadata.layerTitle);
+    private List<MapMLLayerMetadata> groupMetadataToList(MapMLLayerMetadata mapMLLayerMetadata) {
+        List<MapMLLayerMetadata> metadataList = new ArrayList<>();
+        if (mapMLLayerMetadata.getLayerGroupInfo() != null) {
+            LayerGroupInfo layerGroupInfo = mapMLLayerMetadata.getLayerGroupInfo();
+            for (PublishedInfo publishedInfo : layerGroupInfo.getLayers()) {
+                if (publishedInfo instanceof LayerInfo) {
+                    LayerInfo layerInfo = (LayerInfo) publishedInfo;
+                    MapMLLayerMetadata metadata = layerInfoTomapMLLayerMetadata(layerInfo);
+                    metadataList.add(metadata);
+                } else if (publishedInfo instanceof LayerGroupInfo) {
+                    LayerGroupInfo layerGroupInfo1 = (LayerGroupInfo) publishedInfo;
+                    MapMLLayerMetadata metadata = layerGroupInfoTomapMLLayerMetadata(layerGroupInfo1);
+                    metadataList.add(metadata);
+                }
             }
-            extents.add(extent);
+        }
+        return metadataList;
+    }
+
+    private MapMLLayerMetadata layerInfoTomapMLLayerMetadata(LayerInfo layerInfo) {
+        MapMLLayerMetadata metadata = new MapMLLayerMetadata();
+        metadata.setLayerInfo(layerInfo);
+        metadata.setIsLayerGroup(false);
+        metadata.setLayerName(layerInfo.getName());
+        metadata.setLayerTitle(getTitle(layerInfo, layerInfo.getName()));
+        return metadata;
+    }
+
+    private MapMLLayerMetadata layerGroupInfoTomapMLLayerMetadata(LayerGroupInfo layerGroupInfo) {
+        MapMLLayerMetadata metadata = new MapMLLayerMetadata();
+        metadata.setLayerGroupInfo(layerGroupInfo);
+        metadata.setIsLayerGroup(true);
+        metadata.setLayerName(layerGroupInfo.getName());
+        metadata.setLayerTitle(getTitle(layerGroupInfo, layerGroupInfo.getName()));
+        return metadata;
+    }
+
+    private void metadataToExtent(MapMLLayerMetadata mapMLLayerMetadata, List<Extent> extents) throws IOException {
+        Extent extent = new Extent();
+        TiledCRS tiledCRS = projType.getTiledCRS();
+        extent.setUnits(tiledCRS.getName());
+        extentList = extent.getInputOrDatalistOrLink();
+
+        // zoom
+        NumberRange<Double> scaleDenominators = null;
+        // layerInfo is null when layer is a layer group or multi layer request for multi-extent
+        if (!mapMLLayerMetadata.isLayerGroup() && mapMLLayerMetadata.getLayerInfo() != null) {
+            scaleDenominators = CapabilityUtil.searchMinMaxScaleDenominator(mapMLLayerMetadata.getLayerInfo());
+        } else if (mapMLLayerMetadata.getLayerGroupInfo() != null) {
+            scaleDenominators = CapabilityUtil.searchMinMaxScaleDenominator(mapMLLayerMetadata.getLayerGroupInfo());
         }
 
-        return extents;
+        Input extentZoomInput = new Input();
+        extentZoomInput.setName("z");
+        extentZoomInput.setType(InputType.ZOOM);
+        // passing in max sld denominator to get min zoom
+        extentZoomInput.setMin(
+                scaleDenominators != null
+                        ? String.valueOf(tiledCRS.getMinZoomForDenominator(
+                                scaleDenominators.getMaxValue().intValue()))
+                        : "0");
+        int mxz = tiledCRS.getScales().length - 1;
+        // passing in min sld denominator to get max zoom
+        String maxZoom = scaleDenominators != null
+                ? String.valueOf(tiledCRS.getMaxZoomForDenominator(
+                        scaleDenominators.getMinValue().intValue()))
+                : String.valueOf(mxz);
+        extentZoomInput.setMax(maxZoom);
+        extentList.add(extentZoomInput);
+
+        String dimension = layerMeta.get("mapml.dimension", String.class);
+        prepareExtentForLayer(mapMLLayerMetadata, dimension);
+        generateTemplatedLinks(mapMLLayerMetadata);
+        if (isMultiExtent || isSingleLayerWithDimensionOptions(mapMLLayerMetadataList)) {
+            extent.setHidden(null); // not needed for multi-extent
+            extent.setLabel(mapMLLayerMetadata.layerTitle);
+        }
+        extents.add(extent);
     }
 
     private boolean isSingleLayerWithDimensionOptions(List<MapMLLayerMetadata> mapMLLayerMetadataList) {
@@ -2602,6 +2646,15 @@ public class MapMLDocumentBuilder {
         }
 
         /**
+         * Set if is a layer group
+         *
+         * @param isLayerGroup
+         */
+        public void setIsLayerGroup(boolean isLayerGroup) {
+            this.isLayerGroup = isLayerGroup;
+        }
+
+        /**
          * set if the layer uses features
          *
          * @param useFeatures boolean
@@ -3073,6 +3126,7 @@ public class MapMLDocumentBuilder {
 
         /**
          * get the legend URL
+         *
          * @return String
          */
         public String getLegendURL() {

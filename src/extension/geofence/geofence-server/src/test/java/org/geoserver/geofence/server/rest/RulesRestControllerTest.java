@@ -419,12 +419,11 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.setLayer("layer");
         rule.setAccess("ALLOW");
 
-        long id = prepareGeoFenceTestRules(rule);
+        prepareGeoFenceTestRules(rule);
 
         JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
         // print(json);
 
-        assertNotNull(id);
         assertEquals(1, json.getInt("count"));
 
         json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);

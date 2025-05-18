@@ -140,7 +140,6 @@ public class RasterAttributeTableTest {
         if (bandIdx == 0) {
             assertNull(cs);
         } else {
-            assertNotNull(bandIdx);
             SelectedChannelType grayChannel = cs.getGrayChannel();
             assertNotNull(grayChannel);
             assertEquals(

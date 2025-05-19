@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.featurestemplating.utils.StaticTemplateResolver;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSDescribeFeatureTypeOutputFormat;
@@ -35,7 +36,8 @@ public class SchemaOverrideDescribeFeatureTypeResponse extends WFSDescribeFeatur
     protected void write(FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
             throws IOException {
         try {
-            output.write(content.getBytes(StandardCharsets.UTF_8));
+            String contentStr = StaticTemplateResolver.resolveTemplate(content);
+            output.write(contentStr.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new ServiceException(e);
         }

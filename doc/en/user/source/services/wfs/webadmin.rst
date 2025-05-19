@@ -229,7 +229,7 @@ Selecting the :guilabel:`Allow Global Stored Queries` checkbox determines if glo
 
 .. figure:: img/disable-stored-queries-management.png
 
-Selecting the :guilabel:`Disable stored queries management` checkbox will disable stored queries write operations from being present in GetCapabilities response. Attempting to triggering one of operations related to stored queries will result in exception.
+Selecting the :guilabel:`Disable stored queries management` checkbox will disable stored queries write operations from being present in GetCapabilities response. Attempting to trigger one of the operations related to stored queries will result in an exception.
 
 i18n Settings
 -------------

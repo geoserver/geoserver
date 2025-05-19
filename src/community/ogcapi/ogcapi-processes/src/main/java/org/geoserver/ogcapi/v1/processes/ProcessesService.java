@@ -9,6 +9,7 @@ import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATI
 import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -262,7 +263,7 @@ public class ProcessesService {
         LiteralDataType literal = result.getData().getLiteralData();
         BoundingBoxType bbox = result.getData().getBoundingBoxData();
         if (literal != null) {
-            httpResponse.setContentType("text/plain");
+            httpResponse.setContentType(TEXT_PLAIN_VALUE);
             httpResponse.getWriter().write(literal.getValue());
         } else if (bbox != null) {
             httpResponse.setContentType(APPLICATION_JSON_VALUE);
@@ -436,23 +437,23 @@ public class ProcessesService {
         try {
             if (rawResult instanceof RawDataEncoderDelegate) {
                 RawDataEncoderDelegate delegate = (RawDataEncoderDelegate) rawResult;
-                delegate.encode(httpResponse.getOutputStream());
                 httpResponse.setContentType(delegate.getRawData().getMimeType());
+                delegate.encode(httpResponse.getOutputStream());
             } else if (rawResult instanceof XMLEncoderDelegate) {
                 XMLEncoderDelegate delegate = (XMLEncoderDelegate) rawResult;
                 TransformerHandler xmls =
                         ((SAXTransformerFactory) SAXTransformerFactory.newInstance()).newTransformerHandler();
                 xmls.setResult(new StreamResult(httpResponse.getOutputStream()));
-                delegate.encode(xmls);
                 httpResponse.setContentType(delegate.getPPIO().getMimeType());
+                delegate.encode(xmls);
             } else if (rawResult instanceof CDataEncoderDelegate) {
                 CDataEncoderDelegate cdataDelegate = (CDataEncoderDelegate) rawResult;
-                cdataDelegate.encode(httpResponse.getOutputStream());
                 httpResponse.setContentType(cdataDelegate.getPPIO().getMimeType());
+                cdataDelegate.encode(httpResponse.getOutputStream());
             } else if (rawResult instanceof BinaryEncoderDelegate) {
                 BinaryEncoderDelegate binaryDelegate = (BinaryEncoderDelegate) rawResult;
-                binaryDelegate.encode(httpResponse.getOutputStream());
                 httpResponse.setContentType(binaryDelegate.getPPIO().getMimeType());
+                binaryDelegate.encode(httpResponse.getOutputStream());
             } else if (rawResult instanceof String) {
                 // this is an already encoded string (async execution stored), just write it out
                 String result = (String) rawResult;

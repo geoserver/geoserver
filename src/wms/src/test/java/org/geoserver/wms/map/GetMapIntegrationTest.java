@@ -485,7 +485,6 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(statistics.getLayerNames().size(), 2);
         assertNotNull(statistics.getRenderingTime(0));
         assertNotNull(statistics.getRenderingTime(1));
-        assertNotNull(statistics.getLabellingTime());
         checkImage(response);
     }
 

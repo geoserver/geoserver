@@ -40,7 +40,11 @@ public class LandingPageTest extends OGCApiTestSupport {
                         "getConformanceDeclaration",
                         "getProcessList",
                         "getProcessDescription",
-                        "executeProcessKVP"));
+                        "executeProcessPOST",
+                        "executeProcessKVP",
+                        "getStatus",
+                        "getResults",
+                        "dismiss"));
     }
 
     @Test

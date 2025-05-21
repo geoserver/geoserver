@@ -28,7 +28,6 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -42,6 +41,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
@@ -78,7 +78,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                 boolean wfsVisible = layer.hasServiceSupport("WFS");
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", MapPreviewPage.this);
-                    f.add(new Image("layerIcon", layer.getIcon()));
+                    f.add(new CachingImage("layerIcon", layer.getIcon()));
                     return f;
                 } else if (property == NAME) {
                     return new Label(id, property.getModel(itemModel));

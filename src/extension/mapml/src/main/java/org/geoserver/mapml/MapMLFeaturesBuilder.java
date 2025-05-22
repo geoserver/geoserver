@@ -4,10 +4,12 @@
  */
 package org.geoserver.mapml;
 
+import java.awt.RenderingHints;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -83,11 +85,7 @@ public class MapMLFeaturesBuilder {
     private MapMLSimplifier getSimplifier(FeatureSource featureSource, WMSMapContent mapContent, Query query) {
         try {
             CoordinateReferenceSystem layerCRS = featureSource.getSchema().getCoordinateReferenceSystem();
-            MapMLSimplifier simplifier = new MapMLSimplifier(mapContent, layerCRS);
-            if (featureSource.getSupportedHints().contains(Hints.GEOMETRY_DISTANCE)) {
-                query.getHints().put(Hints.GEOMETRY_DISTANCE, simplifier.getQuerySimplificationDistance());
-            }
-            return simplifier;
+            return new MapMLSimplifier(mapContent, layerCRS);
         } catch (FactoryException e) {
             LOGGER.log(Level.WARNING, "Unable to create MapML Simplifier, proceeding with full geometries", e);
         }
@@ -123,26 +121,33 @@ public class MapMLFeaturesBuilder {
             MapMLSimplifier simplifier = getSimplifier(featureSource, mapContent, query);
 
             if (query != null) {
-                if (featureSource.getSupportedHints().contains(Hints.SCREENMAP)) {
+                Set<RenderingHints.Key> fsHints = featureSource.getSupportedHints();
+                if (fsHints.contains(Hints.SCREENMAP)) {
                     query.getHints().put(Hints.SCREENMAP, simplifier.getScreenMap());
                     // we don't want to run the screenmap simplification twice
                     simplifier.setScreenMap(null);
                 }
                 // LineString and MultiLineString geometries can be simplified without worrying about topology
+                // while polygons and collections containing polygons need to have their topology preserved.
+                // Points cannot be simplified, however, they can still be selected out by the pre-generalized plugin.
                 Class<?> binding = featureSource
                         .getSchema()
                         .getGeometryDescriptor()
                         .getType()
                         .getBinding();
-                if (LineString.class.isAssignableFrom(binding) || MultiLineString.class.isAssignableFrom(binding)) {
-                    if (featureSource.getSupportedHints().contains(Hints.GEOMETRY_SIMPLIFICATION)) {
-                        query.getHints().put(Hints.GEOMETRY_SIMPLIFICATION, simplifier);
-                    }
+                double simplificationDistance = simplifier.getQuerySimplificationDistance();
+                if (LineString.class.isAssignableFrom(binding)
+                        || MultiLineString.class.isAssignableFrom(binding)
+                                && fsHints.contains(Hints.GEOMETRY_SIMPLIFICATION)) {
+                    query.getHints().put(Hints.GEOMETRY_SIMPLIFICATION, simplificationDistance);
+                } else if (fsHints.contains(Hints.GEOMETRY_DISTANCE)) {
+                    query.getHints().put(Hints.GEOMETRY_DISTANCE, simplificationDistance);
                 }
                 fc = featureSource.getFeatures(query);
             } else {
                 fc = featureSource.getFeatures();
             }
+
             GeometryDescriptor sourceGeometryDescriptor = fc.getSchema().getGeometryDescriptor();
             if (sourceGeometryDescriptor == null) {
                 throw new ServiceException(

@@ -343,7 +343,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 .feature(true)
                 .getAsMapML();
         features = mapml.getBody().getFeatures();
-        testScale(features, 4);
+        testScale(features, 3);
     }
 
     private static void testScale(List<Feature> features, int expectedScale) {

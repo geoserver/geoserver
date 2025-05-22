@@ -17,6 +17,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.CiteTestData;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs2_0.response.GranuleStack;
@@ -44,6 +45,7 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
      * See https://osgeo-org.atlassian.net/browse/GEOS-11820 for details.
      */
     private static final QName SAT_MOSAIC = new QName(CiteTestData.WCS_URI, "sat", CiteTestData.WCS_PREFIX);
+    private static final QName NO_ENVELOPE_SRS = new QName(MockData.WCS_URI, "world", MockData.WCS_PREFIX);
 
     @BeforeClass
     public static void init() {
@@ -77,6 +79,16 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
         coverageName = getLayerId(SAT_MOSAIC);
         setupRasterDimension(coverageName, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         info = getCatalog().getCoverageByName(coverageName);
+        // Add this to prevent resource locking due to deferred disposal
+        info.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        getCatalog().save(info);
+
+        /* world test data without a native SRS. Forcing use of declared CRS */
+        testData.addRasterLayer(NO_ENVELOPE_SRS, "World_mosaic.zip", null, null, GetCoverageTest.class, getCatalog());
+        info = getCatalog().getCoverageByName(getLayerId(NO_ENVELOPE_SRS));
+        ReferencedEnvelope bbox = info.getNativeBoundingBox();
+        info.setNativeBoundingBox(ReferencedEnvelope.create(bbox, null));
+        info.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         // Add this to prevent resource locking due to deferred disposal
         info.getParameters().put("USE_JAI_IMAGEREAD", "false");
         getCatalog().save(info);
@@ -272,6 +284,71 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
             cleanCoverages(null, targetCoverage, null);
         }
     }
+
+    /**
+     * This test checks that in case {@link ProjectionPolicy#FORCE_DECLARED} is defined,
+     * the declared CRS is used for spatial filtering.
+     */
+    @Test
+    public void sliceWorldWithNoNativeCRS() throws Exception {
+
+        CoordinateReferenceSystem outputCRS = CRS.decode("EPSG:4326");
+        CoordinateReferenceSystem requestCRS = CRS.decode("EPSG:3857");
+
+        ReferencedEnvelope requestEnvelope = new ReferencedEnvelope(7.0, 13.0, 45.0, 55.0, outputCRS);
+
+        ReferencedEnvelope subSettingEnvelope = new ReferencedEnvelope(CRS.transform(requestEnvelope, requestCRS));
+
+        // build the WCS request including spatial sub-setting
+        String wcsRequest = "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__world"
+                + "&subsettingCRS=" + OGC_HTTP_URI.getSRS("EPSG:3857")
+                + "&subset=X(" + subSettingEnvelope.getMinX() + "," + subSettingEnvelope.getMaxX() + ")"
+                + "&subset=Y(" + subSettingEnvelope.getMinY() + "," + subSettingEnvelope.getMaxY() + ")"
+                + "&outputCRS=" + OGC_HTTP_URI.getSRS("EPSG:4326")
+                + "&format=application/custom";
+
+        GridCoverage2D targetCoverage = null;
+        try {
+            // set up the layer so that 4326 is declared and FORCE_DECLARED is enabled
+            Catalog catalog = this.getCatalog();
+            CoverageInfo coverageInfo = catalog.getCoverageByName(NO_ENVELOPE_SRS.getLocalPart());
+            coverageInfo.setSRS("EPSG:4326");
+            coverageInfo.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+            catalog.save(coverageInfo);
+
+            // fire off the request
+            MockHttpServletResponse response = getAsServletResponse(wcsRequest);
+            assertNotNull(response);
+            assertEquals("WCS Response should have status OK == 200.", 200, response.getStatus());
+            assertNotEquals(
+                    "WCS response should not be XML, but was: \n" + response.getContentAsString(),
+                    "application/xml",
+                    response.getContentType());
+
+            // get us the result
+            targetCoverage =
+                    applicationContext.getBean(WCSResponseInterceptor.class).getLastResult();
+
+            assertTrue(
+                    "Target coverage should have " + outputCRS.getName() + " CRS",
+                    CRS.equalsIgnoreMetadata(outputCRS, targetCoverage.getCoordinateReferenceSystem()));
+
+            assertTrue(targetCoverage instanceof GranuleStack);
+            GridCoverage2D granule =
+                    ((GranuleStack) targetCoverage).getGranules().get(0);
+            ReferencedEnvelope granuleEnvelope = granule.getEnvelope2D();
+            assertTrue(
+                    "Granules should have " + outputCRS.getName() + " CRS",
+                    CRS.equalsIgnoreMetadata(outputCRS, granuleEnvelope.getCoordinateReferenceSystem()));
+
+            // TODO: it would be great to match the result envelope,
+            //  but floating point precision makes it not an easy task
+        } finally {
+            cleanCoverages(null, targetCoverage, null);
+        }
+    }
+
     /**
      * clean up after the test-case
      *

@@ -61,9 +61,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
-import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.executor.ExecutionStatus;
@@ -191,41 +189,6 @@ public class DownloadProcessTest extends WPSTestSupport {
         }
     }
 
-    public static class AutoCloseableResource implements AutoCloseable {
-        WPSResourceManager resourceManager;
-
-        RawData rawData;
-
-        Resource resource;
-
-        public File getFile() {
-            return file;
-        }
-
-        File file;
-
-        public AutoCloseableResource(WPSResourceManager resourceManager, RawData rawData) throws IOException {
-
-            // Final checks on the result
-            Assert.assertNotNull(rawData);
-
-            this.resourceManager = resourceManager;
-            this.rawData = rawData;
-            this.resource = resourceManager.getTemporaryResource(rawData.getFileExtension());
-            this.file = resource.file();
-            try (InputStream in = rawData.getInputStream()) {
-                IOUtils.copy(in, file);
-            }
-        }
-
-        @Override
-        public void close() throws IOException {
-            // clean up process
-            IOUtils.delete(file, true);
-            resourceManager.finished(resourceManager.getExecutionId(true));
-        }
-    }
-
     public static class AutoDisposableGeoTiffReader extends GeoTiffReader implements AutoCloseable {
 
         public AutoDisposableGeoTiffReader(File file) throws DataSourceException {
@@ -241,18 +204,6 @@ public class DownloadProcessTest extends WPSTestSupport {
             GridCoverage2D gc = super.read(null);
             assertNotNull(gc);
             return new AutoDisposableGridCoverage2D("", gc);
-        }
-    }
-
-    public static class AutoDisposableGridCoverage2D extends GridCoverage2D implements AutoCloseable {
-
-        public AutoDisposableGridCoverage2D(CharSequence name, GridCoverage2D coverage) {
-            super(name, coverage);
-        }
-
-        @Override
-        public void close() {
-            CoverageCleanerCallback.disposeCoverage(this);
         }
     }
 
@@ -348,7 +299,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         revertLayer(MockData.POLYGONS);
     }
 
-    private WPSResourceManager getResourceManager() {
+    protected WPSResourceManager getResourceManager() {
         return GeoServerExtensions.bean(WPSResourceManager.class);
     }
 

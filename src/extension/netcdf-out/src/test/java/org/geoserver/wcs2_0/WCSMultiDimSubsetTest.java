@@ -286,8 +286,8 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * This test checks that in case {@link ProjectionPolicy#FORCE_DECLARED} is defined,
-     * the declared CRS is used for spatial filtering.
+     * This test checks that in case {@link ProjectionPolicy#FORCE_DECLARED} is defined, the declared CRS is used for
+     * spatial filtering.
      */
     @Test
     public void sliceWorldWithNoNativeCRS() throws Exception {

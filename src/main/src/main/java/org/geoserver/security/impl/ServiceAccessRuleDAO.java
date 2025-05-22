@@ -113,7 +113,8 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
     @Override
     protected Properties toProperties() {
         Properties props = new Properties();
-        for (ServiceAccessRule rule : rules) {
+        TreeSet<ServiceAccessRule> sortedRules = new TreeSet<>(rules);
+        for (ServiceAccessRule rule : sortedRules) {
             props.put(rule.getKey(), rule.getValue());
         }
         return props;

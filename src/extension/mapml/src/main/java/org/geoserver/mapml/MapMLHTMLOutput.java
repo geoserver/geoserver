@@ -123,6 +123,7 @@ public class MapMLHTMLOutput {
                 .append("map-layer { display: none; }\n")
                 .append("</style>\n");
         appendProjectionScript(projType, sb);
+        zoom = computeZoom(projType, projectedBbox);
         sb.append("<noscript>\n")
                 .append("<style>\n")
                 .append("mapml-viewer:not(:defined) > :not(map-layer) { display: initial; }\n")
@@ -135,7 +136,7 @@ public class MapMLHTMLOutput {
                 .append(projType.getTiledCRS().getParams().getName())
                 .append("\" ")
                 .append("zoom=\"")
-                .append(computeZoom(projType, projectedBbox))
+                .append(zoom)
                 .append("\" lat=\"")
                 .append(latitude)
                 .append("\" ")
@@ -233,7 +234,8 @@ public class MapMLHTMLOutput {
         return ResponseUtils.buildURL(base, "/mapml/" + path, null, URLMangler.URLType.RESOURCE);
     }
 
-    private int computeZoom(MapMLProjection projType, ReferencedEnvelope projectedBbox) {
+    public static int computeZoom(
+            MapMLProjection projType, ReferencedEnvelope projectedBbox, double pixelWidth, double pixelHeight) {
         TiledCRS tcrs = projType.getTiledCRS();
         boolean flipAxis =
                 CRS.getAxisOrder(projectedBbox.getCoordinateReferenceSystem()).equals(CRS.AxisOrder.NORTH_EAST);
@@ -245,7 +247,13 @@ public class MapMLHTMLOutput {
         // allowing for the data to be displayed at a certain size (WxH) in pixels,
         // figure out the zoom level at which the projected bounds fits into that,
         // in both dimensions
-        zoom = tcrs.fitProjectedBoundsToDisplay(pb, MapMLConstants.DISPLAY_BOUNDS_DESKTOP_LANDSCAPE);
-        return zoom;
+        Bounds displayBounds = new Bounds(new Point(0, 0), new Point(pixelWidth, pixelHeight));
+        return tcrs.fitProjectedBoundsToDisplay(pb, displayBounds);
+    }
+
+    public static int computeZoom(MapMLProjection projType, ReferencedEnvelope projectedBbox) {
+        double width = MapMLConstants.DISPLAY_BOUNDS_DESKTOP_LANDSCAPE.getMax().getX();
+        double height = MapMLConstants.DISPLAY_BOUNDS_DESKTOP_LANDSCAPE.getMax().getY();
+        return computeZoom(projType, projectedBbox, width, height);
     }
 }

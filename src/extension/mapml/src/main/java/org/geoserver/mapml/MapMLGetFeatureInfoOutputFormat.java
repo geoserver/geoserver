@@ -130,7 +130,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
             Iterator<FeatureCollection> fci = featureCollections.iterator();
             while (fci.hasNext()) {
                 fc = (SimpleFeatureCollection) fci.next();
-                List<Feature> features = body.getFeatures();
+                List<Object> features = body.getTilesOrFeatures();
                 try (SimpleFeatureIterator iterator = fc.features()) {
                     while (iterator.hasNext()) {
                         SimpleFeature feature;

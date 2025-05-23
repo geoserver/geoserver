@@ -6,6 +6,7 @@
 package org.geoserver.mapml;
 
 import static org.geoserver.mapml.MapMLConstants.MAPML_MULTIEXTENT;
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.MapMLLayerConfigurationPanel.getAvailableMimeTypes;
 import static org.geoserver.web.demo.MapMLFormatLink.FORMAT_OPTION_DEFAULT;
@@ -69,6 +70,11 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
             }
         });
         add(useTiles);
+
+        // add the checkbox to select features or not
+        MapModel<Boolean> useFeaturesModel = new MapModel<>(new PropertyModel<>(model, METADATA), MAPML_USE_FEATURES);
+        CheckBox useFeatures = new CheckBox("useFeatures", useFeaturesModel);
+        add(useFeatures);
 
         // add the checkbox to select multiextent or not
         MapModel<Boolean> multiextentModel = new MapModel<>(new PropertyModel<>(model, METADATA), MAPML_MULTIEXTENT);

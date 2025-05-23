@@ -199,3 +199,65 @@ This can also be used when running the local jetty application server:
   mvn jetty:run -DconfigId=release -DconfigDirectory=../../../data/release
 
 You may also use an absolute path, if you have a custom data directory you would like to use.
+
+Dependency Management
+---------------------
+
+GeoServer uses Maven's Bill of Materials (BOM) pattern to manage Spring Framework and Spring Security dependencies centrally. This ensures consistent versions across all modules and simplifies dependency declarations.
+
+Spring Framework and Spring Security BOMs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The root ``src/pom.xml`` imports both Spring Framework and Spring Security BOMs in the ``<dependencyManagement>`` section:
+
+.. code-block:: xml
+
+   <dependencyManagement>
+     <dependencies>
+       <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-framework-bom</artifactId>
+         <version>${spring.version}</version>
+         <type>pom</type>
+         <scope>import</scope>
+       </dependency>
+       <dependency>
+         <groupId>org.springframework.security</groupId>
+         <artifactId>spring-security-bom</artifactId>
+         <version>${spring.security.version}</version>
+         <type>pom</type>
+         <scope>import</scope>
+       </dependency>
+     </dependencies>
+   </dependencyManagement>
+
+Adding Spring Dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When adding Spring Framework or Spring Security dependencies to any module, **do not specify the version**. The BOM will automatically provide the correct version:
+
+.. code-block:: xml
+
+   <dependencies>
+     <!-- Correct - no version specified -->
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-context</artifactId>
+     </dependency>
+
+     <!-- Correct - no version specified -->
+     <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-core</artifactId>
+     </dependency>
+   </dependencies>
+
+.. warning::
+
+   Never specify explicit versions for Spring Framework or Spring Security dependencies. 
+   This can lead to version conflicts and inconsistent behavior across modules.
+
+For a complete list of dependencies managed by the BOMs, see the "Managed dependencies" section at:
+
+* `Spring Framework BOM <https://mvnrepository.com/artifact/org.springframework/spring-framework-bom/5.3.39>`_
+* `Spring Security BOM <https://mvnrepository.com/artifact/org.springframework.security/spring-security-bom/5.8.16>`_

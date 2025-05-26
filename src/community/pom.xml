@@ -380,7 +380,7 @@
       <modules>
         <module>security</module>
       </modules>
-    </profile>    
+    </profile>
     <profile>
       <id>oseo</id>
       <modules>

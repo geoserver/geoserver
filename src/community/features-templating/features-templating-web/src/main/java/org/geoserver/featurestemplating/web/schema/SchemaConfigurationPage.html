@@ -1,0 +1,30 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+    <title><wicket:message key="schemaConfiguration">Schema Configuration</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+<form name="schemaForm" wicket:id="schemaForm" id="schemaForm">
+    <ul>
+        <li>
+            <fieldset>
+                <ul>
+                    <li>
+                        <div wicket:id="schemaPanel"  id="schema-info-tabbed-panel" class="bottom-padding-0pt5em"></div>
+                    </li>
+                    <li>
+                        <label for="schemaEditor"><wicket:message key="schemaEditor"></wicket:message></label>
+                        <div class="field" wicket:id="schemaEditor" id="schemaEditor"> </div>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+    </ul>
+    <div class="button-group toolbar-sticky selfclear">
+        <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+        <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+    </div>
+</form>
+</wicket:extend>
+</body>
+</html>

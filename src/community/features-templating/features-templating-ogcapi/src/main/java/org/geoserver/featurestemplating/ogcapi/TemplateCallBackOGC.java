@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -135,9 +136,28 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
         if (format != null) {
             identifier = TemplateIdentifier.fromOutputFormat(format);
         } else if (accept != null) {
-            identifier = TemplateIdentifier.fromOutputFormat(accept);
+            identifier = getTemplateIdentifierFromAcceptString(accept);
         }
         return identifier;
+    }
+
+    /**
+     * Get the template identifier from the accept header. The accept header can contain multiple comma separated
+     * values, so we need to check each one.
+     *
+     * @param accept the accept header value
+     * @return the template identifier or null if not found
+     */
+    private TemplateIdentifier getTemplateIdentifierFromAcceptString(String accept) {
+        if (StringUtils.isBlank(accept)) return null;
+        String[] split = accept.split(",");
+        for (String s : split) {
+            TemplateIdentifier identifier = TemplateIdentifier.fromOutputFormat(s.trim());
+            if (identifier != null) {
+                return identifier;
+            }
+        }
+        return null;
     }
 
     private void replaceTemplatePathWithFilter(

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.featurestemplating.configuration;
+package org.geoserver.featurestemplating.configuration.schema;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -15,13 +15,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.emf.common.util.URI;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.visitors.SimplifiedPropertyReplacer;
-import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
-import org.geoserver.featurestemplating.validation.TemplateValidator;
+import org.geoserver.featurestemplating.configuration.AbstractLoader;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
@@ -35,17 +34,17 @@ import org.geotools.data.complex.feature.type.Types;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Manage the cache and the retrieving for all templates files */
-public class TemplateLoader extends AbstractLoader {
+public class SchemaLoader extends AbstractLoader {
 
-    private final LoadingCache<CacheKey, Template> templateCache;
+    private final LoadingCache<CacheKey, SchemaDefinition> schemaCache;
 
-    public TemplateLoader(GeoServerDataDirectory dd) {
+    public SchemaLoader(GeoServerDataDirectory dd) {
         super(dd);
-        templateCache = CacheBuilder.newBuilder()
+        schemaCache = CacheBuilder.newBuilder()
                 .maximumSize(100)
                 .initialCapacity(1)
                 .expireAfterAccess(120, TimeUnit.MINUTES)
-                .build(new TemplateCacheLoader());
+                .build(new SchemaCacheLoader());
     }
 
     /**
@@ -58,14 +57,12 @@ public class TemplateLoader extends AbstractLoader {
      * @return the RootBuilder.
      * @throws ExecutionException
      */
-    public RootBuilder getTemplate(FeatureTypeInfo typeInfo, String outputFormat, Request request)
-            throws ExecutionException {
-        String templateIdentifier =
+    public String getSchema(FeatureTypeInfo typeInfo, String outputFormat, Request request) throws ExecutionException {
+        String schemaIdentifier =
                 request == null ? evaluatesTemplateRule(typeInfo) : evaluatesTemplateRule(typeInfo, request);
-        if (templateIdentifier == null)
-            templateIdentifier =
-                    TemplateIdentifier.fromOutputFormat(outputFormat).getFilename();
-        return getTemplateByIdentifier(typeInfo, templateIdentifier);
+        if (schemaIdentifier == null)
+            schemaIdentifier = TemplateIdentifier.fromOutputFormat(outputFormat).getFilename();
+        return getSchemaByIdentifier(typeInfo, schemaIdentifier);
     }
 
     /**
@@ -77,34 +74,23 @@ public class TemplateLoader extends AbstractLoader {
      * @return the RootBuilder.
      * @throws ExecutionException
      */
-    public RootBuilder getTemplate(FeatureTypeInfo typeInfo, String outputFormat) throws ExecutionException {
-        return getTemplate(typeInfo, outputFormat, null);
+    public String getSchema(FeatureTypeInfo typeInfo, String outputFormat) throws ExecutionException {
+        return getSchema(typeInfo, outputFormat, null);
     }
 
-    private RootBuilder getTemplateByIdentifier(FeatureTypeInfo typeInfo, String templateIdentifier)
+    private String getSchemaByIdentifier(FeatureTypeInfo typeInfo, String templateIdentifier)
             throws ExecutionException {
         CacheKey key = new CacheKey(typeInfo, templateIdentifier);
-        Template template = templateCache.get(key);
+        SchemaDefinition schemaDefinition = schemaCache.get(key);
         boolean updateCache = false;
-        if (template.checkTemplate()) updateCache = true;
+        if (schemaDefinition.checkSchema()) updateCache = true;
 
-        RootBuilder root = template.getRootBuilder();
+        String root = schemaDefinition.getSchemaContent();
 
         if (updateCache) {
-            replaceSimplifiedPropertiesIfNeeded(key.getResource(), template.getRootBuilder());
-            templateCache.put(key, template);
+            schemaCache.put(key, schemaDefinition);
         }
 
-        if (root != null) {
-            TemplateValidator validator = new TemplateValidator(typeInfo);
-            boolean isValid = validator.validateTemplate(root);
-            if (!isValid) {
-                throw new RuntimeException("Failed to validate template for feature type "
-                        + typeInfo.getName()
-                        + ". Failing attribute is "
-                        + URI.decode(validator.getFailingAttribute()));
-            }
-        }
         return root;
     }
 
@@ -153,12 +139,12 @@ public class TemplateLoader extends AbstractLoader {
 
     // evaluates the template rule associated to the featureTypeInfo and return the TemplateInfo id.
     private String evaluatesTemplateRule(FeatureTypeInfo featureTypeInfo, Request request) {
-        List<TemplateRule> matching = new ArrayList<>();
-        TemplateRuleService ruleService = new TemplateRuleService(featureTypeInfo);
-        Set<TemplateRule> rules = ruleService.getRules();
+        List<SchemaRule> matching = new ArrayList<>();
+        SchemaRuleService ruleService = new SchemaRuleService(featureTypeInfo);
+        Set<SchemaRule> rules = ruleService.getRules();
         String result = null;
         if (rules != null && !rules.isEmpty()) {
-            for (TemplateRule r : rules) {
+            for (SchemaRule r : rules) {
                 if (r.applyRule(request)) matching.add(r);
             }
         }
@@ -168,12 +154,12 @@ public class TemplateLoader extends AbstractLoader {
         return result;
     }
 
-    private String getHighestPriorityIdentifier(List<TemplateRule> rules) {
+    private String getHighestPriorityIdentifier(List<SchemaRule> rules) {
         if (rules.size() > 1) {
-            TemplateRule.TemplateRuleComparator comparator = new TemplateRule.TemplateRuleComparator();
+            SchemaRule.SchemaRuleComparator comparator = new SchemaRule.SchemaRuleComparator();
             rules.sort(comparator);
         }
-        return rules.get(0).getTemplateIdentifier();
+        return rules.get(0).getSchemaIdentifier();
     }
 
     /**
@@ -184,7 +170,7 @@ public class TemplateLoader extends AbstractLoader {
      */
     public void cleanCache(FeatureTypeInfo fti, String templateIdentifier) {
         CacheKey key = new CacheKey(fti, templateIdentifier);
-        if (templateCache.getIfPresent(key) != null) this.templateCache.invalidate(key);
+        if (schemaCache.getIfPresent(key) != null) this.schemaCache.invalidate(key);
     }
 
     /**
@@ -193,21 +179,21 @@ public class TemplateLoader extends AbstractLoader {
      * @param templateIdentifier the templateIdentifier used to identify the cache entries to remove.
      */
     public void removeAllWithIdentifier(String templateIdentifier) {
-        Set<CacheKey> keys = templateCache.asMap().keySet();
+        Set<CacheKey> keys = schemaCache.asMap().keySet();
         for (CacheKey key : keys) {
             if (key.getIdentifier().equals(templateIdentifier)) {
-                templateCache.invalidate(key);
+                schemaCache.invalidate(key);
             }
         }
     }
 
-    private TemplateFileManager getTemplateFileManager() {
-        return TemplateFileManager.get();
+    private SchemaFileManager getSchemaFileManager() {
+        return SchemaFileManager.get();
     }
 
-    private class TemplateCacheLoader extends CacheLoader<CacheKey, Template> {
+    private class SchemaCacheLoader extends CacheLoader<CacheKey, SchemaDefinition> {
         @Override
-        public Template load(CacheKey key) {
+        public SchemaDefinition load(CacheKey key) {
             NamespaceSupport namespaces = null;
             try {
                 FeatureType type = key.getResource().getFeatureType();
@@ -218,25 +204,21 @@ public class TemplateLoader extends AbstractLoader {
                         + "Exception is: "
                         + e.getMessage());
             }
-            TemplateInfo templateInfo = TemplateInfoDAO.get().findById(key.getIdentifier());
+            SchemaInfo schemaInfo = SchemaInfoDAO.get().findById(key.getIdentifier());
             Resource resource;
-            if (templateInfo != null) resource = getTemplateFileManager().getTemplateResource(templateInfo);
+            if (schemaInfo != null) resource = getSchemaFileManager().getSchemaResource(schemaInfo);
             else resource = getDataDirectory().get(key.getResource(), key.getIdentifier());
-            Template template = new Template(resource, new TemplateReaderConfiguration(namespaces));
-            RootBuilder builder = template.getRootBuilder();
-            if (builder != null) {
-                replaceSimplifiedPropertiesIfNeeded(key.getResource(), builder);
-            }
-            return template;
+            SchemaDefinition schemaDefinition = new SchemaDefinition(resource);
+            return schemaDefinition;
         }
     }
 
     /** Invalidate all the cache entries. */
     public void reset() {
-        templateCache.invalidateAll();
+        schemaCache.invalidateAll();
     }
 
-    public static TemplateLoader get() {
-        return GeoServerExtensions.bean(TemplateLoader.class);
+    public static SchemaLoader get() {
+        return GeoServerExtensions.bean(SchemaLoader.class);
     }
 }

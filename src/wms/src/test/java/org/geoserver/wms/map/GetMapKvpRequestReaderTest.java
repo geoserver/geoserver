@@ -14,9 +14,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -39,9 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.InterpolationBicubic;
@@ -50,9 +48,12 @@ import javax.media.jai.InterpolationNearest;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.cache.HttpCacheContext;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HttpContext;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -771,6 +772,64 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             };
             reqReader.read(spyRequest, parseKvp(kvp), caseInsensitiveKvp(kvp));
         }
+    }
+
+    @Test
+    public void testSldRemoteHttpConcurrency() throws Exception {
+        final String fakeBasicAuth = "FakeBasicAuth";
+        final String authHeader = "Authorization";
+        BasicHeader expectedBasicHeader = new BasicHeader(authHeader, fakeBasicAuth);
+
+        GetMapRequest request = reader.createRequest();
+        GetMapRequest spyRequest = spy(request);
+        Header[] headers = new Header[1];
+        when(spyRequest.getHttpRequestHeader(authHeader)).thenReturn(fakeBasicAuth);
+
+        CloseableHttpClient client = mock(CloseableHttpClient.class);
+        CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+        HttpEntity entity = mock(HttpEntity.class);
+
+        GetMapKvpRequestReader reqReader;
+        try (InputStream sld = GetMapKvpRequestReader.class.getResourceAsStream("BasicPolygonsLibraryNoDefault.sld")) {
+            when(entity.getContent()).thenReturn(sld);
+            when(response.getEntity()).thenReturn(entity);
+            when(client.execute(any(HttpGet.class), any(HttpCacheContext.class))).thenReturn(response);
+
+            reqReader = new GetMapKvpRequestReader(wms, null) {
+                @Override
+                protected CloseableHttpClient createHttpClient(RequestConfig config, CacheConfiguration cacheConfig) {
+                    return client;
+                }
+            };
+        }
+
+
+        int numberOfThreads = 10;
+        ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
+        for (int i = 0; i < numberOfThreads; i++) {
+            service.submit(() -> {
+                try {
+                    URL url = new URL("http://localhost/geoserver/rest/sldurl/sample.sld");
+                    String urlDecoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+                    HashMap kvp = new HashMap<>();
+                    kvp.put("layers", getLayerId(BASIC_POLYGONS));
+                    kvp.put("sld", urlDecoded);
+
+                    reqReader.read(spyRequest, parseKvp(kvp), caseInsensitiveKvp(kvp));
+                    assertSameHeader(headers, expectedBasicHeader);
+                } catch (Exception ignored) {
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        service.shutdown();
+
+        // Assert the same mock HTTP client instance was used by every thread
+        verify(client, times(numberOfThreads)).execute(any(HttpGet.class), any(HttpContext.class));
     }
 
     private void assertSameHeader(Header[] headers, BasicHeader expectedBasicHeader) {

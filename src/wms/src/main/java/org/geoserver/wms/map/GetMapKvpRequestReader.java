@@ -192,8 +192,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     }
 
     private CloseableHttpClient getHttpClient() {
-        CloseableHttpClient client = this._httpClient;
-        if (null == client) {
+        if (null == this._httpClient) {
             synchronized (this) {
                 if (null == this._httpClient) {
                     CacheConfiguration wmsCacheConfig = getCacheConfig();
@@ -204,7 +203,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 }
             }
         }
-        return client;
+        return this._httpClient;
     }
 
     private RequestConfig createHttpRequestConfig() {
@@ -231,7 +230,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         return wms.getServiceInfo().getRemoteStyleTimeout();
     }
 
-    private synchronized CloseableHttpClient createHttpClient(
+    protected synchronized CloseableHttpClient createHttpClient(
             RequestConfig requestConfig, CacheConfiguration wmsCacheConfig) {
         Objects.requireNonNull(requestConfig);
         Objects.requireNonNull(wmsCacheConfig);

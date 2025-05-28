@@ -445,9 +445,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertNotNull(request.getFeatureId());
         assertEquals(1, request.getFeatureId().size());
 
-        // TODO: request.getFeatureId() returns List<FeatureId> but it's not being parsed and contains Strings instead
-        List<?> featureId = request.getFeatureId();
-        assertEquals("foo", featureId.get(0));
+        assertEquals("foo", request.getFeatureId().get(0));
     }
 
     @Test
@@ -572,13 +570,13 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
-        assertEquals(1, manager.getConnections());
+        assertEquals(manager.getConnections(), 1);
 
         request = reader.createRequest();
         request = reader.read(request, parseKvp(kvp), kvp);
 
         // no connection is done, the result is taken from cache
-        assertEquals(1, manager.getConnections());
+        assertEquals(manager.getConnections(), 1);
     }
 
     @Test
@@ -608,13 +606,13 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
-        assertEquals(1, manager.getConnections());
+        assertEquals(manager.getConnections(), 1);
 
         request = reader.createRequest();
         request = reader.read(request, parseKvp(kvp), kvp);
 
         // new connection is done, the result is NOT taken from cache
-        assertEquals(2, manager.getConnections());
+        assertEquals(manager.getConnections(), 2);
     }
 
     @Test
@@ -1486,8 +1484,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             Dispatcher.REQUEST.set(null);
         }
         assertNotNull("ServiceException not catched", serviceException);
-        assertEquals("viewParamsFormat", serviceException.getLocator());
-        assertEquals(ServiceException.INVALID_PARAMETER_VALUE, serviceException.getCode());
+        assertEquals(serviceException.getLocator(), "viewParamsFormat");
+        assertEquals(serviceException.getCode(), ServiceException.INVALID_PARAMETER_VALUE);
     }
 
     /** Creates a HTTP embedded server with a dynamic port for testing the configures timeout. */
@@ -1498,8 +1496,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 "Creating a mock http server at port: {0}",
                 server.getAddress().getPort());
         server.createContext("/sld", createLongResponseHandler());
-
-        @SuppressWarnings("PMD.CloseResource")
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
         server.setExecutor(threadPoolExecutor);
 

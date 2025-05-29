@@ -129,12 +129,12 @@
       <artifactId>jsr305</artifactId>
     </dependency>
     <dependency>
-      <groupId>it.geosolutions.jaiext.concurrent-tile-cache</groupId>
-      <artifactId>jt-concurrent-tile-cache</artifactId>
+      <groupId>org.eclipse.imagen</groupId>
+      <artifactId>concurrent-tile-cache</artifactId>
     </dependency>
     <dependency>
-      <groupId>it.geosolutions.jaiext.jiffle</groupId>
-      <artifactId>jt-jiffle-op</artifactId>
+      <groupId>org.eclipse.imagen</groupId>
+      <artifactId>jiffle-op</artifactId>
     </dependency>
     <dependency>
       <groupId>com.sun.activation</groupId>

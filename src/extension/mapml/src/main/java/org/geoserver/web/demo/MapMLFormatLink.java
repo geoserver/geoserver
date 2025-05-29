@@ -54,7 +54,7 @@ public class MapMLFormatLink extends CommonFormatLink {
         }
         boolean useFeatures = isUseParameter(metadata, MapMLConstants.MAPML_USE_FEATURES);
         boolean useTiles = isUseParameter(metadata, MapMLConstants.MAPML_USE_TILES);
-        boolean multiExtent = isUseParameter(metadata, MapMLConstants.MAPML_MULTIEXTENT);
+        boolean multiExtent = isUseParameter(metadata, MapMLConstants.MAPML_USE_MULTIEXTENTS);
         // set the format
         params.put("format", MapMLConstants.MAPML_HTML_MIME_TYPE);
         // set the format_options

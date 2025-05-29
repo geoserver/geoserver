@@ -5,9 +5,9 @@
 package org.geoserver.mapml.web.demo;
 
 import static org.geoserver.mapml.MapMLConstants.MAPML_CREATE_FEATURE_LINKS;
-import static org.geoserver.mapml.MapMLConstants.MAPML_MULTIEXTENT;
 import static org.geoserver.mapml.MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_MULTIEXTENTS;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES_REP;
 import static org.junit.Assert.assertEquals;
 
@@ -40,7 +40,7 @@ public class MapMLMapPreviewTest extends GeoServerWicketTestSupport {
         Catalog cat = getCatalog();
         LayerInfo li = cat.getLayerByName(MockData.LINES.getLocalPart());
         li.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
-        li.getResource().getMetadata().put(MAPML_MULTIEXTENT, false);
+        li.getResource().getMetadata().put(MAPML_USE_MULTIEXTENTS, false);
         cat.save(li);
 
         ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
@@ -78,7 +78,7 @@ public class MapMLMapPreviewTest extends GeoServerWicketTestSupport {
     public void testURLFormatMulti() throws Exception {
         Catalog cat = getCatalog();
         LayerInfo li = cat.getLayerByName(MockData.LINES.getLocalPart());
-        li.getResource().getMetadata().put(MAPML_MULTIEXTENT, true);
+        li.getResource().getMetadata().put(MAPML_USE_MULTIEXTENTS, true);
         cat.save(li);
         assertLink(
                 "http://localhost/context/cgf/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=cgf%3ALines&amp;"

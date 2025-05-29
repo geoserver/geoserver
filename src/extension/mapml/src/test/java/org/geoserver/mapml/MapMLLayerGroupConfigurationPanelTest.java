@@ -1,4 +1,4 @@
-/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,16 +10,15 @@ import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -31,8 +30,7 @@ import org.geowebcache.layer.TileLayer;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-/** @author prushforth */
-public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport {
+public class MapMLLayerGroupConfigurationPanelTest extends GeoServerWicketTestSupport {
     static QName MOSAIC = new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX);
 
     @Override
@@ -52,117 +50,131 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         testData.addVectorLayer(BASIC_POLYGONS, getCatalog());
     }
 
-    @Test
-    public void testMapMLPanel() {
-        // get a test layer and instantiate the model
-        final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
-        Model<LayerInfo> model = new Model<>(layer);
-        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
-        // let's start the page and check that the components are correctly instantiated
-        tester.startPage(page);
-        tester.assertRenderedPage(FormTestPage.class);
-        tester.assertComponent("form", Form.class);
-        // check that the attributes dropdown is available
-        tester.assertComponent("form:panel:featurecaptionattributes", ListMultipleChoice.class);
-        tester.assertComponent("form:panel:mime", DropDownChoice.class);
-        // check that the mime type pick list is available as expected with vector data
-        tester.assertEnabled("form:panel:mime");
-        // check that the "useFeatures" checkbox is enabled as expected with vector data
-        tester.assertEnabled("form:panel:useFeatures");
-        FormTester ft = tester.newFormTester("form");
-        tester.assertModelValue("form:panel:licenseTitle", null);
-        tester.assertModelValue("form:panel:licenseLink", null);
-        tester.assertModelValue("form:panel:useTiles", null);
-        tester.assertModelValue("form:panel:useFeatures", null);
-        tester.assertModelValue("form:panel:useMultiExtents", null);
-        tester.assertModelValue("form:panel:dimension", null);
-        tester.assertModelValue("form:panel:featurecaptionattributes", null);
-        tester.assertModelValue("form:panel:featureCaptionTemplate", null);
+    private LayerGroupInfo createTestLayerGroup(String name, boolean includeRaster) {
+        LayerGroupInfo layerGroup = getCatalog().getFactory().createLayerGroup();
+        layerGroup.setName(name);
+        layerGroup.setTitle(name + " Title");
+        layerGroup.setAbstract(name + " Abstract");
 
-        ft.setValue("panel:licenseTitle", "A Fake Title");
-        ft.setValue("panel:licenseLink", "https://example.org/mapml");
-        ft.setValue("panel:useTiles", true);
-        ft.setValue("panel:useFeatures", true);
-        // no dimension set up yet should not be able to select one...
-        try {
-            ft.select("panel:dimension", 0);
-            fail("No dimension should be set up yet.");
-        } catch (Exception e) {
+        // Add vector layer
+        LayerInfo pondsLayer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
+        layerGroup.getLayers().add(pondsLayer);
+        layerGroup.getStyles().add(null);
 
+        LayerInfo polygonsLayer = getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
+        layerGroup.getLayers().add(polygonsLayer);
+        layerGroup.getStyles().add(null);
+
+        if (includeRaster) {
+            // Add raster layer
+            LayerInfo mosaicLayer = getCatalog().getLayerByName(MOSAIC.getLocalPart());
+            layerGroup.getLayers().add(mosaicLayer);
+            layerGroup.getStyles().add(null);
         }
 
-        // select the "NAME" attribute from Ponds, map to featurecaption in MapML
-        ft.select("panel:featurecaptionattributes", 2);
-        ft.setValue("panel:featureCaptionTemplate", "This is a ${test}");
-
-        ft.submit();
-        tester.assertModelValue("form:panel:licenseTitle", "A Fake Title");
-        tester.assertModelValue("form:panel:licenseLink", "https://example.org/mapml");
-        tester.assertModelValue("form:panel:useTiles", true);
-        tester.assertModelValue("form:panel:useFeatures", true);
-        //        tester.assertModelValue("form:panel:featurecaptionattributes", "[NAME]");
-        tester.assertModelValue("form:panel:featureCaptionTemplate", "This is a ${test}");
+        getCatalog().add(layerGroup);
+        // Return the proxied version from the catalog
+        return getCatalog().getLayerGroupByName(name);
     }
 
     @Test
-    public void testMapMLPanelWithRasterData() {
-        // get a test layer and instantiate the model
-        final LayerInfo layer = getCatalog().getLayerByName(MOSAIC.getLocalPart());
-        Model<LayerInfo> model = new Model<>(layer);
-        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
+    public void testMapMLPanel() {
+        // create a test layer group with vector layers
+        LayerGroupInfo layerGroup = createTestLayerGroup("testVectorGroup", false);
+        Model<LayerGroupInfo> model = new Model<>(layerGroup);
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerGroupConfigurationPanel(id, model));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertComponent("form", Form.class);
-        // check that the "attributes" (works with raster dimensions) dropdown is available
-        tester.assertComponent("form:panel:featurecaptionattributes", ListMultipleChoice.class);
+        // check that the mime dropdown is available
         tester.assertComponent("form:panel:mime", DropDownChoice.class);
-        // check that the "useFeatures" checkbox is no longer disabled with raster data
+        // check that the mime type pick list is available as expected
+        tester.assertEnabled("form:panel:mime");
+        // check that the "useFeatures" checkbox is enabled as expected
         tester.assertEnabled("form:panel:useFeatures");
+        // check that the "useTiles" checkbox is enabled
+        tester.assertEnabled("form:panel:useTiles");
+        // check that the "useMultiExtents" checkbox is enabled
+        tester.assertEnabled("form:panel:useMultiExtents");
+
         FormTester ft = tester.newFormTester("form");
-        tester.assertModelValue("form:panel:featurecaptionattributes", null);
         tester.assertModelValue("form:panel:licenseTitle", null);
         tester.assertModelValue("form:panel:licenseLink", null);
         tester.assertModelValue("form:panel:useTiles", null);
         tester.assertModelValue("form:panel:useFeatures", null);
         tester.assertModelValue("form:panel:useMultiExtents", null);
-        tester.assertModelValue("form:panel:dimension", null);
-        tester.assertModelValue("form:panel:featurecaptionattributes", null);
-        tester.assertModelValue("form:panel:featureCaptionTemplate", null);
 
-        ft.setValue("panel:licenseTitle", "A Fake Title");
-        ft.setValue("panel:licenseLink", "https://example.org/mapml");
+        ft.setValue("panel:licenseTitle", "A Fake Layer Group Title");
+        ft.setValue("panel:licenseLink", "https://example.org/mapml/layergroup");
         ft.setValue("panel:useTiles", true);
-        ft.setValue("panel:featureCaptionTemplate", "This is a ${test}");
-
-        // no dimension set up yet should not be able to select one...
-        try {
-            ft.select("panel:dimension", 0);
-            fail("No dimension should be set up yet.");
-        } catch (Exception e) {
-
-        }
-        // select the "Blue band" from Mosaic, map to featurecaption in MapML
-        ft.select("panel:featurecaptionattributes", 2);
-        ft.setValue("panel:featureCaptionTemplate", "This is the ${BLUE_BAND}");
+        ft.setValue("panel:useFeatures", true);
+        ft.setValue("panel:useMultiExtents", true);
 
         ft.submit();
-        tester.assertModelValue("form:panel:licenseTitle", "A Fake Title");
-        tester.assertModelValue("form:panel:licenseLink", "https://example.org/mapml");
+        tester.assertModelValue("form:panel:licenseTitle", "A Fake Layer Group Title");
+        tester.assertModelValue("form:panel:licenseLink", "https://example.org/mapml/layergroup");
         tester.assertModelValue("form:panel:useTiles", true);
-        //      tester.assertModelValue("form:panel:featurecaptionattributes", "[BLUE_BAND]");
-        tester.assertModelValue("form:panel:featureCaptionTemplate", "This is the ${BLUE_BAND}");
+        tester.assertModelValue("form:panel:useFeatures", true);
+        tester.assertModelValue("form:panel:useMultiExtents", true);
+
+        // Clean up
+        getCatalog().remove(layerGroup);
+    }
+
+    @Test
+    public void testMapMLPanelWithMixedData() {
+        // create a test layer group with both vector and raster layers
+        LayerGroupInfo layerGroup = createTestLayerGroup("testMixedGroup", true);
+        Model<LayerGroupInfo> model = new Model<>(layerGroup);
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerGroupConfigurationPanel(id, model));
+        // let's start the page and check that the components are correctly instantiated
+        tester.startPage(page);
+        tester.assertRenderedPage(FormTestPage.class);
+        tester.assertComponent("form", Form.class);
+        // check that the mime dropdown is available
+        tester.assertComponent("form:panel:mime", DropDownChoice.class);
+        // check that the "useFeatures" checkbox is enabled
+        tester.assertEnabled("form:panel:useFeatures");
+        // check that the "useTiles" checkbox is enabled
+        tester.assertEnabled("form:panel:useTiles");
+        // check that the "useMultiExtents" checkbox is enabled
+        tester.assertEnabled("form:panel:useMultiExtents");
+
+        FormTester ft = tester.newFormTester("form");
+        tester.assertModelValue("form:panel:licenseTitle", null);
+        tester.assertModelValue("form:panel:licenseLink", null);
+        tester.assertModelValue("form:panel:useTiles", null);
+        tester.assertModelValue("form:panel:useFeatures", null);
+        tester.assertModelValue("form:panel:useMultiExtents", null);
+
+        ft.setValue("panel:licenseTitle", "A Mixed Data Layer Group");
+        ft.setValue("panel:licenseLink", "https://example.org/mapml/mixed");
+        ft.setValue("panel:useTiles", true);
+        ft.setValue("panel:useMultiExtents", true);
+
+        ft.submit();
+        tester.assertModelValue("form:panel:licenseTitle", "A Mixed Data Layer Group");
+        tester.assertModelValue("form:panel:licenseLink", "https://example.org/mapml/mixed");
+        tester.assertModelValue("form:panel:useTiles", true);
+        tester.assertModelValue("form:panel:useMultiExtents", true);
+
+        // Clean up
+        getCatalog().remove(layerGroup);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testMapMLMime() {
-        // get a test layer and instantiate the model
-        final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
-        layer.getResource().getMetadata().put(MapMLConstants.MAPML_USE_FEATURES, true);
-        Model<LayerInfo> model = new Model<>(layer);
+        // this test is a refactor of the corresponding test in MapMLLayerConfigurationPanelTest
+        // but NOTE that that test relies on state from an earlier test, so this
+        // test must itself set the use features/tiles and test accordingly
+        // create a test layer group
+        LayerGroupInfo layerGroup = createTestLayerGroup("testMimeGroup", false);
+        layerGroup.getMetadata().put(MapMLConstants.MAPML_USE_FEATURES, true);
+        Model<LayerGroupInfo> model = new Model<>(layerGroup);
 
-        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerGroupConfigurationPanel(id, model));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
 
@@ -170,11 +182,9 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         // check that the mime type pick list is disabled when mapML useFeatures is enabled
         tester.assertDisabled("form:panel:mime");
 
-        // check that the "mime" checkbox is disabled as expected when mapML useFeatures is enabled
-        tester.assertDisabled("form:panel:mime");
-        layer.getResource().getMetadata().put(MapMLConstants.MAPML_USE_FEATURES, false);
-        Model<LayerInfo> model2 = new Model<>(layer);
-        page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model2));
+        layerGroup.getMetadata().put(MapMLConstants.MAPML_USE_FEATURES, false);
+        Model<LayerGroupInfo> model2 = new Model<>(layerGroup);
+        page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerGroupConfigurationPanel(id, model2));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
         // check that the "mime" checkbox is enabled as expected when mapML useFeatures is disabled
@@ -192,24 +202,24 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
                         "image/png8"));
         GWC mediator = GWC.get();
 
-        final String layerName = getLayerId(BASIC_POLYGONS);
-        LayerInfo layerInfo = getCatalog().getLayerByName(layerName);
-        assertNotNull(layerInfo);
-        layerInfo.getResource().getMetadata().put(MapMLConstants.MAPML_USE_FEATURES, false);
-        layerInfo.getResource().getMetadata().put(MAPML_USE_TILES, true);
+        // Test with tiles enabled
+        layerGroup.getMetadata().put(MapMLConstants.MAPML_USE_FEATURES, false);
+        layerGroup.getMetadata().put(MAPML_USE_TILES, true);
 
-        TileLayer tileLayer = mediator.getTileLayerByName(layerName);
+        TileLayer tileLayer = mediator.getTileLayerByName(layerGroup.getName());
         assertNotNull(tileLayer);
         assertTrue(tileLayer.isEnabled());
-
-        Model<LayerInfo> modelTile = new Model<>(layerInfo);
+        Model<LayerGroupInfo> modelTile = new Model<>(layerGroup);
 
         FormTestPage pageTile =
-                new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, modelTile));
+                new FormTestPage((ComponentBuilder) id -> new MapMLLayerGroupConfigurationPanel(id, modelTile));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(pageTile);
         DropDownChoice<String> dropDownChoiceTile =
                 (DropDownChoice) tester.getComponentFromLastRenderedPage("form:panel:mime");
         assertThat(dropDownChoiceTile.getChoices(), Matchers.containsInAnyOrder("image/jpeg", "image/png"));
+
+        // Clean up
+        getCatalog().remove(layerGroup);
     }
 }

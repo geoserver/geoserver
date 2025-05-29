@@ -78,6 +78,21 @@
             <li>
                 <fieldset>
                     <legend>
+                        <span><wicket:message key="mapmlMultiExtentSection">Sub-layer Config</wicket:message></span>
+                    </legend>
+                    <ul class="choiceList">
+                      <li>
+                        <input id="multiextent" wicket:id="useMultiExtents" type="checkbox"></input>
+                        <label for="multiextent">
+                          <wicket:message key="mapmlUseMultiExtents">Expose sub-layers in layer control</wicket:message>
+                        </label>
+                      </li>
+                    </ul>
+                </fieldset>
+            </li>
+            <li>
+                <fieldset>
+                    <legend>
                         <span><wicket:message key="mapmlDimensionSection">Dimension Config</wicket:message></span>
                     </legend>
                     <ul>

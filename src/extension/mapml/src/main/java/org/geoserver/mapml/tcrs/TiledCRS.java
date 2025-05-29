@@ -192,7 +192,9 @@ public class TiledCRS {
             zoom = i;
             Bounds pxb = this.getPixelBounds(prjb, i);
             if (!(dsplyb.getWidth() >= pxb.getWidth() && dsplyb.getHeight() >= pxb.getHeight())) {
-                zoom = i - 1;
+                if (zoom != 0) {
+                    zoom = i - 1;
+                }
                 break;
             }
         }

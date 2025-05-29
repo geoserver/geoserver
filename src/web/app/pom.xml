@@ -279,7 +279,6 @@
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>${jetty.version}</version>
         <configuration>
           <webApp>
             <contextPath>/geoserver</contextPath>
@@ -341,7 +340,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.0.0</version>
         <executions>
           <execution>
             <id>attach-war</id>

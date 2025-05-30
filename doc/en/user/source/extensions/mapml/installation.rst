@@ -69,7 +69,14 @@ For example, the UTM14WGS84Quad specified in the above selector has the followin
 
 .. figure:: images/mapml_utm_gridset.png
 
+Global Settings
+---------------
 
+.. figure:: images/mapml_global_menu.png
+
+The Global settings menu (above) contains a Service Response Settings section (below) which contains the Verbose XML output (pretty print) checkbox. The MapML extension respects or uses this setting when serializing text/mapml (media type) responses.  Be aware that caching on both the client and server may prevent this setting from becoming immediately obvious in devtools responses. Refreshing the browser cache can request a new version of the response, but if the response is cached on the server, for example as a vector tile, it may not be possible to obtain a pretty printed version of the data, short of deleting the tile cache, which may be undesirable.
+
+.. figure:: images/mapml_global_verbose_output.png
 
 Styles
 ------

@@ -73,7 +73,9 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
             mapMLDocument = mapMLDocumentBuilder.getMapMLDocument();
         }
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        encoder.encode(mapMLDocument, bos);
+        // write to output based on global verbose setting
+        boolean verbose = geoServer.getGlobal().getSettings().isVerbose();
+        encoder.encode(mapMLDocument, bos, verbose);
         return new RawMap(mapContent, bos, MapMLConstants.MAPML_MIME_TYPE);
     }
 

@@ -57,6 +57,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
@@ -2250,5 +2251,108 @@ public class MapMLWMSTest extends MapMLTestSupport {
         public void describeTo(Description description) {
             description.appendText("Bounds matches " + expected + " with tolerance " + tolerance);
         }
+    }
+
+    @Test
+    public void testMapMLWMSVerboseSettingPrettyPrint() throws Exception {
+        // Test that WMS GetMap MapML output is pretty-printed when global verbose setting is true
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        info.getSettings().setVerbose(true);
+        gs.save(info);
+
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        MockRequestResponse requestResponse = getMockRequestResponse(layerId, null, null, "EPSG:4326", null);
+
+        String response = requestResponse.response.getContentAsString();
+
+        // Check for pretty-printing indicators
+        assertTrue("WMS MapML response should contain newlines for pretty-printing", response.contains("\n"));
+        assertTrue("WMS MapML response should contain indentation spaces", response.contains("  <"));
+
+        // Verify XML structure is preserved
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // reset to default
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+    }
+
+    @Test
+    public void testMapMLWMSVerboseSettingDenseOutput() throws Exception {
+        // Test that WMS GetMap MapML output is dense when global verbose setting is false
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        MockRequestResponse requestResponse = getMockRequestResponse(layerId, null, null, "EPSG:4326", null);
+
+        String response = requestResponse.response.getContentAsString();
+
+        // Check that output is more compact (minimal indentation)
+        assertFalse(
+                "Dense WMS MapML output should have minimal indentation spaces",
+                response.contains("  <") && response.contains("    <"));
+
+        // Verify XML structure is still valid
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // reset to default not necessary - default is false
+    }
+
+    @Test
+    public void testMapMLGetFeatureInfoVerboseSettingPrettyPrint() throws Exception {
+        // Test that WMS GetFeatureInfo MapML output is pretty-printed when global verbose setting is true
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        info.getSettings().setVerbose(true);
+        gs.save(info);
+
+        String response = getAsString("wms?LAYERS=" + getLayerId(MockData.FORESTS) + "&STYLES=&FORMAT=image%2Fpng"
+                + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG%3A4326&BBOX=-0.002,-0.002,0.002,0.002"
+                + "&WIDTH=20&HEIGHT=20&INFO_FORMAT=text/mapml&QUERY_LAYERS=" + getLayerId(MockData.FORESTS)
+                + "&X=10&Y=10");
+
+        // Check for pretty-printing indicators
+        assertTrue(
+                "GetFeatureInfo MapML response should contain newlines for pretty-printing", response.contains("\n"));
+        assertTrue("GetFeatureInfo MapML response should contain indentation spaces", response.contains("  "));
+
+        // Verify XML structure is preserved
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // reset to default
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+    }
+
+    @Test
+    public void testMapMLGetFeatureInfoVerboseSettingDenseOutput() throws Exception {
+        // Test that WMS GetFeatureInfo MapML output is dense when global verbose setting is false
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+
+        String response = getAsString("wms?LAYERS=" + getLayerId(MockData.FORESTS) + "&STYLES=&FORMAT=image%2Fpng"
+                + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG%3A4326&BBOX=-0.002,-0.002,0.002,0.002"
+                + "&WIDTH=20&HEIGHT=20&INFO_FORMAT=text/mapml&QUERY_LAYERS=" + getLayerId(MockData.FORESTS)
+                + "&X=10&Y=10");
+
+        // Check that output is more compact (minimal indentation)
+        assertFalse(
+                "Dense GetFeatureInfo MapML output should have minimal indentation spaces",
+                response.contains("  <") && response.contains("    <"));
+
+        // Verify XML structure is still valid
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // reset to default not necessary - default is false
     }
 }

@@ -19,7 +19,7 @@ import org.geotools.api.filter.sort.SortBy;
 public class APISearchQuery {
 
     private BigInteger limit;
-    private BigInteger startIndex;
+    private BigInteger startIndex = BigInteger.ZERO;
     private String crs;
     private String bbox;
 

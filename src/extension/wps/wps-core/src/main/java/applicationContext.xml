@@ -201,7 +201,7 @@
     <bean id="interpolationPPIO" class="org.geoserver.wps.ppio.InterpolationPPIO" />
     <bean id="sldStylePPIO" class="org.geoserver.wps.ppio.SLDStylePPIO" />
     <bean id="urlPPIO" class="org.geoserver.wps.ppio.URLPPIO" />
-    <bean id="jaitoolsRangePPIO" class="org.geoserver.wps.ppio.JAIToolsRangePPIO"/>
+    <bean id="jaiextRangePPIO" class="org.geoserver.wps.ppio.JAIExtRangePPIO"/>
     <bean id="rawDataPPIO" class="org.geoserver.wps.ppio.RawDataPPIO">
       <constructor-arg ref="wpsResourceManager" />
     </bean>

@@ -15,8 +15,11 @@ import javax.xml.namespace.QName;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
+
+import it.geosolutions.jaiext.JAIExt;
 
 public class CoverageClassStatsTest extends WPSTestSupport {
 

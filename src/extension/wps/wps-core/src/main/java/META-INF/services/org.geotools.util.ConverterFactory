@@ -1,1 +1,1 @@
-org.geoserver.wps.ppio.JAIToolsRangeConverterFactory
+org.geoserver.wps.ppio.JAIExtRangeConverterFactory

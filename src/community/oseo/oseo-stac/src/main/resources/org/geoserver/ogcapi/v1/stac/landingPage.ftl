@@ -1,4 +1,6 @@
-<#global pagecrumbs="<li class='breadcrumb-item active'>Home</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item active'>Home</li>
+</#global>
 <#include "common-header.ftl">
 
   <h1>${service.title!"GeoServer STAC 1.0 Service"}</h1>

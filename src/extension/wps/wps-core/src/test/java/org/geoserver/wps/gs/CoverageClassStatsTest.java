@@ -15,12 +15,20 @@ import javax.xml.namespace.QName;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.coverage.processing.CoverageProcessor;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class CoverageClassStatsTest extends WPSTestSupport {
 
     public static QName DEM = new QName(MockData.SF_URI, "sfdem", MockData.SF_PREFIX);
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        // forces jai-ext initialization, to be removed once ImageN migration is done
+        CoverageProcessor.getInstance();
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

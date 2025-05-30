@@ -8,22 +8,23 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.mock;
 import static org.easymock.EasyMock.notNull;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 
+import it.geosolutions.jaiext.range.Range;
+import it.geosolutions.jaiext.range.RangeFactory;
+import it.geosolutions.jaiext.stats.Statistics;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.easymock.EasyMock;
 import org.geotools.process.classify.ClassificationStats;
-import org.geotools.process.vector.FeatureClassStats;
-import org.jaitools.numeric.Range;
-import org.jaitools.numeric.Statistic;
-import org.jaitools.numeric.StreamingSampleStats;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.ContentHandler;
@@ -32,22 +33,7 @@ public class ClassificationStatsPPIOTest {
 
     @Test
     public void testSanity() throws Exception {
-        List<Range<Double>> ranges =
-                Arrays.asList(Range.create(0d, true, 10d, false), Range.create(10d, true, 20d, true));
-
-        StreamingSampleStats s1 = new StreamingSampleStats();
-        s1.setStatistic(Statistic.MEAN);
-        s1.addRange(ranges.get(0));
-        s1.offer(10d);
-
-        StreamingSampleStats s2 = new StreamingSampleStats();
-        s2.setStatistic(Statistic.MEAN);
-        s2.addRange(ranges.get(0));
-        s2.offer(10d);
-
-        StreamingSampleStats[] stats = {s1, s2};
-
-        ClassificationStats classStats = new FeatureClassStats.Results(ranges, stats);
+        ClassificationStats classStats = newStats();
 
         ClassificationStatsPPIO ppio = new ClassificationStatsPPIO();
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -76,21 +62,25 @@ public class ClassificationStatsPPIOTest {
     }
 
     ClassificationStats newStats() {
-        List<Range<Double>> ranges =
-                Arrays.asList(Range.create(0d, true, 10d, false), Range.create(10d, true, 20d, true));
+        Range r0 = RangeFactory.create(0d, true, 10d, false);
+        Range r1 = RangeFactory.create(10d, true, 20d, true);
 
-        StreamingSampleStats s1 = new StreamingSampleStats();
-        s1.setStatistic(Statistic.MEAN);
-        s1.addRange(ranges.get(0));
-        s1.offer(10d);
-
-        StreamingSampleStats s2 = new StreamingSampleStats();
-        s2.setStatistic(Statistic.MEAN);
-        s2.addRange(ranges.get(0));
-        s2.offer(10d);
-
-        StreamingSampleStats[] stats = {s1, s2};
-
-        return new FeatureClassStats.Results(ranges, stats);
+        ClassificationStats result = mock(ClassificationStats.class);
+        EasyMock.expect(result.size()).andReturn(2).anyTimes();
+        EasyMock.expect(result.range(0)).andReturn(r0).anyTimes();
+        EasyMock.expect(result.range(1)).andReturn(r1).anyTimes();
+        EasyMock.expect(result.count(0)).andReturn(1L).anyTimes();
+        EasyMock.expect(result.count(1)).andReturn(1L).anyTimes();
+        EasyMock.expect(result.value(0, Statistics.StatsType.MEAN))
+                .andReturn(10d)
+                .anyTimes();
+        EasyMock.expect(result.value(1, Statistics.StatsType.MEAN))
+                .andReturn(10d)
+                .anyTimes();
+        EasyMock.expect(result.getStats())
+                .andReturn(new LinkedHashSet<>(List.of(Statistics.StatsType.MEAN)))
+                .anyTimes();
+        EasyMock.replay(result);
+        return result;
     }
 }

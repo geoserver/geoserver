@@ -6,6 +6,8 @@
  */
 package org.geoserver.wps.ppio;
 
+import it.geosolutions.jaiext.range.Range;
+import it.geosolutions.jaiext.range.RangeFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -13,15 +15,14 @@ import java.util.regex.Pattern;
 import org.geotools.util.Converter;
 import org.geotools.util.ConverterFactory;
 import org.geotools.util.factory.Hints;
-import org.jaitools.numeric.Range;
 
 /**
- * ConverterFactory for trading between strings and JAITools ranges
+ * ConverterFactory for trading between strings and JAIExt ranges
  *
  * @author Andrea Aime - GeoSolutions
  * @source $URL$
  */
-public class JAIToolsRangeConverterFactory implements ConverterFactory {
+public class JAIExtRangeConverterFactory implements ConverterFactory {
 
     private static final String RE_OPEN = "(\\(|\\[)"; // char for opening a range
     private static final String RE_CLOSE = "(\\)|\\])"; // char for closing range
@@ -55,7 +56,7 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
     }
 
     /** Return the parsed Range. */
-    static Range<Double> parseRangeInternal(Matcher m, String sRange) {
+    static Range parseRangeInternal(Matcher m, String sRange) {
         Double min = null;
         Double max = null;
 
@@ -65,9 +66,13 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
 
         if (m.group(2) != null) {
             min = Double.valueOf(m.group(2));
+        } else {
+            min = Double.NEGATIVE_INFINITY;
         }
         if (m.group(3) != null) {
             max = Double.valueOf(m.group(3));
+        } else {
+            max = Double.POSITIVE_INFINITY;
         }
 
         boolean inclmin;
@@ -83,11 +88,11 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
         if (min != null && max != null && min > max)
             throw new IllegalArgumentException("Bad min/max relation (" + sRange + ")");
 
-        return new Range<>(min, inclmin, max, inclmax);
+        return RangeFactory.create(min, inclmin, max, inclmax);
     }
 
     /** Parses a list of ranges from a string */
-    public static List<Range<Double>> parseRanges(String sRangeList) {
+    public static List<Range> parseRanges(String sRangeList) {
         // check that the whole input string is a list of ranges
         Matcher m = RANGELIST_PATTERN.matcher(sRangeList);
         if (!m.matches()) throw new IllegalArgumentException("Bad range definition '" + sRangeList + "'");
@@ -95,9 +100,9 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
         // fetch every single range
         m = RANGE_PATTERN.matcher(sRangeList);
 
-        List<Range<Double>> ret = new ArrayList<>();
+        List<Range> ret = new ArrayList<>();
         while (m.find()) {
-            Range<Double> range = parseRangeInternal(m, sRangeList);
+            Range range = parseRangeInternal(m, sRangeList);
             ret.add(range);
         }
 

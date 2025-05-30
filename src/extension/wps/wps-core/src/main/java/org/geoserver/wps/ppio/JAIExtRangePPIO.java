@@ -5,25 +5,23 @@
  */
 package org.geoserver.wps.ppio;
 
+import it.geosolutions.jaiext.range.Range;
 import org.geotools.util.Converter;
-import org.jaitools.JAITools;
-import org.jaitools.numeric.Range;
 
 /**
- * Parses a {@link JAITools} range from a string defining it
+ * Parses a JAIExt range from a string defining it
  *
  * @author Andrea Aime - GeoSolutions
  * @author Emanuele Tajarol - GeoSolutions
  */
-public class JAIToolsRangePPIO extends LiteralPPIO {
+public class JAIExtRangePPIO extends LiteralPPIO {
 
-    static Converter CONVERTER = new JAIToolsRangeConverterFactory().createConverter(String.class, Range.class, null);
+    static Converter CONVERTER = new JAIExtRangeConverterFactory().createConverter(String.class, Range.class, null);
 
     /** Parses a single range from a string */
-    public static Range<Double> parseRange(String sRange) {
+    public static Range parseRange(String sRange) {
         try {
-            @SuppressWarnings("unchecked")
-            Range<Double> result = CONVERTER.convert(sRange, Range.class);
+            Range result = CONVERTER.convert(sRange, Range.class);
             if (result == null) {
                 throw new IllegalArgumentException("Bad range definition '" + sRange + "'");
             }
@@ -34,8 +32,13 @@ public class JAIToolsRangePPIO extends LiteralPPIO {
         }
     }
 
-    public JAIToolsRangePPIO() {
+    public JAIExtRangePPIO() {
         super(Range.class);
+    }
+
+    @Override
+    public PPIODirection getDirection() {
+        return PPIODirection.DECODING;
     }
 
     /** Decodes the parameter (as a string) to its internal object implementation. */
@@ -47,6 +50,6 @@ public class JAIToolsRangePPIO extends LiteralPPIO {
     /** Encodes the internal object representation of a parameter as a string. */
     @Override
     public String encode(Object value) throws Exception {
-        throw new UnsupportedOperationException("JaiTools range not supported out of the box");
+        throw new UnsupportedOperationException("JAIExt range encoding not supported out of the box");
     }
 }

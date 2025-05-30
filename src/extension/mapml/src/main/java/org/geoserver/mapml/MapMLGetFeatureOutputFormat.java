@@ -7,14 +7,11 @@ package org.geoserver.mapml;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 import net.opengis.wfs.impl.GetFeatureTypeImpl;
 import net.opengis.wfs.impl.QueryTypeImpl;
 import org.geoserver.catalog.LayerInfo;
@@ -32,7 +29,6 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 /**
  * @author Chris Hodgson
@@ -42,7 +38,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
     private static final Logger LOGGER = Logging.getLogger(MapMLGetFeatureOutputFormat.class);
 
     @Autowired
-    private Jaxb2Marshaller mapmlMarshaller;
+    private MapMLEncoder mapMLEncoder;
 
     private String base;
     private String path;
@@ -97,11 +93,9 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
                 null,
                 null);
 
-        // write to output
-        OutputStreamWriter osw = new OutputStreamWriter(out, gs.getSettings().getCharset());
-        Result result = new StreamResult(osw);
-        mapmlMarshaller.marshal(mapml, result);
-        osw.flush();
+        // write to output based on global verbose setting
+        boolean verbose = gs.getGlobal().getSettings().isVerbose();
+        mapMLEncoder.encode(mapml, out, verbose);
     }
 
     /**

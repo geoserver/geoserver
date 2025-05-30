@@ -5,16 +5,12 @@
 package org.geoserver.mapml;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 /**
  * @author Chris Hodgson
@@ -23,7 +19,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 public class MapMLMessageConverter extends BaseMessageConverter<Object> {
 
     @Autowired
-    private Jaxb2Marshaller mapmlMarshaller;
+    private MapMLEncoder mapMLEncoder;
 
     /** */
     public MapMLMessageConverter() {
@@ -47,7 +43,7 @@ public class MapMLMessageConverter extends BaseMessageConverter<Object> {
      */
     @Override
     public boolean canWrite(Class<?> clazz, @Nullable MediaType mediaType) {
-        return canWrite(mediaType) && mapmlMarshaller.supports(clazz);
+        return canWrite(mediaType) && org.geoserver.mapml.xml.Mapml.class.isAssignableFrom(clazz);
     }
 
     /**
@@ -69,11 +65,12 @@ public class MapMLMessageConverter extends BaseMessageConverter<Object> {
     @Override
     protected void writeInternal(Object o, HttpOutputMessage outputMessage)
             throws UnsupportedEncodingException, IOException {
-        try (OutputStreamWriter osw = new OutputStreamWriter(
-                outputMessage.getBody(), geoServer.getSettings().getCharset())) {
-            Result result = new StreamResult(osw);
-            mapmlMarshaller.marshal(o, result);
-            osw.flush();
+        if (o instanceof org.geoserver.mapml.xml.Mapml) {
+            // write to output based on global verbose setting
+            boolean verbose = geoServer.getGlobal().getSettings().isVerbose();
+            mapMLEncoder.encode((org.geoserver.mapml.xml.Mapml) o, outputMessage.getBody(), verbose);
+        } else {
+            throw new IllegalArgumentException("Can only write Mapml objects, got: " + o.getClass());
         }
     }
 }

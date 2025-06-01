@@ -29,7 +29,6 @@ import org.geotools.util.factory.Hints;
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
-@SuppressWarnings("deprecation")
 public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
 
     /** */

@@ -80,7 +80,6 @@ import org.xml.sax.SAXParseException;
  *
  * @author Andrea Aime, GeoSolutions
  */
-@SuppressWarnings("serial")
 public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected static XpathEngine xpath;
 

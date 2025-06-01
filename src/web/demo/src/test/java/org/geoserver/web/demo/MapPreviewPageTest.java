@@ -128,7 +128,6 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testMaxNumberOfFeaturesForPreview() throws Exception {
 
         GeoServer geoserver = getGeoServer();

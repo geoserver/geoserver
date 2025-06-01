@@ -181,7 +181,7 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
     @Override
     public void close() throws IOException {
         try {
-            @SuppressWarnings({"resource", "PMD.CloseResource"}) // no need to close AutoClosable loggerContext here
+            @SuppressWarnings({"PMD.CloseResource"}) // no need to close AutoClosable loggerContext here
             LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
             Configuration configuration = ctx.getConfiguration();
             configuration.getAppenders().values().remove(this);

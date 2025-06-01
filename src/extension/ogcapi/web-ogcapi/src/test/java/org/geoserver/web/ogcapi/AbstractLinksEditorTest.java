@@ -46,7 +46,6 @@ public abstract class AbstractLinksEditorTest extends GeoServerWicketTestSupport
         tester.assertModelValue(EDITOR + ITEM1 + SERVICE, link.getService());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testAddLink() throws Exception {
         // create a new link

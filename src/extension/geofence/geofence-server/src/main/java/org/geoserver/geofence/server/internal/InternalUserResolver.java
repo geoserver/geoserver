@@ -90,7 +90,6 @@ public class InternalUserResolver implements UserResolver {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public boolean existsUser(String username) {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "Getting Roles for User [" + username + "]");
@@ -153,7 +152,6 @@ public class InternalUserResolver implements UserResolver {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public boolean existsRole(String rolename) {
         try {
             if (logger.isLoggable(Level.FINE)) {

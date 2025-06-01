@@ -143,7 +143,7 @@ class LoggingUtilsDelegate {
 
         // add the appenders we saved above (for example a test appender)
         {
-            @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+            @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
             LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
             Configuration configuration = loggerContext.getConfiguration();
 
@@ -173,7 +173,7 @@ class LoggingUtilsDelegate {
     private static boolean checkConfiguration(
             boolean suppressStdOutLogging, boolean suppressFileLogging, String logFileName) {
 
-        @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+        @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
         LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 
         Configuration configuration = loggerContext.getConfiguration();
@@ -276,7 +276,7 @@ class LoggingUtilsDelegate {
 
         String extension = Paths.extension(configResource.path());
 
-        @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+        @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
         LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 
         try {
@@ -440,7 +440,7 @@ class LoggingUtilsDelegate {
         }
         System.setProperty(DefaultConfiguration.DEFAULT_LEVEL, defaultLevel);
 
-        @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+        @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
         LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
         loggerContext.reconfigure(new DefaultConfiguration());
 

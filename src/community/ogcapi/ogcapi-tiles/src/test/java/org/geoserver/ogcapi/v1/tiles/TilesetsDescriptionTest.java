@@ -52,7 +52,6 @@ public class TilesetsDescriptionTest extends TilesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked") // matcher varargs
     public void testGetTileMatrixSet() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/tiles/v1/tileMatrixSets/EPSG:4326", 200);
 
@@ -144,7 +143,7 @@ public class TilesetsDescriptionTest extends TilesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked") // matcher varargs
+    // matcher varargs
     public void testTileJSONLayerGroup() throws Exception {
         DocumentContext doc = getAsJSONPath(
                 "/ogc/tiles/v1/collections/" + NATURE_GROUP + "/tiles/EPSG:900913/metadata?f=application%2Fjson", 200);

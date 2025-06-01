@@ -122,7 +122,6 @@ public class XStreamPersisterIntegrationTest extends GeoServerSystemTestSupport 
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testProxyUseHeaderMigrationOnWrite() throws Exception {
         GeoServerInfoImpl info = new GeoServerInfoImpl();
         info.setUseHeadersProxyURLRaw(true);

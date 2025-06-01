@@ -102,7 +102,6 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     }
 
     @Override
-    @SuppressWarnings("unchecked") // EMF objects without generics
     public WCSCapsTransformer getCapabilities(GetCapabilitiesType request) {
         WCSCapsTransformer capsTransformer = new WCSCapsTransformer(geoServer);
         capsTransformer.setEncoding(

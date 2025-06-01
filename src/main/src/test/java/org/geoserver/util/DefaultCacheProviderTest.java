@@ -59,7 +59,6 @@ public class DefaultCacheProviderTest {
         verify(testCacheProvider1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testFindTwoInContext() {
         CacheProvider testCacheProvider1 = addMockProvider("testCacheProvider1");

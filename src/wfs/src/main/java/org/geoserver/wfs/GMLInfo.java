@@ -63,7 +63,6 @@ public interface GMLInfo extends Serializable {
 
         /** Deprecated. Use toSrsSyntax() and compute the SRS with it instead */
         @Deprecated
-        @SuppressWarnings("deprecation") // calling onto anothre deprecated  method
         public String getPrefix() {
             return toSrsSyntax().getPrefix();
         }

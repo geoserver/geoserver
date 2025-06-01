@@ -94,10 +94,8 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
     @Test
     public <T extends FeatureType, F extends Feature> void testReadOnlyFeatureSourceDataAccess() throws Exception {
         // build the mock up
-        @SuppressWarnings("unchecked")
         DataAccess<T, F> da = createNiceMock(DataAccess.class);
         replay(da);
-        @SuppressWarnings("unchecked")
         FeatureSource<T, F> fs = createNiceMock(FeatureSource.class);
         expect(fs.getDataStore()).andReturn(da);
         replay(fs);
@@ -113,19 +111,15 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         @SuppressWarnings("unchecked")
         T schema = (T) createNiceMock(ComplexFeatureTypeImpl.class);
         expect(schema.getName()).andReturn(new NameImpl("testComplexFt"));
-        @SuppressWarnings("unchecked")
         List<PropertyDescriptor> descriptors = createNiceMock(List.class);
         expect(descriptors.size()).andReturn(3).anyTimes();
         replay(descriptors);
         expect(schema.getDescriptors()).andReturn(descriptors).anyTimes();
         replay(schema);
-        @SuppressWarnings("unchecked")
         DataAccess<T, F> store = createNiceMock(DataAccess.class);
         replay(store);
-        @SuppressWarnings("unchecked")
         FeatureStore<T, F> fStore = createNiceMock(FeatureStore.class);
         expect(fStore.getSchema()).andReturn(schema).anyTimes();
-        @SuppressWarnings("unchecked")
         FeatureCollection<T, F> fc = createNiceMock(FeatureCollection.class);
         expect(fStore.getDataStore()).andReturn(store);
         expect(fStore.getFeatures()).andReturn(fc).anyTimes();

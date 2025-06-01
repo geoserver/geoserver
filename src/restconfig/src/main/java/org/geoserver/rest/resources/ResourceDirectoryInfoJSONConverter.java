@@ -79,7 +79,7 @@ public class ResourceDirectoryInfoJSONConverter extends XStreamJSONMessageConver
 
         Converter conv = new CollectionConverter(xstream.getMapper()) {
             @Override
-            public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+            public boolean canConvert(Class type) {
                 return Collection.class.isAssignableFrom(type);
             }
 

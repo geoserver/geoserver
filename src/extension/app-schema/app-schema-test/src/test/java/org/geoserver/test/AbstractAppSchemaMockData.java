@@ -60,7 +60,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
     public static final String SPEC_PREFIX = "spec";
 
     /** Map of namespace prefix to namespace URI for GML 32 schema. */
-    @SuppressWarnings("serial")
     protected static final Map<String, String> GML32_NAMESPACES = Map.ofEntries(
             entry("cgu", "urn:cgi:xmlns:CGI:Utilities:3.0.0"),
             entry("gco", "http://www.isotc211.org/2005/gco"),
@@ -74,7 +73,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
             entry("xlink", "http://www.w3.org/1999/xlink"));
 
     /** Map of namespace prefix to namespace URI. */
-    @SuppressWarnings("serial")
     private static final Map<String, String> NAMESPACES = Map.ofEntries(
             entry(GSML_PREFIX, GSML_URI),
             entry("gml", "http://www.opengis.net/gml"),
@@ -462,7 +460,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
      * @param featureTypesBaseDir feature types base directory
      * @param dataStoreName data store name
      */
-    @SuppressWarnings("serial")
     protected static Map<String, Serializable> buildAppSchemaDatastoreParams(
             final String namespacePrefix,
             final String typeName,

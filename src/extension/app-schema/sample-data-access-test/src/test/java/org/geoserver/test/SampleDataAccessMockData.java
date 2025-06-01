@@ -126,7 +126,6 @@ public class SampleDataAccessMockData extends SystemTestData {
     }
 
     /** Writes catalog.xml to the data directory. */
-    @SuppressWarnings("serial")
     protected void setUpCatalog() throws IOException {
         CatalogWriter writer = new CatalogWriter();
         writer.dataStores(

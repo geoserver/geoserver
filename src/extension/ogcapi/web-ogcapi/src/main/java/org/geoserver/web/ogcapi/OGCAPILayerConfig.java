@@ -19,7 +19,6 @@ public class OGCAPILayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     private final LinkInfoEditor linkEditor;
     private final MetadataMapModel<List<LinkInfo>> linksModel;
 
-    @SuppressWarnings("unchecked")
     public OGCAPILayerConfig(String id, IModel<LayerInfo> layerModel) {
         super(id, layerModel);
 

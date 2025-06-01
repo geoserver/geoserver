@@ -106,7 +106,6 @@ public class WPSRequestBuilder extends GeoServerBasePage {
 
         form.add(new AjaxSubmitLink("execute") {
 
-            @SuppressWarnings("unchecked")
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 HttpServletRequest http = GeoServerApplication.get().servletRequest();

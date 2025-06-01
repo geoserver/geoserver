@@ -152,7 +152,6 @@ public class LegendMerger {
                     forceTitlesOff);
         }
 
-        @SuppressWarnings("unchecked")
         public ImageList getImageStack() {
             return imageStack;
         }

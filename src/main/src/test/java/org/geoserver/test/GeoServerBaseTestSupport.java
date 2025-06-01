@@ -199,7 +199,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
                 }
                 // reset log4j2 to default, to drop any open files
                 LogManager.shutdown();
-                @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+                @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
                 LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
                 loggerContext.reconfigure(new DefaultConfiguration());
 

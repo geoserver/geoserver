@@ -20,7 +20,7 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TemplateRuleConfigurationPanelTest extends GeoServerWicketTestSupport {
+public class SchemaRuleConfigurationPanelTest extends GeoServerWicketTestSupport {
 
     @Before
     public void setUpInternal() {

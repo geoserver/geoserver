@@ -47,7 +47,7 @@ You will need to set the ``JAVA_HOME`` environment variable if it is not already
 
 #. Click OK three times.
 
-.. note:: You may also want to set the ``GEOSERVER_HOME`` variable, which is the directory where GeoServer is installed, and the ``GEOSERVER_DATA_DIR`` variable, which is the location of the GeoServer data directory (which by default is :file:`%GEOSERVER_HOME\\data_dir`). The latter is mandatory if you wish to use a data directory other than the default location. The procedure for setting these variables is identical to setting the ``JAVA_HOME`` variable.
+.. note:: You may also want to set the ``GEOSERVER_HOME`` variable, which is the directory where GeoServer is installed, and the ``GEOSERVER_DATA_DIR`` variable, which is the location of the GeoServer data directory (which by default is :file:`%GEOSERVER_HOME\\data_dir`). The latter is mandatory if you wish to use a data directory other than the default location. Finally, the variable ``JETTY_OPTS`` allows to tweak the jetty configuration upfront (example: ``jetty.http.port=1234``). The procedure for setting these variables is identical to setting the ``JAVA_HOME`` variable.
 
 Running
 -------

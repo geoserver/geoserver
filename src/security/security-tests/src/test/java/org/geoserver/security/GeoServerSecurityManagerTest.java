@@ -11,13 +11,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 import org.geoserver.platform.GeoServerEnvironment;
-import org.geoserver.platform.resource.Files;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
@@ -25,7 +22,6 @@ import org.geoserver.test.SystemTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 @Category(SystemTest.class)
 public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
@@ -100,72 +96,6 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
         // assert configuration reload works properly
         secMgr.reload();
-    }
-
-    @Test
-    public void testMasterPasswordDump() throws Exception {
-
-        GeoServerSecurityManager secMgr = getSecurityManager();
-        File f = File.createTempFile("masterpw", "info");
-        f.delete();
-        try {
-            assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
-
-            TestingAuthenticationToken auth =
-                    new TestingAuthenticationToken("admin", "geoserver", List.of(GeoServerRole.ADMIN_ROLE));
-            auth.setAuthenticated(true);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            assertTrue(secMgr.dumpMasterPassword(Files.asResource(f)));
-            dumpPWInfoFile(f);
-            assertTrue(masterPWInfoFileContains(f, String.valueOf(secMgr.getMasterPassword())));
-        } finally {
-            f.delete();
-        }
-    }
-
-    @Test
-    public void testMasterPasswordDumpNotAuthorized() throws Exception {
-
-        GeoServerSecurityManager secMgr = getSecurityManager();
-        File f = File.createTempFile("masterpw", "info");
-        try {
-            assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
-
-            TestingAuthenticationToken auth =
-                    new TestingAuthenticationToken("admin", "geoserver", List.of(GeoServerRole.ADMIN_ROLE));
-            auth.setAuthenticated(true);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
-        } finally {
-            f.delete();
-        }
-    }
-
-    @Test
-    public void testMasterPasswordDumpNotOverwrite() throws Exception {
-
-        GeoServerSecurityManager secMgr = getSecurityManager();
-        File f = File.createTempFile("masterpw", "info");
-        try (FileOutputStream os = new FileOutputStream(f)) {
-            os.write("This should not be overwritten!".getBytes(StandardCharsets.UTF_8));
-        }
-        try {
-            assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
-
-            TestingAuthenticationToken auth =
-                    new TestingAuthenticationToken("admin", "geoserver", List.of(GeoServerRole.ADMIN_ROLE));
-            auth.setAuthenticated(true);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
-            dumpPWInfoFile(f);
-            assertTrue(masterPWInfoFileContains(f, "This should not be overwritten!"));
-            assertFalse(masterPWInfoFileContains(f, String.valueOf(secMgr.getMasterPassword())));
-        } finally {
-            f.delete();
-        }
     }
 
     @SuppressWarnings("PMD.SystemPrintln")

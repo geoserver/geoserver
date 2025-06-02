@@ -1886,44 +1886,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Method to dump master password to a file
-     *
-     * <p>The file name is the shared secret between the administrator and GeoServer.
-     *
-     * <p>The method inspects the stack trace to check for an authorized calling method. The authenticated principal has
-     * to be an administrator
-     *
-     * <p>If authorization fails, a warning is written in the log and the return code is <code>false
-     * </code>. On success, the return code is <code>true</code>.
-     */
-    public boolean dumpMasterPassword(Resource file) throws IOException {
-        if (file.getType() != Resource.Type.UNDEFINED) {
-            LOGGER.warning("Master password dump attempted to overwrite existing resource");
-            return false;
-        }
-        if (checkAuthenticationForAdminRole() == false) {
-            LOGGER.warning("Unautorized user tries to dump master password");
-            return false;
-        }
-
-        String[][] allowedMethods = {
-            {"org.geoserver.security.GeoServerSecurityManagerTest", "testMasterPasswordDump"},
-            {"org.geoserver.security.web.passwd.MasterPasswordInfoPage", "dumpMasterPassword"}
-        };
-
-        String result = checkStackTrace(10, allowedMethods);
-
-        if (result != null) {
-            LOGGER.warning("Dump master password is called by an unautorized method\n" + result);
-            return false;
-        }
-
-        String message = "The current master password is: ";
-        writeMasterPasswordInfo(file, message, getMasterPassword());
-        return true;
-    }
-
-    /**
      * Get master password for REST configuraton
      *
      * <p>The method inspects the stack trace to check for an authorized calling method. The authenticated principal has

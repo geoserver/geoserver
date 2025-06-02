@@ -33,15 +33,6 @@ public class PasswordPage extends AbstractSecurityPage {
             }
         });
 
-        form.add(new Link<>("masterPasswordInfo") {
-            @Override
-            public void onClick() {
-                MasterPasswordInfoPage page = new MasterPasswordInfoPage();
-                page.setReturnPage(getPage());
-                setResponsePage(page);
-            }
-        });
-
         form.add(new MasterPasswordProvidersPanel("masterPasswordProviders"));
         form.add(new HelpLink("masterPasswordProvidersHelp").setDialog(dialog));
         form.add(new PasswordPoliciesPanel("passwordPolicies"));

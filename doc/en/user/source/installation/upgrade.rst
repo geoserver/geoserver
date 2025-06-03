@@ -30,6 +30,13 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+Keystore password link (GeoServer 2.26.4 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The :guilabel:`Password` page link to :guilabel:`Keystore password forgotten` now :ref:`directly links <security_webadmin_masterpasswordprovider>` to the :ref:`REST API <rest_security_keystore>` endpoint, allowing the value to be read in your browser.
+
+With this change it is no longer necessary to generate a :file:`masterpw.info` when upgrading an older data directory. If this file is present from an earlier upgrade it is still considering a security warning noted on the welcome page.
+
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd"
+>
+
+    <context:component-scan base-package="org.geoserver.llm"/>
+
+    <bean id="llmSettingsPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="llmSettings"/>
+        <property name="titleKey" value="LlmSettingsPage.title"/>
+        <property name="descriptionKey" value="LlmSettingsPage.description"/>
+        <property name="componentClass" value="org.geoserver.llm.web.LlmSettingsPage"/>
+        <property name="category" ref="settingsCategory"/>
+        <property name="icon" value="openai.png"/>
+        <property name="order" value="20"/>
+    </bean>
+    <bean id="llmSettingsXStreamInitializer" class="org.geoserver.llm.LlmSettingsXStreamInitializer"/>
+    <bean id="llmCacheManager" class="org.geoserver.llm.cache.LlmCacheManager">
+        <constructor-arg name="geoServer" ref="geoServer"/>
+    </bean>
+    <bean id="openAiProcess" class="org.geoserver.llm.process.OpenAIProcess">
+        <property name="geoServer" ref="geoServer"/>
+        <property name="cacheManager" ref="llmCacheManager"/>
+    </bean>
+</beans>

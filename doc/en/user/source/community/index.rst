@@ -79,4 +79,5 @@ officially part of the GeoServer releases. They are however built along with the
    wfs-freemarker/index
    wps-download-netcdf/index
    wps-longitudinal-profile/index
+   wps-openai/index
 

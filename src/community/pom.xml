@@ -181,6 +181,7 @@
         <module>wps-download-netcdf</module>
         <module>singlestore</module>
         <module>pmtiles-store</module>
+        <module>wps-openai</module>
       </modules>
     </profile>
     <profile>
@@ -585,6 +586,12 @@
       <id>pmtiles-store</id>
       <modules>
         <module>pmtiles-store</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wps-openai</id>
+      <modules>
+        <module>wps-openai</module>
       </modules>
     </profile>
     <profile>

@@ -1,4 +1,7 @@
-<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item active'>Collections</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item'><a href='${serviceLink("")}'>Home</a></li>
+  <li class='breadcrumb-item active'>Collections</li>
+</#global>
 <#include "common-header.ftl">
 
   <h1 id="title">GeoServer STAC Collections</h1>

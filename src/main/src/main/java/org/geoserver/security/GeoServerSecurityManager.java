@@ -1873,11 +1873,14 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             }
             w.newLine();
             w.newLine();
-            w.write("Test the master password by logging in as user \"root\"");
+            w.write("Test the keystore password by accessing \"geoserver.jceks\":");
+            w.newLine();
+            w.newLine();
+            w.write("  keytool -list -keystore geoserver.jceks -storetype \"JCEKS\"");
             w.newLine();
             w.newLine();
             w.write(
-                    "Note: To test 'Login with the master password' setting must be enabled for Master Password Provider.");
+                    "Note: To test 'Login with the master password' setting must be enabled for Master Password. Provider.");
             w.newLine();
             w.newLine();
             w.write("This file should be removed after reading !!!.");

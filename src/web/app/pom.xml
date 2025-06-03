@@ -2002,5 +2002,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>wps-openai</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>wps-openai</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>

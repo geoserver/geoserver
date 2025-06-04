@@ -1512,12 +1512,12 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>33.4.0-jre</version>
+        <version>33.4.8-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>jsr305</artifactId>
-        <version>2.0.3</version>
+        <version>3.0.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>

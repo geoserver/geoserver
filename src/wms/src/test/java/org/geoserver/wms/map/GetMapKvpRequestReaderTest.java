@@ -793,7 +793,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         try (InputStream sld = GetMapKvpRequestReader.class.getResourceAsStream("BasicPolygonsLibraryNoDefault.sld")) {
             when(entity.getContent()).thenReturn(sld);
             when(response.getEntity()).thenReturn(entity);
-            when(client.execute(any(HttpGet.class), any(HttpCacheContext.class))).thenReturn(response);
+            when(client.execute(any(HttpGet.class), any(HttpCacheContext.class)))
+                    .thenReturn(response);
 
             reqReader = new GetMapKvpRequestReader(wms, null) {
                 @Override
@@ -802,7 +803,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 }
             };
         }
-
 
         int numberOfThreads = 10;
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);

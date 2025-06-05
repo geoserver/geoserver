@@ -2,6 +2,7 @@ package org.geoserver.rest.security;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
 import java.util.logging.Level;
 import junit.framework.TestCase;
 import org.geoserver.rest.RestBaseController;
@@ -9,15 +10,32 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoServerSystemTestSupport {
 
-    private static String BASEPATH = RestBaseController.ROOT_PATH;
+    private static final String BASEPATH = RestBaseController.ROOT_PATH;
 
     @Test
     public void testList_XML() {
+        setUser();
         try {
             getAsDOM(BASEPATH + "/security/filterChains.xml", 200);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "", e);
+            Assert.fail(e.getLocalizedMessage());
+        } finally {
+            SecurityContextHolder.clearContext();
+        }
+    }
+
+    @Test
+    public void testList_NotAuthorised() {
+        try {
+            getAsDOM(BASEPATH + "/security/filterChains.xml", 403);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
@@ -26,36 +44,46 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
 
     @Test
     public void testList_JSON() {
+        setUser();
         try {
             getAsJSON(BASEPATH + "/security/filterChains.json", 200);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
+        } finally {
+            SecurityContextHolder.clearContext();
         }
     }
 
     @Test
     public void testView_XML() {
+        setUser();
         try {
             getAsDOM(BASEPATH + "/security/filterChains/web.xml", 200);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
+        } finally {
+            SecurityContextHolder.clearContext();
         }
     }
 
     @Test
     public void testView_JSON() {
+        setUser();
         try {
             getAsJSON(BASEPATH + "/security/filterChains/web.json", 200);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
+        } finally {
+            SecurityContextHolder.clearContext();
         }
     }
 
     @Test
     public void testPost_JSON() {
+        setUser();
         try {
             String json = getAsString(RestBaseController.ROOT_PATH + "/security/filterChains/web.json");
             deleteAsServletResponse(RestBaseController.ROOT_PATH + "/security/filterChains/web");
@@ -66,11 +94,14 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
+        } finally {
+            SecurityContextHolder.clearContext();
         }
     }
 
     @Test
     public void testPut_JSON() {
+        setUser();
         try {
             String json = getAsString(RestBaseController.ROOT_PATH + "/security/filterChains/web");
             MockHttpServletResponse response =
@@ -80,6 +111,14 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
+        } finally {
+            SecurityContextHolder.clearContext();
         }
+    }
+
+    private void setUser() {
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                "admin", "password", Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR")));
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 }

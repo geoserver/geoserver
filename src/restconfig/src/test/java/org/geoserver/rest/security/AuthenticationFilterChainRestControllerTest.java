@@ -1,5 +1,14 @@
 package org.geoserver.rest.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import org.geoserver.rest.security.AuthenticationFilterChainRestController.BadRequest;
 import org.geoserver.rest.security.AuthenticationFilterChainRestController.DuplicateChainName;
 import org.geoserver.rest.security.AuthenticationFilterChainRestController.FilterChainNotFound;
@@ -14,15 +23,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSupport {
     private static final String DEFAULT_CHAIN_NAME = "default";
@@ -54,119 +58,181 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
         controller = new AuthenticationFilterChainRestController(securityManager);
     }
 
+    public void setUser() {
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                "admin", "password", Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR")));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
+    private void clearUser() {
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
     public void testListFilterChains() {
-        ResponseEntity<RestWrapper<AuthFilterChainList>> response = controller.list();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        AuthFilterChainList authFilterChainList = (AuthFilterChainList) Objects.requireNonNull(
-                Objects.requireNonNull(response.getBody()).getObject());
-        assertNotNull(authFilterChainList);
-        authFilterChainList.getFilterChains().stream()
-                .filter(chain -> chain.getName().equals(DEFAULT_CHAIN_NAME))
-                .findFirst()
-                .ifPresentOrElse(
-                        authFilterChain -> assertEquals(DEFAULT_CHAIN_NAME, authFilterChain.getName()),
-                        () -> fail("No default message"));
+        setUser();
+
+        try {
+            ResponseEntity<RestWrapper<AuthFilterChainList>> response = controller.list();
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            AuthFilterChainList authFilterChainList = (AuthFilterChainList) Objects.requireNonNull(
+                    Objects.requireNonNull(response.getBody()).getObject());
+            assertNotNull(authFilterChainList);
+            authFilterChainList.getFilterChains().stream()
+                    .filter(chain -> chain.getName().equals(DEFAULT_CHAIN_NAME))
+                    .findFirst()
+                    .ifPresentOrElse(
+                            authFilterChain -> assertEquals(DEFAULT_CHAIN_NAME, authFilterChain.getName()),
+                            () -> fail("No default message"));
+        } finally {
+            clearUser();
+        }
     }
 
     @Test
     public void testViewFilterChain() {
-        ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.view(DEFAULT_CHAIN_NAME);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        AuthFilterChain authFilterChain =
-                (AuthFilterChain) Objects.requireNonNull(response.getBody()).getObject();
-        assertNotNull(authFilterChain);
-        assertEquals(DEFAULT_CHAIN_NAME, authFilterChain.getName());
+        setUser();
+        try {
+            ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.view(DEFAULT_CHAIN_NAME);
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            AuthFilterChain authFilterChain =
+                    (AuthFilterChain) Objects.requireNonNull(response.getBody()).getObject();
+            assertNotNull(authFilterChain);
+            assertEquals(DEFAULT_CHAIN_NAME, authFilterChain.getName());
+        } finally {
+            clearUser();
+        }
     }
 
     @Test(expected = FilterChainNotFound.class)
     public void testViewFilterChain_Unknown() {
-        controller.view("UnknownName");
+        setUser();
+        try {
+            controller.view("UnknownName");
+        } finally {
+            clearUser();
+        }
     }
 
     @Test
     public void testCreateFilterChain() {
-        AuthFilterChain authFilterChain = createNewAuthFilterChain();
-        ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        setUser();
+        try {
+            AuthFilterChain authFilterChain = createNewAuthFilterChain();
+            ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
+            assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-        // Check it is accessible
-        ResponseEntity<RestWrapper<AuthFilterChain>> viewResponse = controller.view(authFilterChain.getName());
-        assertEquals(HttpStatus.OK, viewResponse.getStatusCode());
-        AuthFilterChain viewFilterChain =
-                (AuthFilterChain) Objects.requireNonNull(viewResponse.getBody()).getObject();
-        assertNotNull(viewFilterChain);
-        assertEquals(authFilterChain.getName(), viewFilterChain.getName());
-        assertEquals(authFilterChain.getFilters(), viewFilterChain.getFilters());
-        assertEquals(authFilterChain.getRoleFilterName(), viewFilterChain.getRoleFilterName());
-        assertEquals(authFilterChain.getClassName(), viewFilterChain.getClassName());
-        assertEquals(authFilterChain.getHttpMethods(), viewFilterChain.getHttpMethods());
-        assertEquals(authFilterChain.getPatterns(), viewFilterChain.getPatterns());
-        assertEquals(authFilterChain.getPosition(), viewFilterChain.getPosition());
-        assertEquals(authFilterChain.isAllowSessionCreation(), viewFilterChain.isAllowSessionCreation());
-        assertEquals(authFilterChain.isDisabled(), viewFilterChain.isDisabled());
-        assertEquals(authFilterChain.isRequireSSL(), viewFilterChain.isRequireSSL());
-        assertEquals(authFilterChain.isMatchHTTPMethod(), viewFilterChain.isMatchHTTPMethod());
+            // Check it is accessible
+            ResponseEntity<RestWrapper<AuthFilterChain>> viewResponse = controller.view(authFilterChain.getName());
+            assertEquals(HttpStatus.OK, viewResponse.getStatusCode());
+            AuthFilterChain viewFilterChain = (AuthFilterChain)
+                    Objects.requireNonNull(viewResponse.getBody()).getObject();
+            assertNotNull(viewFilterChain);
+            assertEquals(authFilterChain.getName(), viewFilterChain.getName());
+            assertEquals(authFilterChain.getFilters(), viewFilterChain.getFilters());
+            assertEquals(authFilterChain.getRoleFilterName(), viewFilterChain.getRoleFilterName());
+            assertEquals(authFilterChain.getClassName(), viewFilterChain.getClassName());
+            assertEquals(authFilterChain.getHttpMethods(), viewFilterChain.getHttpMethods());
+            assertEquals(authFilterChain.getPatterns(), viewFilterChain.getPatterns());
+            assertEquals(authFilterChain.getPosition(), viewFilterChain.getPosition());
+            assertEquals(authFilterChain.isAllowSessionCreation(), viewFilterChain.isAllowSessionCreation());
+            assertEquals(authFilterChain.isDisabled(), viewFilterChain.isDisabled());
+            assertEquals(authFilterChain.isRequireSSL(), viewFilterChain.isRequireSSL());
+            assertEquals(authFilterChain.isMatchHTTPMethod(), viewFilterChain.isMatchHTTPMethod());
+        } finally {
+            clearUser();
+        }
     }
 
     @Test(expected = DuplicateChainName.class)
     public void testCreateFilterChain_duplicateName() {
-        AuthFilterChain authFilterChain = createNewAuthFilterChain();
-        ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        setUser();
+        try {
+            AuthFilterChain authFilterChain = createNewAuthFilterChain();
+            ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
+            assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-        controller.create(authFilterChain);
+            controller.create(authFilterChain);
+        } finally {
+            clearUser();
+        }
     }
 
     @Test
     public void testUpdateFilterChain() {
-        AuthFilterChain authFilterChain = createNewAuthFilterChain();
-        ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        setUser();
+        try {
+            AuthFilterChain authFilterChain = createNewAuthFilterChain();
+            ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
+            assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-        AuthFilterChain updatedAuthFilterChain = updateAuthFilterChain(authFilterChain);
-        ResponseEntity<RestWrapper<AuthFilterChain>> updatedResponse =
-                controller.update(updatedAuthFilterChain.getName(), updatedAuthFilterChain);
-        AuthFilterChain responseFilterChain = (AuthFilterChain)
-                Objects.requireNonNull(updatedResponse.getBody()).getObject();
-        assertEquals(HttpStatus.OK, updatedResponse.getStatusCode());
-        assertEquals(updatedAuthFilterChain.getName(), responseFilterChain.getName());
-        assertEquals(updatedAuthFilterChain.getFilters(), responseFilterChain.getFilters());
-        assertEquals(updatedAuthFilterChain.getRoleFilterName(), responseFilterChain.getRoleFilterName());
-        assertEquals(updatedAuthFilterChain.getClassName(), responseFilterChain.getClassName());
-        assertEquals(updatedAuthFilterChain.getHttpMethods(), responseFilterChain.getHttpMethods());
-        assertEquals(updatedAuthFilterChain.getPatterns(), responseFilterChain.getPatterns());
-        assertEquals(updatedAuthFilterChain.getPosition(), responseFilterChain.getPosition());
-        assertEquals(updatedAuthFilterChain.isAllowSessionCreation(), responseFilterChain.isAllowSessionCreation());
-        assertEquals(updatedAuthFilterChain.isDisabled(), responseFilterChain.isDisabled());
-        assertEquals(updatedAuthFilterChain.isRequireSSL(), responseFilterChain.isRequireSSL());
-        assertEquals(updatedAuthFilterChain.isMatchHTTPMethod(), responseFilterChain.isMatchHTTPMethod());
+            AuthFilterChain updatedAuthFilterChain = updateAuthFilterChain(authFilterChain);
+            ResponseEntity<RestWrapper<AuthFilterChain>> updatedResponse =
+                    controller.update(updatedAuthFilterChain.getName(), updatedAuthFilterChain);
+            AuthFilterChain responseFilterChain = (AuthFilterChain)
+                    Objects.requireNonNull(updatedResponse.getBody()).getObject();
+            assertEquals(HttpStatus.OK, updatedResponse.getStatusCode());
+            assertEquals(updatedAuthFilterChain.getName(), responseFilterChain.getName());
+            assertEquals(updatedAuthFilterChain.getFilters(), responseFilterChain.getFilters());
+            assertEquals(updatedAuthFilterChain.getRoleFilterName(), responseFilterChain.getRoleFilterName());
+            assertEquals(updatedAuthFilterChain.getClassName(), responseFilterChain.getClassName());
+            assertEquals(updatedAuthFilterChain.getHttpMethods(), responseFilterChain.getHttpMethods());
+            assertEquals(updatedAuthFilterChain.getPatterns(), responseFilterChain.getPatterns());
+            assertEquals(updatedAuthFilterChain.getPosition(), responseFilterChain.getPosition());
+            assertEquals(updatedAuthFilterChain.isAllowSessionCreation(), responseFilterChain.isAllowSessionCreation());
+            assertEquals(updatedAuthFilterChain.isDisabled(), responseFilterChain.isDisabled());
+            assertEquals(updatedAuthFilterChain.isRequireSSL(), responseFilterChain.isRequireSSL());
+            assertEquals(updatedAuthFilterChain.isMatchHTTPMethod(), responseFilterChain.isMatchHTTPMethod());
+        } finally {
+
+            clearUser();
+        }
     }
 
     @Test(expected = BadRequest.class)
     public void testUpdateFilterChain_MismatchName() {
-        AuthFilterChain authFilterChain = createNewAuthFilterChain();
-        controller.update("unKnown", authFilterChain);
+        setUser();
+        try {
+            AuthFilterChain authFilterChain = createNewAuthFilterChain();
+            controller.update("unKnown", authFilterChain);
+        } finally {
+            clearUser();
+        }
     }
 
     @Test
     public void testDeleteFilterChain() {
-        AuthFilterChain authFilterChain = createNewAuthFilterChain();
-        ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        setUser();
+        try {
+            AuthFilterChain authFilterChain = createNewAuthFilterChain();
+            ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
+            assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-        ResponseEntity<RestWrapper<AuthFilterChain>> deletedResponse = controller.delete(authFilterChain.getName());
-        assertEquals(HttpStatus.OK, deletedResponse.getStatusCode());
+            ResponseEntity<RestWrapper<AuthFilterChain>> deletedResponse = controller.delete(authFilterChain.getName());
+            assertEquals(HttpStatus.OK, deletedResponse.getStatusCode());
+        } finally {
+            clearUser();
+        }
     }
 
     @Test(expected = NothingToDelete.class)
     public void testDeleteFilterChain_Unknown() {
-        controller.delete("UnknownName");
+        setUser();
+        try {
+            controller.delete("UnknownName");
+        } finally {
+            clearUser();
+        }
     }
 
     @Test(expected = BadRequest.class)
     public void testDeleteFilterChain_cannotBeRemoved() {
-        controller.delete("webLogout");
+        setUser();
+        try {
+            controller.delete("webLogout");
+        } finally {
+            clearUser();
+        }
     }
 
     public static AuthFilterChain createNewAuthFilterChain() {

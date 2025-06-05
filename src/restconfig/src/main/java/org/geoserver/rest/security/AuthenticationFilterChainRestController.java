@@ -1,3 +1,7 @@
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.rest.security;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -25,7 +29,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController(value = "authenticationFilterChainRestController")
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/filterChains")
-@ControllerAdvice
+@ControllerAdvice(assignableTypes = {AuthenticationFilterChainRestController.class})
 public class AuthenticationFilterChainRestController extends RestBaseController {
     private final GeoServerSecurityManager securityManager;
 
@@ -47,19 +50,18 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         this.securityManager = securityManager;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_ADMIN')")
     @GetMapping(
             produces = {
                 MediaType.APPLICATION_JSON_VALUE,
                 MediaType.APPLICATION_XML_VALUE,
             })
     public ResponseEntity<RestWrapper<AuthFilterChainList>> list() {
+        checkAuthorisation();
         List<AuthFilterChain> filterChains = listFilterChains();
         AuthFilterChainList authFilterChainList = new AuthFilterChainList(filterChains);
         return ResponseEntity.ok(wrapObject(authFilterChainList, AuthFilterChainList.class));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_ADMIN')")
     @GetMapping(
             value = "/{chainName}",
             produces = {
@@ -67,11 +69,12 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 MediaType.APPLICATION_XML_VALUE,
             })
     public ResponseEntity<RestWrapper<AuthFilterChain>> view(@PathVariable("chainName") String chainName) {
+        checkAuthorisation();
+
         AuthFilterChain filterChain = viewFilterChain(chainName);
         return ResponseEntity.ok(wrapObject(filterChain, AuthFilterChain.class));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_ADMIN')")
     @PostMapping(
             produces = {
                 MediaType.APPLICATION_JSON_VALUE,
@@ -82,12 +85,13 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 MediaType.APPLICATION_XML_VALUE,
             })
     public ResponseEntity<RestWrapper<AuthFilterChain>> create(@RequestBody AuthFilterChain authFilterChain) {
+        checkAuthorisation();
+
         RequestFilterChain filterChain = authFilterChain.toRequestFilterChain();
         AuthFilterChain savedFilterChain = saveFilterChain(filterChain, authFilterChain.getPosition());
         return new ResponseEntity<>(wrapObject(savedFilterChain, AuthFilterChain.class), HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_ADMIN')")
     @PutMapping(
             value = "/{chainName}",
             produces = {
@@ -100,12 +104,13 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             })
     public ResponseEntity<RestWrapper<AuthFilterChain>> update(
             @PathVariable("chainName") String chainName, @RequestBody AuthFilterChain authFilterChain) {
+        checkAuthorisation();
+
         RequestFilterChain filterChain = authFilterChain.toRequestFilterChain();
         AuthFilterChain updatedFilterChain = updateFilterChain(chainName, filterChain, authFilterChain.getPosition());
         return ResponseEntity.ok(wrapObject(updatedFilterChain, AuthFilterChain.class));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_ADMIN')")
     @DeleteMapping(
             value = "/{chainName}",
             produces = {
@@ -113,6 +118,8 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 MediaType.APPLICATION_XML_VALUE,
             })
     public ResponseEntity<RestWrapper<AuthFilterChain>> delete(@PathVariable("chainName") String chainName) {
+        checkAuthorisation();
+
         AuthFilterChain deleted = deleteFilterChain(chainName);
         return ResponseEntity.ok(wrapObject(deleted, AuthFilterChain.class));
     }
@@ -198,6 +205,15 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(NotAuthorised2.class)
+    public ResponseEntity<ErrorResponse> handleRestException(NotAuthorised2 exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
     // Inner class to model the error response
     public static class ErrorResponse {
         private int status;
@@ -233,6 +249,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
     @Override
     public boolean supports(
             MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        checkAuthorisation();
         return AuthFilterChain.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
@@ -394,6 +411,12 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         return authFilterChain;
     }
 
+    private void checkAuthorisation() {
+        if (!securityManager.checkAuthenticationForAdminRole()) {
+            throw new NotAuthorised2();
+        }
+    }
+
     // ///////////////////////////////////////////////////////////////////////
     // Exceptions
 
@@ -442,6 +465,12 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
     public static class DuplicateChainName extends RuntimeException {
         public DuplicateChainName(String filterName) {
             super("Cannot create the filter chain " + filterName + " because one with that name already exists.");
+        }
+    }
+
+    public static class NotAuthorised2 extends RuntimeException {
+        public NotAuthorised2() {
+            super("Admin role required to access this resource");
         }
     }
 }

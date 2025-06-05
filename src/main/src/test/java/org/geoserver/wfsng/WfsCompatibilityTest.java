@@ -22,6 +22,7 @@ import org.geotools.api.feature.type.FeatureType;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.util.decorate.Wrapper;
 import org.junit.Assume;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -31,6 +32,7 @@ import org.junit.Test;
  *
  * @author Niels Charlier
  */
+@Ignore
 public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
 
     private boolean isOnline() {

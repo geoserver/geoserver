@@ -12,6 +12,7 @@ import com.google.common.base.Strings;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.FileItemCleanupCallback;
@@ -45,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController(value = "authProvidersRestController")
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/authProviders")
-@ControllerAdvice
+@ControllerAdvice(assignableTypes = {AuthenticationProviderRestController.class})
 public class AuthenticationProviderRestController extends RestBaseController {
     private final GeoServerSecurityManager securityManager;
 
@@ -216,11 +217,11 @@ public class AuthenticationProviderRestController extends RestBaseController {
     private AuthProviderList listAuthProviders() {
         try {
             checkAuthorisation();
-            var providerNames = new ArrayList<>(securityManager.listAuthenticationProviders());
-            var providerInst = providerNames.stream()
+            ArrayList<String> providerNames = new ArrayList<>(securityManager.listAuthenticationProviders());
+            List<AuthProvider> providerInst = providerNames.stream()
                     .map(this::loadProviderOrError)
                     .peek(p -> {
-                        var index = providerNames.indexOf(p.getName());
+                        int index = providerNames.indexOf(p.getName());
                         p.setPosition(index);
                         p.setDisabled(index == -1);
                     })
@@ -242,9 +243,9 @@ public class AuthenticationProviderRestController extends RestBaseController {
                 throw new UnknownProvider(providerName);
             }
 
-            var authProvider = new AuthProvider(provider);
-            var names = new ArrayList<>(securityManager.listAuthenticationProviders());
-            var index = names.indexOf(providerName);
+            AuthProvider authProvider = new AuthProvider(provider);
+            ArrayList<String> names = new ArrayList<>(securityManager.listAuthenticationProviders());
+            int index = names.indexOf(providerName);
             authProvider.setPosition(index);
             authProvider.setDisabled(index == -1);
 
@@ -317,7 +318,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
                     authProvider.getName().equals(providerName), "AuthProvider name does not match the one provided");
             checkArgument(authProvider.getId() != null, "AuthProvider id cannot be null");
 
-            var config = securityManager.loadAuthenticationProviderConfig(providerName);
+            SecurityAuthProviderConfig config = securityManager.loadAuthenticationProviderConfig(providerName);
 
             checkArgument(
                     config.getId().equals(authProvider.getId()), "AuthProvider id does not match the one provided");
@@ -377,8 +378,8 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
     // Breaking other tests will restore
     private void checkAuthorisation() {
-        if (securityManager.checkAuthenticationForAdminRole()) {
-//            throw new RequiresAdministrator();
+        if (!securityManager.checkAuthenticationForAdminRole()) {
+            throw new RequiresAdministrator();
         }
     }
 
@@ -423,7 +424,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
     public static class RequiresAdministrator extends RuntimeException {
         public RequiresAdministrator() {
-            super("Secure Endpoint Admistrator only");
+            super("Secure Endpoint Administrator only");
         }
     }
 }

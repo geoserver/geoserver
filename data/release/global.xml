@@ -21,13 +21,6 @@
     <metadata>
       <map>
         <entry>
-          <string>CogSettings.Key</string>
-          <cogSettings>
-            <useCachingStream>false</useCachingStream>
-            <rangeReaderSettings>HTTP</rangeReaderSettings>
-          </cogSettings>
-        </entry>
-        <entry>
           <string>quietOnNotFound</string>
           <boolean>false</boolean>
         </entry>

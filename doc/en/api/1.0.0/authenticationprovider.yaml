@@ -18,7 +18,6 @@ schemes:
   - http
 host: localhost
 basePath: /geoserver/rest/security
-
 paths:
   /authProviders:
     get:
@@ -108,10 +107,42 @@ paths:
           
           examples:
             application/xml: |
+              <authProvider>
+                  <id>4394eafb:19744df3931:-8000</id>
+                  <name>Test_Provider15</name>
+                  <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+                  <userGroupServiceName>default</userGroupServiceName>
+                  <position>0</position>
+                  <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
+                      <id>4394eafb:19744df3931:-8000</id>
+                      <name>Test_Provider15</name>
+                      <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+                      <userGroupServiceName>default</userGroupServiceName>
+                  </config>
+                  <disabled>false</disabled>
+              </authProvider>
+            application/json: |
+              {
+                  "authProvider": {
+                      "id": "4394eafb:19744df3931:-7fff",
+                      "name": "Test_Provider18",
+                      "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+                      "userGroupServiceName": "default",
+                      "position": 0,
+                      "config": {
+                          "@class": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
+                          "id": "4394eafb:19744df3931:-7fff",
+                          "name": "Test_Provider18",
+                          "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+                          "userGroupServiceName": "default"
+                      },
+                      "disabled": false
+                  }
+              }
         400:
           description: |
             The data supplied by the client was invalid. Typically check that the name 
-            is unqiue and that no id is supplied.
+            is unique and that no id is supplied.
   /authProviders/{providerName}:
     get:
       security:
@@ -182,6 +213,12 @@ paths:
       summary: Update the named provider configuration.
       description: |
         Update the named provider configuration.
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/AuthProvider"
       consumes:
         - application/xml
         - application/json
@@ -194,12 +231,52 @@ paths:
             The configuration has been updated
           schema:
             $ref: "#/definitions/AuthProviders"
+          examples:
+            application/xml: |
+              <authProvider>
+                  <id>34585eb0:1973eb55a29:-8000</id>
+                  <name>Test_Provider10</name>
+                  <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+                  <userGroupServiceName>default</userGroupServiceName>
+                  <position>0</position>
+                  <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
+                      <id>34585eb0:1973eb55a29:-8000</id>
+                      <name>Test_Provider10</name>
+                      <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+                      <userGroupServiceName>default</userGroupServiceName>
+                  </config>
+                  <disabled>false</disabled>
+              </authProvider>
+            application/json: |
+              {
+                  "authProvider": {
+                      "id": "655557d7:1973eb7ba3a:-8000",
+                      "name": "Test_Provider11",
+                      "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+                      "userGroupServiceName": "default",
+                      "position": 0,
+                      "config": {
+                          "@class": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
+                          "id": "655557d7:1973eb7ba3a:-8000",
+                          "name": "Test_Provider11",
+                          "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+                          "userGroupServiceName": "default"
+                      },
+                      "disabled": false
+                  }
+              }
         400:
           description: |
             The provider configuration cannot be updated. Check that the supplied name matches
             the name in the body of the request. Check that the Id matches the Id of the 
             configuration in memory. Check all required fields the type of authentication
             provider have been supplied.
+          examples:
+            application/xml: |
+              <ErrorResponse>
+                  <status>400</status>
+                  <message>java.lang.IllegalArgumentException: AuthProvider name does not match the one provided</message>
+              </ErrorResponse>
         500:
           description: |
             The server is experiencing some issue. If this persists contact your administrator.
@@ -216,9 +293,56 @@ paths:
         200:
           description: |
             The authentication provider was successfully removed
-        410:
+          schema:
+            $ref: "#/definitions/AuthProvider"
+          examples:
+            application/xml: |
+              <authProvider>
+                  <id>2373abe0:1973f07017d:-8000</id>
+                  <name>Test_Provider13</name>
+                  <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+                  <userGroupServiceName>default</userGroupServiceName>
+                  <position>3</position>
+                  <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
+                      <id>2373abe0:1973f07017d:-8000</id>
+                      <name>Test_Provider13</name>
+                      <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+                      <userGroupServiceName>default</userGroupServiceName>
+                  </config>
+                  <disabled>false</disabled>
+              </authProvider>
+            application/json: |
+              {
+                "authProvider": {
+                  "id": "521a99b9:1973eb9aa52:-8000",
+                  "name": "Test_Provider12",
+                  "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+                  "userGroupServiceName": "default",
+                  "position": 2,
+                  "config": {
+                    "@class": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
+                    "id": "521a99b9:1973eb9aa52:-8000",
+                    "name": "Test_Provider12",
+                    "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+                    "userGroupServiceName": "default"
+                  },
+                "disabled": false
+                }
+              }
+        404:
           description: |
             The authentication provider does not exist or has already been removed
+          examples:
+            application/xml:
+              <ErrorResponse>
+                <status>404</status>
+                <message>No provider configuration for the name  Test_Provider13</message>
+              </ErrorResponse>
+            application/json:
+              {
+                "status": 404,
+                "message": "No provider configuration for the name  Test_Provider12"
+              }
         500:
           description: |
             The server is experiencing some issue. If this persists contact your administrator.

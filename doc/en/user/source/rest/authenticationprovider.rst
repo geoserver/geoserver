@@ -1,5 +1,5 @@
-uth Providers
-=============
+Auth Providers
+==============
 
 The REST API allows you to list, create, upload, update, and delete authProviders in GeoServer.
 

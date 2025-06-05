@@ -18,17 +18,15 @@ Adds or Lists the authentication providers in the geoserver systems
      - Action
      - Status code
      - Formats
-     - Default Format
    * - GET
      - List all auth providers in the system
-     - 200,403,500
+     - 200,403,404,500
      - XML, JSON
-     -
    * - POST
-     - Great a new authProvider
+     - Create a new authProvider
      - 200,400,403,500
      - XML, JSON
-     -
+
 
 Formats:
 
@@ -62,7 +60,7 @@ For Post (Create - Request)
 .. code-block:: xml
 
     <authProvider>
-        <name>Test_Provider13</name>
+        <name>Test_Provider15</name>
             <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
         <userGroupServiceName>default</userGroupServiceName>
         <position>1</position>
@@ -73,6 +71,23 @@ For Post (Create - Request)
     </authProvider>
 
 For Post (Create - Response)
+
+.. code-block:: xml
+
+    <authProvider>
+        <id>4394eafb:19744df3931:-8000</id>
+        <name>Test_Provider15</name>
+        <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+        <userGroupServiceName>default</userGroupServiceName>
+        <position>0</position>
+        <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
+            <id>4394eafb:19744df3931:-8000</id>
+            <name>Test_Provider15</name>
+            <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+            <userGroupServiceName>default</userGroupServiceName>
+        </config>
+        <disabled>false</disabled>
+    </authProvider>
 
 **JSON**
 
@@ -108,9 +123,43 @@ For Post (create - request)
 
 .. code-block:: json
 
+    {
+        "authProvider":
+            {
+                "name": "Test_Provider18",
+                "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+                "userGroupServiceName": "default",
+                "position": 0,
+                "config": {
+                    "@class": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
+                    "userGroupServiceName": "default"
+                },
+                "disabled": false
+            }
+    }
+
+
 For Post (create - response)
 
 .. code-block:: json
+
+    {
+        "authProvider": {
+            "id": "4394eafb:19744df3931:-7fff",
+            "name": "Test_Provider18",
+            "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+            "userGroupServiceName": "default",
+            "position": 0,
+            "config": {
+                "@class": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
+                "id": "4394eafb:19744df3931:-7fff",
+                "name": "Test_Provider18",
+                "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+                "userGroupServiceName": "default"
+            },
+            "disabled": false
+        }
+    }
 
 Exceptions
 ~~~~~~~~~~
@@ -169,6 +218,8 @@ For PUT and GET
 
 ** XML Response **
 
+GET
+
 .. code-block:: xml
 
     <authProvider>
@@ -186,11 +237,110 @@ For PUT and GET
         <disabled>false</disabled>
     </authProvider>
 
+PUT:
+
+Request:
+
+.. code-block:: xml
+
+    <authProvider>
+        <id>-3e8020b4:1973ebc2c56:-8000</id>
+        <name>Test_Provider13</name>
+        <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+        <userGroupServiceName>default</userGroupServiceName>
+        <position>0</position>
+        <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
+            <userGroupServiceName>default</userGroupServiceName>
+        </config>
+        <disabled>false</disabled>
+    </authProvider>
+
+Response: 200
+
+.. code-block:: xml
+
+    <authProvider>
+        <id>-3e8020b4:1973ebc2c56:-8000</id>
+        <name>Test_Provider13</name>
+        <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+        <userGroupServiceName>default</userGroupServiceName>
+        <position>0</position>
+        <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
+            <id>-3e8020b4:1973ebc2c56:-8000</id>
+            <name>Test_Provider13</name>
+            <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+            <userGroupServiceName>default</userGroupServiceName>
+        </config>
+        <disabled>false</disabled>
+    </authProvider>
+
+DELETE:
+
+HTTP Status:200
+
+.. code-block:: xml
+
+    <authProvider>
+        <id>2373abe0:1973f07017d:-8000</id>
+        <name>Test_Provider13</name>
+        <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+        <userGroupServiceName>default</userGroupServiceName>
+        <position>3</position>
+        <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
+            <id>2373abe0:1973f07017d:-8000</id>
+            <name>Test_Provider13</name>
+            <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+            <userGroupServiceName>default</userGroupServiceName>
+        </config>
+        <disabled>false</disabled>
+    </authProvider>
+
 **JSON**
 
-For PUT and GET
+GET
 
 .. code-block:: json
+
+    {
+        "authProvider": {
+            "id": "4394eafb:19744df3931:-7fff",
+            "name": "Test_Provider18",
+            "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+            "userGroupServiceName": "default",
+            "position": 6,
+            "config": {
+                "@class": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
+                "id": "4394eafb:19744df3931:-7fff",
+                "name": "Test_Provider18",
+                "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+                "userGroupServiceName": "default"
+            },
+            "disabled": false
+        }
+    }
+
+Delete:
+Success:200
+
+.. code-block:: json
+
+    {
+        "authProvider": {
+            "id": "521a99b9:1973eb9aa52:-8000",
+            "name": "Test_Provider12",
+            "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+            "userGroupServiceName": "default",
+            "position": 2,
+            "config": {
+                "@class": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
+                "id": "521a99b9:1973eb9aa52:-8000",
+                "name": "Test_Provider12",
+                "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
+                "userGroupServiceName": "default"
+            },
+            "disabled": false
+        }
+    }
 
 Exceptions
 ~~~~~~~~~~
@@ -206,7 +356,5 @@ Exceptions
      - 403
    * - Authentication provider not found
      - 404
-   * - Gone - On Delete Only
-     - 410
    * - Internal Server Error
      - 500

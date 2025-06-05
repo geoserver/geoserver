@@ -4,11 +4,14 @@
  */
 package org.geoserver.rest.security;
 
-import static org.jsoup.helper.Validate.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
+import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
 import org.geoserver.security.validation.SecurityConfigException;
 
@@ -22,7 +25,7 @@ public class AuthenticationProviderHelper {
         this.securityManager = securityManager;
     }
 
-    public UsernamePasswordAuthenticationProviderConfig createUsernamePasswordAuthenticationProviderConfig(
+    protected UsernamePasswordAuthenticationProviderConfig createUsernamePasswordAuthenticationProviderConfig(
             String name, boolean save) {
         try {
             UsernamePasswordAuthenticationProviderConfig config = new UsernamePasswordAuthenticationProviderConfig();
@@ -36,8 +39,14 @@ public class AuthenticationProviderHelper {
             }
             return config;
         } catch (IOException | SecurityConfigException e) {
-            fail("Unexpected exception", e);
+            fail("Unexpected exception " + e.getMessage());
             return null;
         }
+    }
+
+    protected static void checkProvideUsernamePasswordAuthenticationProvider(
+            UsernamePasswordAuthenticationProviderConfig provider, SecurityAuthProviderConfig config) {
+        assertNotNull(config);
+        assertEquals(provider.getUserGroupServiceName(), config.getUserGroupServiceName());
     }
 }

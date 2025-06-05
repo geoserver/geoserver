@@ -6,6 +6,7 @@ package org.geoserver.rest.security.xml;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,7 +15,14 @@ public class AuthProviderList {
     @XStreamImplicit
     protected List<AuthProvider> providers;
 
-    public AuthProviderList() {}
+    /*
+     * Constructor for serialisation.
+     * If the serialisation does not initialise the providers we have assigned a default to prevent an NPE. When
+     * debugging if an empty list of providers is found this may be a bug in serialisation.
+     */
+    public AuthProviderList() {
+        providers = new ArrayList<>();
+    }
 
     public AuthProviderList(List<AuthProvider> providers) {
         this.providers = providers;

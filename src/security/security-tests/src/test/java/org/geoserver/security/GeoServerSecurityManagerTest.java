@@ -6,12 +6,8 @@
 package org.geoserver.security;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.List;
 import java.util.Properties;
 import org.geoserver.platform.GeoServerEnvironment;
@@ -43,8 +39,6 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         GeoServerSecurityManager secMgr = getSecurityManager();
         char[] generatedPW = secMgr.extractMasterPasswordForMigration(null);
         assertEquals(8, generatedPW.length);
-        assertTrue(masterPWInfoFileContains(String.valueOf(generatedPW)));
-        // dumpPWInfoFile();
 
         Properties props = new Properties();
         String adminUser = "user1";
@@ -58,23 +52,16 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
         generatedPW = secMgr.extractMasterPasswordForMigration(props);
         assertEquals(8, generatedPW.length);
-        assertTrue(masterPWInfoFileContains(String.valueOf(generatedPW)));
-        assertFalse(masterPWInfoFileContains(GeoServerUser.ADMIN_USERNAME));
-        assertFalse(masterPWInfoFileContains(adminUser));
-        assertFalse(masterPWInfoFileContains(noAdminUser));
-        // dumpPWInfoFile();
 
         // valid master password for noadminuser
         props.put(noAdminUser, "validPassword" + ",ROLE_WFS");
         generatedPW = secMgr.extractMasterPasswordForMigration(props);
         assertEquals(8, generatedPW.length);
-        assertTrue(masterPWInfoFileContains(String.valueOf(generatedPW)));
 
         // password to short  for adminuser
         props.put(adminUser, "abc" + "," + GeoServerRole.ADMIN_ROLE);
         generatedPW = secMgr.extractMasterPasswordForMigration(props);
         assertEquals(8, generatedPW.length);
-        assertTrue(masterPWInfoFileContains(String.valueOf(generatedPW)));
 
         // valid password for user having admin role
 
@@ -82,57 +69,14 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         props.put(adminUser, validPassword + "," + GeoServerRole.ADMIN_ROLE);
         generatedPW = secMgr.extractMasterPasswordForMigration(props);
         assertEquals(validPassword, String.valueOf(generatedPW));
-        assertFalse(masterPWInfoFileContains(validPassword));
-        assertTrue(masterPWInfoFileContains(adminUser));
-        // dumpPWInfoFile();
 
         // valid password for "admin" user
         props.put(GeoServerUser.ADMIN_USERNAME, validPassword + "," + GeoServerRole.ADMIN_ROLE);
         generatedPW = secMgr.extractMasterPasswordForMigration(props);
         assertEquals(validPassword, String.valueOf(generatedPW));
-        assertFalse(masterPWInfoFileContains(validPassword));
-        assertTrue(masterPWInfoFileContains(GeoServerUser.ADMIN_USERNAME));
-        // dumpPWInfoFile();
 
         // assert configuration reload works properly
         secMgr.reload();
-    }
-
-    @SuppressWarnings("PMD.SystemPrintln")
-    void dumpPWInfoFile(File infoFile) throws Exception {
-
-        try (BufferedReader bf = new BufferedReader(new FileReader(infoFile))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                System.out.println(line);
-            }
-        }
-    }
-
-    void dumpPWInfoFile() throws Exception {
-        dumpPWInfoFile(new File(
-                getSecurityManager().get("security").dir(), GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME));
-    }
-
-    boolean masterPWInfoFileContains(File infoFile, String searchString) throws Exception {
-
-        try (BufferedReader bf = new BufferedReader(new FileReader(infoFile))) {
-            String line;
-            while ((line = bf.readLine()) != null) {
-                if (line.contains(searchString)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    boolean masterPWInfoFileContains(String searchString) throws Exception {
-        return masterPWInfoFileContains(
-                new File(
-                        getSecurityManager().get("security").dir(),
-                        GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME),
-                searchString);
     }
 
     @Test

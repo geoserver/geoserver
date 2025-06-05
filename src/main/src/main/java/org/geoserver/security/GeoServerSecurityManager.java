@@ -17,7 +17,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,11 +30,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.rmi.server.UID;
 import java.security.InvalidKeyException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -207,9 +203,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /** master password config file name */
     public static final String MASTER_PASSWD_CONFIG_FILENAME = "masterpw.xml";
 
-    /** master password info file name */
-    public static final String MASTER_PASSWD_INFO_FILENAME = "masterpw.info";
-
     /** master password digest file name */
     public static final String MASTER_PASSWD_DIGEST_FILENAME = "masterpw.digest";
 
@@ -375,10 +368,19 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /** Reload the configuration which may have been updated in the meanwhile; after a restore as an instance. */
     public void reload() {
         try {
-            Resource masterPasswordInfo = security().get(MASTER_PASSWD_INFO_FILENAME);
+            Resource masterPasswordInfo = security().get("masterpw.info");
             if (masterPasswordInfo.getType() != Type.UNDEFINED) {
                 LOGGER.warning(masterPasswordInfo.path()
                         + " is a security risk. Please read this file and remove it afterward");
+            }
+        } catch (Exception e1) {
+            throw new RuntimeException(e1);
+        }
+        try {
+            Resource userPropertiesOld = security().get("users.properties.old");
+            if (userPropertiesOld.getType() != Type.UNDEFINED) {
+                LOGGER.warning(userPropertiesOld.path()
+                        + " is a security risk (containing user passwords in plain text). Please remove this file.");
             }
         } catch (Exception e1) {
             throw new RuntimeException(e1);
@@ -1823,7 +1825,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 // The default password is not allowed
                 if (defaultPasswordAsString.equals(attr.getPassword())) continue;
 
-                // the  user named "admin" having a non default password is the primary candiate
+                // the  user named "admin" having a non default password is the primary candidate
                 if (GeoServerUser.ADMIN_USERNAME.equals(username)) {
                     candidates.put(GeoServerUser.ADMIN_USERNAME, attr.getPassword());
                     continue;
@@ -1843,49 +1845,17 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             masterPW = candidates.get(username);
         }
 
-        String message = null;
-        Resource info = security().get(MASTER_PASSWD_INFO_FILENAME);
-        char[] masterPasswordArray = null;
+        char[] keystorePasswordArray;
         if (masterPW != null) {
-            message = "Master password is identical to the password of user: " + username;
-            masterPasswordArray = masterPW.toCharArray();
-            writeMasterPasswordInfo(info, message, null);
+            LOGGER.config("Keystore password is identical to the password of user: " + username);
+            keystorePasswordArray = masterPW.toCharArray();
         } else {
-            message = "The generated master password is: ";
-            masterPasswordArray = getRandomPassworddProvider().getRandomPassword(8);
-            writeMasterPasswordInfo(info, message, masterPasswordArray);
+            LOGGER.config("Keystore password set to default.");
+            keystorePasswordArray = getRandomPassworddProvider().getRandomPassword(8);
         }
 
-        LOGGER.info("Information regarding the master password is in: " + info.path());
-        return masterPasswordArray;
-    }
-
-    /** Writes a file containing info about the master password. */
-    void writeMasterPasswordInfo(Resource file, String message, char[] masterPasswordArray) throws IOException {
-        try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(file.out()))) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            w.write("This file was created at " + dateFormat.format(new Date()));
-            w.newLine();
-            w.newLine();
-            w.write(message);
-            if (masterPasswordArray != null) {
-                w.write(masterPasswordArray);
-            }
-            w.newLine();
-            w.newLine();
-            w.write("Test the keystore password by accessing \"geoserver.jceks\":");
-            w.newLine();
-            w.newLine();
-            w.write("  keytool -list -keystore geoserver.jceks -storetype \"JCEKS\"");
-            w.newLine();
-            w.newLine();
-            w.write(
-                    "Note: To test 'Login with the master password' setting must be enabled for Master Password. Provider.");
-            w.newLine();
-            w.newLine();
-            w.write("This file should be removed after reading !!!.");
-            w.newLine();
-        }
+        LOGGER.info("Information regarding the keystore password is available via REST API.");
+        return keystorePasswordArray;
     }
 
     /**

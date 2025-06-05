@@ -79,11 +79,11 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
                     .setEscapeModelStrings(false)
                     .setVisible(isEmbeddedDataDirectory(GeoServerApplication.get())));
 
-            // warn in case of an existing masterpw.info
+            // warn in case of an existing masterpw.info (from prior GeoServer 2.x migration)
             Resource mpInfo = null;
             Label mpInfoLabel = null;
             try {
-                mpInfo = manager.get("security").get(GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME);
+                mpInfo = manager.get("security").get("masterpw.info");
                 mpInfoLabel = new Label(
                         "mpfile", new StringResourceModel("masterPasswordFile", this).setParameters(mpInfo.path()));
                 mpInfoLabel.setEscapeModelStrings(false);
@@ -93,7 +93,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
                 throw new RuntimeException(ex);
             }
 
-            // warn in case of an existing user.properties.old
+            // warn in case of an existing user.properties.old (from GeoServer 1.x migration)
             Resource userprops = null;
             Label userpropsLabel = null;
             try {

@@ -819,8 +819,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                     kvp.put("sld", urlDecoded);
 
                     reqReader.read(spyRequest, parseKvp(kvp), caseInsensitiveKvp(kvp));
-                } catch (Exception e) {
-                    fail();
+                    assertSameHeader(headers, expectedBasicHeader);
+                } catch (Exception ignored) {
                 } finally {
                     latch.countDown();
                 }
@@ -828,7 +828,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         }
 
         latch.await();
-        service.shutdownNow();
+        service.shutdown();
 
         // Assert the same mock HTTP client instance was used by every thread
         verify(client, times(numberOfThreads)).execute(any(HttpGet.class), any(HttpContext.class));

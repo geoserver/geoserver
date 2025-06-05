@@ -1,0 +1,7 @@
+{
+  "access_token": "CPURR33RUz-gGhjwODTd9zXo5JkQx4wS",
+  "id_token": "${id_token}",
+  "scope": "openid profile email phone address",
+  "expires_in": 86400,
+  "token_type": "Bearer"
+}

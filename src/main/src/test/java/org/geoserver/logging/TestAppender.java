@@ -73,8 +73,7 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
 
     /** Add appender to configuration and start listening for events. */
     public void startRecording() {
-        @SuppressWarnings({"PMD.UnnecessaryReturn", "PMD.CloseResource"
-        }) // current context, no need to enforce AutoClosable
+        @SuppressWarnings("PMD.CloseResource") // current context, no need to enforce AutoClosable
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration configuration = ctx.getConfiguration();
 
@@ -149,8 +148,7 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
     }
     /** Remove appender from logging configuration (and stop listening for events). */
     public void stopRecording() {
-        @SuppressWarnings({"PMD.UnnecessaryReturn", "PMD.CloseResource"
-        }) // current context, no need to enforce AutoClosable
+        @SuppressWarnings("PMD.CloseResource") // current context, no need to enforce AutoClosable
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration configuration = ctx.getConfiguration();
 

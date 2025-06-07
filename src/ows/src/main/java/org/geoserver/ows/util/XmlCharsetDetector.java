@@ -53,7 +53,6 @@ public class XmlCharsetDetector {
     @SuppressWarnings("PMD.CloseResource") // reader being re-assigned
     public static Reader getCharsetAwareReader(InputStream istream, EncodingInfo encInfo)
             throws IOException, UnsupportedCharsetException {
-        @SuppressWarnings("PMD.CloseResource") // just a wrapper
         RewindableInputStream stream = new RewindableInputStream(istream, false);
 
         //

@@ -59,7 +59,6 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
             private static final long serialVersionUID = 426375054014475107L;
 
             @Override
-            @SuppressWarnings("PMD.UseTryWithResources") // iterator needs to be tested
             public Iterator<LayerInfo> iterator(final long first, final long count) {
                 Iterator<LayerInfo> iterator = filteredItems((int) first, (int) count);
                 if (iterator instanceof CloseableIterator) {

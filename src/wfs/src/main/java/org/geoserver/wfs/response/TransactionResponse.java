@@ -62,7 +62,6 @@ public class TransactionResponse extends WFSResponse {
         }
     }
 
-    @SuppressWarnings("PMD.CloseResource")
     public void v_1_0(TransactionResponseType response, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         TransactionResultsType result = response.getTransactionResults();

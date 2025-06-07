@@ -180,12 +180,12 @@ public class ImportTask implements Serializable {
         return transform;
     }
 
-    @SuppressWarnings({"unchecked", "PMD.UnnecessaryCast"})
+    @SuppressWarnings("unchecked")
     public void addTransform(ImportTransform tx) {
         ((TransformChain) this.transform).add(tx);
     }
 
-    @SuppressWarnings({"unchecked", "PMD.UnnecessaryCast"})
+    @SuppressWarnings("unchecked")
     public void removeTransform(ImportTransform tx) {
         ((TransformChain) this.transform).remove(tx);
     }

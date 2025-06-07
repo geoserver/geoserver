@@ -221,7 +221,6 @@ public class RequestUtils {
      */
     public static BufferedReader getBufferedXMLReader(InputStream stream, int xmlLookahead) throws IOException {
 
-        @SuppressWarnings("PMD.CloseResource")
         Reader reader = XmlCharsetDetector.getCharsetAwareReader(stream);
 
         return getBufferedXMLReader(reader, xmlLookahead);

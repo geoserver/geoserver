@@ -974,7 +974,6 @@ public class TransactionTest extends WFSTestSupport {
 
             @SuppressWarnings("PMD.CloseResource")
             ApplicationContext context = GeoServerSystemTestSupport.applicationContext;
-            @SuppressWarnings("PMD.CloseResource")
             Transaction transaction = new Transaction(getWFS(), getCatalog(), context);
             gtTransaction = transaction.getDatastoreTransaction(request);
         } finally {

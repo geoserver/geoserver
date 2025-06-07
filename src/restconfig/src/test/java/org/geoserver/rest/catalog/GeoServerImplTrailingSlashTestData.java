@@ -19,7 +19,6 @@ public class GeoServerImplTrailingSlashTestData extends SystemTestData {
     }
 
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws Exception {
         System.setProperty(GeoServerInfoImpl.TRAILING_SLASH_MATCH_KEY, "false");
         super.setUp();

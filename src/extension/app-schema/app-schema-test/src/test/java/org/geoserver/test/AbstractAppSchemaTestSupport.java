@@ -90,7 +90,6 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
     protected static final String XMLNS = "http://www.w3.org/2000/xmlns/";
 
     /** WFS namespaces, for use by XMLUnit. A seen in WFSTestSupport, plus xlink. */
-    @SuppressWarnings("serial")
     private final Map<String, String> WFS_NAMESPACES = Map.ofEntries(
             entry("wfs", "http://www.opengis.net/wfs"),
             entry("ows", "http://www.opengis.net/ows"),

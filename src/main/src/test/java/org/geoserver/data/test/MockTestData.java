@@ -25,7 +25,6 @@ import org.geoserver.util.IOUtils;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-@SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
 public class MockTestData extends CiteTestData {
 
     File data;

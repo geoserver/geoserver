@@ -102,6 +102,7 @@ public class APIConformance implements Serializable {
         EXTENSION
     }
 
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private final APIConformance parent;
 
     /** Conformance class identifier. */
@@ -110,6 +111,7 @@ public class APIConformance implements Serializable {
     /** Indicates standard approval level. */
     private final Level level;
 
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private final Type type;
 
     /** Bean property name. */

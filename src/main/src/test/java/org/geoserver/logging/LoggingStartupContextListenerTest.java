@@ -166,7 +166,7 @@ public class LoggingStartupContextListenerTest {
 
         // Lookup Log4J Core configuration
         {
-            @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+            @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
             LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
             Configuration configuration = ctx.getConfiguration();
@@ -195,7 +195,7 @@ public class LoggingStartupContextListenerTest {
         {
             String expectedLogfile = new File(tmp, "foo.log").getCanonicalPath();
 
-            @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+            @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
             LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
             Configuration configuration = ctx.getConfiguration();

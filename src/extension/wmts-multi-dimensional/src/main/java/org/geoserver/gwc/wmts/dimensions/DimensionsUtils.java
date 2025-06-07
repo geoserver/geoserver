@@ -380,7 +380,6 @@ public final class DimensionsUtils {
      * Helper method that simply extract from a feature collection the values of a specific attribute keeping duplicate
      * values.
      */
-    @SuppressWarnings("unchecked")
     static List<Comparable> getValuesWithDuplicates(String attributeName, FeatureCollection featureCollection) {
         return getValuesWithDuplicates(attributeName, null, featureCollection);
     }

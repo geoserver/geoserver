@@ -285,7 +285,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
                 // reset log4j2 to default, to drop any open files
 
-                @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+                @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
                 LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
                 loggerContext.reconfigure(new DefaultConfiguration());
 

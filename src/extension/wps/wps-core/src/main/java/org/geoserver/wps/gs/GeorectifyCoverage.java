@@ -368,7 +368,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
      * @param inputFilePath the path of the file referring to the dataset to be warped
      * @param outputFilePath the path of the file referring to the produced dataset
      */
-    @SuppressWarnings("serial")
     private static final List<String> buildWarpArguments(
             final List<String> targetEnvelope,
             final Integer width,
@@ -419,7 +418,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
     }
 
     /** Parse the bounding box to be used by gdalwarp command */
-    @SuppressWarnings("serial")
     private static List<String> parseBBox(Envelope re) {
         if (re == null) {
             return Collections.emptyList();
@@ -449,7 +447,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
     private File addGroundControlPoints(
             final String originalFilePath, final List<String> gcp, final List<String> parameters) throws IOException {
         final File vrtFile = File.createTempFile("vrt_", ".vrt", config.getTempFolder());
-        @SuppressWarnings("serial")
         final List<String> arguments = new ArrayList<>();
         arguments.add("-of");
         arguments.add("VRT");
@@ -572,7 +569,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
         int gcpPoints = 0;
         // Setting up gcp command arguments
         while (gcpMatcher.find()) {
-            @SuppressWarnings("serial")
             List<String> gcp = new ArrayList<>();
             gcp.add("-gcp");
 

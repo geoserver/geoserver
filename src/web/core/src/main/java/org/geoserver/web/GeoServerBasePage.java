@@ -101,7 +101,6 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         commonBaseInit();
     }
 
-    @SuppressWarnings("serial")
     protected GeoServerBasePage() {
         commonBaseInit();
     }

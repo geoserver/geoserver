@@ -99,7 +99,6 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
     public static <T> CloseableIterator<T> filter(final Iterator<T> iterator, final Predicate<T> predicate) {
 
         UnmodifiableIterator<T> filteredNotCloseable = Iterators.filter(iterator, predicate);
-        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         Closeable closeable = iterator instanceof Closeable ? (Closeable) iterator : null;
         return new CloseableIteratorAdapter<>(filteredNotCloseable, closeable);
     }
@@ -108,7 +107,6 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
             Iterator<F> iterator, Function<? super F, ? extends T> function) {
 
         Iterator<T> transformedNotCloseable = Iterators.transform(iterator, function);
-        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         Closeable closeable = (Closeable) (iterator instanceof CloseableIterator ? iterator : null);
         return new CloseableIteratorAdapter<>(transformedNotCloseable, closeable);
     }
@@ -116,7 +114,6 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
     public static <T> CloseableIterator<T> limit(final Iterator<T> iterator, int maxElements) {
 
         Iterator<T> limitedNotCloseable = Iterators.limit(iterator, maxElements);
-        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         Closeable closeable = iterator instanceof Closeable ? (Closeable) iterator : null;
         return new CloseableIteratorAdapter<>(limitedNotCloseable, closeable);
     }

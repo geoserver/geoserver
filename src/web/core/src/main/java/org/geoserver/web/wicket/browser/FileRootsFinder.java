@@ -160,7 +160,6 @@ public class FileRootsFinder implements Serializable {
      * @param fileFilter An optional file filter to filter the returned files. The file filter should accept
      *     directories.
      */
-    @SuppressWarnings("PMD.CloseResource")
     public Stream<String> getMatches(String input, FileFilter fileFilter) {
         // null safe, simplify code
         FileFilter ff = fileFilter == null ? f -> true : fileFilter;

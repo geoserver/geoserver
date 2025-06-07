@@ -189,7 +189,6 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testDropDownLayerSelection() throws Exception {
         tester.startPage(GeoServerHomePage.class);
         tester.assertNoErrorMessage();

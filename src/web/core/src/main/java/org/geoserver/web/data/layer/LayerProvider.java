@@ -144,7 +144,6 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     }
 
     @Override
-    @SuppressWarnings("PMD.UseTryWithResources") // iterator needs to be tested
     public Iterator<LayerInfo> iterator(final long first, final long count) {
         Iterator<LayerInfo> iterator = filteredItems(first, count);
         if (iterator instanceof CloseableIterator) {

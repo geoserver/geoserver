@@ -85,7 +85,7 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked") // matchers make for generic varargs
+    // matchers make for generic varargs
     public void testGetLayerAsGeoJsonReproject() throws Exception {
         String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
         MockHttpServletResponse response = getAsMockHttpServletResponse(
@@ -744,7 +744,6 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testSearchCRSFilter() throws Exception {
         WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
         FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);

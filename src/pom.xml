@@ -146,7 +146,7 @@
     <mysql.jdbc.version>9.1.0</mysql.jdbc.version>
     <solrj.version>8.11.3</solrj.version>
     <mockito.version>5.15.2</mockito.version>
-    <jacoco.version>0.8.6</jacoco.version>
+    <jacoco.version>0.8.13</jacoco.version>
     <hazelcast.version>5.3.8</hazelcast.version>
     <xalan.version>2.7.3</xalan.version>
     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=240m</argLine>
@@ -1906,10 +1906,11 @@
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.7.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.1</version>
+          <version>3.14.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-dependency-plugin</artifactId>
@@ -1921,11 +1922,11 @@
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.4</version>
+          <version>3.0.2</version>
         </plugin>
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.3</version>
+          <version>3.11.2</version>
         </plugin>
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
@@ -1944,16 +1945,8 @@
           <version>3.4.0</version>
         </plugin>
         <plugin>
-          <groupId>org.commonjava.maven.plugins</groupId>
-          <artifactId>directory-maven-plugin</artifactId>
-          <version>1.0</version>
-        </plugin>
-
-        <!-- third-party plugins -->
-        <plugin>
-          <groupId>com.ruleoftech</groupId>
-          <artifactId>markdown-page-generator-plugin</artifactId>
-          <version>2.4.0</version>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1965,6 +1958,63 @@
           <artifactId>versions-maven-plugin</artifactId>
           <version>2.18.0</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>3.1.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>javacc-maven-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>
+
+        <!-- third-party plugins -->
+        <plugin>
+          <groupId>org.commonjava.maven.plugins</groupId>
+          <artifactId>directory-maven-plugin</artifactId>
+          <version>1.0</version>
+        </plugin>
+        <plugin>
+          <groupId>com.ruleoftech</groupId>
+          <artifactId>markdown-page-generator-plugin</artifactId>
+          <version>2.4.0</version>
+        </plugin>
+        <plugin>
+          <groupId>pl.project13.maven</groupId>
+          <artifactId>git-commit-id-plugin</artifactId>
+          <version>4.9.10</version>
+        </plugin>
+        <plugin>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>2.43.0</version>
+        </plugin>
+        <plugin>
+          <groupId>com.github.ekryd.sortpom</groupId>
+          <artifactId>sortpom-maven-plugin</artifactId>
+          <version>2.15.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-maven-plugin</artifactId>
+          <version>${jetty.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>maven-jetty-plugin</artifactId>
+          <version>6.1.8</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -1974,8 +2024,7 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <release>17</release>
           <debug>true</debug>
           <encoding>UTF-8</encoding>
           <fork>${fork.javac}</fork>
@@ -2157,7 +2206,6 @@
       <plugin>
         <groupId>pl.project13.maven</groupId>
         <artifactId>git-commit-id-plugin</artifactId>
-        <version>4.9.10</version>
         <executions>
           <execution>
             <goals>
@@ -2196,15 +2244,17 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <source>11</source>
+          <release>17</release>
+          <!-- Force non-modular mode for projects without module-info.java -->
+          <legacyMode>true</legacyMode>
           <version>false</version>
           <noqualifier>all</noqualifier>
           <quiet>true</quiet>
           <maxmemory>512M</maxmemory>
           <encoding>UTF-8</encoding>
           <failOnError>false</failOnError>
-
-          <additionalparam>-Xdoclint:none</additionalparam>
+          <!-- Set an additional parameter for the javac command call. -->
+          <doclint>none</doclint>
           <breakiterator>true</breakiterator>
           <tags>
             <tag>
@@ -2240,7 +2290,7 @@
           </tags>
 
           <links>
-            <link>https://docs.oracle.com/en/java/javase/11/docs/api</link>
+            <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
             <link>http://docs.oracle.com/javaee/7/api/</link>
             <link>http://jscience.org/api/</link>
             <link>https://locationtech.github.io/jts/javadoc/</link>
@@ -2255,7 +2305,6 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.43.0</version>
         <executions>
           <execution>
             <phase>validate</phase>
@@ -2281,7 +2330,6 @@
       <plugin>
         <groupId>com.github.ekryd.sortpom</groupId>
         <artifactId>sortpom-maven-plugin</artifactId>
-        <version>2.15.0</version>
         <executions>
           <execution>
             <phase>verify</phase>
@@ -2341,6 +2389,9 @@
                   <version>[3.8,4.0)</version>
                   <message>You must use Maven 3.8 or higher to build this project.</message>
                 </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[17,)</version>
+                </requireJavaVersion>
               </rules>
             </configuration>
           </execution>
@@ -2360,7 +2411,6 @@
       <!-- website -->
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.0</version>
       </plugin>
 
       <!-- ======================================================= -->
@@ -2369,14 +2419,16 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <source>11</source>
+          <release>17</release>
+          <!-- Force non-modular mode for projects without module-info.java -->
+          <legacyMode>true</legacyMode>
           <version>false</version>
           <noqualifier>all</noqualifier>
           <quiet>true</quiet>
           <maxmemory>256M</maxmemory>
           <encoding>UTF-8</encoding>
-
-          <additionalparam>-Xdoclint:none</additionalparam>
+          <!-- Set an additional parameter for the javac command call. -->
+          <doclint>none</doclint>
           <breakiterator>true</breakiterator>
           <tags>
             <tag>
@@ -2412,7 +2464,7 @@
           </tags>
 
           <links>
-            <link>http://docs.oracle.com/javase/8/docs/api/</link>
+            <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
             <link>http://docs.oracle.com/javaee/7/api/</link>
             <link>http://jscience.org/api/</link>
             <link>http://tsusiatsoftware.net/jts/javadoc</link>
@@ -2470,8 +2522,8 @@
         <version>${jacoco.version}</version>
         <configuration>
           <formats>
-            <format>html</format>
-            <format>xml</format>
+            <format>HTML</format>
+            <format>XML</format>
           </formats>
         </configuration>
       </plugin>
@@ -2861,7 +2913,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.1.1</version>
+            <version>3.6.0</version>
             <executions>
               <execution>
                 <goals>

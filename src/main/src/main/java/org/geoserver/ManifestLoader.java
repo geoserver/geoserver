@@ -562,7 +562,6 @@ public class ManifestLoader {
              * @param manifest the manifest bean to load
              * @return the generated model
              */
-            @SuppressWarnings("PMD.UnusedPrivateMethod") // false positive
             private static ManifestModel parseManifest(
                     final String name, final Manifest manifest, final AttributesFilter<Map<String, String>> filter) {
 

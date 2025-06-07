@@ -109,7 +109,6 @@ public class LogPage extends GeoServerSecuredPage {
             }
         });
 
-        @SuppressWarnings("PMD.UseDiamondOperator") // java 8 compiler cannot infer type
         NumberTextField<Integer> lines = new NumberTextField<Integer>("lines", new PropertyModel<>(this, "lines"));
         lines.add(RangeValidator.minimum(1));
         form.add(lines);

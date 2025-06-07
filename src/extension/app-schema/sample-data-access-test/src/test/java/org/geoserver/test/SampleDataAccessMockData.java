@@ -102,7 +102,6 @@ public class SampleDataAccessMockData extends SystemTestData {
      * @see org.geoserver.data.test.TestData#setUp()
      */
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws Exception {
         setUpCatalog();
         copyTo(MockData.class.getResourceAsStream("services.xml"), "services.xml");
@@ -119,7 +118,6 @@ public class SampleDataAccessMockData extends SystemTestData {
      * @see org.geoserver.data.test.TestData#tearDown()
      */
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseAfterAnnotation")
     public void tearDown() throws Exception {
         IOUtils.delete(data);
         data = null;

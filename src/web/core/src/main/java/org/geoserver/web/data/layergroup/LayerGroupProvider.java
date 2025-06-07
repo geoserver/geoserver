@@ -112,7 +112,6 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
      * {@link Stream}; note {@link Stream} is {@link AutoCloseable} and hence the returned stream shall be used in a
      * try-with-resources block.
      */
-    @SuppressWarnings("PMD.CloseResource")
     private Stream<LayerGroupInfo> query(
             Filter filter, @Nullable Integer first, @Nullable Integer count, @Nullable SortBy sortOrder) {
         Catalog catalog = getCatalog();

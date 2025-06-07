@@ -921,7 +921,6 @@ class RasterDownload {
     }
 
     private ImageOutputStream getImageOutputStream(long limit, Resource output) throws IOException {
-        @SuppressWarnings("PMD.CloseResource") // wrapped and returned along with "os"
         ImageOutputStream fileImageOutputStreamExtImpl = new FileImageOutputStreamExtImpl(output.file(), BUFFER_SIZE);
 
         // If limit is defined, LimitedImageOutputStream is used

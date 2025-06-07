@@ -128,7 +128,7 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
         }
 
         // in this case, just do a plain on the fly conversion
-        try (Reader unusedReader = toReader(input)) { // NOPMD
+        try (Reader unusedReader = toReader(input)) {
             return convertToSLD(toReader(input));
         }
     }
@@ -153,7 +153,7 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
 
     @Override
     public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
-        try (Reader unusedReader = toReader(input)) { // NOPMD
+        try (Reader unusedReader = toReader(input)) {
             // full parse to perform the validation
             convertToSLD(toReader(input));
             return Collections.emptyList();

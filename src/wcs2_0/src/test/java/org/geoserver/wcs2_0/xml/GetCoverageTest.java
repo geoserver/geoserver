@@ -479,7 +479,6 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testCoverageTrimmingBordersOverlap() throws Exception {
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTrimmingBordersOverlap.xml");
         testCoverageResult(xml, targetCoverage -> {
@@ -492,7 +491,6 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testCoverageTrimmingBordersOverlapVertical() throws Exception {
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTrimmingBordersOverlapVertical.xml");
         testCoverageResult(xml, targetCoverage -> {
@@ -505,7 +503,6 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testCoverageTrimmingBordersOverlapOutside() throws Exception {
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTrimmingBordersOverlapOutside.xml");
         testCoverageResult(xml, targetCoverage -> {

@@ -942,7 +942,6 @@ public class CatalogImpl implements Catalog {
 
     @Override
     @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     public ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew) {
         if (isNull(layerGroup.getName())) {
             throw new NullPointerException("Layer group name must not be null");

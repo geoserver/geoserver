@@ -79,7 +79,6 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.ForLoopCanBeForeach")
     public void testStyleAllPage() throws Exception {
         loginAsCite();
 

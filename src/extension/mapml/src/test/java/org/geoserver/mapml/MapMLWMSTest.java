@@ -1941,7 +1941,6 @@ public class MapMLWMSTest extends MapMLTestSupport {
         return mapmlSingleExtent;
     }
 
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     private Document testLayersAndGroupsHTML(PublishedInfo l, Locale locale) throws Exception {
         String layerName;
         String layerLabel;

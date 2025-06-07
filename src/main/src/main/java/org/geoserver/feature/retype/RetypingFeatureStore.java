@@ -58,7 +58,6 @@ public class RetypingFeatureStore extends RetypingFeatureSource implements Simpl
 
     @Override
     public void setFeatures(FeatureReader<SimpleFeatureType, SimpleFeature> reader) throws IOException {
-        @SuppressWarnings("PMD.CloseResource") // just a wrapper
         RetypingFeatureReader retypingFeatureReader =
                 new RetypingFeatureReader(reader, typeMap.getOriginalFeatureType());
         featureStore().setFeatures(retypingFeatureReader);

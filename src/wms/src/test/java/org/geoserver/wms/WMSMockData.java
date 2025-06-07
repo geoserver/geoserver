@@ -81,7 +81,6 @@ public class WMSMockData {
 
     private WMS mockWMS;
 
-    @SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation"})
     public void setUp() throws Exception {
         catalog = new CatalogImpl();
 

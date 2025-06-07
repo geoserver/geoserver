@@ -729,7 +729,6 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
      * @throws IOException
      */
     @Test(expected = FileNotFoundException.class)
-    @SuppressWarnings("PMD.UnusedLocalVariable")
     public void testMissingStyleThrowsException() throws IOException {
         Catalog catalog = getCatalog();
         StyleInfo missing = catalog.getFactory().createStyle();

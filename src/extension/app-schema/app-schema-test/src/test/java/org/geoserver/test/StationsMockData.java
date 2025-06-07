@@ -374,7 +374,6 @@ public class StationsMockData extends AbstractAppSchemaMockData {
     }
 
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseAfterAnnotation")
     public void tearDown() {
         super.tearDown();
         try {

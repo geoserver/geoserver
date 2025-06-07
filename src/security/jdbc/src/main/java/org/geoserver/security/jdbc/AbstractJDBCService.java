@@ -251,7 +251,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     /** Checks if the tables are already created */
     public boolean tablesAlreadyCreated() throws IOException {
         Connection con = null;
-        try { // NOPMD - connection closing must be delegated to the closeConnection method
+        try {
             con = getConnection();
             DatabaseMetaData md = con.getMetaData();
             String schemaName = null;

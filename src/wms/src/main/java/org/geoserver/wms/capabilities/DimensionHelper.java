@@ -488,7 +488,6 @@ public abstract class DimensionHelper {
         }
     }
 
-    @SuppressWarnings("PMD.UnnecessaryWrapperObjectCreation")
     protected static String getNumberRepresentation(DimensionInfo dimension, TreeSet<? extends Object> values) {
         String elevationMetadata = null;
 

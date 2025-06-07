@@ -579,7 +579,7 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
 
         public CoverageGranules(
                 CoverageInfo coverage,
-                String unUsedName, // NOPMD
+                String unUsedName,
                 StructuredGridCoverage2DReader reader,
                 SimpleFeatureCollection granules,
                 List<DimensionDescriptor> dimensionDescriptors) {

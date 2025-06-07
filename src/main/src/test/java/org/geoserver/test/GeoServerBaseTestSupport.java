@@ -65,7 +65,6 @@ import org.junit.rules.TestRule;
  * @author Justin Deoliveira, OpenGeo
  * @param <T>
  */
-@SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
 public abstract class GeoServerBaseTestSupport<T extends TestData> {
 
     /** Common logger for test cases */

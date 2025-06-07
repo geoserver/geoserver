@@ -307,7 +307,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
      * @see org.geoserver.data.test.TestData#setUp()
      */
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws IOException {
         setUpCatalog();
         setUpSecurity();
@@ -325,7 +324,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
      * @see org.geoserver.data.test.TestData#tearDown()
      */
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseAfterAnnotation")
     public void tearDown() {
         try {
             IOUtils.delete(data);

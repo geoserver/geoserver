@@ -171,7 +171,6 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     }
 
     @Override
-    @SuppressWarnings("PMD.UseTryWithResources") // iterator needs to be tested
     public Iterator<StoreInfo> iterator(final long first, final long count) {
         Iterator<StoreInfo> iterator = filteredItems(first, count);
         if (iterator instanceof CloseableIterator) {

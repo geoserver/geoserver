@@ -169,7 +169,6 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         }
 
         Filter filter = getFilter();
-        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         CloseableIterator<PublishedInfo> pi =
                 catalog.list(PublishedInfo.class, filter, (int) first, (int) count, sortOrder);
         return CloseableIteratorAdapter.transform(pi, input -> {

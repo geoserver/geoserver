@@ -246,7 +246,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         AdminRequest.start(new Object());
         assertEquals(cat.getLayerGroups().size(), view.getItemCount());
 
-        for (Iterator<Item<Object>> it = view.getItems(); it.hasNext(); ) { // NOPMD
+        for (Iterator<Item<Object>> it = view.getItems(); it.hasNext(); ) {
             String name = it.next().get("itemProperties:0:component:link:label").getDefaultModelObjectAsString();
             assertNotEquals("sf_local", name);
         }

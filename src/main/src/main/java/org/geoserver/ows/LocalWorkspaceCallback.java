@@ -38,11 +38,9 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
     static final Logger LOGGER = Logging.getLogger(LocalWorkspaceCallback.class);
 
     GeoServer gs;
-    Catalog catalog;
 
     public LocalWorkspaceCallback(GeoServer gs) {
         this.gs = gs;
-        catalog = gs.getCatalog();
     }
 
     @Override
@@ -61,6 +59,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
             }
 
             // check if the context matches a workspace
+            Catalog catalog = gs.getCatalog();
             ws = catalog.getWorkspaceByName(first);
             if (ws != null) {
                 LocalWorkspace.set(ws);

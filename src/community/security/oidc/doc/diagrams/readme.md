@@ -8,7 +8,7 @@ Options for viewing and editing:
 
 View diagrams directly (maybe adjust URL, to use proper repository and branch).
 
-Class digram:
+Class diagram:
 
     https://www.draw.io/?lightbox=1&edit=_blank#Uhttps://raw.githubusercontent.com/geoserver/geoserver/refs/heads/main/src/community/security/oidc/doc/diagrams/GeoServer-Spring-OAuth.drawio
 

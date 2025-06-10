@@ -244,7 +244,7 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
         try {
             lOAuthFilterNames = manager.listFilters(GeoServerOAuth2LoginAuthenticationFilter.class);
         } catch (IOException e) {
-            throw new GeoServerRuntimException("Valdation failed. Error while listing existing filters.", e);
+            throw new GeoServerRuntimException("Validation failed. Error while listing existing filters.", e);
         }
         if (lOAuthFilterNames == null) {
             lOAuthFilterNames = new HashSet<>();

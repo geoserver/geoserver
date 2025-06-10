@@ -785,6 +785,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         Header[] headers = new Header[1];
         when(spyRequest.getHttpRequestHeader(authHeader)).thenReturn(fakeBasicAuth);
 
+        @SuppressWarnings("PMD.CloseResource") // mocked so no need for closing
         CloseableHttpClient client = mock(CloseableHttpClient.class);
         CloseableHttpResponse response = mock(CloseableHttpResponse.class);
         HttpEntity entity = mock(HttpEntity.class);
@@ -826,7 +827,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         }
 
         latch.await();
-        service.shutdown();
+        service.shutdownNow();
 
         // Assert the same mock HTTP client instance was used by every thread
         verify(client, times(numberOfThreads)).execute(any(HttpGet.class), any(HttpContext.class));
@@ -1494,6 +1495,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 "Creating a mock http server at port: {0}",
                 server.getAddress().getPort());
         server.createContext("/sld", createLongResponseHandler());
+
+        @SuppressWarnings("PMD.CloseResource")
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
         server.setExecutor(threadPoolExecutor);
 

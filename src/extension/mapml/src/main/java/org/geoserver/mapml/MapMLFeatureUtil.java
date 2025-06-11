@@ -10,7 +10,6 @@ import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
 import static org.geoserver.mapml.MapMLDocumentBuilder.extractCRS;
 import static org.geoserver.mapml.MapMLDocumentBuilder.toCommaDelimitedBbox;
-import static org.geoserver.mapml.MapMLDocumentBuilder.useTiles;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_FTL;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_HEAD_FTL;
 
@@ -39,6 +38,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.mapml.gwc.gridset.MapMLGridsets;
 import org.geoserver.mapml.tcrs.MapMLProjection;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
@@ -81,6 +81,7 @@ import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.GridSubsetFactory;
 import org.geowebcache.grid.SRS;
+import org.geowebcache.layer.TileLayer;
 import org.locationtech.jts.geom.Envelope;
 
 public class MapMLFeatureUtil {
@@ -251,19 +252,20 @@ public class MapMLFeatureUtil {
             } else if (layerSimplfierContext.getResourceInfo() != null
                     && layerSimplfierContext.getResourceInfo() instanceof CoverageInfo
                     && request != null) {
-                if (getMapRequest != null && useTiles(getMapRequest)) {
-                    String crs = extractCRS(getMapRequest.getRawKvp());
-                    useTileLinks = gwc.hasTileLayer(layerSimplfierContext.getResourceInfo())
-                            && gwc.getTileLayer(layerSimplfierContext.getResourceInfo())
-                                            .getGridSubset(crs)
-                                    != null;
-                }
+                String availableImageFormat = null;
                 try {
                     if (getMapRequest != null) {
                         GridSet chosen = getGridSet(requestCRS);
                         if (chosen == null) {
                             throw new ServiceException("No MapML gridset found for CRS: " + requestCRS);
                         }
+
+                        // Check if we should use GetTile links based on:
+                        // a) resource is a coverage (already checked above)
+                        // b) TileLayer exists with the chosen GridSet available
+                        // c) TileLayer has cached image formats available
+                        availableImageFormat = getAvailableImageFormat(layerSimplfierContext.getResourceInfo(), chosen);
+                        useTileLinks = availableImageFormat != null;
                         BoundingBox bbox = new BoundingBox(
                                 clipBounds.getMinX(), clipBounds.getMinY(), clipBounds.getMaxX(), clipBounds.getMaxY());
                         MapMLProjection projType = parseProjType(getMapRequest);
@@ -288,18 +290,10 @@ public class MapMLFeatureUtil {
                                         tileBbox.getMinX(), tileBbox.getMaxX(), tileBbox.getMinY(), tileBbox.getMaxY());
                                 String link = null;
                                 if (useTileLinks) {
-                                    Map<String, Object> formatOptions = getMapRequest.getFormatOptions();
-                                    String format = null;
-                                    if (formatOptions != null) {
-                                        format = formatOptions
-                                                .get(MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION)
-                                                .toString();
-                                    } else {
-                                        format = "image/png";
-                                    }
+                                    String format = determineImageFormat(getMapRequest, availableImageFormat);
                                     link = getWMTSLink(
                                             layerSimplfierContext,
-                                            chosen.getSrs().toString(),
+                                            chosen.getName(),
                                             request,
                                             String.valueOf(zoomLevel),
                                             String.valueOf(tileX),
@@ -312,7 +306,8 @@ public class MapMLFeatureUtil {
                                             getMapRequest,
                                             layerSimplfierContext,
                                             chosen.getTileWidth(),
-                                            chosen.getTileHeight());
+                                            chosen.getTileHeight(),
+                                            availableImageFormat);
                                 }
                                 Tile tile = new Tile();
                                 tile.setRow(BigInteger.valueOf(tileY));
@@ -404,7 +399,7 @@ public class MapMLFeatureUtil {
         params.put("service", "WMTS");
         params.put("request", "GetTile");
         params.put("version", "1.0.0");
-        params.put("tilematrix", layerName + ":" + zoomLevel);
+        params.put("tilematrix", zoomLevel);
         params.put("TileCol", column);
         params.put("TileRow", row);
         params.put("format", format);
@@ -418,7 +413,8 @@ public class MapMLFeatureUtil {
             GetMapRequest getMapRequest,
             LayerSimplfierContext layerSimplfierContext,
             int tileWidth,
-            int tileHeight) {
+            int tileHeight,
+            String availableImageFormat) {
         String baseUrl = ResponseUtils.baseURL(request);
         Map<String, String> kvp = new LinkedHashMap<>();
         kvp.put(
@@ -431,7 +427,7 @@ public class MapMLFeatureUtil {
         kvp.put("HEIGHT", String.valueOf(tileHeight));
         kvp.put("WIDTH", String.valueOf(tileWidth));
         kvp.put("CRS", escapeHtml4(extractCRS(getMapRequest.getRawKvp())));
-        kvp.put("FORMAT", "image/png");
+        kvp.put("FORMAT", determineImageFormat(getMapRequest, availableImageFormat));
         kvp.put("TRANSPARENT", String.valueOf(getMapRequest.isTransparent()));
         kvp.put("SERVICE", "WMS");
         kvp.put("REQUEST", "GetMap");
@@ -781,7 +777,7 @@ public class MapMLFeatureUtil {
     /** Checks if the request should dump features instead of HTML */
     public static boolean isFeaturesRequest(Request request) {
         // case 1: the format_options parameter is set to include the mapml feature format
-        if (getBoleanFormatOption(request, MAPML_FEATURE_FO)) return true;
+        if (getBooleanFormatOption(request, MAPML_FEATURE_FO)) return true;
 
         // case 2: it's a GWC tile seeding request, can only be a features request
         return isGWCTiledRequest(request);
@@ -790,7 +786,7 @@ public class MapMLFeatureUtil {
     /** Checks if the request should skip attributes */
     public static boolean isSkipAttributes(Request request) {
         // case 1: the format_options parameter is set to include the mapml feature format
-        if (getBoleanFormatOption(request, MAPML_SKIP_ATTRIBUTES_FO)) return true;
+        if (getBooleanFormatOption(request, MAPML_SKIP_ATTRIBUTES_FO)) return true;
 
         // case 2: it's a GWC tile seeding request, we want to skip attributes as well
         return isGWCTiledRequest(request);
@@ -799,7 +795,7 @@ public class MapMLFeatureUtil {
     /** Checks if the request should skip style bodies */
     public static boolean isSkipHeadStyles(Request request) {
         // case 1: the format_options parameter is set to include the mapml feature format
-        if (getBoleanFormatOption(request, MAPML_SKIP_STYLES_FO)) return true;
+        if (getBooleanFormatOption(request, MAPML_SKIP_STYLES_FO)) return true;
 
         // case 2: it's a GWC tile seeding request, we want to skip styles in head as well
         return isGWCTiledRequest(request);
@@ -810,10 +806,77 @@ public class MapMLFeatureUtil {
     }
 
     /** Tests if the specified format option is present and evaluates to true */
-    private static boolean getBoleanFormatOption(Request request, String key) {
+    private static boolean getBooleanFormatOption(Request request, String key) {
         Map formatOptions = (Map) request.getKvp().get("format_options");
         if (formatOptions != null && Boolean.valueOf((String) formatOptions.get(key))) return true;
         return false;
+    }
+
+    /**
+     * Check if a coverage has image formats available in its tile cache for the given GridSet
+     *
+     * @param resourceInfo the coverage resource info
+     * @param gridSet the GridSet to check for cached formats
+     * @return the preferred image format if available, or null if no image formats are cached
+     */
+    private static String getAvailableImageFormat(ResourceInfo resourceInfo, GridSet gridSet) {
+        // this local variable is necessary because otherwise
+        // MapMLFormatOptionsMatrixTest.testScenarioH2_1_RasterWithImageCacheMapMLResponseMapTileSrcIsGetTile
+        // fails but only during a full test suite run, not when run by itself
+        GWC gwc = GWC.get();
+        if (gwc == null || !gwc.hasTileLayer(resourceInfo)) {
+            return null;
+        }
+
+        try {
+            TileLayer tileLayer = gwc.getTileLayer(resourceInfo);
+
+            // Check if the tile layer has the specified GridSet
+            if (tileLayer.getGridSubset(gridSet.getName()) == null) {
+                return null;
+            }
+
+            if (tileLayer instanceof GeoServerTileLayer && tileLayer.isEnabled()) {
+                GeoServerTileLayer geoServerTileLayer = (GeoServerTileLayer) tileLayer;
+                GeoServerTileLayerInfo info = geoServerTileLayer.getInfo();
+
+                // Get all MIME formats and filter for image types
+                Set<String> allFormats = info.getMimeFormats();
+                return allFormats.stream()
+                        .filter(format -> format.startsWith("image/"))
+                        .findFirst()
+                        .orElse(null);
+            }
+        } catch (IllegalArgumentException e) {
+            // No tile layer found for this resource
+            LOGGER.fine("No tile layer found for " + resourceInfo.getName());
+        }
+
+        return null;
+    }
+
+    /**
+     * Determine the appropriate image format based on request parameters and available cached formats
+     *
+     * @param getMapRequest the GetMap request containing format options
+     * @param availableImageFormat the image format available in the tile cache, or null if none
+     * @return the determined image format to use
+     */
+    private static String determineImageFormat(GetMapRequest getMapRequest, String availableImageFormat) {
+        Map<String, Object> formatOptions = getMapRequest.getFormatOptions();
+
+        // First priority: explicit format option in request
+        if (formatOptions != null && formatOptions.get(MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION) != null) {
+            return formatOptions.get(MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION).toString();
+        }
+
+        // Second priority: available image format from tile cache
+        if (availableImageFormat != null) {
+            return availableImageFormat;
+        }
+
+        // Default fallback
+        return "image/png";
     }
 
     /** Convenience class to hold the information needed to simplify a feature collection */

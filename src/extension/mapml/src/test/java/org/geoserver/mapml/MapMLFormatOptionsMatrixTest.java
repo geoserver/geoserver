@@ -7,6 +7,7 @@ package org.geoserver.mapml;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +23,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 /**
@@ -389,8 +391,8 @@ public class MapMLFormatOptionsMatrixTest extends MapMLTestSupport {
      * map-extents with GetTile + features (raster with cache)
      */
     @Test
-    public void testScenarioH2_RasterWithCache() throws Exception {
-        enableTileCaching(new QName(MockData.CITE_URI, "World"), getCatalog());
+    public void testScenarioH2_RasterWithMapMLCache() throws Exception {
+        enableTileCaching(new QName(MockData.WCS_URI, RASTER_LAYER), getCatalog());
 
         try {
             String xml = getAsString(RASTER_LAYER, USE_FEATURES_TRUE, USE_MULTI_EXTENTS_TRUE, USE_TILES_TRUE);
@@ -411,7 +413,119 @@ public class MapMLFormatOptionsMatrixTest extends MapMLTestSupport {
             assertTrue("Tile URL should use text/mapml for vector tiles", tileUrl.contains("text/mapml"));
 
         } finally {
-            disableTileCaching(new QName(MockData.CITE_URI, "World"), getCatalog());
+            disableTileCaching(new QName(MockData.WCS_URI, RASTER_LAYER), getCatalog());
+        }
+    }
+
+    /**
+     * Test Scenario H2_1: Verify that individual MapML tiles contain map-tile elements with GetTile image URLs This
+     * test follows up on H2 by actually requesting a filled-in tile URL and verifying the content.
+     */
+    @Test
+    public void testScenarioH2_1_RasterWithImageCacheMapMLResponseMapTileSrcIsGetTile() throws Exception {
+        enableTileCaching(new QName(MockData.WCS_URI, "World"), getCatalog());
+
+        try {
+            // First get the MapML response with tile template URL
+            String xml = getAsString(RASTER_LAYER, USE_FEATURES_TRUE, USE_MULTI_EXTENTS_TRUE, USE_TILES_TRUE);
+            Document doc = XMLUnit.buildTestDocument(xml);
+
+            // Extract the tile URL template
+            String tileUrlTemplate = xpath.evaluate("//html:map-link[@rel='tile'][@type='text/mapml']/@tref", doc);
+            assertTrue(
+                    "Tile URL template should contain template variables",
+                    tileUrlTemplate.contains("{z}")
+                            && tileUrlTemplate.contains("{x}")
+                            && tileUrlTemplate.contains("{y}"));
+
+            // Fill in the template with known values for OSMTILE grid (zoom=0, row=0, col=0)
+            String filledTileUrl =
+                    tileUrlTemplate.replace("{z}", "0").replace("{y}", "0").replace("{x}", "0");
+
+            // Extract just the path part from the full URL for the test framework
+            String tilePath = filledTileUrl.substring(filledTileUrl.indexOf("/geoserver/") + "/geoserver".length());
+
+            // Make a request to the tile path (without the base URL)
+            MockHttpServletResponse response = getAsServletResponse(tilePath);
+            assertEquals("Response should be successful", 200, response.getStatus());
+            assertEquals("Response should be text/mapml", "text/mapml", response.getContentType());
+
+            // Parse the tile response as MapML
+            Document tileDoc = XMLUnit.buildTestDocument(response.getContentAsString());
+
+            // Verify the tile response contains map-tile elements
+            assertXpathExists("//html:map-tile", tileDoc);
+
+            // Verify that map-tile src URLs are GetTile requests for image formats
+            String mapTileSrc = xpath.evaluate("//html:map-tile/@src", tileDoc);
+            assertTrue("map-tile src should contain GetTile", mapTileSrc.contains("GetTile"));
+            assertTrue(
+                    "map-tile src should contain image format",
+                    mapTileSrc.contains("image%2Fpng") || mapTileSrc.contains("image%2Fjpeg"));
+            assertFalse("map-tile src should NOT contain GetMap", mapTileSrc.contains("GetMap"));
+
+        } finally {
+            disableTileCaching(new QName(MockData.WCS_URI, "World"), getCatalog());
+        }
+    }
+
+    /**
+     * Test Scenario H2_2: Verify that without image cache, MapML tiles contain map-tile elements with GetMap URLs This
+     * test verifies the fallback behavior when no image tile cache is available.
+     */
+    @Test
+    public void testScenarioH2_2_RasterWithNoImageCacheMapMLResponseMapTileSrcIsGetMap() throws Exception {
+        // First ensure any existing tile caching is disabled
+        try {
+            disableTileCaching(new QName(MockData.WCS_URI, RASTER_LAYER), getCatalog());
+        } catch (Exception e) {
+            // Ignore if layer wasn't cached
+        }
+
+        // Enable tile caching for text/mapml only (no image formats) - testing the fallback to tile-shaped GetMap
+        enableTileCachingMapMLOnly(new QName(MockData.WCS_URI, RASTER_LAYER), getCatalog());
+
+        try {
+            // First get the MapML response with tile template URL
+            String xml = getAsString(RASTER_LAYER, USE_FEATURES_TRUE, USE_MULTI_EXTENTS_TRUE, USE_TILES_TRUE);
+            Document doc = XMLUnit.buildTestDocument(xml);
+
+            // Extract the tile URL template
+            String tileUrlTemplate = xpath.evaluate("//html:map-link[@rel='tile'][@type='text/mapml']/@tref", doc);
+            assertTrue(
+                    "Tile URL template should contain template variables",
+                    tileUrlTemplate.contains("{z}")
+                            && tileUrlTemplate.contains("{x}")
+                            && tileUrlTemplate.contains("{y}"));
+
+            // Fill in the template with known values for OSMTILE grid (zoom=0, row=0, col=0)
+            String filledTileUrl =
+                    tileUrlTemplate.replace("{z}", "0").replace("{y}", "0").replace("{x}", "0");
+
+            // Extract just the path part from the full URL for the test framework
+            String tilePath = filledTileUrl.substring(filledTileUrl.indexOf("/geoserver/") + "/geoserver".length());
+
+            // Make a request to the tile path (without the base URL)
+            MockHttpServletResponse response = getAsServletResponse(tilePath);
+            assertEquals("Response should be successful", 200, response.getStatus());
+            assertEquals("Response should be text/mapml", "text/mapml", response.getContentType());
+
+            // Parse the tile response as MapML
+            Document tileDoc = XMLUnit.buildTestDocument(response.getContentAsString());
+
+            // Verify the tile response contains map-tile elements
+            assertXpathExists("//html:map-tile", tileDoc);
+
+            // Verify that map-tile src URLs are GetMap requests (not GetTile) for image formats
+            String mapTileSrc = xpath.evaluate("//html:map-tile/@src", tileDoc);
+            assertTrue("map-tile src should contain GetMap", mapTileSrc.contains("GetMap"));
+            assertTrue(
+                    "map-tile src should contain image format",
+                    mapTileSrc.contains("image%2Fpng") || mapTileSrc.contains("image%2Fjpeg"));
+            assertFalse("map-tile src should NOT contain GetTile", mapTileSrc.contains("GetTile"));
+
+        } finally {
+            disableTileCaching(new QName(MockData.WCS_URI, RASTER_LAYER), getCatalog());
         }
     }
 

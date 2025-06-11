@@ -27,7 +27,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -68,6 +68,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     private static Logger log = Logging.getLogger(CachedLayersPage.class);
 
     private static final long serialVersionUID = -6795610175856538774L;
+
+    private static final PackageResourceReference JS_FILE =
+            new PackageResourceReference(CachedLayersPage.class, "CachedLayersPage.js");
 
     private CachedLayerProvider provider = new CachedLayerProvider();
 
@@ -129,8 +132,8 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 target.add(removal);
             }
         };
-        table.setOutputMarkupId(true);
-        add(table);
+        table.setTableChangeJS("CachedLayersPage_SetOnChange();");
+        add(table.setOutputMarkupId(true));
 
         // the confirm dialog
         add(dialog = new GeoServerDialog("dialog"));
@@ -148,11 +151,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        String script = "$('.tile-layers-page-menu-select').on('change', function(event) {\n"
-                + "    window.open(this.options[this.selectedIndex].value);\n"
-                + "    this.selectedIndex=0;\n"
-                + "});";
-        response.render(OnDomReadyHeaderItem.forScript(script));
+        response.render(JavaScriptReferenceHeaderItem.forReference(JS_FILE));
     }
 
     private Component quotaLink(String id, IModel<Quota> quotaModel) {

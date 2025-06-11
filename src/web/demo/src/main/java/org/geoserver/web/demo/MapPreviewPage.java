@@ -25,9 +25,10 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -37,8 +38,8 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.DynamicImageResource;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.PublishedType;
-import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
@@ -52,6 +53,9 @@ import org.geoserver.wms.GetMapOutputFormat;
 public class MapPreviewPage extends GeoServerBasePage {
 
     private static final long serialVersionUID = 1L;
+
+    private static final PackageResourceReference JS_FILE =
+            new PackageResourceReference(MapPreviewPage.class, "MapPreviewPage.js");
 
     PreviewLayerProvider provider = new PreviewLayerProvider();
 
@@ -105,51 +109,16 @@ public class MapPreviewPage extends GeoServerBasePage {
                 throw new IllegalArgumentException("Don't know a property named " + property.getName());
             }
         };
-        table.setOutputMarkupId(true);
-        add(table);
+        table.setTableChangeJS("MapPreviewPage_SetOnChange();");
+        add(table.setOutputMarkupId(true));
+        int maxFeatures = getGeoServer().getService(WFSInfo.class).getMaxNumberOfFeaturesForPreview();
+        add(new HiddenField<>("maxFeatures", Model.of(maxFeatures)).setOutputMarkupId(true));
     }
 
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-
-        // setup onChange events (Content-security-policy doesn't allow onClick events in the HTML)
-        String script = "\n";
-
-        script +=
-                "\n         //1. attach to the appropriate <select> elements (marked with class map-preview-page-menu-select)\n"
-                        + "        //2. when onChange called:\n"
-                        + "        //    a. is this WMS (otherwise its WFS)\n"
-                        + "        //    b. determine the format attribute selector (its different for WMS and WFS). This is from the optionGroup\n"
-                        + "        //       the selected option is from (WMS or WFS).\n"
-                        + "        //    c. determine actual format (i.e. image/png) - this is the option's `value`\n"
-                        + "        //    d. the \"&maxFeature=50\" is a constant (based on the configuration).  Used by WFS.\n"
-                        + "        //    e. use either the attribute wmsLink of wfsLink as the base url and add\n"
-                        + "        //         i. format specifier\n"
-                        + "        //        ii. \"&maxFeature=50\" (see above) if its WFS\n"
-                        + "        //    f. open a new window to computed url (NOTE: this is a popup and might be blocked by browser)\n"
-                        + "        //    g. reset the selected item to \"Select one\" so user can choose a different one (or different layer)"
-                        + "\n\n$('.map-preview-page-menu-select').on('change',function(event) {\n"
-                        + "    //debugger;\n\n"
-                        + "    var isWMS = this.options[this.selectedIndex].parentNode.label == 'WMS';\n"
-                        + "    var formatAtt= isWMS ? 'format' : 'outputFormat';\n"
-                        + "    var actualFormat = this.options[this.selectedIndex].value;\n"
-                        + "    var maxFeature = '"
-                        + getMaxFeatures()
-                        + "';\n"
-                        + "     var url='';\n"
-                        + "     if (isWMS) {\n"
-                        + "       url=this.getAttribute('wmsLink') + '&' + formatAtt + '=' + actualFormat;\n"
-                        + "    }\n"
-                        + "    else {\n"
-                        + "       url=this.getAttribute('wfsLink') + '&' + formatAtt + '=' + actualFormat + maxFeature;\n"
-                        + "    }\n"
-                        + "    window.open(url);\n"
-                        + "    this.selectedIndex=0;\n"
-                        + "}\n"
-                        + ");\n\n";
-        script += "\n";
-        response.render(OnDomReadyHeaderItem.forScript(script));
+        response.render(JavaScriptReferenceHeaderItem.forReference(JS_FILE));
     }
 
     private List<ExternalLink> commonFormatLinks(PreviewLayer layer) {
@@ -160,20 +129,6 @@ public class MapPreviewPage extends GeoServerBasePage {
             links.add(link.getFormatLink(layer));
         }
         return links;
-    }
-    /**
-     * Generates the maxFeatures element of the WFS request using the value of maxNumberOfFeaturesForPreview. Values <=
-     * 0 give no limit.
-     *
-     * @return "&maxFeatures=${maxNumberOfFeaturesForPreview}" or "" if maxNumberOfFeaturesForPreview <= 0"
-     */
-    private String getMaxFeatures() {
-        GeoServer geoserver = getGeoServer();
-        WFSInfo service = geoserver.getService(WFSInfo.class);
-        if (service.getMaxNumberOfFeaturesForPreview() > 0) {
-            return "&maxFeatures=" + service.getMaxNumberOfFeaturesForPreview();
-        }
-        return "";
     }
 
     /**

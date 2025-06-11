@@ -5,10 +5,14 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.matchesRegex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.wicket.util.tester.TagTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -63,8 +67,14 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
 
         tester.startPage(page);
         tester.assertRenderedPage(CachedLayersPage.class);
-
-        // print(page, true, true);
+        List<String> scripts = TagTester.createTags(
+                        tester.getLastResponseAsString(), tag -> tag.getName().equalsIgnoreCase("script"), false)
+                .stream()
+                .map(tag -> tag.getAttribute("src"))
+                .collect(Collectors.toList());
+        String regex =
+                "^.*/" + CachedLayersPage.class.getName() + "/" + CachedLayersPage.class.getSimpleName() + ".*\\.js$";
+        assertThat(scripts, hasItem(matchesRegex(regex)));
     }
 
     @Test

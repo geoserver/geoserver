@@ -66,7 +66,6 @@ import net.sf.json.JSON;
 import net.sf.json.JSONException;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HeaderElement;
 import org.apache.http.message.BasicHeaderValueParser;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -1250,18 +1249,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         request.setContentType(contentType);
         request.setContent(body.getBytes(UTF_8));
         return dispatch(request, charset);
-    }
-
-    protected MockHttpServletResponse postAsServletResponse(
-            String path, String body, String contentType, List<Pair<String, String>> headers) throws Exception {
-        MockHttpServletRequest request = createRequest(path);
-        request.setMethod("POST");
-        request.setContentType(contentType);
-        // request.setContent(body.getBytes(UTF_8));
-
-        headers.forEach(h -> request.addHeader(h.getKey(), h.getValue()));
-
-        return dispatch(request);
     }
 
     protected MockHttpServletResponse postAsServletResponse(String path, byte[] body, String contentType)

@@ -10,7 +10,6 @@ Filter Chains
 
 Adds or Lists the filter chains in the geoserver systems
 
-
 .. list-table::
    :header-rows: 1
 
@@ -38,30 +37,23 @@ For Get (List - Response)
 
 .. code-block:: xml
 
-    <filterChainList>
+    <filterChains>
         <filterChain>
-            <name>web-test-1</name>
-            <className>org.geoserver.security.HtmlLoginFilterChain</className>
-            <patterns>
-                <string>/web/**</string>
-                <string>/gwc/rest/web/**</string>
-                <string>/</string>
-            </patterns>
-            <filters>
-                <string>rememberme</string>
-                <string>form</string>
-                <string>anonymous</string>
-            </filters>
-            <disabled>false</disabled>
-            <allowSessionCreation>true</allowSessionCreation>
-            <requireSSL>false</requireSSL>
-            <matchHTTPMethod>false</matchHTTPMethod>
-            <position>0</position>
+            <name>web-test-2</name>
+            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/security/filterChains/web-test-2.xml" type="application/atom+xml"/>
         </filterChain>
-    </filterChainList>
+        <filterChain>
+            <name>web-test-5</name>
+            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/security/filterChains/web-test-5.xml" type="application/atom+xml"/>
+        </filterChain>
+    </fiterChains>
+
 
 
 For Post (Create - Request)
+
+Content-Type: application/xml
+Authentication: XXXXXX
 
 .. code-block:: xml
 
@@ -87,27 +79,9 @@ For Post (Create - Request)
 
 For Post (Create - Response)
 
-.. code-block:: xml
-
-    <filterChain>
-        <name>web-test-2</name>
-        <className>org.geoserver.security.HtmlLoginFilterChain</className>
-        <patterns>
-            <string>/web/**</string>
-            <string>/gwc/rest/web/**</string>
-            <string>/</string>
-        </patterns>
-        <filters>
-            <string>rememberme</string>
-            <string>form</string>
-            <string>anonymous</string>
-        </filters>
-        <disabled>false</disabled>
-        <allowSessionCreation>true</allowSessionCreation>
-        <requireSSL>false</requireSSL>
-        <matchHTTPMethod>false</matchHTTPMethod>
-        <position>0</position>
-    </filterChain>
+201 Created
+Content-Type: text/plain
+Location: "http://localhost:9002/geoserver/rest/security/filterChains/web-test-2"
 
 **JSON**
 
@@ -116,30 +90,15 @@ For Get (list)
 .. code-block:: json
 
     {
-        "filterChainList": {
+        "filterChains": {
             "filterChain": [
                 {
                     "name": "web-test-2",
-                    "className": "org.geoserver.security.HtmlLoginFilterChain",
-                    "patterns": {
-                        "string": [
-                            "/web/**",
-                            "/gwc/rest/web/**",
-                            "/"
-                        ]
-                    },
-                    "filters": {
-                        "string": [
-                            "rememberme",
-                            "form",
-                            "anonymous"
-                        ]
-                    },
-                    "disabled": false,
-                    "allowSessionCreation": true,
-                    "requireSSL": false,
-                    "matchHTTPMethod": false,
-                    "position": 0
+                    "href": "http://localhost:8080/geoserver/rest/security/filterChains/web-test-2.json"
+                },
+                {
+                    "name": "web-test-5",
+                    "href": "http://localhost:8080/geoserver/rest/security/filterChains/web-test-5.json"
                 }
             ]
         }
@@ -178,42 +137,10 @@ For Post (create - response)
 
 .. code-block:: json
 
-    {
-        "filterChain": {
-            "name": "rest",
-            "className": "org.geoserver.security.ServiceLoginFilterChain",
-            "patterns": {
-                "string": [
-                    "/rest.*",
-                    "/rest/**"
-                ]
-            },
-            "filters": {
-                "string": [
-                    "basic",
-                    "anonymous"
-                ]
-            },
-            "disabled": false,
-            "allowSessionCreation": false,
-            "requireSSL": false,
-            "matchHTTPMethod": false,
-            "position": 6
-        }
-    }
+201 Created
+Content-Type: text/plain
+Location: "http://localhost:9002/geoserver/rest/security/filterChains/rest"
 
-.. code-block:: json
-
-    {
-        "id": "2d3ea9bb:196c91945a2:-7ffe",
-        "name": "restInterceptor16",
-        "config": {
-            "@class": "org.geoserver.security.config.SecurityInterceptorFilterConfig",
-            "className": "org.geoserver.security.filter.GeoServerSecurityInterceptorFilter",
-            "allowIfAllAbstainDecisions": true,
-            "securityMetadataSource": "restFilterDefinitionMap"
-        }
-    }
 
 Exceptions
 ~~~~~~~~~~

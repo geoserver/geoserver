@@ -1,3 +1,7 @@
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.rest.security;
 
 import static org.junit.Assert.assertEquals;
@@ -14,19 +18,17 @@ import org.geoserver.rest.security.AuthenticationFilterChainRestController.Dupli
 import org.geoserver.rest.security.AuthenticationFilterChainRestController.FilterChainNotFound;
 import org.geoserver.rest.security.AuthenticationFilterChainRestController.NothingToDelete;
 import org.geoserver.rest.security.xml.AuthFilterChain;
-import org.geoserver.rest.security.xml.AuthFilterChainList;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.HtmlLoginFilterChain;
 import org.geoserver.test.GeoServerTestSupport;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSupport {
     private static final String DEFAULT_CHAIN_NAME = "default";
@@ -68,17 +70,17 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
         SecurityContextHolder.clearContext();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testListFilterChains() {
         setUser();
 
         try {
-            ResponseEntity<RestWrapper<AuthFilterChainList>> response = controller.list();
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            AuthFilterChainList authFilterChainList = (AuthFilterChainList) Objects.requireNonNull(
-                    Objects.requireNonNull(response.getBody()).getObject());
+            RestWrapper<AuthFilterChain> response = controller.list();
+            List<AuthFilterChain> authFilterChainList =
+                    (List<AuthFilterChain>) Objects.requireNonNull(response).getObject();
             assertNotNull(authFilterChainList);
-            authFilterChainList.getFilterChains().stream()
+            authFilterChainList.stream()
                     .filter(chain -> chain.getName().equals(DEFAULT_CHAIN_NAME))
                     .findFirst()
                     .ifPresentOrElse(
@@ -93,10 +95,8 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
     public void testViewFilterChain() {
         setUser();
         try {
-            ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.view(DEFAULT_CHAIN_NAME);
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            AuthFilterChain authFilterChain =
-                    (AuthFilterChain) Objects.requireNonNull(response.getBody()).getObject();
+            RestWrapper<AuthFilterChain> response = controller.view(DEFAULT_CHAIN_NAME);
+            AuthFilterChain authFilterChain = (AuthFilterChain) Objects.requireNonNull(response.getObject());
             assertNotNull(authFilterChain);
             assertEquals(DEFAULT_CHAIN_NAME, authFilterChain.getName());
         } finally {
@@ -118,15 +118,13 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
     public void testCreateFilterChain() {
         setUser();
         try {
+            UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
             AuthFilterChain authFilterChain = createNewAuthFilterChain();
-            ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
-            assertEquals(HttpStatus.CREATED, response.getStatusCode());
+            controller.create(authFilterChain, builder);
 
             // Check it is accessible
-            ResponseEntity<RestWrapper<AuthFilterChain>> viewResponse = controller.view(authFilterChain.getName());
-            assertEquals(HttpStatus.OK, viewResponse.getStatusCode());
-            AuthFilterChain viewFilterChain = (AuthFilterChain)
-                    Objects.requireNonNull(viewResponse.getBody()).getObject();
+            RestWrapper<AuthFilterChain> viewResponse = controller.view(authFilterChain.getName());
+            AuthFilterChain viewFilterChain = (AuthFilterChain) Objects.requireNonNull(viewResponse.getObject());
             assertNotNull(viewFilterChain);
             assertEquals(authFilterChain.getName(), viewFilterChain.getName());
             assertEquals(authFilterChain.getFilters(), viewFilterChain.getFilters());
@@ -148,11 +146,10 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
     public void testCreateFilterChain_duplicateName() {
         setUser();
         try {
+            UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
             AuthFilterChain authFilterChain = createNewAuthFilterChain();
-            ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
-            assertEquals(HttpStatus.CREATED, response.getStatusCode());
-
-            controller.create(authFilterChain);
+            controller.create(authFilterChain, builder);
+            controller.create(authFilterChain, builder);
         } finally {
             clearUser();
         }
@@ -162,16 +159,15 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
     public void testUpdateFilterChain() {
         setUser();
         try {
+            UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
             AuthFilterChain authFilterChain = createNewAuthFilterChain();
-            ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
-            assertEquals(HttpStatus.CREATED, response.getStatusCode());
+            controller.create(authFilterChain, builder);
 
             AuthFilterChain updatedAuthFilterChain = updateAuthFilterChain(authFilterChain);
-            ResponseEntity<RestWrapper<AuthFilterChain>> updatedResponse =
-                    controller.update(updatedAuthFilterChain.getName(), updatedAuthFilterChain);
-            AuthFilterChain responseFilterChain = (AuthFilterChain)
-                    Objects.requireNonNull(updatedResponse.getBody()).getObject();
-            assertEquals(HttpStatus.OK, updatedResponse.getStatusCode());
+            controller.update(updatedAuthFilterChain.getName(), updatedAuthFilterChain);
+            RestWrapper<AuthFilterChain> responseFilterChainWrapper = controller.view(updatedAuthFilterChain.getName());
+            AuthFilterChain responseFilterChain =
+                    (AuthFilterChain) Objects.requireNonNull(responseFilterChainWrapper.getObject());
             assertEquals(updatedAuthFilterChain.getName(), responseFilterChain.getName());
             assertEquals(updatedAuthFilterChain.getFilters(), responseFilterChain.getFilters());
             assertEquals(updatedAuthFilterChain.getRoleFilterName(), responseFilterChain.getRoleFilterName());
@@ -204,12 +200,18 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
     public void testDeleteFilterChain() {
         setUser();
         try {
-            AuthFilterChain authFilterChain = createNewAuthFilterChain();
-            ResponseEntity<RestWrapper<AuthFilterChain>> response = controller.create(authFilterChain);
-            assertEquals(HttpStatus.CREATED, response.getStatusCode());
+            UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
 
-            ResponseEntity<RestWrapper<AuthFilterChain>> deletedResponse = controller.delete(authFilterChain.getName());
-            assertEquals(HttpStatus.OK, deletedResponse.getStatusCode());
+            AuthFilterChain authFilterChain = createNewAuthFilterChain();
+            controller.create(authFilterChain, builder);
+
+            controller.delete(authFilterChain.getName());
+            try {
+                controller.view(authFilterChain.getName());
+                fail("Expected there to not exist");
+            } catch (FilterChainNotFound e) {
+                // expected
+            }
         } finally {
             clearUser();
         }

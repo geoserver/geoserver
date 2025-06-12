@@ -1,6 +1,11 @@
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.rest.security;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.logging.Level;
@@ -72,7 +77,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     public void testView_JSON() {
         setUser();
         try {
-            getAsJSON(BASEPATH + "/security/filterChains/web.json", 200);
+            getAsJSON(BASEPATH + "/security/filterChains/web", 200);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
@@ -82,15 +87,17 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     }
 
     @Test
-    public void testPost_JSON() {
+    public void testPost() {
         setUser();
         try {
-            String json = getAsString(RestBaseController.ROOT_PATH + "/security/filterChains/web.json");
+            String json = getAsString(RestBaseController.ROOT_PATH + "/security/filterChains/web");
             deleteAsServletResponse(RestBaseController.ROOT_PATH + "/security/filterChains/web");
             MockHttpServletResponse response =
-                    postAsServletResponse(BASEPATH + "/security/filterChains.json", json, "application/json");
+                    postAsServletResponse(BASEPATH + "/security/filterChains", json, "application/json");
             TestCase.assertEquals(201, response.getStatus());
-            assertEquals("application/json", response.getContentType());
+            assertEquals("text/plain", response.getContentType());
+            String location = response.getHeader("Location");
+            assertTrue(location.endsWith("/security/filterChains/web"));
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
@@ -107,7 +114,6 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
             MockHttpServletResponse response =
                     putAsServletResponse(BASEPATH + "/security/filterChains/web", json, "application/json");
             TestCase.assertEquals(200, response.getStatus());
-            assertEquals("application/json", response.getContentType());
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());

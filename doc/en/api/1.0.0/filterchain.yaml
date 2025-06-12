@@ -36,57 +36,31 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/FilterChains"
+            type: array
           examples:
             application/xml: |
               <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-              <filterChainList>
+              <filterChains>
                 <filterChain>
-                  <name>web</name>
-                  <className>org.geoserver.security.HtmlLoginFilterChain</className>
-                  <patterns>
-                    <string>/web/**</string>
-                    <string>/gwc/rest/web/**</string>
-                    <string>/</string>
-                  </patterns>
-                  <filters>
-                    <string>rememberme</string>
-                    <string>form</string>
-                    <string>anonymous</string>
-                  </filters>
-                  <disabled>false</disabled>
-                  <allowSessionCreation>true</allowSessionCreation>
-                  <requireSSL>false</requireSSL>
-                  <matchHTTPMethod>false</matchHTTPMethod>
-                  <position>0</position>
-                  </filterChain>
-              </filterChainList>
+                  <name>web-test-2</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/security/filterChains/web-test-2.xml" type="application/atom+xml"/>
+                </filterChain>
+                <filterChain>
+                  <name>web-test-5</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/security/filterChains/web-test-5.xml" type="application/atom+xml"/>
+                </filterChain>
+              </filterChains>
             application/json: |
               {
-                "filterChainList": {
+                "filterChains": {
                   "filterChain": [
                     {
                       "name": "web-test-2",
-                      "className": "org.geoserver.security.HtmlLoginFilterChain",
-                      "patterns": {
-                        "string": [
-                          "/web/**",
-                          "/gwc/rest/web/**",
-                          "/"
-                        ]
-                      },
-                      "filters": {
-                        "string": [
-                          "rememberme",
-                          "form",
-                          "anonymous"
-                        ]
-                      },
-                      "disabled": false,
-                      "allowSessionCreation": true,
-                      "requireSSL": false,
-                      "matchHTTPMethod": false,
-                      "position": 0
+                      "href": "http://localhost:8080/geoserver/rest/security/filterChains/web-test-2.json"
+                    },
+                    {
+                      "name": "web-test-5",
+                      "href": "http://localhost:8080/geoserver/rest/security/filterChains/web-test-5.json"
                     }
                   ]
                 }
@@ -106,8 +80,7 @@ paths:
         - application/xml
         - application/json
       produces:
-        - application/xml
-        - application/json
+        - application/text
       parameters:
         - name: filterChain
           in: body
@@ -119,29 +92,6 @@ paths:
         201:
           description: |
             The filter configuration has been saved on the server
-          schema:
-            $ref: "#/definitions/FilterChain"
-          examples:
-            application/xml: |
-              <filterChain>
-                <name>web-test-2</name>
-                <className>org.geoserver.security.HtmlLoginFilterChain</className>
-                <patterns>
-                  <string>/web/**</string>
-                  <string>/gwc/rest/web/**</string>
-                  <string>/</string>
-                </patterns>
-                <filters>
-                  <string>rememberme</string>
-                  <string>form</string>
-                  <string>anonymous</string>
-                </filters>
-                <disabled>false</disabled>
-                <allowSessionCreation>true</allowSessionCreation>
-                <requireSSL>false</requireSSL>
-                <matchHTTPMethod>false</matchHTTPMethod>
-                <position>0</position>
-              </filterChain>
         400:
           description: |
             The data supplied by the client was invalid. Typically check that the name 
@@ -172,6 +122,27 @@ paths:
             has been returned.
           schema:
             $ref: "#/definitions/FilterChain"
+          examples:
+            application/xml:
+              <filterChain>
+                <name>web</name>
+                <className>org.geoserver.security.HtmlLoginFilterChain</className>
+                <patterns>
+                  <string>/web/**</string>
+                  <string>/gwc/rest/web/**</string>
+                  <string>/</string>
+                </patterns>
+                <filters>
+                  <string>rememberme</string>
+                  <string>form</string>
+                  <string>anonymous</string>
+                </filters>
+                <disabled>false</disabled>
+                <allowSessionCreation>true</allowSessionCreation>
+                <requireSSL>false</requireSSL>
+                <matchHTTPMethod>false</matchHTTPMethod>
+                <position>4</position>
+              </filterChain>
         404:
           description: |
             The named configuration does not exist on the server
@@ -203,16 +174,10 @@ paths:
       consumes:
         - application/xml
         - application/json
-      produces:
-        - application/xml
-        - application/json
-
       responses:
         200:
           description: |
             The configuration has been updated
-          schema:
-            $ref: "#/definitions/FilterChains"
         400:
           description: |
             The filter configuration cannot be updated. Check that the supplied name matches
@@ -250,11 +215,6 @@ paths:
 
 
 definitions:
-  FilterChains:
-    title: Filter Chains
-    type: array
-    items:
-      $ref: "#/definitions/FilterChain"
   FilterChain:
     title: Filter Chain
     type: object

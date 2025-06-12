@@ -30,6 +30,7 @@ public class AuthFilterChain {
     private Set<String> httpMethods;
     private String roleFilterName;
 
+    // Property that is not available in RequestFilterChain
     private int position;
 
     public AuthFilterChain() {}

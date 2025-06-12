@@ -15,15 +15,18 @@ public class SecurityConfigFilterHelper {
         this.securityManager = securityManager;
     }
 
-    public BasicAuthenticationFilterConfig createBasciAuthFilterConfig(String name, boolean save)
-            throws IOException, SecurityConfigException {
+    public BasicAuthenticationFilterConfig createBasciAuthFilterConfig(String name, boolean save) {
         BasicAuthenticationFilterConfig basicAuthConfig = new BasicAuthenticationFilterConfig();
         basicAuthConfig.setClassName(GeoServerBasicAuthenticationFilter.class.getName());
         basicAuthConfig.setUseRememberMe(false);
         basicAuthConfig.setName(name);
 
-        if (save) {
-            securityManager.saveFilter(basicAuthConfig);
+        try {
+            if (save) {
+                securityManager.saveFilter(basicAuthConfig);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return basicAuthConfig;
     }

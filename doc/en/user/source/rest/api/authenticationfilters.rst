@@ -30,103 +30,144 @@ Adds or Lists the authentication filters in the geoserver systems
      - XML, JSON
      -
 
-Formats:
+GET
+---
 
-**XML**
+*Request*
+GET: http://localhost:9002/geoserver/rest/security/authFilters
+Authorisation: XXXXX
+Accept: application/xml
 
-For Get (List - Response)
+*Response*
+200 OK
 
 .. code-block:: xml
 
-   <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <authFilters>
         <authFilter>
-            <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="anonymousAuthenticationFilterConfig">
-                <className>org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter</className>
-            </config>
-            <id>-3737ce2b:196b56d5575:-7fed</id>
-            <name>anonymous</name>
+            <name>Keycloak</name>
+            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:9002/geoserver/rest/security/authFilters/Keycloak.xml" type="application/atom+xml"/>
         </authFilter>
-    </authFilters>
+    <authFilters>
 
-For Post (Create - Request)
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    <authFilter>
-        <name>restInterceptor14</name>
-        <className>org.geoserver.security.config.SecurityInterceptorFilterConfig</className>
-        <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="securityInterceptorFilterConfig">
-            <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>
-            <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>
-            <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>
-        </config>
-    </authFilter>
-
-For Post (Create - Response)
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    <authFilter>
-        <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="securityInterceptorFilterConfig">
-            <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>
-            <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>
-            <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>
-        </config>
-        <id>2d3ea9bb:196c91945a2:-8000</id>
-        <name>restInterceptor14</name>
-    </authFilter>
-
-**JSON**
-
-For Get (list)
-
-.. code-block:: json
-
-      {
-      "filters": [
-        {
-          "id": "-3737ce2b:196b56d5575:-7fed",
-          "name": "anonymous",
-          "config": {
-            "@class": "org.geoserver.security.config.AnonymousAuthenticationFilterConfig",
-            "className": "org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter"
-          }
-        }
-      ]}
-
-For Post (create - request)
+*Request*
+GET: http://localhost:9002/geoserver/rest/security/authFilters
+Authorisation: XXXXX
+Accept: application/json
 
 .. code-block:: json
 
     {
-        "authFilter": {
-            "name": "restInterceptor15",
-            "config": {
-                "@class": "org.geoserver.security.config.SecurityInterceptorFilterConfig",
-                "className": "org.geoserver.security.filter.GeoServerSecurityInterceptorFilter",
-                "allowIfAllAbstainDecisions": true,
-                "securityMetadataSource": "restFilterDefinitionMap"
+        "authFilters": {
+            "authFilter": [
+                {
+                    "name": "Keycloak",
+                    "href": "http://localhost:9002/geoserver/rest/security/authFilters/Keycloak.json"
+                },
+            ]
+        }
+    }
+
+
+
+POST
+-----
+
+*Request*
+POST: http://localhost:9002/geoserver/rest/security/authFilters
+Authorisation: XXXXX
+Content-Type: application/xml
+
+.. code-block:: xml
+
+    <authFilter>
+        <name>Keycloak7</name>
+        <config class="org.geoserver.security.oauth2.OpenIdConnectFilterConfig">
+            <className>org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter</className>
+            <roleSource class="org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig$PreAuthenticatedUserNameRoleSource">RoleService</roleSource>
+            <roleServiceName>default</roleServiceName>
+            <cliendId>myclient</cliendId>
+            <clientSecret>UGIAvmT8qgfikS9cbAi2vUJOTVUU61sG</clientSecret>
+            <accessTokenUri>http://localhost:8080/realms/myrealm/protocol/openid-connect/token</accessTokenUri>
+            <userAuthorizationUri>http://localhost:8080/realms/myrealm/protocol/openid-connect/auth</userAuthorizationUri>
+            <redirectUri>http://localhost:9001/geoserver/</redirectUri>
+            <checkTokenEndpointUrl>http://localhost:8080/realms/myrealm/protocol/openid-connect/userinfo</checkTokenEndpointUrl>
+            <introspectionEndpointUrl>http://localhost:8080/realms/myrealm/protocol/openid-connect/token/introspect</introspectionEndpointUrl>
+            <logoutUri>http://localhost:8080/realms/myrealm/protocol/openid-connect/logout</logoutUri>
+            <scopes>openid email</scopes>
+            <enableRedirectAuthenticationEntryPoint>false</enableRedirectAuthenticationEntryPoint>
+            <forceAccessTokenUriHttps>false</forceAccessTokenUriHttps>
+            <forceUserAuthorizationUriHttps>false</forceUserAuthorizationUriHttps>
+            <loginEndpoint>/j_spring_oauth2_openid_connect_login</loginEndpoint>
+            <logoutEndpoint>/j_spring_oauth2_openid_connect_logout</logoutEndpoint>
+            <allowUnSecureLogging>false</allowUnSecureLogging>
+            <principalKey>email</principalKey>
+            <jwkURI>http://localhost:8080/realms/myrealm/protocol/openid-connect/certs</jwkURI>
+            <postLogoutRedirectUri>http://localhost:9001/geoserver/</postLogoutRedirectUri>
+            <sendClientSecret>false</sendClientSecret>
+            <allowBearerTokens>true</allowBearerTokens>
+            <usePKCE>false</usePKCE>
+            <enforceTokenValidation>false</enforceTokenValidation>
+            <cacheAuthentication>false</cacheAuthentication>
+        </config>
+    </authFilter>
+
+*Response*
+201 CREATED
+Location: http://localhost:9002/geoserver/rest/rest/security/authFilters/Keycloak7
+
+
+*Request*
+POST: http://localhost:9002/geoserver/rest/security/authFilters
+Authorisation: XXXXX
+Content-Type: application/jspn
+
+.. code-block:: json
+
+    {
+    "authFilter":
+        {
+        "name": "Keycloak12",
+        "config": {
+            "@class": "org.geoserver.security.oauth2.OpenIdConnectFilterConfig",
+            "className": "org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter",
+            "roleSource": {
+                "@class": "org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig$PreAuthenticatedUserNameRoleSource",
+                "$": "RoleService"
+            },
+            "roleServiceName": "default",
+            "cliendId": "myclient",
+            "clientSecret": "UGIAvmT8qgfikS9cbAi2vUJOTVUU61sG",
+            "accessTokenUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/token",
+            "userAuthorizationUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/auth",
+            "redirectUri": "http://localhost:9001/geoserver/",
+            "checkTokenEndpointUrl": "http://localhost:8080/realms/myrealm/protocol/openid-connect/userinfo",
+            "introspectionEndpointUrl": "http://localhost:8080/realms/myrealm/protocol/openid-connect/token/introspect",
+            "logoutUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/logout",
+            "scopes": "openid email",
+            "enableRedirectAuthenticationEntryPoint": false,
+            "forceAccessTokenUriHttps": false,
+            "forceUserAuthorizationUriHttps": false,
+            "loginEndpoint": "/j_spring_oauth2_openid_connect_login",
+            "logoutEndpoint": "/j_spring_oauth2_openid_connect_logout",
+            "allowUnSecureLogging": false,
+            "principalKey": "email",
+            "jwkURI": "http://localhost:8080/realms/myrealm/protocol/openid-connect/certs",
+            "postLogoutRedirectUri": "http://localhost:9001/geoserver/",
+            "sendClientSecret": false,
+            "allowBearerTokens": true,
+            "usePKCE": false,
+            "enforceTokenValidation": false,
+            "cacheAuthentication": false
             }
         }
     }
 
-For Post (create - response)
+*Response*
+200 OK
+Location: http://localhost:9002/geoserver/rest/rest/security/authFilters/Keycloak12
+Content-Type: application/xml
 
-.. code-block:: json
-
-    {
-        "id": "2d3ea9bb:196c91945a2:-7ffe",
-        "name": "restInterceptor16",
-        "config": {
-            "@class": "org.geoserver.security.config.SecurityInterceptorFilterConfig",
-            "className": "org.geoserver.security.filter.GeoServerSecurityInterceptorFilter",
-            "allowIfAllAbstainDecisions": true,
-            "securityMetadataSource": "restFilterDefinitionMap"
-        }
-    }
 
 Exceptions
 ~~~~~~~~~~
@@ -176,12 +217,92 @@ View, Update or Delete an existing auth filter
      -
      -
 
+GET
+---
 
-Formats:
+*Request*
+GET http://localhost:9002/geoserver/rest/security/authFilters/anonymous
+Accept: application/json
+Authorisation: XXXXX
 
-**XML**
+*Response*
+Status: 200
 
-For PUT and GET
+.. code-block:: xml
+
+    <authFilter>
+        <id>52857278:13c7ffd66a8:-7ff7</id>
+        <className>org.geoserver.security.config.AnonymousAuthenticationFilterConfig</className>
+        <name>anonymous</name>
+        <config class="org.geoserver.security.config.AnonymousAuthenticationFilterConfig">
+            <id>52857278:13c7ffd66a8:-7ff7</id>
+            <name>anonymous</name>
+            <className>org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter</className>
+        </config>
+    </authFilter>
+
+GET
+
+*Request*
+
+GET http://localhost:9002/geoserver/rest/security/authFilters/Keycloak
+Accept: application/json
+Authorisation: XXXXX
+
+*Response*
+Status: 200
+Content-Type: application/json
+
+.. code-block::json
+    {
+        "authFilter": {
+            "id": "6bc4a33d:196d8c8ede2:-8000",
+            "className": "org.geoserver.security.oauth2.OpenIdConnectFilterConfig",
+            "name": "Keycloak",
+            "config": {
+                "@class": "org.geoserver.security.oauth2.OpenIdConnectFilterConfig",
+                "id": "6bc4a33d:196d8c8ede2:-8000",
+                "name": "Keycloak",
+                "className": "org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter",
+                "roleSource": {
+                    "@class": "org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig$PreAuthenticatedUserNameRoleSource",
+                    "$": "RoleService"
+                },
+                "roleServiceName": "default",
+                "cliendId": "myclient",
+                "clientSecret": "UGIAvmT8qgfikS9cbAi2vUJOTVUU61sG",
+                "accessTokenUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/token",
+                "userAuthorizationUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/auth",
+                "redirectUri": "http://localhost:9001/geoserver/",
+                "checkTokenEndpointUrl": "http://localhost:8080/realms/myrealm/protocol/openid-connect/userinfo",
+                "introspectionEndpointUrl": "http://localhost:8080/realms/myrealm/protocol/openid-connect/token/introspect",
+                "logoutUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/logout",
+                "scopes": "openid email",
+                "enableRedirectAuthenticationEntryPoint": false,
+                "forceAccessTokenUriHttps": false,
+                "forceUserAuthorizationUriHttps": false,
+                "loginEndpoint": "/j_spring_oauth2_openid_connect_login",
+                "logoutEndpoint": "/j_spring_oauth2_openid_connect_logout",
+                "allowUnSecureLogging": false,
+                "principalKey": "email",
+                "jwkURI": "http://localhost:8080/realms/myrealm/protocol/openid-connect/certs",
+                "postLogoutRedirectUri": "http://localhost:9001/geoserver/",
+                "sendClientSecret": false,
+                "allowBearerTokens": true,
+                "usePKCE": false,
+                "enforceTokenValidation": false,
+                "cacheAuthentication": false
+            }
+        }
+    }
+
+PUT
+---
+
+*Request*
+POST http://localhost:9002/geoserver/rest/security/authFilters/restInterceptor9
+Authorisation: XXXXX
+Content-Type: application/xml
 
 .. code-block:: xml
 
@@ -196,10 +317,13 @@ For PUT and GET
     </config>
   </authFilter>
 
+*Response*
+Status:200
 
-**JSON**
-
-For PUT and GET
+*Request*
+POST http://localhost:9002/geoserver/rest/security/authFilters/restInterceptor13
+Authorisation: XXXXX
+Content-Type: application/json
 
 .. code-block:: json
 
@@ -216,7 +340,18 @@ For PUT and GET
         }
     }
 
+*Response*
+Status:200
 
+DELETE
+------
+
+*Request*
+DELETE: http://localhost:9002/geoserver/rest/security/authFilters/restInterceptor13
+Authorisation: XXXXX
+
+*Response*
+Status:200
 
 Exceptions
 ~~~~~~~~~~

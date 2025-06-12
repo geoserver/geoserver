@@ -77,24 +77,28 @@ paths:
       consumes:
         - application/xml
         - application/json
-      produces:
-        - application/xml
-        - application/json
+      parameters:
+        - name: filter
+          in: body
+          required: true
+          description: The filter chain configuration to create
+          schema:
+            $ref: "#/definitions/AuthFilter"
       responses:
         201:
           description: |
             The filter configuration has been saved on the server
-          schema:
-            $ref: "#/definitions/AuthFilter"
-
-          examples:
-            application/xml: |
-
         400:
           description: |
             The data supplied by the client was invalid. Typically check that the name 
             is unqiue and that no id is supplied.
   /authFilters/{filterName}:
+    parameters:
+      - name: filterName
+        in: path
+        required: true
+        type: string
+        description: The name of the filter chain to retrieve
     get:
       security:
         - basicAuth: []
@@ -133,15 +137,17 @@ paths:
       consumes:
         - application/xml
         - application/json
-      produces:
-        - application/xml
-        - application/json
+      parameters:
+        - name: filter
+          in: body
+          required: true
+          description: The filter chain configuration to create
+          schema:
+            $ref: "#/definitions/AuthFilter"
       responses:
         200:
           description: |
             The configuration has been updated
-          schema:
-            $ref: "#/definitions/AuthFilters"
         400:
           description: |
             The filter configuration cannot be updated. Check that the supplied name matches

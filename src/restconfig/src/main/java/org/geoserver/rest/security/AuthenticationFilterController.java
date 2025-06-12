@@ -18,7 +18,6 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.security.xml.AuthFilter;
-import org.geoserver.rest.security.xml.AuthFilterList;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityFilterConfig;
@@ -26,6 +25,7 @@ import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.security.validation.FilterConfigValidator;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +39,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController("authenticationFilterChainController")
 @ControllerAdvice(assignableTypes = {AuthenticationFilterController.class})
@@ -61,9 +64,10 @@ public class AuthenticationFilterController extends RestBaseController {
     /// REST API methods
 
     @GetMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthFilterList>> list() {
-        AuthFilterList result = loadAuthFilters();
-        return ResponseEntity.ok(wrapObject(result, AuthFilterList.class));
+    public RestWrapper<AuthFilter> list() {
+        checkAuthorisation();
+        List<AuthFilter> result = loadAuthFilters();
+        return wrapList(result, AuthFilter.class);
     }
 
     // 200
@@ -71,22 +75,26 @@ public class AuthenticationFilterController extends RestBaseController {
     @GetMapping(
             value = "/{filterName}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthFilter>> get(@PathVariable("filterName") String filterName) {
+    public RestWrapper<AuthFilter> view(@PathVariable("filterName") String filterName) {
+        checkAuthorisation();
         AuthFilter authFilter = loadAuthFilter(filterName);
-        return ResponseEntity.ok(wrapObject(authFilter, AuthFilter.class));
+        return wrapObject(authFilter, AuthFilter.class);
     }
 
     // FilterConfigValidator to check if filter is valid
     // 201
     // 400
-    @PostMapping(
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
-            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthFilter>> post(@RequestBody AuthFilter authFilterRequest)
-            throws IOException, SecurityConfigException {
+    @PostMapping(consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> post(
+            @RequestBody AuthFilter authFilterRequest, UriComponentsBuilder uriComponentsBuilder) {
+        checkAuthorisation();
         AuthFilter authFilterResponse = saveAuthFilter(authFilterRequest);
-        RestWrapper<AuthFilter> authFilterRestWrapper = wrapObject(authFilterResponse, AuthFilter.class);
-        return new ResponseEntity<>(authFilterRestWrapper, HttpStatus.CREATED);
+
+        UriComponents uriComponents = getUriComponents(authFilterResponse.getName(), uriComponentsBuilder);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(uriComponents.toUri());
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity<>(authFilterResponse.getName(), headers, HttpStatus.CREATED);
     }
 
     // 200
@@ -94,33 +102,28 @@ public class AuthenticationFilterController extends RestBaseController {
     // 404
     @PutMapping(
             value = "/{filterName}",
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthFilter>> put(
-            @PathVariable("filterName") String filterName, @RequestBody AuthFilter authFilterRequest)
-            throws IOException, SecurityConfigException {
-        AuthFilter updated = updateAuthFilter(filterName, authFilterRequest);
-        return ResponseEntity.ok(wrapObject(updated, AuthFilter.class));
+    public @ResponseStatus(code = HttpStatus.OK) void put(
+            @PathVariable("filterName") String filterName, @RequestBody AuthFilter authFilterRequest) {
+        checkAuthorisation();
+        updateAuthFilter(filterName, authFilterRequest);
     }
 
     // 200 when deleted
-    // 410 if already deleted
-    @DeleteMapping(
-            value = "/{filterName}",
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthFilter>> delete(@PathVariable("filterName") String filterName)
-            throws IOException, SecurityConfigException {
-        AuthFilter deleted = removeAuthFilter(filterName);
-
-        if (deleted == null) {
-            return ResponseEntity.status(HttpStatus.GONE).build();
-        } else {
-            RestWrapper<AuthFilter> deletedWrapper = wrapObject(deleted, AuthFilter.class);
-            return ResponseEntity.ok(deletedWrapper);
-        }
+    // 404 if already deleted
+    @DeleteMapping(value = "/{filterName}")
+    public @ResponseStatus(code = HttpStatus.OK) void delete(@PathVariable("filterName") String filterName) {
+        checkAuthorisation();
+        removeAuthFilter(filterName);
     }
     /// ///////////////////////////////////////////////////////////////////////
     /// Controller Advice
+
+    private void checkAuthorisation() {
+        if (!securityManager.checkAuthenticationForAdminRole()) {
+            throw new NotAuthorised();
+        }
+    }
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -129,9 +132,7 @@ public class AuthenticationFilterController extends RestBaseController {
             "org.geoserver.security.**", "org.geoserver.security.config.**", "org.geoserver.rest.security.xml.**"
         });
 
-        persister.getXStream().alias("authFilterList", AuthFilterList.class);
-        persister.getXStream().alias("authFilter", AuthFilter.class);
-        persister.getXStream().processAnnotations(new Class[] {AuthFilter.class, AuthFilterList.class});
+        persister.getXStream().processAnnotations(new Class[] {AuthFilter.class});
 
         super.configurePersister(persister, converter);
     }
@@ -145,24 +146,28 @@ public class AuthenticationFilterController extends RestBaseController {
      */
     public boolean supports(
             MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return AuthFilter.class.isAssignableFrom(methodParameter.getParameterType())
-                || AuthFilterList.class.isAssignableFrom(methodParameter.getParameterType());
+        return AuthFilter.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     /// ///////////////////////////////////////////////////////////////////////
     /// Internal logic
 
-    protected AuthFilterList loadAuthFilters() {
+    private UriComponents getUriComponents(String name, UriComponentsBuilder builder) {
+        return builder.path(RestBaseController.ROOT_PATH + "/security/authFilters/{authFilter}")
+                .buildAndExpand(name);
+    }
+
+    protected List<AuthFilter> loadAuthFilters() {
         try {
             Set<String> authFilterNames = securityManager.listFilters();
-            List<AuthFilter> jaxbAuthFilters = new ArrayList<>();
+            List<AuthFilter> authFilters = new ArrayList<>();
             for (String filterName : authFilterNames) {
                 SecurityFilterConfig securityFilterConfig = securityManager.loadFilterConfig(filterName, true);
                 if (securityFilterConfig != null) {
-                    jaxbAuthFilters.add(new AuthFilter(securityFilterConfig));
+                    authFilters.add(new AuthFilter(securityFilterConfig));
                 }
             }
-            return new AuthFilterList(jaxbAuthFilters);
+            return authFilters;
         } catch (IOException ex) {
             throw new IllegalStateException("Cannot load provider filters", ex);
         }
@@ -225,7 +230,7 @@ public class AuthenticationFilterController extends RestBaseController {
         }
     }
 
-    protected AuthFilter updateAuthFilter(String filterName, AuthFilter authFilterRequest) {
+    protected void updateAuthFilter(String filterName, AuthFilter authFilterRequest) {
         if (!filterName.equals(authFilterRequest.getName())) {
             LOGGER.warning(format(
                     "Cannot modify the config %s because the name %s in the body does not match",
@@ -252,14 +257,12 @@ public class AuthenticationFilterController extends RestBaseController {
 
             securityManager.saveFilter(authFilterRequest.getConfig());
             securityManager.reload();
-
-            return new AuthFilter(securityManager.loadFilterConfig(filterName, true));
         } catch (IOException | SecurityConfigException ex) {
             throw new IllegalStateException("Cannot access filter provider configs", ex);
         }
     }
 
-    protected AuthFilter removeAuthFilter(String filterName) {
+    protected void removeAuthFilter(String filterName) {
         if (DELETE_BLACK_LIST.contains(filterName)) {
             LOGGER.warning(format("Cannot delete %s because it is a required authentication filter", filterName));
             throw new DeleteBlackListException(filterName);
@@ -269,11 +272,10 @@ public class AuthenticationFilterController extends RestBaseController {
             SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, true);
             if (filter == null) {
                 LOGGER.warning(format("Cannot delete %s because it does not exist", filterName));
-                return null;
+                throw new IllegalArgumentException("Cannot find filter " + filterName);
             }
             securityManager.removeFilter(filter);
             securityManager.reload();
-            return new AuthFilter(securityManager.loadFilterConfig(filterName, true));
         } catch (IOException | SecurityConfigException ex) {
             throw new IllegalStateException("Cannot access filter provider config " + filterName, ex);
         }
@@ -334,6 +336,11 @@ public class AuthenticationFilterController extends RestBaseController {
         response.sendError(400, exception.getMessage());
     }
 
+    @ExceptionHandler(NotAuthorised.class)
+    public void duplicateNameException(NotAuthorised exception, HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.FORBIDDEN.value(), exception.getMessage());
+    }
+
     /// ///////////////////////////////////////////////////////////////////////
     /// Bespoke Exceptions
 
@@ -376,6 +383,12 @@ public class AuthenticationFilterController extends RestBaseController {
             super(format(
                     "Cannot modify the config with %s because the id %s in the body does not match",
                     requestBodyId, id));
+        }
+    }
+
+    public static class NotAuthorised extends RuntimeException {
+        public NotAuthorised() {
+            super("Admin role required to access this resource");
         }
     }
 }

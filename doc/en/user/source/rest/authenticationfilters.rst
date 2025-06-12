@@ -57,19 +57,6 @@ Update an Authentication Filter
 
 200 OK
 
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    <authFilter>
-        <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="securityInterceptorFilterConfig">
-            <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>
-            <allowIfAllAbstainDecisions>true</allowIfAllAbstainDecisions>
-            <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>
-        </config>
-        <id>-3737ce2b:196b56d5575:-7fea</id>
-        <name>restInterceptor</name>
-    </authFilter>
-
 Delete an Authentication Filter
 -------------------------------
 
@@ -78,15 +65,11 @@ Delete an Authentication Filter
 .. admonition:: curl
 
     curl --location --request DELETE 'http://localhost:8080/geoserver/rest/security/authFilters/restInterceptor7' \
-    --header 'content-type: application/xml' \
-    --header 'Accept: application/xml' \
     --header 'Authorization: ••••••'
 
 *Response*
 
 200 OK
-
-<HttpStatus>OK</HttpStatus>
 
 Create an Authentication Filter
 -------------------------------
@@ -97,7 +80,6 @@ Create an Authentication Filter
 
     curl --location 'http://localhost:8080/geoserver/rest/security/authFilters.xml' \
     --header 'content-type: application/xml' \
-    --header 'Accept: application/xml' \
     --header 'Authorization: ••••••' \
     --data '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <authFilter>
@@ -112,18 +94,6 @@ Create an Authentication Filter
 
 201 Created
 
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    <authFilter>
-        <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="securityInterceptorFilterConfig">
-            <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>
-            <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>
-            <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>
-        </config>
-        <id>2d3ea9bb:196c91945a2:-7ffd</id>
-        <name>restInterceptor17</name>
-    </authFilter>
 
 List all Authentication Filters
 -------------------------------

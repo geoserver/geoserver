@@ -679,6 +679,35 @@ public class StoredQueryTest extends WFS20TestSupport {
         }
     }
 
+    @Test
+    public void testDisabledStoredQueriesManagement() {
+        final GeoServer geoServer = getGeoServer();
+        try {
+            WFSInfo wfsInfo = geoServer.getService(WFSInfo.class);
+            wfsInfo.setDisableStoredQueriesManagement(true);
+            geoServer.save(wfsInfo);
+            String xml = getCreatePrimitiveWithinQuery(false);
+            // save on local workspace
+            Document dom = postAsDOM("sf/wfs", xml);
+            // Create
+            dom.getDocumentElement();
+            XMLAssert.assertXpathEvaluatesTo(
+                    "Stored queries management is disabled", "string(//ows:ExceptionText)", dom);
+
+            // Drop
+            xml = "<wfs:DropStoredQuery xmlns:wfs='" + WFS.NAMESPACE + "' service='WFS' id='myStoredQuery'/>";
+            dom = postAsDOM("wfs", xml);
+            XMLAssert.assertXpathEvaluatesTo(
+                    "Stored queries management is disabled", "string(//ows:ExceptionText)", dom);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            WFSInfo wfsInfo = geoServer.getService(WFSInfo.class);
+            wfsInfo.setDisableStoredQueriesManagement(false);
+            geoServer.save(wfsInfo);
+        }
+    }
+
     private void removeAllLocalStoredQueries() {
         final GeoServer geoServer = getGeoServer();
         WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName("sf");

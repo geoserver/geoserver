@@ -2325,8 +2325,10 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 operations.add(getPropertyValue());
                 operations.add(listStoredQueries());
                 operations.add(describeStoredQueries());
-                operations.add(createStoredQuery());
-                operations.add(dropStoredQuery());
+                if (!wfs.isDisableStoredQueriesManagement()) {
+                    operations.add(createStoredQuery());
+                    operations.add(dropStoredQuery());
+                }
                 if (wfs.getServiceLevel().contains(WFSInfo.ServiceLevel.COMPLETE)) {
                     operations.add(lockFeature());
                     operations.add(getFeatureWithLock());
@@ -2460,7 +2462,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 constraints.add(new DomainType("ImplementsSpatialJoins", TRUE));
                 constraints.add(new DomainType("ImplementsTemporalJoins", TRUE));
                 constraints.add(new DomainType("ImplementsFeatureVersioning", FALSE));
-                constraints.add(new DomainType("ManageStoredQueries", TRUE));
+                constraints.add(
+                        new DomainType("ManageStoredQueries", wfs.isDisableStoredQueriesManagement() ? FALSE : TRUE));
 
                 // capacity constraints
                 constraints.add(new DomainType("PagingIsTransactionSafe", FALSE));

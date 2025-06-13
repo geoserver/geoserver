@@ -1,0 +1,80 @@
+# (c) 2024 Open Source Geospatial Foundation - all rights reserved
+# This code is licensed under the GPL 2.0 license, available at the root
+# application directory.
+#
+# Default Workspace Admin REST security configuration
+# ---------------------------------------------------
+# This file defines the default security rules for workspace administrators 
+# accessing the REST API. It is copied to security/rest.workspaceadmin.properties
+# in the GeoServer data directory when that file does not exist.
+#
+# IMPORTANT: REST endpoints that don't match any pattern in this file fall back to the 
+# global REST security configuration (rest.properties), which typically restricts access
+# to administrators only. Only add patterns for endpoints that workspace administrators
+# should be allowed to access.
+#
+# Format:
+#   /url/pattern=METHOD1,METHOD2,...
+#
+# Shorthand method values:
+#   r = Read operations (GET, HEAD, OPTIONS, TRACE)
+#   w = Write operations (POST, PUT, PATCH, DELETE)
+#   rw = All operations (read + write)
+#
+
+# Workspace and catalog endpoints
+# -------------------------------
+# Contents filtered out by SecureCatalog based on AdminRequest
+
+# A workspace admin access to the workspaces collections is read-only
+/rest/workspaces.{ext}=r
+/rest/workspaces=r
+
+# And can only read or update a workspace
+/rest/workspaces/{workspace}.{ext}=r,PUT
+/rest/workspaces/{workspace}=r,PUT
+
+# But can modify anything else within it
+/rest/workspaces/{workspace}/**=rw
+
+
+# Same for namespaces
+/rest/namespaces.{ext}=r
+/rest/namespaces=r
+
+/rest/namespaces/{namespace}.{ext}=r,PUT
+/rest/namespaces/{namespace}=r,PUT
+
+/rest/namespaces/{namespace}/**=rw
+
+# A workspace admin has rw access to /rest/layers/**.
+# The secured catalog will only allow access to layers in its adminable workspaces 
+/rest/layers/**=rw
+
+# A workspace admin needs read-only access to global styles
+/rest/styles.{ext}=r
+/rest/styles/**=r
+
+# Resource access
+# ---------------
+# Access to resources, contents filtered out by SecureResourceStore
+/rest/resource/workspaces=r
+/rest/resource/workspaces/{workspace}/**=rw
+/rest/resource/**=r
+
+# User account management
+# -----------------------
+# Leaving /rest/security/self/** open for GET requests to return the 405 error code from UserPasswordController
+/rest/security/self/**=rw
+
+# General service endpoints
+# -------------------------
+# Basic API navigation and discoverability
+/rest/fonts.{ext}=r
+/rest/fonts/**=r
+
+/rest=r
+/rest/=r
+/rest.{ext}=r
+/rest/index=r
+/rest/index.{ext}=r

@@ -35,7 +35,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/AuthProviders"
+            type: array
           examples:
             application/xml: |
               <authProviderList>
@@ -57,30 +57,23 @@ paths:
                 </authProvider>
             application/json: |
               {
-                "authProviderList": {
+                "authProviders": {
                   "authProvider": [
                     {
-                      "id": "-4e7ef1a4:196d967dcea:-8000",
-                      "name": "-4e7ef1a4:196d967dcea:-8000",
-                      "className": "org.geoserver.security.jdbc.config.JDBCConnectAuthProviderConfig",
-                      "userGroupServiceName": "default",
-                      "position": -1,
-                      "config": {
-                        "@class": "org.geoserver.security.jdbc.config.JDBCConnectAuthProviderConfig",
-                        "id": "-4e7ef1a4:196d967dcea:-8000",
-                        "name": "JDBC",
-                        "className": "org.geoserver.security.jdbc.JDBCConnectAuthProvider",
-                        "driverClassName": "org.postgresql.Driver",
-                        "connectURL": "Jdbc::/postgresSQl",
-                        "userGroupServiceName": "default"
-                      },
-                      "disabled": true
+                      "name": "Test_Provider10",
+                      "href": "http://localhost:9002/geoserver/rest/security/authProviders/Test_Provider10.json"
                     },
+                    {
+                      "name": "default",
+                      "href": "http://localhost:9002/geoserver/rest/security/authProviders/default.json"
+                    }
                   ]
                 }
               }
+        403:
+          description: Only people with a Admin role can use this endpoint
         500:
-          description: INTERNAL_SERVER_ERROR
+          description: Geoserver failure try again later or report issue
     post:
       security:
         - basicAuth: []
@@ -95,54 +88,23 @@ paths:
       consumes:
         - application/xml
         - application/json
-      produces:
-        - application/xml
-        - application/json
       responses:
         201:
           description: |
             The provider configuration has been saved on the server
           schema:
-            $ref: "#/definitions/AuthProvider"
-          
-          examples:
-            application/xml: |
-              <authProvider>
-                  <id>4394eafb:19744df3931:-8000</id>
-                  <name>Test_Provider15</name>
-                  <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
-                  <userGroupServiceName>default</userGroupServiceName>
-                  <position>0</position>
-                  <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
-                      <id>4394eafb:19744df3931:-8000</id>
-                      <name>Test_Provider15</name>
-                      <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
-                      <userGroupServiceName>default</userGroupServiceName>
-                  </config>
-                  <disabled>false</disabled>
-              </authProvider>
-            application/json: |
-              {
-                  "authProvider": {
-                      "id": "4394eafb:19744df3931:-7fff",
-                      "name": "Test_Provider18",
-                      "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
-                      "userGroupServiceName": "default",
-                      "position": 0,
-                      "config": {
-                          "@class": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
-                          "id": "4394eafb:19744df3931:-7fff",
-                          "name": "Test_Provider18",
-                          "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
-                          "userGroupServiceName": "default"
-                      },
-                      "disabled": false
-                  }
-              }
+            type: string
+          headers:
+            Location:
+              description: The URI of the resource created
         400:
           description: |
             The data supplied by the client was invalid. Typically check that the name 
             is unique and that no id is supplied.
+        403:
+          description: Only people with a Admin role can use this endpoint
+        500:
+          description: Geoserver failure try again later or report issue
   /authProviders/{providerName}:
     get:
       security:
@@ -197,6 +159,8 @@ paths:
               }
           schema:
             $ref: "#/definitions/AuthProvider"
+        403:
+          description: Only people with a Admin role can use this endpoint
         404:
           description: |
             The named configuration does not exist on the server
@@ -222,49 +186,10 @@ paths:
       consumes:
         - application/xml
         - application/json
-      produces:
-        - application/xml
-        - application/json
       responses:
         200:
           description: |
             The configuration has been updated
-          schema:
-            $ref: "#/definitions/AuthProviders"
-          examples:
-            application/xml: |
-              <authProvider>
-                  <id>34585eb0:1973eb55a29:-8000</id>
-                  <name>Test_Provider10</name>
-                  <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
-                  <userGroupServiceName>default</userGroupServiceName>
-                  <position>0</position>
-                  <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
-                      <id>34585eb0:1973eb55a29:-8000</id>
-                      <name>Test_Provider10</name>
-                      <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
-                      <userGroupServiceName>default</userGroupServiceName>
-                  </config>
-                  <disabled>false</disabled>
-              </authProvider>
-            application/json: |
-              {
-                  "authProvider": {
-                      "id": "655557d7:1973eb7ba3a:-8000",
-                      "name": "Test_Provider11",
-                      "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
-                      "userGroupServiceName": "default",
-                      "position": 0,
-                      "config": {
-                          "@class": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
-                          "id": "655557d7:1973eb7ba3a:-8000",
-                          "name": "Test_Provider11",
-                          "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
-                          "userGroupServiceName": "default"
-                      },
-                      "disabled": false
-                  }
-              }
         400:
           description: |
             The provider configuration cannot be updated. Check that the supplied name matches
@@ -277,6 +202,10 @@ paths:
                   <status>400</status>
                   <message>java.lang.IllegalArgumentException: AuthProvider name does not match the one provided</message>
               </ErrorResponse>
+        403:
+          description: Only people with a Admin role can use this endpoint
+        404:
+          description: The provider does not exist
         500:
           description: |
             The server is experiencing some issue. If this persists contact your administrator.
@@ -343,15 +272,12 @@ paths:
                 "status": 404,
                 "message": "No provider configuration for the name  Test_Provider12"
               }
+        403:
+          description: Only people with a Admin role can use this endpoint
         500:
           description: |
             The server is experiencing some issue. If this persists contact your administrator.
 definitions:
-  AuthProviders:
-    title: Auth Providers
-    type: array
-    items:
-      $ref: "#/definitions/AuthProvider"
   AuthProvider:
     title: Auth Provider
     type: object

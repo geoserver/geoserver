@@ -7,13 +7,12 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Objects;
+import java.util.List;
 import org.geoserver.rest.security.AuthenticationProviderRestController.CannotSaveProvider;
 import org.geoserver.rest.security.AuthenticationProviderRestController.InvalidData;
 import org.geoserver.rest.security.AuthenticationProviderRestController.RequiresAdministrator;
 import org.geoserver.rest.security.AuthenticationProviderRestController.UnknownProvider;
 import org.geoserver.rest.security.xml.AuthProvider;
-import org.geoserver.rest.security.xml.AuthProviderList;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
@@ -21,8 +20,6 @@ import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfi
 import org.geoserver.test.GeoServerTestSupport;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -58,17 +55,15 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
                 });
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testList() throws IOException {
         try {
             setUser();
-            ResponseEntity<RestWrapper<AuthProviderList>> result = controller.list();
-            HttpStatus status = result.getStatusCode();
-            assertEquals("Expected an OK response", HttpStatus.OK, status);
-            assertNotNull(Objects.requireNonNull(result.getBody()).getObject());
-            AuthProviderList authProviderList =
-                    (AuthProviderList) result.getBody().getObject();
-            authProviderList.getProviders().forEach(filter -> {
+            RestWrapper<AuthProvider> result = controller.list();
+            assertNotNull(result.getObject());
+            List<AuthProvider> authProviderList = (List<AuthProvider>) result.getObject();
+            authProviderList.forEach(filter -> {
                 assertNotNull(filter.getId());
                 assertNotNull(filter.getName());
                 assertNotNull(filter.getConfig());
@@ -91,11 +86,9 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             String name = generateName("view");
             UsernamePasswordAuthenticationProviderConfig provider =
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, true);
-            ResponseEntity<RestWrapper<AuthProvider>> result = controller.view(provider.getName());
-            HttpStatus status = result.getStatusCode();
-            assertEquals("Expected an OK response", HttpStatus.OK, status);
-            assertNotNull(Objects.requireNonNull(result.getBody()).getObject());
-            AuthProvider authProvider = (AuthProvider) result.getBody().getObject();
+            RestWrapper<AuthProvider> result = controller.view(provider.getName());
+            assertNotNull(result.getObject());
+            AuthProvider authProvider = (AuthProvider) result.getObject();
             assertNotNull(authProvider.getId());
             assertEquals(provider.getName(), authProvider.getName());
             assertNotNull(authProvider.getConfig());
@@ -122,22 +115,15 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             UsernamePasswordAuthenticationProviderConfig provider =
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, false);
             AuthProvider authProvider = new AuthProvider(provider);
-            ResponseEntity<RestWrapper<AuthProvider>> result = controller.create(authProvider);
-            HttpStatus status = result.getStatusCode();
-            assertEquals("Expected an OK response", HttpStatus.CREATED, status);
-            assertNotNull(Objects.requireNonNull(result.getBody()).getObject());
-            AuthProvider createdAuthProvider = (AuthProvider) result.getBody().getObject();
-            assertNotNull(createdAuthProvider.getId());
-            assertEquals(provider.getName(), createdAuthProvider.getName());
-            checkProvideUsernamePasswordAuthenticationProvider(provider, createdAuthProvider.getConfig());
+            controller.create(authProvider);
 
             // File system check as securityManger has been reloaded
-            ResponseEntity<RestWrapper<AuthProvider>> viewProviderResult = controller.view(name);
-            AuthProvider viewProvider = (AuthProvider)
-                    Objects.requireNonNull(viewProviderResult.getBody()).getObject();
+            RestWrapper<AuthProvider> viewProviderResult = controller.view(name);
+            AuthProvider viewProvider = (AuthProvider) viewProviderResult.getObject();
             assertNotNull(viewProvider.getId());
             assertEquals(provider.getName(), viewProvider.getName());
             assertNotNull(viewProvider.getConfig());
+            checkProvideUsernamePasswordAuthenticationProvider(provider, viewProvider.getConfig());
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -223,22 +209,15 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             UsernamePasswordAuthenticationProviderConfig provider =
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, true);
             AuthProvider authProvider = new AuthProvider(provider);
-            ResponseEntity<RestWrapper<AuthProvider>> result = controller.update(authProvider.getName(), authProvider);
-            HttpStatus status = result.getStatusCode();
-            assertEquals("Expected an OK response", HttpStatus.OK, status);
-            assertNotNull(Objects.requireNonNull(result.getBody()).getObject());
-            AuthProvider createdAuthProvider = (AuthProvider) result.getBody().getObject();
-            assertNotNull(createdAuthProvider.getId());
-            assertEquals(provider.getName(), createdAuthProvider.getName());
-            checkProvideUsernamePasswordAuthenticationProvider(provider, createdAuthProvider.getConfig());
+            controller.update(authProvider.getName(), authProvider);
 
             // File system check as securityManger has been reloaded
-            ResponseEntity<RestWrapper<AuthProvider>> viewProviderResult = controller.view(name);
-            AuthProvider viewProvider = (AuthProvider)
-                    Objects.requireNonNull(viewProviderResult.getBody()).getObject();
+            RestWrapper<AuthProvider> viewProviderResult = controller.view(name);
+            AuthProvider viewProvider = (AuthProvider) viewProviderResult.getObject();
             assertNotNull(viewProvider.getId());
             assertEquals(provider.getName(), viewProvider.getName());
             assertNotNull(viewProvider.getConfig());
+            checkProvideUsernamePasswordAuthenticationProvider(provider, viewProvider.getConfig());
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -306,16 +285,8 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         String name = generateName("delete");
         setUser();
         try {
-            UsernamePasswordAuthenticationProviderConfig provider =
-                    authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, true);
-            ResponseEntity<RestWrapper<AuthProvider>> result = controller.delete(name);
-            HttpStatus status = result.getStatusCode();
-            assertEquals("Expected an OK response", HttpStatus.OK, status);
-            assertNotNull(Objects.requireNonNull(result.getBody()).getObject());
-            AuthProvider createdAuthProvider = (AuthProvider) result.getBody().getObject();
-            assertNotNull(createdAuthProvider.getId());
-            assertEquals(provider.getName(), createdAuthProvider.getName());
-            checkProvideUsernamePasswordAuthenticationProvider(provider, createdAuthProvider.getConfig());
+            authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, true);
+            controller.delete(name);
             // File system check as securityManger has been reloaded
             try {
                 controller.view(name);

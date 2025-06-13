@@ -19,7 +19,6 @@ import org.geoserver.ows.FileItemCleanupCallback;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.security.xml.AuthProvider;
-import org.geoserver.rest.security.xml.AuthProviderList;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
@@ -38,6 +37,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -68,42 +68,41 @@ public class AuthenticationProviderRestController extends RestBaseController {
      * @return A list of providers
      */
     @GetMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthProviderList>> list() throws IOException {
-        return ResponseEntity.ok(wrapObject(listAuthProviders(), AuthProviderList.class));
+    public RestWrapper<AuthProvider> list() throws IOException {
+        checkAuthorisation();
+        return wrapList(listAuthProviders(), AuthProvider.class);
     }
 
     @GetMapping(
             value = "{providerName}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthProvider>> view(@PathVariable String providerName) {
+    public RestWrapper<AuthProvider> view(@PathVariable String providerName) {
+        checkAuthorisation();
         AuthProvider authProvider = authProviderByName(providerName);
-        return ResponseEntity.ok(wrapObject(authProvider, AuthProvider.class));
+        return wrapObject(authProvider, AuthProvider.class);
     }
 
-    @PostMapping(
-            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthProvider>> create(@RequestBody AuthProvider authProvider) {
-        AuthProvider newAuthProvider = createAuthProvider(authProvider);
-        return ResponseEntity.status(HttpStatus.CREATED).body(wrapObject(newAuthProvider, AuthProvider.class));
+    @PostMapping(consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public @ResponseStatus(code = HttpStatus.CREATED) void create(@RequestBody AuthProvider authProvider) {
+        checkAuthorisation();
+        createAuthProvider(authProvider);
     }
 
     @PutMapping(
             value = "{providerName}",
-            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthProvider>> update(
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public @ResponseStatus(code = HttpStatus.OK) void update(
             @PathVariable String providerName, @RequestBody AuthProvider authProvider) {
-        AuthProvider newAuthProvider = updateAuthProvider(providerName, authProvider);
-        return ResponseEntity.ok(wrapObject(newAuthProvider, AuthProvider.class));
+        checkAuthorisation();
+        updateAuthProvider(providerName, authProvider);
     }
 
     @DeleteMapping(
             value = "{providerName}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RestWrapper<AuthProvider>> delete(@PathVariable String providerName) {
-        AuthProvider newAuthProvider = deleteAuthProvider(providerName);
-        return ResponseEntity.ok(wrapObject(newAuthProvider, AuthProvider.class));
+    public @ResponseStatus(code = HttpStatus.OK) void delete(@PathVariable String providerName) {
+        checkAuthorisation();
+        deleteAuthProvider(providerName);
     }
 
     @ExceptionHandler(CannotSaveProvider.class)
@@ -190,6 +189,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
             this.message = message;
         }
     }
+
     /// ///////////////////////////////////////////////////////////////////////
     /// ControllerAdvice overrides
 
@@ -206,19 +206,18 @@ public class AuthenticationProviderRestController extends RestBaseController {
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         persister.getXStream().alias("authProvider", AuthProvider.class);
-        persister.getXStream().alias("authProviders", AuthProviderList.class);
 
-        persister.getXStream().processAnnotations(new Class[] {AuthProvider.class, AuthProviderList.class});
+        persister.getXStream().processAnnotations(new Class[] {AuthProvider.class});
     }
 
     /// ///////////////////////////////////////////////////////////////////////
     /// Implementation
 
-    private AuthProviderList listAuthProviders() {
+    private List<AuthProvider> listAuthProviders() {
         try {
             checkAuthorisation();
             ArrayList<String> providerNames = new ArrayList<>(securityManager.listAuthenticationProviders());
-            List<AuthProvider> providerInst = providerNames.stream()
+            return providerNames.stream()
                     .map(this::loadProviderOrError)
                     .peek(p -> {
                         int index = providerNames.indexOf(p.getName());
@@ -226,8 +225,6 @@ public class AuthenticationProviderRestController extends RestBaseController {
                         p.setDisabled(index == -1);
                     })
                     .collect(toList());
-
-            return new AuthProviderList(providerInst);
         } catch (IOException ex) {
             throw new CannotReadConfiguration("All", ex);
         }
@@ -235,7 +232,6 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
     private AuthProvider authProviderByName(String providerName) {
         try {
-            checkAuthorisation();
             checkArgument(!Strings.isNullOrEmpty(providerName), "Provider name cannot be null or empty");
 
             SecurityAuthProviderConfig provider = securityManager.loadAuthenticationProviderConfig(providerName);
@@ -255,8 +251,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
         }
     }
 
-    private AuthProvider createAuthProvider(AuthProvider authProvider) {
-        checkAuthorisation();
+    private void createAuthProvider(AuthProvider authProvider) {
 
         try {
             checkArgument(authProvider != null, "AuthProvider cannot be null");
@@ -292,7 +287,6 @@ public class AuthenticationProviderRestController extends RestBaseController {
             SecurityAuthProviderConfig createdAuthProvider =
                     securityManager.loadAuthenticationProviderConfig(authProvider.getName());
             checkState(Objects.nonNull(createdAuthProvider.getId()), "Provider id was not created");
-            return new AuthProvider(createdAuthProvider);
         } catch (IOException | SecurityConfigException e) {
             throw new CannotSaveProvider(authProvider.getName(), e);
         } catch (IllegalArgumentException ex) {
@@ -302,7 +296,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
         }
     }
 
-    private AuthProvider updateAuthProvider(String providerName, AuthProvider authProvider) {
+    private void updateAuthProvider(String providerName, AuthProvider authProvider) {
         checkAuthorisation();
 
         try {
@@ -332,12 +326,6 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
             securityManager.saveAuthenticationProvider(authProvider.getConfig());
             securityManager.reload();
-
-            SecurityAuthProviderConfig createdAuthProvider =
-                    securityManager.loadAuthenticationProviderConfig(authProvider.getName());
-            checkState(Objects.nonNull(createdAuthProvider.getId()), "Provider id was not created");
-
-            return new AuthProvider(createdAuthProvider);
         } catch (IOException | SecurityConfigException e) {
             throw new CannotSaveProvider(authProvider.getConfig().getName(), e);
         } catch (IllegalArgumentException ex) {
@@ -347,16 +335,13 @@ public class AuthenticationProviderRestController extends RestBaseController {
         }
     }
 
-    private AuthProvider deleteAuthProvider(String providerName) {
-        checkAuthorisation();
-
+    private void deleteAuthProvider(String providerName) {
         try {
             checkArgument(!Strings.isNullOrEmpty(providerName), "Provider name cannot be null or empty");
             AuthProvider authProvider = authProviderByName(providerName);
             SecurityAuthProviderConfig config = authProvider.getConfig();
             securityManager.removeAuthenticationProvider(config);
             securityManager.reload();
-            return authProvider;
         } catch (IOException | SecurityConfigException e) {
             throw new CannotSaveProvider(providerName, e);
         } catch (IllegalArgumentException ex) {

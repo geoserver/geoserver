@@ -65,6 +65,13 @@
     </profile>
 
     <profile>
+      <id>oidc</id>
+      <modules>
+        <module>oidc</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>oauth2-all</id>
       <modules>
         <module>oauth2</module>
@@ -85,6 +92,7 @@
         <module>oauth2-geonode</module>
         <module>oauth2-openid-connect</module>
         <module>keycloak</module>
+        <module>oidc</module>
       </modules>
     </profile>
 

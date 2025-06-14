@@ -179,7 +179,6 @@ class FakeHttpServletRequest implements HttpServletRequest {
 
     /** @deprecated use #isRequestedSessionIdFromURL() */
     @Deprecated
-    @SuppressWarnings({"deprecation"})
     @Override
     public boolean isRequestedSessionIdFromUrl() {
         return isRequestedSessionIdFromURL();
@@ -352,7 +351,6 @@ class FakeHttpServletRequest implements HttpServletRequest {
     /** @deprecated */
     @Override
     @Deprecated
-    @SuppressWarnings("deprecation")
     public String getRealPath(String arg0) {
         throw new ServletDebugException();
     }

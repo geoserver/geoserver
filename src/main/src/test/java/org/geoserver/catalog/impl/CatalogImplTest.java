@@ -3676,7 +3676,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testChangeLayerGroupOrder() {
         addLayerGroup();
 

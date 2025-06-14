@@ -54,7 +54,6 @@ public class GeoServerExtensionsHelperTest {
 
     class TestClass {}
 
-    @SuppressWarnings("unchecked")
     @Test
     public void helperMultipleSingleton() {
         TestClass o1 = new TestClass();

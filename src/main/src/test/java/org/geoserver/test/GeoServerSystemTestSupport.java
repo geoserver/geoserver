@@ -190,7 +190,6 @@ import org.xml.sax.SAXParseException;
  * @author Justin Deoliveira, OpenGeo
  */
 @TestSetup(run = TestSetupFrequency.ONCE)
-@SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
 public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemTestData> {
 
     private MockHttpServletResponse lastResponse;

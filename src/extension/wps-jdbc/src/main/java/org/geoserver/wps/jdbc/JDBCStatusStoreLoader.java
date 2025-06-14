@@ -23,7 +23,6 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 
 public class JDBCStatusStoreLoader implements DisposableBean {
-    @SuppressWarnings("unused")
     private static final Logger LOGGER = Logging.getLogger(JDBCStatusStoreLoader.class);
 
     private static final String JDBCSTATUS_NAME = "jdbcstatusstore.props";

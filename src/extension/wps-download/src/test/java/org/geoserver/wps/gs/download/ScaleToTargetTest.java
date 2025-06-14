@@ -159,7 +159,6 @@ public class ScaleToTargetTest {
         testFullSize(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution, expectedGridSize);
     }
 
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // envelope equality with tolerance
     private void testFullSize(
             int targetSizeX,
             int targetSizeY,
@@ -235,7 +234,6 @@ public class ScaleToTargetTest {
         testROI(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution, expectedGridSize);
     }
 
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // envelope equality with tolerance
     private void testROI(
             int targetSizeX,
             int targetSizeY,

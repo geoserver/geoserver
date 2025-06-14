@@ -87,7 +87,6 @@ public class NamespaceKvpParserTest {
         assertEquals("http://default.namespace.com", ctx.getURI(XMLConstants.DEFAULT_NS_PREFIX));
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> getPrefixes(NamespaceSupport ctx) {
         Enumeration<String> prefixes = ctx.getPrefixes();
         List<String> l = new ArrayList<>();

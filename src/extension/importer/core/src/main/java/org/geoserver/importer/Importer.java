@@ -1351,7 +1351,6 @@ public class Importer implements DisposableBean, ApplicationListener {
     void loadIntoDataStore(ImportTask task, DataStoreInfo store, VectorFormat format, VectorTransformChain tx)
             throws Throwable {
         ImportData data = task.getData();
-        @SuppressWarnings("PMD.CloseResource") // conditionally created, then closed
         FeatureReader reader = null;
 
         // using this exception to throw at the end
@@ -1568,8 +1567,6 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     void loadIntoCoverageStore(ImportTask task, CoverageStoreInfo store, GridFormat format, RasterTransformChain tx)
             throws IOException {
-        @SuppressWarnings("PMD.CloseResource") // conditionally created, then closed
-
         // see if the store exposes a structured grid coverage reader
         // this is a ResourcePool reader, we should not close it
         GridCoverageReader reader = store.getGridCoverageReader(null, null);

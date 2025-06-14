@@ -82,7 +82,6 @@ public class SecureCatalogImplFilterTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked") // hamcrest varargs method is not marked as @SafeVarArgs
     public void testFeatureTypeList() throws Exception {
         Catalog catalog = createMock(Catalog.class);
 

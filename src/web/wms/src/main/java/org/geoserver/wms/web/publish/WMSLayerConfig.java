@@ -315,7 +315,6 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     static class VendorParametersConvertor implements IConverter<Map<String, String>> {
 
         @Override

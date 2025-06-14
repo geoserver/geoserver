@@ -249,7 +249,6 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         return separator;
     }
 
-    @SuppressWarnings("PMD.UnnecessaryCast")
     private AttrFormatter[] getFormatters(FeatureType schema) {
         if (schema instanceof SimpleFeatureType) {
             // prepare the formatter for numbers

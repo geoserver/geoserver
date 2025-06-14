@@ -68,7 +68,6 @@ public abstract class DescribeLayerResponse extends Response {
      * @see org.geoserver.ows.Response#write(java.lang.Object, java.io.OutputStream, org.geoserver.platform.Operation)
      */
     @Override
-    @SuppressWarnings("PMD.UseTryWithResources") // the output is provided from outside
     public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
 
         Assert.notNull(operation.getParameters(), "parameters");

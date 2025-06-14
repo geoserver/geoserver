@@ -157,7 +157,7 @@
     <errorProneFlags></errorProneFlags>
     <errorProne.version>2.31.0</errorProne.version>
     <javac.version>9+181-r4173-1</javac.version>
-    <pmd.version>7.13.0</pmd.version>
+    <pmd.version>7.14.0</pmd.version>
     <hsql.version>2.7.2</hsql.version>
     <checkstyle.skip>false</checkstyle.skip>
     <qa>false</qa>

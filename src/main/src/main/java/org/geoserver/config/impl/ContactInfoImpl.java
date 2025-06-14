@@ -427,7 +427,6 @@ public class ContactInfoImpl implements ContactInfo {
     }
 
     @Override
-    @SuppressWarnings("PMD.CognitiveComplexity") // IDE generated code, ignoring
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;

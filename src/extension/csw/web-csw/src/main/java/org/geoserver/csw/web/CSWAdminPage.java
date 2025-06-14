@@ -40,7 +40,6 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void build(final IModel info, Form form) {
 
         final PropertyModel<MetadataMap> metadata = new PropertyModel<>(info, "metadata");

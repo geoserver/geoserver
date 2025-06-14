@@ -32,7 +32,6 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         }
     }
 
-    @SuppressWarnings("PMD.EmptyWhileStmt")
     public void doInputStreamTest(String testString) throws Exception {
         HttpServletRequest req = makeRequest(testString, null);
 
@@ -91,7 +90,6 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         assertEquals("4", ((String[]) params.get("d"))[0]);
     }
 
-    @SuppressWarnings("PMD.EmptyWhileStmt")
     private void clearOutBody(HttpServletRequest req) throws IOException {
         try (BufferedReader br = req.getReader()) {
             while ((br.readLine()) != null) { // NOPMD

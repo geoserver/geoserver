@@ -29,7 +29,6 @@ public class GWCTestHelpers {
         return mockLayer(resourceName, null, extraStyles, type);
     }
 
-    @SuppressWarnings("unchecked")
     public static LayerInfoImpl mockLayer(
             String resourceName, String workSpaceName, String[] extraStyles, PublishedType type) {
         StoreInfo store = new DataStoreInfoImpl(null);

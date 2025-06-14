@@ -26,7 +26,7 @@
     <feign-form-version>3.8.0</feign-form-version>
     <swagger-annotations.version>1.5.24</swagger-annotations.version>
     <oltu-version>1.0.2</oltu-version>
-
+    <jackson.version>2.18.2</jackson.version>
     <openapi-base-folder>${maven.multiModuleProjectDirectory}/src/community/rest-openapi/openapi/1.0.0</openapi-base-folder>
     <openapi.api.v1>${openapi.basepackage}.api.v1</openapi.api.v1>
     <openapi.api.v1.client>${openapi.api.v1}.client</openapi.api.v1.client>
@@ -60,17 +60,17 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${jackson2.databind.version}</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${jackson2.version}</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
         <artifactId>jackson-datatype-jsr310</artifactId>
-        <version>${jackson2.version}</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>io.github.openfeign</groupId>

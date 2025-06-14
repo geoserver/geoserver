@@ -139,7 +139,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-main</artifactId>
-      <version>${gt.version}</version>
       <classifier>tests</classifier>
     </dependency>
     <dependency>
@@ -157,7 +156,6 @@
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-h2</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

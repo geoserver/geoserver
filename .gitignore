@@ -8,6 +8,8 @@ target
 .DS_Store
 *.class
 *.pyc
+# draw.io backup
+*.bkp
 
 /.metadata/
 
@@ -45,3 +47,6 @@ src/release/installer/win/target/
 
 # Eclipse stuff
 src/web/app/.temp-Start*
+
+# VS Code
+.vscode/

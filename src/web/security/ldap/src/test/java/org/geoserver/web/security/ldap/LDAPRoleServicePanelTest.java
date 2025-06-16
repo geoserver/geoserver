@@ -137,8 +137,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
 
         tester.newFormTester("form").submit();
 
-        tester.assertErrorMessages(
-                new String[] {"Field 'Server URL' is required.", "Field 'Group search base' is required."});
+        tester.assertErrorMessages("Field 'Server URL' is required.", "Field 'Group search base' is required.");
     }
 
     @Test

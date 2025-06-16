@@ -81,22 +81,12 @@
         <artifactId>javacc-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>jjtree</id>
+            <id>jjtree-javacc</id>
             <goals>
-              <goal>jjtree</goal>
+              <goal>jjtree-javacc</goal>
             </goals>
             <configuration>
               <sourceDirectory>src/main/java/org/geoserver/wcs/kvp/rangesubset</sourceDirectory>
-              <outputDirectory>target/jjtree</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>javacc</id>
-            <goals>
-              <goal>javacc</goal>
-            </goals>
-            <configuration>
-              <sourceDirectory>target/jjtree/</sourceDirectory>
               <outputDirectory>target/generated-sources/javacc</outputDirectory>
             </configuration>
           </execution>

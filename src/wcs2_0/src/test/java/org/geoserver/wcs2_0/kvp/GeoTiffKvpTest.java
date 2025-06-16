@@ -557,11 +557,11 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(
@@ -611,11 +611,11 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file, hints);
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(
@@ -673,11 +673,11 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file, hints);
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(

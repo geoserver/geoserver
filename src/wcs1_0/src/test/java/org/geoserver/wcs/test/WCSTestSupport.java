@@ -155,7 +155,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
             throws Exception {
         try (MemoryCacheImageInputStream stream =
                 new MemoryCacheImageInputStream(new ByteArrayInputStream(response.getContentAsByteArray()))) {
-            GridCoverage2D coverage = new GeoTiffReader(stream).read(null);
+            GridCoverage2D coverage = new GeoTiffReader(stream).read();
             consumer.accept(coverage);
         }
     }

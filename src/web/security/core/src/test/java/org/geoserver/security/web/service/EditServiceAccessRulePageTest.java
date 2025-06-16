@@ -53,7 +53,7 @@ public class EditServiceAccessRulePageTest extends AbstractSecurityWicketTestSup
         form = tester.newFormTester("form");
         form.submit("save");
 
-        tester.assertErrorMessages(new String[0]);
+        tester.assertErrorMessages();
         tester.assertRenderedPage(ServiceAccessRulePage.class);
 
         ServiceAccessRule rule = getRule("wms.GetMap");

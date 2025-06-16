@@ -62,7 +62,7 @@ public class CRSExtentionTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             final CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857", true);
             Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));
 
@@ -107,7 +107,7 @@ public class CRSExtentionTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             final CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857", true);
             Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));
 
@@ -152,7 +152,7 @@ public class CRSExtentionTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             final CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857", true);
             Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));
 
@@ -197,7 +197,7 @@ public class CRSExtentionTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             final CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857", true);
             Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));
 

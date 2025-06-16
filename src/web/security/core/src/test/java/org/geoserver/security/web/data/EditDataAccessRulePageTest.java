@@ -65,7 +65,7 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
         form.setValue("roles:anyRole", true);
         form.submit("save");
 
-        tester.assertErrorMessages(new String[0]);
+        tester.assertErrorMessages();
         tester.assertRenderedPage(DataSecurityPage.class);
 
         DataAccessRule rule = getRule(ruleName);

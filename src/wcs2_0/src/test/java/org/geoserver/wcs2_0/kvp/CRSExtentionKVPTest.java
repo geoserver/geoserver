@@ -74,7 +74,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), EPSG_3857));
 
@@ -103,7 +103,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), EPSG_3857));
 
             // checks
@@ -133,7 +133,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), EPSG_3857));
 
             // checks
@@ -165,7 +165,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), EPSG_3857));
 
             // checks
@@ -224,7 +224,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), EPSG_3857));
 
             // checks
@@ -256,7 +256,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), EPSG_3857));
 
             // checks

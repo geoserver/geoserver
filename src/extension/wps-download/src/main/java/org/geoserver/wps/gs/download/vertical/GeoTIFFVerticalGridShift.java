@@ -84,7 +84,7 @@ public class GeoTIFFVerticalGridShift implements VerticalGridShift {
         maxY = envelope.getMaximum(1);
 
         dataType = layout.getSampleModel(null).getDataType();
-        GridCoverage2D coverage = reader.read(null);
+        GridCoverage2D coverage = reader.read();
         gridImage = coverage.getRenderedImage();
         tileWidth = gridImage.getTileWidth();
         tileHeight = gridImage.getTileHeight();

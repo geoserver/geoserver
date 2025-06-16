@@ -126,7 +126,7 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
         GridCoverage2D test = factory.create("test", bi, envelope);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         GeoTiffWriter writer = new GeoTiffWriter(bos);
-        writer.write(test, null);
+        writer.write(test);
         writer.dispose();
 
         // create the lot of files

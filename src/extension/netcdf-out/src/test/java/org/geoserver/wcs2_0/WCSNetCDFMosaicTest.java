@@ -840,7 +840,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             assertEquals(6500000, envelope.getMaximum(1), TOLERANCE);
 
             // check the data has been cut
-            coverage = reader.read(null);
+            coverage = reader.read();
             // .. outside of the triangle
             Point2D.Double position = new Point2D.Double(410000, 6400000);
             double[] pixel = new double[1];

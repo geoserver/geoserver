@@ -31,19 +31,19 @@ public class CredentialsFromRequestHeaderFilterConfigValidator extends FilterCon
     public void validateFilterConfig(CredentialsFromRequestHeaderFilterConfig config) throws FilterConfigException {
         if (config.getUserNameHeaderName() == null || "".equals(config.getUserNameHeaderName())) {
             throw new CredentialsFromRequestHeaderFilterConfigException(
-                    CredentialsFromRequestHeaderFilterConfigException.USERNAME_HEADER_REQUIRED, null);
+                    CredentialsFromRequestHeaderFilterConfigException.USERNAME_HEADER_REQUIRED);
         }
         if (config.getUserNameRegex() == null || "".equals(config.getUserNameRegex())) {
             throw new CredentialsFromRequestHeaderFilterConfigException(
-                    CredentialsFromRequestHeaderFilterConfigException.USERNAME_REGEX_REQUIRED, null);
+                    CredentialsFromRequestHeaderFilterConfigException.USERNAME_REGEX_REQUIRED);
         }
         if (config.getPasswordHeaderName() == null || "".equals(config.getPasswordHeaderName())) {
             throw new CredentialsFromRequestHeaderFilterConfigException(
-                    CredentialsFromRequestHeaderFilterConfigException.PASSWORD_HEADER_REQUIRED, null);
+                    CredentialsFromRequestHeaderFilterConfigException.PASSWORD_HEADER_REQUIRED);
         }
         if (config.getPasswordRegex() == null || "".equals(config.getPasswordRegex())) {
             throw new CredentialsFromRequestHeaderFilterConfigException(
-                    CredentialsFromRequestHeaderFilterConfigException.PASSWORD_REGEX_REQUIRED, null);
+                    CredentialsFromRequestHeaderFilterConfigException.PASSWORD_REGEX_REQUIRED);
         }
     }
 }

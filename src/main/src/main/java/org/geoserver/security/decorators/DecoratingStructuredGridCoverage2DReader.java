@@ -101,12 +101,12 @@ public abstract class DecoratingStructuredGridCoverage2DReader implements Struct
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue... parameters) throws IllegalArgumentException, IOException {
         return delegate.read(parameters);
     }
 
     @Override
-    public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
+    public GridCoverage2D read(String coverageName, GeneralParameterValue... parameters)
             throws IllegalArgumentException, IOException {
         return delegate.read(coverageName, parameters);
     }

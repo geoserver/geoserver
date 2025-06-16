@@ -347,7 +347,7 @@ public class GeoServerFeatureSource extends AbstractDecorator<SimpleFeatureSourc
         Integer offset = null, maxFeatures = null;
         if (sortBy != null && sortBy != SortBy.UNSORTED) {
             if (!source.getQueryCapabilities().supportsSorting(sortBy)) {
-                query.setSortBy(null);
+                query.setSortBy((SortBy[]) null);
 
                 // if paging is in and we cannot do sorting natively
                 // we should not let the datastore handle it: we need to sort first, then

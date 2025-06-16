@@ -38,7 +38,7 @@ public class SecuredStructuredGridCoverage2DReader extends DecoratingStructuredG
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue... parameters) throws IllegalArgumentException, IOException {
         return SecuredGridCoverage2DReader.read(delegate, policy, parameters);
     }
 

@@ -138,7 +138,7 @@ public class RangeLookupTest extends WPSTestSupport {
         try (InputStream is = getBinaryInputStream(response)) {
 
             ArcGridFormat format = new ArcGridFormat();
-            GridCoverage gc = format.getReader(is).read(null);
+            GridCoverage gc = format.getReader(is).read();
 
             assertTrue(new Envelope(144.9, 146.1, -40.9, -43.1).contains(new ReferencedEnvelope(gc.getEnvelope())));
 

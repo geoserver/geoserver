@@ -148,6 +148,7 @@
     <pmd.version>7.14.0</pmd.version>
     <checkstyle.skip>false</checkstyle.skip>
     <qa>false</qa>
+    <compiler.args></compiler.args>
     <lint>deprecation,unchecked</lint>
     <jmh.version>1.37</jmh.version>
   </properties>
@@ -1189,7 +1190,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>javacc-maven-plugin</artifactId>
-          <version>2.3</version>
+          <version>3.1.1</version>
         </plugin>
 
         <!-- third-party plugins -->
@@ -1253,6 +1254,10 @@
           <fork>${fork.javac}</fork>
           <maxmem>${javac.maxHeapSize}</maxmem>
           <parameters>true</parameters>
+          <compilerArgs>
+            <arg>-Xlint:${lint}</arg>
+            <arg>${compiler.args}</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
 

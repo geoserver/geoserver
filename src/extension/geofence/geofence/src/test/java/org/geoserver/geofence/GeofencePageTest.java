@@ -124,6 +124,6 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     public void testInvalidateCache() {
         tester.clickLink("form:invalidate", true);
         String success = new StringResourceModel(GeofencePage.class.getSimpleName() + ".cacheInvalidated").getObject();
-        tester.assertInfoMessages(new String[] {success});
+        tester.assertInfoMessages(success);
     }
 }

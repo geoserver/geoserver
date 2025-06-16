@@ -93,7 +93,7 @@ public class Mosaic extends Directory {
                 AbstractGridCoverage2DReader r = ((GridFormat) format).gridReader(g);
                 try {
                     // get the envelope
-                    GridCoverage2D cov = r.read(null);
+                    GridCoverage2D cov = r.read();
 
                     g.setEnvelope(cov.getEnvelope2D());
                     g.setGrid(cov.getGridGeometry());

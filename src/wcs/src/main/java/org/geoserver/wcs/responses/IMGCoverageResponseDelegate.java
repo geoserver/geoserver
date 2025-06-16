@@ -15,7 +15,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.IOUtils;
 import org.geotools.api.coverage.grid.Format;
-import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.parameter.ParameterValue;
 import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -73,7 +72,7 @@ public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate im
 
         try {
             // writing
-            writer.write(sourceCoverage, new GeneralParameterValue[] {format});
+            writer.write(sourceCoverage, format);
             output.flush();
         } finally {
 

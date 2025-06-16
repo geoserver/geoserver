@@ -481,4 +481,39 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
                 "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/DownloadMetadata/WarningsFound",
                 dom);
     }
+
+    @Test
+    public void testSimpleGrayTransparent() throws Exception {
+        String xml = getTestRequest("mapGrayTransparent.xml");
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("image/png", response.getContentType());
+
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertEquals(ColorModel.TRANSLUCENT, image.getColorModel().getTransparency());
+        ImageAssert.assertEquals(new File(SAMPLES + "mapGrayTransparent.png"), image, 100);
+    }
+
+    @Test
+    public void testSimpleGrayTransparentExplicitOpacity() throws Exception {
+        // with an express opacity set the code used to take a different path that without it
+        String xml = getTestRequest("mapGrayTransparentExplicitOpacity.xml");
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("image/png", response.getContentType());
+
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertEquals(ColorModel.TRANSLUCENT, image.getColorModel().getTransparency());
+        ImageAssert.assertEquals(new File(SAMPLES + "mapGrayTransparent.png"), image, 100);
+    }
+
+    @Test
+    public void testMultilayerGrayTransparent() throws Exception {
+        // testing overlay with a base layer that adds opacity
+        String xml = getTestRequest("mapGrayTransparentMultilayer.xml");
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("image/png", response.getContentType());
+
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertEquals(ColorModel.TRANSLUCENT, image.getColorModel().getTransparency());
+        ImageAssert.assertEquals(new File(SAMPLES + "mapGrayTransparentMultilayer.png"), image, 100);
+    }
 }

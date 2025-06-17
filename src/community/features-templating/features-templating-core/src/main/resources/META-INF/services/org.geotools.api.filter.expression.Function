@@ -7,6 +7,7 @@ org.geoserver.featurestemplating.expressions.RequestParameterFunction
 org.geoserver.featurestemplating.expressions.HeaderFunction
 org.geoserver.featurestemplating.expressions.MimeTypeFunction
 org.geoserver.featurestemplating.expressions.RequestMatchRegex
+org.geoserver.featurestemplating.expressions.GeoServerBaseUrlFunction
 org.geoserver.featurestemplating.expressions.aggregate.AggregateFunction
 org.geoserver.featurestemplating.expressions.aggregate.FilteringFunction
 org.geoserver.featurestemplating.expressions.aggregate.StreamFunction

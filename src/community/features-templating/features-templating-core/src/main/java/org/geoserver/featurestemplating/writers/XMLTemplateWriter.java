@@ -189,7 +189,8 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
 
     private void writeAsAttribute(String key, Object elementValue, EncodingHints encodingHints) throws IOException {
         try {
-            String strVal = escape(elementValue.toString());
+            // xml escape not needed, the downstream writer will perform it
+            String strVal = elementValue.toString();
             if (key.indexOf(":") != -1 && !key.contains("xmlns")) {
                 String[] splitKey = key.split(":");
                 streamWriter.writeAttribute(splitKey[0], namespaces.get(splitKey[0]), splitKey[1], strVal);

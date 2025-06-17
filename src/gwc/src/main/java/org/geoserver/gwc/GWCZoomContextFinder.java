@@ -48,7 +48,7 @@ public class GWCZoomContextFinder implements ZoomContextFinder {
         return broker.getNames();
     }
 
-    class GWCZoomContext extends MedialZoomContext {
+    static class GWCZoomContext extends MedialZoomContext {
         final GridSet gridset;
 
         public GWCZoomContext(GridSet gridset) {

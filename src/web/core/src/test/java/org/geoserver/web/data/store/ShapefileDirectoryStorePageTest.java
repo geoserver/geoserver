@@ -6,6 +6,7 @@
 package org.geoserver.web.data.store;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import org.apache.wicket.util.file.File;
@@ -81,6 +82,6 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
         assertEquals(
                 getCatalog().getNamespaceByPrefix(ws.getName()).getURI(),
                 store.getConnectionParameters().get("namespace"));
-        assertEquals(true, store.getConnectionParameters().get("skipScan"));
+        assertTrue((Boolean) store.getConnectionParameters().get("skipScan"));
     }
 }

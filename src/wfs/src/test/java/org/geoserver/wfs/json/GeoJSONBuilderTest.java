@@ -55,7 +55,7 @@ public class GeoJSONBuilderTest {
         assertEquals("{\"type\":\"Point\",\"coordinates\":[1,2]}", writer.toString());
     }
 
-    class MyPoint extends Point {
+    static class MyPoint extends Point {
 
         public MyPoint(double x, double y) {
             super(new CoordinateArraySequence(new Coordinate[] {new Coordinate(x, y)}), new GeometryFactory());

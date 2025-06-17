@@ -71,7 +71,8 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
         DataAccessRule rule = getRule(ruleName);
         assertNotNull(rule);
         assertEquals(1, rule.getRoles().size());
-        assertEquals(GeoServerRole.ANY_ROLE, rule.getRoles().iterator().next());
+        String actual = rule.getRoles().iterator().next();
+        assertEquals(GeoServerRole.ANY_ROLE.getAuthority(), actual);
     }
 
     @Test

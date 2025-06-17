@@ -87,7 +87,7 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
         ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
         new GeoJSONPPIO.Geometries(gs).encode(point, os);
         String output = os.toString();
-        assertEquals(output, "{\"type\":\"Point\",\"coordinates\":[1.12345679,2]}");
+        assertEquals("{\"type\":\"Point\",\"coordinates\":[1.12345679,2]}", output);
 
         int dec = global.getSettings().getNumDecimals();
         global.getSettings().setNumDecimals(4);
@@ -96,7 +96,7 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
         ByteArrayOutputStream os2 = new ByteArrayOutputStream(1024);
         new GeoJSONPPIO.Geometries(gs).encode(point, os2);
         String output2 = os2.toString();
-        assertEquals(output2, "{\"type\":\"Point\",\"coordinates\":[1.1235,2]}");
+        assertEquals("{\"type\":\"Point\",\"coordinates\":[1.1235,2]}", output2);
 
         global.getSettings().setNumDecimals(dec);
         getGeoServer().save(global);

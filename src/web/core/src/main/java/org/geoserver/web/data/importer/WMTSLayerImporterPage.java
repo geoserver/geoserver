@@ -281,7 +281,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
         }
     }
 
-    final class IconModel implements IModel<PackageResourceReference> {
+    static final class IconModel implements IModel<PackageResourceReference> {
 
         private static final long serialVersionUID = 5762710251083186192L;
         IModel<LayerResource> layerResource;

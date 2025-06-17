@@ -54,7 +54,7 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
             return new DescribeProcessTranslator1_0(handler);
         }
 
-        public class DescribeProcessTranslator1_0 extends TranslatorSupport {
+        public static class DescribeProcessTranslator1_0 extends TranslatorSupport {
             public DescribeProcessType request;
 
             private Locale locale;

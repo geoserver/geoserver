@@ -126,7 +126,7 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
 
         assertEquals(layerDesc.get("layerName"), layer);
         // assertEquals(layerDesc.get("owsUrl"), "WFS");
-        assertEquals(layerDesc.get("owsType"), "WFS");
+        assertEquals("WFS", layerDesc.get("owsType"));
     }
 
     private void checkJSONDescribeLayerGroup(String body, String layer) {
@@ -138,12 +138,12 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
         JSONObject layerDesc = layerDescs.getJSONObject(0);
         assertEquals(layerDesc.get("layerName"), MockData.LAKES.getPrefix() + ":" + MockData.LAKES.getLocalPart());
         assertTrue(layerDesc.get("owsURL").toString().endsWith("geoserver/wfs?"));
-        assertEquals(layerDesc.get("owsType"), "WFS");
+        assertEquals("WFS", layerDesc.get("owsType"));
 
         layerDesc = layerDescs.getJSONObject(1);
         assertEquals(layerDesc.get("layerName"), MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart());
         assertTrue(layerDesc.get("owsURL").toString().endsWith("geoserver/wfs?"));
-        assertEquals(layerDesc.get("owsType"), "WFS");
+        assertEquals("WFS", layerDesc.get("owsType"));
     }
 
     @Test

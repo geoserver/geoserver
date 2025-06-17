@@ -767,8 +767,8 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse layerStore2 =
                 getAsServletResponse(ROOT_PATH + "/workspaces/sf/featuretypes/Geometryless.json");
 
-        assertEquals(layerStore1.getStatus(), 200);
-        assertEquals(layerStore2.getStatus(), 200);
+        assertEquals(200, layerStore1.getStatus());
+        assertEquals(200, layerStore2.getStatus());
     }
 
     public static void assertContains(String message, String contains) {

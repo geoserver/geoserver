@@ -51,7 +51,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 
 public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTest {
 
-    class TestHttpClient extends AbstractHttpClient {
+    static class TestHttpClient extends AbstractHttpClient {
 
         private String authkey;
 
@@ -601,7 +601,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         propMapper.setHttpClient(new TestHttpClient("testkey", "user1"));
         GeoServerUser user = propMapper.getUser("testkey");
         assertNotNull(user);
-        assertEquals(user.getUsername(), "user1");
+        assertEquals("user1", user.getUsername());
         boolean error = false;
         try {
             user = propMapper.getUser("wrongkey");
@@ -633,14 +633,14 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
                 new TestHttpClient("testkey", "{\n    \"user\": \"user1\", \"detail\": \"mydetail\"\n   }"));
         GeoServerUser user = propMapper.getUser("testkey");
         assertNotNull(user);
-        assertEquals(user.getUsername(), "user1");
+        assertEquals("user1", user.getUsername());
 
         propMapper.setSearchUser("^.*?<username>(.*?)</username>.*$");
         propMapper.setHttpClient(new TestHttpClient(
                 "testkey", "<root>\n<userdetail>\n<username>user1</username>\n</userdetail>\n</root>"));
         user = propMapper.getUser("testkey");
         assertNotNull(user);
-        assertEquals(user.getUsername(), "user1");
+        assertEquals("user1", user.getUsername());
 
         user = propMapper.getUser("wrongkey");
         assertNull(user);
@@ -675,7 +675,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
                 "{\n    \"user\": \"user1\", \"detail\": \"mydetail\", \"roles\": \"myrole_1, myrole_2\"\n   }"));
         GeoServerUser user = propMapper.getUser("testkey");
         assertNotNull(user);
-        assertEquals(user.getUsername(), "user1");
+        assertEquals("user1", user.getUsername());
 
         assertNotNull(user.getAuthorities());
         assertEquals(2, user.getAuthorities().size());
@@ -871,7 +871,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
                 "{\n    \"user\": \"user1\", \"detail\": \"mydetail\", \"roles\": \"myrole_1, myrole_2\"\n   }"));
         GeoServerUser user = propMapper.getUser("testkey");
         assertNotNull(user);
-        assertEquals(user.getUsername(), "user1");
+        assertEquals("user1", user.getUsername());
 
         assertNotNull(user.getAuthorities());
         assertEquals(1, user.getAuthorities().size());

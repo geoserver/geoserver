@@ -31,8 +31,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 public class RestConcurrencyTest extends CatalogRESTTestSupport {
 
-    static volatile Exception exception;
-    volatile DispatcherServlet dispatcher;
+    private volatile Exception exception;
+    private volatile DispatcherServlet dispatcher;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

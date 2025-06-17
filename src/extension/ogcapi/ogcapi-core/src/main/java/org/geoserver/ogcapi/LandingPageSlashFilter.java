@@ -114,7 +114,7 @@ public class LandingPageSlashFilter implements GeoServerFilter, ApplicationConte
      * Removes the trailing slash on the path info, so that the landing page is properly served even when trailing
      * slashes are present by their match is disabled
      */
-    private class SlashWrapper extends HttpServletRequestWrapper {
+    private static class SlashWrapper extends HttpServletRequestWrapper {
 
         public SlashWrapper(ServletRequest request) {
             super((HttpServletRequest) request);

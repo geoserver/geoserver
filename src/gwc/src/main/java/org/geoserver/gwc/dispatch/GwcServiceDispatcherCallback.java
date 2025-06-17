@@ -5,7 +5,6 @@
  */
 package org.geoserver.gwc.dispatch;
 
-import com.google.common.base.Strings;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -47,7 +46,7 @@ public class GwcServiceDispatcherCallback extends AbstractDispatcherCallback imp
     private static final Pattern GWC_LAYER_VIRTUAL_SERVICE_PATTERN = Pattern.compile("([^/]+)/([^/]+)/gwc/service.*");
 
     static final String buildRestPattern(int numPathElements) {
-        return ".*/service/wmts/rest" + Strings.repeat("/([^/]+)", numPathElements);
+        return ".*/service/wmts/rest" + "/([^/]+)".repeat(numPathElements);
     }
 
     private static final Pattern TILE_1 = Pattern.compile(buildRestPattern(5));
@@ -168,7 +167,7 @@ public class GwcServiceDispatcherCallback extends AbstractDispatcherCallback imp
      * Helper wrapper that allow to match GWC expectations. GWC doesn't have the concept of workspaces, so he always
      * expect a layer name to be prefixed by is workspace.
      */
-    private final class VirtualServiceRequest extends HttpServletRequestWrapper {
+    private static final class VirtualServiceRequest extends HttpServletRequestWrapper {
 
         private final String localWorkspaceName;
         private String localPublishedName;

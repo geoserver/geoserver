@@ -91,7 +91,7 @@ public class MBStyleEditPageTest extends GeoServerWicketTestSupport {
         ExternalGraphic eg =
                 (ExternalGraphic) label.getGraphic().graphicalSymbols().get(0);
         assertEquals(
-                eg.getURI(),
-                "http://localhost:8080/geoserver/styles/mbsprites#icon=${strURLEncode('circle')}&size=${strURLEncode(Interpolate(POP_MAX,0,0.7,40000000,3.7,'numeric'))}");
+                "http://localhost:8080/geoserver/styles/mbsprites#icon=${strURLEncode('circle')}&size=${strURLEncode(Interpolate(POP_MAX,0,0.7,40000000,3.7,'numeric'))}",
+                eg.getURI());
     }
 }

@@ -672,6 +672,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             case INT:
                 matrix.setInt(matrixIndex, sample);
                 break;
+            default:
+                break;
         }
     }
 

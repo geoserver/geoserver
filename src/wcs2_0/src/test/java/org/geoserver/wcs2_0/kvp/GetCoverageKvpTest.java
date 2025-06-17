@@ -252,7 +252,7 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         assertEquals(1, extensions.size());
         String overviewPolicy = (String) extensions.get(
                 WCS20Const.OVERVIEW_POLICY_EXTENSION_NAMESPACE + ":" + WCS20Const.OVERVIEW_POLICY_EXTENSION);
-        assertEquals(overviewPolicy, "QUALITY");
+        assertEquals("QUALITY", overviewPolicy);
     }
 
     @Test

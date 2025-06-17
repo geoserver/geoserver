@@ -671,7 +671,7 @@ public class GeoServerFeatureSource extends AbstractDecorator<SimpleFeatureSourc
             }
 
             @Override
-            public boolean supportsSorting(SortBy[] sortAttributes) {
+            public boolean supportsSorting(SortBy... sortAttributes) {
                 return true;
             }
         };

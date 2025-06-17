@@ -58,7 +58,7 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
         }
     }
 
-    private class OpenAPIContentNegotiationStrategy implements ContentNegotiationStrategy {
+    private static class OpenAPIContentNegotiationStrategy implements ContentNegotiationStrategy {
         @Override
         public List<MediaType> resolveMediaTypes(NativeWebRequest nativeWebRequest) {
             if (nativeWebRequest instanceof ServletWebRequest) {

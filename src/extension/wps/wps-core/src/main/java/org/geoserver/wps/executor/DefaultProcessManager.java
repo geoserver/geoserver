@@ -180,7 +180,7 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
         return ExtensionPriority.LOWEST;
     }
 
-    class ProcessCallable implements Callable<Map<String, Object>> {
+    static class ProcessCallable implements Callable<Map<String, Object>> {
 
         Name processName;
 

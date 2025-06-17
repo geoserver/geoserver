@@ -2205,7 +2205,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Performs basic checks on an OWS 2.0 exception. The check for status, exception code and locator is optional,
      * leave null if you don't want to check it.
      *
-     * @returns Returns the message of the inner exception.
+     * @return Returns the message of the inner exception.
      */
     protected String checkOws20Exception(
             MockHttpServletResponse response, Integer status, String exceptionCode, String locator) throws Exception {

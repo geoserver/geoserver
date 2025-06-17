@@ -70,7 +70,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
         return result;
     }
 
-    private class MetadataTemplateComparator implements Comparator<MetadataTemplate> {
+    private static class MetadataTemplateComparator implements Comparator<MetadataTemplate> {
 
         private List<MetadataTemplate> list;
 

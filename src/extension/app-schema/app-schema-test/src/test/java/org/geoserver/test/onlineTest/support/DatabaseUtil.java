@@ -110,7 +110,7 @@ public class DatabaseUtil {
     }
 
     /** sets up the rule such that all ";" between these operators will not be treated as a delimiter */
-    private class PostgisIgnoreOperator {
+    private static class PostgisIgnoreOperator {
 
         public final String[] operators = {"$$", "$_$", "'"};
 

@@ -24,7 +24,7 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
     private static final String NESTED_GROUP_SEARCH_FILTER = "nestedGroupSearchFilter";
     private static final String NESTED_SEARCH_FIELDS_CONTAINER = "nestedSearchFieldsContainer";
 
-    class LDAPAuthenticationPanel extends WebMarkupContainer {
+    static class LDAPAuthenticationPanel extends WebMarkupContainer {
 
         private static final long serialVersionUID = 6533128678666053350L;
 

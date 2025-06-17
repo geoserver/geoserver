@@ -76,9 +76,9 @@ public class DateField extends DateTextField {
     }
 
     @Override
-    public <Date> IConverter<Date> getConverter(Class<Date> type) {
+    public <D> IConverter<D> getConverter(Class<D> type) {
         @SuppressWarnings("unchecked")
-        IConverter<Date> converter = (IConverter<Date>) dateConverter;
+        IConverter<D> converter = (IConverter<D>) dateConverter;
         return converter;
     }
 

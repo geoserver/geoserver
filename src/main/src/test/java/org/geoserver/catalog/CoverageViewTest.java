@@ -260,7 +260,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         final ResourcePool resPool = cat.getResourcePool();
         final ReferencedEnvelope bbox = coverageInfo.getLatLonBoundingBox();
         final GridCoverage coverage = resPool.getGridCoverage(coverageInfo, "waterView", bbox, null);
-        assertEquals(coverage.getNumSampleDimensions(), 1);
+        assertEquals(1, coverage.getNumSampleDimensions());
 
         disposeCoverage(coverage);
         final GridCoverageReader reader = resPool.getGridCoverageReader(coverageInfo, null);
@@ -318,7 +318,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         sameViewDifferentName.setName("winds");
         sameViewDifferentName.setCoverageBands(bands);
         assertNotEquals(coverageView, sameViewDifferentName);
-        assertEquals(coverageView.getCompositionType(), defaultComposition);
+        assertEquals(defaultComposition, coverageView.getCompositionType());
 
         assertEquals(coverageView.getBand(1), outputBandV);
         assertEquals(outputBandU, coverageView.getBands("u-component").get(0));

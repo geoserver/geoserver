@@ -52,7 +52,7 @@ public class GeometryTextArea extends TextArea<Geometry> {
      *
      * @author Andrea Aime - GeoSolutions
      */
-    private class GeometryConverter implements IConverter<Object> {
+    private static class GeometryConverter implements IConverter<Object> {
         private static final long serialVersionUID = 5868644160487841740L;
 
         transient GeometryFactory gf = new GeometryFactory();

@@ -66,7 +66,7 @@ public class MonitorRequestFilter {
     }
 
     /** FileWatcher used to parse List<Filter> from text file. */
-    private final class FilterPropertyFileWatcher extends FileWatcher<List<Filter>> {
+    private static final class FilterPropertyFileWatcher extends FileWatcher<List<Filter>> {
 
         private FilterPropertyFileWatcher(Resource resource) {
             super(resource);

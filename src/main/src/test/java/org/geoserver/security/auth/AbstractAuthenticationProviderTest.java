@@ -369,7 +369,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
 
             @Override
             public String toString() {
-                return null;
+                return "";
             }
 
             @Override

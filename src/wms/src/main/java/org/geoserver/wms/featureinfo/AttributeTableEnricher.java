@@ -70,6 +70,8 @@ class AttributeTableEnricher {
                 case Real:
                     type = Double.class;
                     break;
+                default:
+                    break;
             }
 
             builder.add(field.getName(), type);

@@ -527,7 +527,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
 
         Resource newDir = getDataDirectory().get("mynewdir");
         assertTrue(Resources.exists(newDir));
-        assertSame(newDir.getType(), Type.DIRECTORY);
+        assertSame(Type.DIRECTORY, newDir.getType());
         Assert.assertFalse(Resources.exists(myRes));
         assertTrue(Resources.exists(getDataDirectory().get("mynewdir/myres")));
 

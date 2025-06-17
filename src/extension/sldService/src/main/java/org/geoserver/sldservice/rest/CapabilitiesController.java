@@ -47,7 +47,7 @@ public class CapabilitiesController extends BaseSLDServiceController {
         xstream.allowTypes(new Class[] {SldServiceCapabilities.class});
     }
 
-    class CapabilitiesConverter implements Converter {
+    static class CapabilitiesConverter implements Converter {
 
         @Override
         public void marshal(

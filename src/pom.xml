@@ -148,7 +148,6 @@
     <pmd.version>7.14.0</pmd.version>
     <checkstyle.skip>false</checkstyle.skip>
     <qa>false</qa>
-    <compiler.args></compiler.args>
     <lint>deprecation,unchecked</lint>
     <jmh.version>1.37</jmh.version>
   </properties>
@@ -1256,7 +1255,6 @@
           <parameters>true</parameters>
           <compilerArgs>
             <arg>-Xlint:${lint}</arg>
-            <arg>${compiler.args}</arg>
           </compilerArgs>
         </configuration>
       </plugin>
@@ -2078,7 +2076,98 @@
               <fork>false</fork>
               <compilerArgs>
                 <arg>-XDcompilePolicy=simple</arg>
-                <arg>-Xplugin:ErrorProne -XepExcludedPaths:\Q${project.build.directory}\E.* -Xep:SelfAssertion:OFF ${errorProneFlags}</arg>
+                <arg>-Xplugin:ErrorProne -XepExcludedPaths:\Q${project.build.directory}\E/generated-sources/.*  \
+                -Xep:DeadException:WARN \
+                -Xep:GuardedBy:OFF \
+                -Xep:BanJNDI:WARN \
+                -Xep:AlmostJavadoc:OFF \
+                -Xep:AlreadyChecked:OFF \
+                -Xep:AnnotateFormatMethod:OFF \
+                -Xep:AssertionFailureIgnored:OFF \
+                -Xep:AssertThrowsMultipleStatements:OFF \
+                -Xep:BadImport:OFF \
+                -Xep:BadInstanceof:OFF \
+                -Xep:CatchFail:OFF \
+                -Xep:ClassInitializationDeadlock:OFF \
+                -Xep:CollectionUndefinedEquality:OFF \
+                -Xep:DateFormatConstant:OFF \
+                -Xep:DefaultCharset:OFF \
+                -Xep:DirectInvocationOnMock:OFF \
+                -Xep:DoNotCallSuggester:OFF \
+                -Xep:DoubleCheckedLocking:OFF \
+                -Xep:DuplicateDateFormatField:OFF \
+                -Xep:EmptyBlockTag:OFF \
+                -Xep:EmptyCatch:OFF \
+                -Xep:EnumOrdinal:OFF \
+                -Xep:EqualsGetClass:OFF \
+                -Xep:EqualsUnsafeCast:OFF \
+                -Xep:ExtendingJUnitAssert:OFF \
+                -Xep:Finalize:OFF \
+                -Xep:Finally:OFF \
+                -Xep:FloatCast:OFF \
+                -Xep:FloatingPointLiteralPrecision:OFF \
+                -Xep:FutureReturnValueIgnored:OFF \
+                -Xep:HidingField:OFF \
+                -Xep:ImmutableEnumChecker:OFF \
+                -Xep:InconsistentCapitalization:OFF \
+                -Xep:InconsistentHashCode:OFF \
+                -Xep:InlineFormatString:OFF \
+                -Xep:InlineMeSuggester:OFF \
+                -Xep:IntLongMath:OFF \
+                -Xep:InvalidBlockTag:OFF \
+                -Xep:InvalidInlineTag:OFF \
+                -Xep:InvalidLink:OFF \
+                -Xep:InvalidParam:OFF \
+                -Xep:InvalidThrows:OFF \
+                -Xep:JavaLangClash:OFF \
+                -Xep:JavaTimeDefaultTimeZone:OFF \
+                -Xep:JavaUtilDate:OFF \
+                -Xep:JdkObsolete:OFF \
+                -Xep:JUnitAmbiguousTestClass:OFF \
+                -Xep:LockOnNonEnclosingClassLiteral:OFF \
+                -Xep:LongDoubleConversion:OFF \
+                -Xep:MalformedInlineTag:OFF \
+                -Xep:MissingFail:OFF \
+                -Xep:MissingSummary:OFF \
+                -Xep:MixedMutabilityReturnType:OFF \
+                -Xep:ModifiedButNotUsed:OFF \
+                -Xep:MutablePublicArray:OFF \
+                -Xep:NarrowCalculation:OFF \
+                -Xep:NarrowingCompoundAssignment:OFF \
+                -Xep:NonApiType:OFF \
+                -Xep:NonCanonicalType:OFF \
+                -Xep:NonOverridingEquals:OFF \
+                -Xep:NotJavadoc:OFF \
+                -Xep:ObjectEqualsForPrimitives:OFF \
+                -Xep:OperatorPrecedence:OFF \
+                -Xep:OverrideThrowableToString:OFF \
+                -Xep:ProtectedMembersInFinalClass:OFF \
+                -Xep:ReferenceEquality:OFF \
+                -Xep:SelfAssertion:OFF \
+                -Xep:ShortCircuitBoolean:OFF \
+                -Xep:StaticAssignmentInConstructor:OFF \
+                -Xep:StringCaseLocaleUsage:OFF \
+                -Xep:StringCharset:OFF \
+                -Xep:StringSplitter:OFF \
+                -Xep:SynchronizeOnNonFinalField:OFF \
+                -Xep:ThreadLocalUsage:OFF \
+                -Xep:ThreadPriorityCheck:OFF \
+                -Xep:ThreeLetterTimeZoneID:OFF \
+                -Xep:TypeParameterShadowing:OFF \
+                -Xep:TypeParameterUnusedInFormals:OFF \
+                -Xep:UndefinedEquals:OFF \
+                -Xep:UnnecessaryAssignment:OFF \
+                -Xep:UnnecessaryParentheses:OFF \
+                -Xep:UnnecessaryStringBuilder:OFF \
+                -Xep:UnrecognisedJavadocTag:OFF \
+                -Xep:UnsynchronizedOverridesSynchronized:OFF \
+                -Xep:UnusedLabel:OFF \
+                -Xep:UnusedMethod:OFF \
+                -Xep:UnusedNestedClass:OFF \
+                -Xep:UnusedVariable:OFF \
+                -Xep:UnnecessaryLambda:OFF \
+                -Xep:VariableNameSameAsType:OFF \
+                ${errorProneFlags}</arg>
                 <arg>-Xlint:${lint}</arg>
                 <arg>-Werror</arg>
                 <arg>-Xmaxwarns</arg>

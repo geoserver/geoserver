@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
@@ -63,6 +62,8 @@ public class AuthenticationFilterController extends RestBaseController {
     /// ///////////////////////////////////////////////////////////////////////
     /// REST API methods
 
+    // 200
+    // 403
     @GetMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public RestWrapper<AuthFilter> list() {
         checkAuthorisation();
@@ -71,6 +72,7 @@ public class AuthenticationFilterController extends RestBaseController {
     }
 
     // 200
+    // 403
     // 404
     @GetMapping(
             value = "/{filterName}",
@@ -84,6 +86,7 @@ public class AuthenticationFilterController extends RestBaseController {
     // FilterConfigValidator to check if filter is valid
     // 201
     // 400
+    // 403
     @PostMapping(consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> post(
             @RequestBody AuthFilter authFilterRequest, UriComponentsBuilder uriComponentsBuilder) {
@@ -283,62 +286,132 @@ public class AuthenticationFilterController extends RestBaseController {
 
     /// ///////////////////////////////////////////////////////////////////////
     /// Exception handlers
+
     @ExceptionHandler(IllegalArgumentException.class)
-    public void somethingNotFound(IllegalArgumentException exception, HttpServletResponse response) throws IOException {
-        response.sendError(404, exception.getMessage());
+    public ResponseEntity<ErrorResponse> somethingNotFound(IllegalArgumentException exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DeleteBlackListException.class)
-    public void cannotDelete(DeleteBlackListException exception, HttpServletResponse response) throws IOException {
-        response.sendError(404, exception.getMessage());
+    public ResponseEntity<ErrorResponse> blackListed(DeleteBlackListException exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IdSetByServerException.class)
-    public void idSetByServerException(IdSetByServerException exception, HttpServletResponse response)
-            throws IOException {
-        response.sendError(400, exception.getMessage());
+    public ResponseEntity<ErrorResponse> idSetByServer(IdSetByServerException exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NameMismatchException.class)
-    public void nameMismatch(NameMismatchException exception, HttpServletResponse response) throws IOException {
-        response.sendError(400, exception.getMessage());
+    public ResponseEntity<ErrorResponse> nameMismatched(NameMismatchException exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MissingNameException.class)
-    public void missingName(MissingNameException exception, HttpServletResponse response) throws IOException {
-        response.sendError(400, exception.getMessage());
+    public ResponseEntity<ErrorResponse> missingName(MissingNameException exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IdNotSet.class)
-    public void idMismatch(IdNotSet exception, HttpServletResponse response) throws IOException {
-        response.sendError(400, exception.getMessage());
+    public ResponseEntity<ErrorResponse> idNotSet(IdNotSet exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(SecurityConfigException.class)
-    public void securityConfigException(SecurityConfigException exception, HttpServletResponse response)
-            throws IOException {
-        response.sendError(400, exception.getMessage());
+    public ResponseEntity<ErrorResponse> securityIssue(SecurityConfigException exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IOException.class)
-    public void readWriteFailure(IOException exception, HttpServletResponse response) throws IOException {
-        response.sendError(500, exception.getMessage());
+    public ResponseEntity<ErrorResponse> ioIssue(IOException exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(FilterConfigException.class)
-    public void validationError(FilterConfigException exception, HttpServletResponse response) throws IOException {
-        response.sendError(400, exception.getMessage());
+    public ResponseEntity<ErrorResponse> validationError(FilterConfigException exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DuplicateNameException.class)
-    public void duplicateNameException(FilterConfigException exception, HttpServletResponse response)
-            throws IOException {
-        response.sendError(400, exception.getMessage());
+    public ResponseEntity<ErrorResponse> duplicatedName(DuplicateNameException exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotAuthorised.class)
-    public void duplicateNameException(NotAuthorised exception, HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.FORBIDDEN.value(), exception.getMessage());
+    public ResponseEntity<ErrorResponse> notAuthorised(NotAuthorised exception) {
+        // Prepare an error response object
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.getMessage());
+
+        // Return as ResponseEntity with status and body
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    // Inner class to model the error response
+    public static class ErrorResponse {
+        private int status;
+        private String message;
+
+        public ErrorResponse(int status, String message) {
+            this.status = status;
+            this.message = message;
+        }
+
+        // Getters and setters for JSON serialization
+        public int getStatus() {
+            return status;
+        }
+
+        public void setStatus(int status) {
+            this.status = status;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
     }
 
     /// ///////////////////////////////////////////////////////////////////////

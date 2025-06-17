@@ -42,7 +42,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.InterpolationBicubic;
@@ -815,8 +819,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                     kvp.put("sld", urlDecoded);
 
                     reqReader.read(spyRequest, parseKvp(kvp), caseInsensitiveKvp(kvp));
-                    assertSameHeader(headers, expectedBasicHeader);
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    fail();
                 } finally {
                     latch.countDown();
                 }

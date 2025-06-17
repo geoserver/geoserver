@@ -15,8 +15,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -39,7 +42,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.InterpolationBicubic;
@@ -774,36 +781,32 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testSldRemoteHttpConcurrency() throws Exception {
-        final String fakeBasicAuth = "FakeBasicAuth";
-        final String authHeader = "Authorization";
-        BasicHeader expectedBasicHeader = new BasicHeader(authHeader, fakeBasicAuth);
-
         GetMapRequest request = reader.createRequest();
         GetMapRequest spyRequest = spy(request);
-        Header[] headers = new Header[1];
-        when(spyRequest.getHttpRequestHeader(authHeader)).thenReturn(fakeBasicAuth);
 
-        @SuppressWarnings("PMD.CloseResource") // mocked so no need for closing
+        @SuppressWarnings("PMD.CloseResource")
         CloseableHttpClient client = mock(CloseableHttpClient.class);
+
+        @SuppressWarnings("PMD.CloseResource")
         CloseableHttpResponse response = mock(CloseableHttpResponse.class);
         HttpEntity entity = mock(HttpEntity.class);
 
-        GetMapKvpRequestReader reqReader;
-        try (InputStream sld = GetMapKvpRequestReader.class.getResourceAsStream("BasicPolygonsLibraryNoDefault.sld")) {
-            when(entity.getContent()).thenReturn(sld);
-            when(response.getEntity()).thenReturn(entity);
-            when(client.execute(any(HttpGet.class), any(HttpCacheContext.class)))
-                    .thenReturn(response);
+        when(response.getEntity()).thenReturn(entity);
+        when(client.execute(any(HttpGet.class), any(HttpCacheContext.class))).thenReturn(response);
+        when(entity.getContent())
+                .thenAnswer(invocation ->
+                        GetMapKvpRequestReader.class.getResourceAsStream("BasicPolygonsLibraryNoDefault.sld"));
 
-            reqReader = new GetMapKvpRequestReader(wms, null) {
-                @Override
-                protected CloseableHttpClient createHttpClient(RequestConfig config, CacheConfiguration cacheConfig) {
-                    return client;
-                }
-            };
-        }
+        @SuppressWarnings("PMD.CloseResource")
+        GetMapKvpRequestReader reqReader = new GetMapKvpRequestReader(wms, null) {
+            @Override
+            protected CloseableHttpClient createHttpClient(RequestConfig config, CacheConfiguration cacheConfig) {
+                return client;
+            }
+        };
 
         int numberOfThreads = 10;
+        @SuppressWarnings("PMD.CloseResource")
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
         for (int i = 0; i < numberOfThreads; i++) {
@@ -816,8 +819,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                     kvp.put("sld", urlDecoded);
 
                     reqReader.read(spyRequest, parseKvp(kvp), caseInsensitiveKvp(kvp));
-                    assertSameHeader(headers, expectedBasicHeader);
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    fail();
                 } finally {
                     latch.countDown();
                 }

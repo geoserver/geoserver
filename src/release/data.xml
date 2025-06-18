@@ -18,7 +18,7 @@
         <exclude>gwc-gs.xml</exclude>
         <exclude>gwc-layers/**</exclude>
         <exclude>logs/**</exclude>
-        <exclude>security/geoserver.jceks</exclude>
+        <exclude>security/geoserver.bcfks</exclude>
         <exclude>security/masterpw.digest</exclude>
         <exclude>security/version.properties</exclude>
       </excludes>

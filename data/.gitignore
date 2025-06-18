@@ -3,6 +3,6 @@ release/gwc-gs.xml
 release/gwc-layers
 release/legendsamples
 release/logs
-release/security/geoserver.jceks
+release/security/geoserver.bcfks
 release/security/masterpw.digest
 release/security/version.properties

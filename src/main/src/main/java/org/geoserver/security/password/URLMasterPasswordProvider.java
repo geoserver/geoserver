@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -104,8 +105,10 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
             return toBytes(passwd);
         }
 
-        // encrypt the password
+        // encrypt the password using AES-GCM with BCFIPS
         StandardPBEByteEncryptor encryptor = new StandardPBEByteEncryptor();
+        encryptor.setProvider(new BouncyCastleFipsProvider());
+        encryptor.setAlgorithm("PBEWITHSHA256ANDAES_256");
 
         char[] key = key();
         try {
@@ -121,8 +124,11 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
             return passwd;
         }
 
-        // decrypt the password
+        // decrypt the password using AES-GCM with BCFIPS
         StandardPBEByteEncryptor encryptor = new StandardPBEByteEncryptor();
+        encryptor.setProvider(new BouncyCastleFipsProvider());
+        encryptor.setAlgorithm("PBEWITHSHA256ANDAES_256");
+
         char[] key = key();
         try {
             encryptor.setPasswordCharArray(key);
@@ -181,7 +187,8 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
         }
 
         @Override
-        public void validate(MasterPasswordProviderConfig config) throws SecurityConfigException {
+        public void validate(org.geoserver.security.password.MasterPasswordProviderConfig config)
+                throws SecurityConfigException {
             super.validate(config);
 
             URLMasterPasswordProviderConfig urlConfig = (URLMasterPasswordProviderConfig) config;
@@ -218,8 +225,8 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
         }
 
         @Override
-        public MasterPasswordProvider createMasterPasswordProvider(MasterPasswordProviderConfig config)
-                throws IOException {
+        public MasterPasswordProvider createMasterPasswordProvider(
+                org.geoserver.security.password.MasterPasswordProviderConfig config) throws IOException {
             return new URLMasterPasswordProvider();
         }
 

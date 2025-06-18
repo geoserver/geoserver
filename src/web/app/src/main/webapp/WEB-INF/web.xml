@@ -60,6 +60,20 @@
    </context-param>
   -->
 
+    <!-- BCFKS application contexts -->
+    <context-param>
+        <param-name>GEOSERVER_KEYSTORE_FILE</param-name>
+        <param-value>file:///${GEOSERVER_DATA_DIR}/security/keystore.bcfks</param-value>
+    </context-param>
+    <context-param>
+        <param-name>GEOSERVER_KEYSTORE_TYPE</param-name>
+        <param-value>BCFKS</param-value>
+    </context-param>
+    <context-param>
+        <param-name>GEOSERVER_KEYSTORE_PASSWORD</param-name>
+        <param-value>${keystore.password}</param-value>
+    </context-param>
+
     <!-- pick up all spring application contexts -->
     <context-param>
         <param-name>contextConfigLocation</param-name>

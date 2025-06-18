@@ -133,6 +133,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - ENTITY_RESOLUTION_UNRESTRICTED
+       
+       :doc:`/production/config`, default false.
+     - x
+     - x
+     - x
    * - ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL
        
        :doc:`/production/config`, default false.

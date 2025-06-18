@@ -8,6 +8,7 @@ info:
     name: GeoServer
     email: 'geoserver-users@osgeo.org'
     url: 'https://geoserver.org/comm/'
+
 securityDefinitions:
   basicAuth: # <-- arbitrary name for the security scheme
     type: basic
@@ -16,10 +17,10 @@ securityDefinitions:
 schemes:
   - https
   - http
-host: localhost
-basePath: /geoserver/rest/security
+host: localhost:8080
+basePath: /geoserver/rest
 paths:
-  /authProviders:
+  /security/authProviders:
     get:
       security:
         - basicAuth: []
@@ -33,28 +34,32 @@ paths:
         - application/json
       responses:
         200:
-          description: OK
+          description: Successful response containing the list of authProviders.
           schema:
-            type: array
+            type: object
+            properties:
+              authProviders:
+                type: object
+                properties:
+                  authProvider:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: The Name
+                        link:
+                          type: string
+                          description: The URL
           examples:
             application/xml: |
-              <authProviderList>
-                <authProvider>
-                  <id>-4e7ef1a4:196d967dcea:-8000</id>
-                  <name>-4e7ef1a4:196d967dcea:-8000</name>
-                  <className>org.geoserver.security.jdbc.config.JDBCConnectAuthProviderConfig</className>
-                  <userGroupServiceName>default</userGroupServiceName>
-                  <position>-1</position>
-                  <config class="org.geoserver.security.jdbc.config.JDBCConnectAuthProviderConfig">
-                    <id>-4e7ef1a4:196d967dcea:-8000</id>
-                    <name>JDBC</name>
-                    <className>org.geoserver.security.jdbc.JDBCConnectAuthProvider</className>
-                    <driverClassName>org.postgresql.Driver</driverClassName>
-                    <connectURL>Jdbc::/postgresSQl</connectURL>
-                    <userGroupServiceName>default</userGroupServiceName>
-                  </config>
-                  <disabled>true</disabled>
-                </authProvider>
+              <authProviders>
+                  <authProvider>
+                      <name>Test_Provider10</name>
+                      <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:9002/geoserver/rest/security/authProviders/Test_Provider10.xml" type="application/atom+xml"/>
+                  </authProvider>
+              </authProviders>
             application/json: |
               {
                 "authProviders": {
@@ -85,6 +90,13 @@ paths:
       tags:
         - "AuthProviders"
       summary: Create a new auth provider
+      parameters:
+        - name: provider
+          in: body
+          required: true
+          description: Auth provider details
+          schema:
+            $ref: '#/definitions/AuthProvider'
       consumes:
         - application/xml
         - application/json
@@ -97,6 +109,7 @@ paths:
           headers:
             Location:
               description: The URI of the resource created
+              type: string
         400:
           description: |
             The data supplied by the client was invalid. Typically check that the name 
@@ -105,7 +118,7 @@ paths:
           description: Only people with a Admin role can use this endpoint
         500:
           description: Geoserver failure try again later or report issue
-  /authProviders/{providerName}:
+  /security/authProviders/{providerName}:
     get:
       security:
         - basicAuth: []
@@ -113,6 +126,13 @@ paths:
       tags:
         - "AuthProviders"
       summary: Views the details of a single provider.
+      parameters:
+        - name: providerName
+          in: path
+          required: true
+          description: Name of the authentication provider
+          schema:
+            type: string
       description: |
         Displays the contents of the configuration object on the server.
       produces:
@@ -178,11 +198,12 @@ paths:
       description: |
         Update the named provider configuration.
       parameters:
-        - name: body
+        - name: provider
           in: body
           required: true
+          description: Auth provider details
           schema:
-            $ref: "#/definitions/AuthProvider"
+            $ref: '#/definitions/AuthProvider'
       consumes:
         - application/xml
         - application/json
@@ -216,6 +237,13 @@ paths:
       tags:
         - "AuthProviders"
       summary: Deletes the named provider.
+      parameters:
+        - name: providerName
+          in: path
+          required: true
+          description: Name of the authentication provider
+          schema:
+            type: string
       description: |
         Removes the authentication configuration from the server.
       responses:
@@ -290,6 +318,10 @@ definitions:
         type: string
         description: |
           The unique name assigned to the configuration by client
+      className:
+        type: string
+        description: |
+          The className of the actual provider class used in geoserver
       position:
         type: string
         description: |
@@ -304,14 +336,10 @@ definitions:
           Bespoke configuration fields required by the specific type
           of authentication provider
         properties:
-          className:
-            type: string
-            description: |
-              The className of the actual provider class used in geoserver
           AnyValue: {}
         required:
-          - className
     required:
       - id
       - name
+      - className
       - config

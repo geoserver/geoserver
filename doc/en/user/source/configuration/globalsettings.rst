@@ -88,20 +88,6 @@ Allow Per-Workspace Stored Queries
 
 When enabled, allows to persist Stored queries per workspace, making queries created inside a workspace available in the workspace virtual service only.
 
-Service Request Settings
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _config_globalsettings_external_entities:
-
-Unrestricted XML External Entity Resolution
-'''''''''''''''''''''''''''''''''''''''''''
-
-XML Requests sent to GeoServer can include references to other XML documents. Since these files are processed by GeoServer the facility could be used to access files on the server, which is a security concern.
-
-* Enable the :guilabel:`Unrestricted XML External Entity Resolution` option when using the application schema extension to allow use of local XSD definition.
-
-  This option disables all other External Entity Resolution restrictions (see :ref:`production_config_external_entities`)
-
 Service Response Settings
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

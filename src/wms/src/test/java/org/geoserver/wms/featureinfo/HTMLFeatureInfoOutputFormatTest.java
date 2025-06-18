@@ -323,7 +323,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
                 }
             }
         } finally {
-            executor.shutdown();
+            executor.shutdownNow();
         }
     }
 

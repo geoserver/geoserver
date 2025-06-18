@@ -12,8 +12,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
+import org.vfny.geoserver.util.Requests;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.EntityResolver2;
@@ -25,6 +27,8 @@ import org.xml.sax.ext.EntityResolver2;
  * @author Jody Garnett (GeoCat)
  */
 public class AllowListEntityResolver implements EntityResolver2, Serializable {
+
+    public static final String ENTITY_RESOLUTION_RESTRICT_INTERNAL = "ENTITY_RESOLUTION_RESTRICT_INTERNAL";
 
     /** Wildcard '*' location indicating unrestricted http(s) access */
     public static String UNRESTRICTED = "*";
@@ -51,12 +55,14 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
      *
      * <ul>
      *   <li>allow schema parsing for validation.
-     *   <li>http(s) - external schema reference
      *   <li>jar - internal schema reference
      *   <li>vfs - internal schema reference (JBoss/WildFly)
      * </ul>
      */
     private static final Pattern INTERNAL_URIS = Pattern.compile("(?i)(jar:file|vfs)[^?#;]*\\.xsd");
+
+    /** Block query strings in external uri references */
+    private static final Pattern EXTERNAL_URIS = Pattern.compile("(?i)[^?#;]*\\.xsd");
 
     /** Allowed http(s) locations */
     private final Pattern ALLOWED_URIS;
@@ -66,6 +72,9 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
 
     /** GeoServer used to identify internal http(s) references as provided by proxy base. */
     private final GeoServer geoServer;
+
+    /** The path to the GeoServer webapp lib directory. */
+    private final String geoServerLib;
 
     /**
      * AllowListEntityResolver willing to resolve commong ogc and w3c entities, and those relative to GeoServer proxy
@@ -115,6 +124,26 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
 
             ALLOWED_URIS = Pattern.compile(regex);
         }
+        this.geoServerLib = getGeoServerLibDir();
+    }
+
+    /**
+     * Looks up the location of the gs-main jar file to determine the location of the GeoServer webapp's lib directory.
+     */
+    private String getGeoServerLibDir() {
+        // check if this restriction is disabled
+        if ("false".equalsIgnoreCase(GeoServerExtensions.getProperty(ENTITY_RESOLUTION_RESTRICT_INTERNAL))) {
+            return "";
+        }
+        // this code assumes that /DEFAULT_LOGGING.xml is unique to the gs-main jar file
+        // for Jetty or Tomcat, the URL will be like the example below
+        // for WildFly, it will be the same except starting with "vfs:" instead of "jar:file:"
+        // other web servers should behave similarly to Jetty and Tomcat but have not been tested
+        // IN  jar:file:/path/to/geoserver.war/WEB-INF/lib/gs-main-2.28.0.jar!/DEFAULT_LOGGING.xml
+        // OUT jar:file:/path/to/geoserver.war/WEB-INF/lib/
+        String url = getClass().getResource("/DEFAULT_LOGGING.xml").toString();
+        url = url.substring(0, url.lastIndexOf('/'));
+        return url.substring(0, url.lastIndexOf('/') + 1);
     }
 
     @Override
@@ -160,7 +189,7 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
                 }
             }
             // check if the absolute systemId is an allowed URI jar or vfs reference
-            if (INTERNAL_URIS.matcher(uri).matches()) {
+            if (INTERNAL_URIS.matcher(uri).matches() && uri.startsWith(this.geoServerLib)) {
                 LOGGER.finest("resolveEntity internal: " + uri);
                 return null;
             }
@@ -170,23 +199,21 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
                 return null;
             }
 
-            String uri_lowercase = uri.toLowerCase();
-            if (geoServer != null) {
-                final String PROXY_BASE = geoServer.getSettings().getProxyBaseUrl();
-                if (PROXY_BASE != null && uri_lowercase.startsWith(PROXY_BASE.toLowerCase())) {
+            if (EXTERNAL_URIS.matcher(uri).matches()) {
+                String proxyBase = (GeoServerExtensions.getProperty(Requests.PROXY_PARAM) != null)
+                        ? GeoServerExtensions.getProperty(Requests.PROXY_PARAM)
+                        : geoServer != null ? geoServer.getSettings().getProxyBaseUrl() : null;
+                if (urlStartsWith(uri, proxyBase)) {
                     LOGGER.finest("resolveEntity proxy base: " + uri);
                     return null;
-                }
-
-                if (isDataDirectorySchema(systemId, geoServer)) {
+                } else if (geoServer != null && isDataDirectorySchema(systemId)) {
                     LOGGER.finest("resolveEntity data directory: " + uri);
                     return null;
+                } else if (urlStartsWith(uri, baseURL)) {
+                    // baseURL is only used by unit tests
+                    LOGGER.finest("resolveEntity base url: " + uri);
+                    return null;
                 }
-            }
-
-            if (baseURL != null && uri_lowercase.startsWith(baseURL.toLowerCase())) {
-                LOGGER.finest("resolveEntity proxy base: " + uri);
-                return null;
             }
         } catch (Exception e) {
             // do nothing
@@ -196,12 +223,20 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
         throw new SAXException(ERROR_MESSAGE_BASE + systemId);
     }
 
-    private boolean isDataDirectorySchema(String systemId, GeoServer geoServer) throws IOException {
+    private static boolean urlStartsWith(String url, String allowedUrl) {
+        if (allowedUrl == null) {
+            return false;
+        }
+        allowedUrl = allowedUrl.endsWith("/") ? allowedUrl : allowedUrl + "/";
+        return url.toLowerCase().startsWith(allowedUrl.toLowerCase());
+    }
+
+    private boolean isDataDirectorySchema(String systemId) throws IOException {
         GeoServerResourceLoader resourceLoader = geoServer.getCatalog().getResourceLoader();
         String path = resourceLoader.get("workspaces").dir().getCanonicalPath();
         if (systemId.startsWith("file:")) systemId = systemId.substring(5);
         String canonicalSystemId = new File(systemId).getCanonicalPath();
-        return canonicalSystemId.startsWith(path) && canonicalSystemId.endsWith(".xsd");
+        return canonicalSystemId.startsWith(path);
     }
 
     @Override

@@ -13,9 +13,9 @@ import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.renderer.style.FontCache;
 
@@ -41,9 +41,7 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
 
         // disable entity resolver as it won't let the tests run in IntelliJ if also GeoTools is
         // loaded...
-        GeoServerInfo global = getGeoServer().getGlobal();
-        global.setXmlExternalEntitiesEnabled(true);
-        getGeoServer().save(global);
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
 
         // add water temperature
         testData.addStyle("temperature", "temperature.sld", DownloadMapProcess.class, catalog);

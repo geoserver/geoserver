@@ -50,7 +50,6 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
  *
  * @param <T>
  */
-// TODO WICKET8 - Verify this page works OK
 public abstract class GeoServerTablePanel<T> extends Panel {
 
     private static final long serialVersionUID = -5275268446479549108L;
@@ -100,6 +99,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
     boolean selectAllValue;
     boolean pageable;
+
+    private String tableChangeJS;
 
     /** Builds a non selectable table */
     public GeoServerTablePanel(final String id, final GeoServerDataProvider<T> dataProvider) {
@@ -392,6 +393,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 // update table and the checkbox itself
                 target.add(getComponent());
                 target.add(listContainer);
+                if (tableChangeJS != null) {
+                    target.appendJavaScript(tableChangeJS);
+                }
 
                 // allow subclasses to play on this change as well
                 onSelectionUpdate(target);
@@ -560,6 +564,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 }
                 setSelection(false);
                 target.add(listContainer);
+                if (tableChangeJS != null) {
+                    target.appendJavaScript(tableChangeJS);
+                }
                 rememeberSort();
             }
         };
@@ -589,6 +596,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         target.add(navigatorTop);
         target.add(navigatorBottom);
         target.add(filterForm);
+        if (tableChangeJS != null) {
+            target.appendJavaScript(tableChangeJS);
+        }
     }
 
     /** Sets back to the first page, clears the selection and */
@@ -601,6 +611,11 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     /** Turns filtering abilities on/off. */
     public void setFilterVisible(boolean filterVisible) {
         filterForm.setVisible(filterVisible);
+    }
+
+    /** Sets a JavaScript string to execute whenever the table is redrawn in the browser */
+    public void setTableChangeJS(String tableChangeJS) {
+        this.tableChangeJS = tableChangeJS;
     }
 
     public void processInputs() {
@@ -732,6 +747,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                     navigatorBottom.updateMatched();
                     target.add(navigatorTop);
                     target.add(navigatorBottom);
+                    if (tableChangeJS != null) {
+                        target.appendJavaScript(tableChangeJS);
+                    }
                 }
             };
         }

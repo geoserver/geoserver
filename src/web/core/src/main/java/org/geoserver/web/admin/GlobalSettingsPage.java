@@ -130,8 +130,6 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(requestCheckBox);
 
-        form.add(new CheckBox("xmlExternalEntitiesEnabled"));
-
         form.add(new CheckBox("trailingSlashMatch"));
 
         form.add(new TextField<Integer>("featureTypeCacheSize").add(RangeValidator.minimum(0)));

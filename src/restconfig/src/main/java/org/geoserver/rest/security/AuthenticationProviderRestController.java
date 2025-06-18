@@ -24,6 +24,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Rest Controller for AuthenticationProvider provider resource Extends SequentialExecutionController as we do not want
@@ -83,9 +86,16 @@ public class AuthenticationProviderRestController extends RestBaseController {
     }
 
     @PostMapping(consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public @ResponseStatus(code = HttpStatus.CREATED) void create(@RequestBody AuthProvider authProvider) {
+    public ResponseEntity<String> create(@RequestBody AuthProvider authProvider, UriComponentsBuilder builder) {
         checkAuthorisation();
         createAuthProvider(authProvider);
+
+        HttpHeaders headers = new HttpHeaders();
+        UriComponents uriComponents = builder.path(RestBaseController.ROOT_PATH + "/security/authProviders/{providerName}")
+                        .buildAndExpand(authProvider.getName());
+        headers.setLocation(uriComponents.toUri());
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity<>(authProvider.getName(), headers, HttpStatus.CREATED);
     }
 
     @PutMapping(

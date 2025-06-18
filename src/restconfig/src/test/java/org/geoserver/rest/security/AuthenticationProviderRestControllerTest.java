@@ -24,6 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class AuthenticationProviderRestControllerTest extends GeoServerTestSupport {
     private static final String TEST_PROVIDER_PREFIX = "TEST-";
@@ -115,7 +116,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             UsernamePasswordAuthenticationProviderConfig provider =
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, false);
             AuthProvider authProvider = new AuthProvider(provider);
-            controller.create(authProvider);
+            controller.create(authProvider, UriComponentsBuilder.newInstance());
 
             // File system check as securityManger has been reloaded
             RestWrapper<AuthProvider> viewProviderResult = controller.view(name);
@@ -138,7 +139,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
                 authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, false);
         provider.setId("id");
         AuthProvider authProvider = new AuthProvider(provider);
-        controller.create(authProvider);
+        controller.create(authProvider, UriComponentsBuilder.newInstance());
     }
 
     @Test(expected = InvalidData.class)
@@ -150,7 +151,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, false);
             provider.setId("id");
             AuthProvider authProvider = new AuthProvider(provider);
-            controller.create(authProvider);
+            controller.create(authProvider, UriComponentsBuilder.newInstance());
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -165,7 +166,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, false);
             AuthProvider authProvider = new AuthProvider(provider);
             authProvider.setName(null);
-            controller.create(authProvider);
+            controller.create(authProvider, UriComponentsBuilder.newInstance());
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -180,7 +181,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, false);
             AuthProvider authProvider = new AuthProvider(provider);
             authProvider.setClassName(null);
-            controller.create(authProvider);
+            controller.create(authProvider, UriComponentsBuilder.newInstance());
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -195,7 +196,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, false);
             AuthProvider authProvider = new AuthProvider(provider);
             authProvider.setClassName(String.class.getName());
-            controller.create(authProvider);
+            controller.create(authProvider, UriComponentsBuilder.newInstance());
         } finally {
             SecurityContextHolder.clearContext();
         }

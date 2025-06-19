@@ -23,9 +23,11 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
     protected static final String SAMPLES = "src/test/resources/org/geoserver/wps/gs/download/";
     protected static final QName WATERTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static final QName BMTIME = new QName(MockData.SF_URI, "bmtime", MockData.SF_PREFIX);
+    protected static final QName GRAY = new QName(MockData.WCS_URI, "gray", MockData.WCS_PREFIX);
     protected static final String UNITS = "foot";
     protected static final String UNIT_SYMBOL = "ft";
     protected static QName GIANT_POLYGON = new QName(MockData.CITE_URI, "giantPolygon", MockData.CITE_PREFIX);
+    protected static String YELLOW_TRANSLUCENT = "yellowTranslucent";
 
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
@@ -62,6 +64,10 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
         // a world covering layer with no dimensions
         testData.addVectorLayer(
                 GIANT_POLYGON, Collections.emptyMap(), "giantPolygon.properties", SystemTestData.class, getCatalog());
+        testData.addStyle(YELLOW_TRANSLUCENT, "yellowTransluent.sld", getClass(), catalog);
+
+        // a gray image (8-bit, 1 band, no dimensions)
+        testData.addRasterLayer(GRAY, "gray.tiff", null, null, getClass(), catalog);
 
         // add decoration layouts
         File layouts = getDataDirectory().findOrCreateDir("layouts");

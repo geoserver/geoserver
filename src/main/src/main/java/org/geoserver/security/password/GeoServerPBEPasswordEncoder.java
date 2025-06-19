@@ -12,6 +12,7 @@ import static org.geoserver.security.SecurityUtils.toChars;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Base64;
+import javax.crypto.SecretKey;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.KeyStoreProvider;
@@ -29,7 +30,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  *
  * @author christian
  */
-public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncoder {
+public abstract class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncoder {
+    private GeoServerSecurityManager securityManager;
+
+    public void setSecurityManager(GeoServerSecurityManager securityManager) {
+        this.securityManager = securityManager;
+    }
+
+    protected byte[] getEncryptionKey() throws IOException {
+        if (securityManager != null) {
+            KeyStoreProvider keyStoreProvider = securityManager.getKeyStoreProvider();
+            SecretKey key = keyStoreProvider.getSecretKey(KeyStoreProviderImpl.CONFIGPASSWORDKEY);
+            return key != null ? key.getEncoded() : null;
+        }
+        return null;
+    }
 
     StandardPBEStringEncryptor stringEncrypter;
     StandardPBEByteEncryptor byteEncrypter;

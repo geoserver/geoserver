@@ -9,7 +9,7 @@ package org.geoserver.security.password;
 import java.io.IOException;
 import java.security.Security;
 import java.util.logging.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geotools.util.logging.Logging;
@@ -35,7 +35,14 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     private String prefix;
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        try {
+            if (Security.getProvider("BCFIPS") == null) {
+                Security.addProvider(new BouncyCastleFipsProvider());
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Failed to initialize BCFIPS provider: " + e.getMessage());
+            throw new RuntimeException("BCFIPS initialization failed", e);
+        }
     }
 
     @Override

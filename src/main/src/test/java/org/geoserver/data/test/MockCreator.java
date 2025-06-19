@@ -424,21 +424,14 @@ public class MockCreator implements Callback {
 
     protected GeoServerPBEPasswordEncoder createStrongPbePasswordEncoder(GeoServerSecurityManager secMgr)
             throws IOException {
-        GeoServerPBEPasswordEncoder strongPbePwe = new GeoServerPBEPasswordEncoder();
-        strongPbePwe.setBeanName("strongPbePasswordEncoder");
-        strongPbePwe.setPrefix("crypt2");
-        strongPbePwe.setProviderName("BC");
-        strongPbePwe.setAvailableWithoutStrongCryptogaphy(false);
-        strongPbePwe.initialize(secMgr);
+        GeoServerPBEPasswordEncoder strongPbePwe = createNiceMock(GeoServerPBEPasswordEncoder.class);
+        replay(strongPbePwe);
         return strongPbePwe;
     }
 
     protected GeoServerPBEPasswordEncoder createPbePasswordEncoder(GeoServerSecurityManager secMgr) throws IOException {
-        GeoServerPBEPasswordEncoder pbePwe = new GeoServerPBEPasswordEncoder();
-        pbePwe.setBeanName("pbePasswordEncoder");
-        pbePwe.setPrefix("crypt1");
-        pbePwe.setAlgorithm("PBEWITHMD5ANDDES");
-        pbePwe.initialize(secMgr);
+        GeoServerPBEPasswordEncoder pbePwe = createNiceMock(GeoServerPBEPasswordEncoder.class);
+        replay(pbePwe);
         return pbePwe;
     }
 

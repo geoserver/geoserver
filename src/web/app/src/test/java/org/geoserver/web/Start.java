@@ -8,33 +8,22 @@ package org.geoserver.web;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.KeyStore;
-import java.security.SecureRandom;
-import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.security.auth.x500.X500Principal;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.plus.jndi.Resource;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
@@ -175,114 +164,25 @@ public class Start {
         String sslHost = System.getProperty("ssl.hostname");
         ServerConnector https = null;
         if (sslHost != null && !sslHost.isEmpty()) {
-            Security.addProvider(new BouncyCastleProvider());
-            SslContextFactory ssl = createSSLContextFactory(sslHost);
-
-            HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
-            httpsConfig.addCustomizer(new SecureRequestCustomizer());
-
-            https = new ServerConnector(
-                    jettyServer,
-                    new SslConnectionFactory(ssl, HttpVersion.HTTP_1_1.asString()),
-                    new HttpConnectionFactory(httpsConfig));
-            https.setPort(Integer.getInteger("jetty.ssl.port", 8443));
+            // SSL functionality disabled due to BouncyCastle FIPS compatibility issues
+            // TODO: Implement SSL using standard Java security classes
+            log.warning("SSL functionality is currently disabled. HTTPS connector will not be created.");
         }
         return https;
     }
 
     private static SslContextFactory createSSLContextFactory(String hostname) {
-        String password = System.getProperty("jetty.keystore.password", "changeit");
-
-        String keyStoreLocation = System.getProperty("jetty.keystore");
-        if (keyStoreLocation == null) {
-            File userHome = new File(System.getProperty("user.home"));
-            File geoserverDir = new File(userHome, ".geoserver");
-            if (!geoserverDir.exists()) {
-                geoserverDir.mkdir();
-            }
-            keyStoreLocation = new File(geoserverDir, "keystore.jks").getPath();
-        }
-
-        File keyStoreFile = new File(keyStoreLocation);
-        try {
-            assureSelfSignedServerCertificate(hostname, keyStoreFile, password);
-        } catch (Exception e) {
-            log.log(Level.WARNING, "NO SSL available", e);
-            return null;
-        }
-        SslContextFactory ssl = new SslContextFactory();
-        ssl.setKeyStorePath(keyStoreFile.getAbsolutePath());
-        ssl.setKeyStorePassword(password);
-
-        File javaHome = new File(System.getProperty("java.home"));
-        File cacerts =
-                new File(javaHome, "lib").toPath().resolve("security/cacerts").toFile();
-
-        if (!cacerts.exists()) {
-            return null;
-        }
-
-        ssl.setTrustStorePath(cacerts.getAbsolutePath());
-        ssl.setTrustStorePassword("changeit");
-
-        return ssl;
+        // SSL functionality disabled due to BouncyCastle FIPS compatibility issues
+        // TODO: Implement SSL using standard Java security classes
+        return null;
     }
 
     private static void assureSelfSignedServerCertificate(String hostname, File keyStoreFile, String password)
             throws Exception {
-
-        KeyStore privateKS = KeyStore.getInstance("JKS");
-        if (keyStoreFile.exists()) {
-            try (FileInputStream fis = new FileInputStream(keyStoreFile)) {
-                privateKS.load(fis, password.toCharArray());
-            }
-            if (keyStoreContainsCertificate(privateKS, hostname)) return;
-
-        } else {
-            privateKS.load(null);
-        }
-
-        // create a RSA key pair generator using 1024 bits
-
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(1024);
-        KeyPair KPair = keyPairGenerator.generateKeyPair();
-
-        // cerate a X509 certifacte generator
-        org.bouncycastle.x509.X509V3CertificateGenerator v3CertGen =
-                new org.bouncycastle.x509.X509V3CertificateGenerator();
-
-        // set validity to 10 years, issuer and subject are equal --> self singed certificate
-        int random = new SecureRandom().nextInt();
-        if (random < 0) random *= -1;
-        v3CertGen.setSerialNumber(BigInteger.valueOf(random));
-        v3CertGen.setIssuerDN(
-                new org.bouncycastle.jce.X509Principal("CN=" + hostname + ", OU=None, O=None L=None, C=None"));
-        v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
-        v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10)));
-        v3CertGen.setSubjectDN(
-                new org.bouncycastle.jce.X509Principal("CN=" + hostname + ", OU=None, O=None L=None, C=None"));
-
-        v3CertGen.setPublicKey(KPair.getPublic());
-        v3CertGen.setSignatureAlgorithm("MD5WithRSAEncryption");
-
-        X509Certificate PKCertificate = v3CertGen.generateX509Certificate(KPair.getPrivate());
-
-        // store the certificate containing the public key,this file is needed
-        // to import the public key in other key store.
-        File certFile = new File(keyStoreFile.getParentFile(), hostname + ".cert");
-        try (FileOutputStream fos = new FileOutputStream(certFile.getAbsoluteFile())) {
-            fos.write(PKCertificate.getEncoded());
-        }
-
-        privateKS.setKeyEntry(
-                hostname + ".key", KPair.getPrivate(), password.toCharArray(), new java.security.cert.Certificate[] {
-                    PKCertificate
-                });
-
-        privateKS.setCertificateEntry(hostname + ".cert", PKCertificate);
-
-        privateKS.store(new FileOutputStream(keyStoreFile), password.toCharArray());
+        // SSL functionality disabled due to BouncyCastle FIPS compatibility issues
+        // TODO: Implement certificate generation using standard Java security classes
+        throw new UnsupportedOperationException(
+                "SSL certificate generation is currently disabled due to BouncyCastle FIPS compatibility issues");
     }
 
     private static boolean keyStoreContainsCertificate(KeyStore ks, String hostname) throws Exception {

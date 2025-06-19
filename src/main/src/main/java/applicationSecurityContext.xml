@@ -56,14 +56,19 @@
   <bean id="pbePasswordEncoder"    
     class="org.geoserver.security.password.GeoServerPBEPasswordEncoder" scope="prototype">
     <property name="prefix" value="crypt1" />
-    <property name="algorithm" value="PBEWITHMD5ANDDES" />
+    <property name="providerName" value="BCFIPS" />
+    <property name="algorithm" value="PBEWITHSHA256ANDAES_256" />
   </bean>
   <bean id="strongPbePasswordEncoder"    
     class="org.geoserver.security.password.GeoServerPBEPasswordEncoder" scope="prototype">
     <property name="prefix" value="crypt2" />
-    <property name="providerName" value="BC" />
-    <property name="algorithm" value="PBEWITHSHA256AND256BITAES-CBC-BC" />
+    <property name="providerName" value="BCFIPS" />
+    <property name="algorithm" value="PBEWITHSHA256ANDAES_256" />
     <property name="availableWithoutStrongCryptogaphy" value="false" />
+  </bean>  
+  <bean id="aesGcmPasswordEncoder"    
+    class="org.geoserver.security.password.GeoServerAESGCMPasswordEncoder" scope="prototype">
+    <property name="prefix" value="crypt3" />
   </bean>  
   <bean id="digestPasswordEncoder"    
     class="org.geoserver.security.password.GeoServerDigestPasswordEncoder" scope="prototype">

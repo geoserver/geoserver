@@ -47,13 +47,10 @@ Password-based encryption
 
 .. note:: The system never uses passwords specified by users because these passwords tend to be weak. Passwords used for encryption are generated using a secure random generator and stored in the GeoServer key store. The number of possible passwords is 2^260 .
 
-GeoServer supports two forms of PBE. **Weak PBE** (the GeoServer default) uses a basic encryption method that is relatively easy to crack. The encryption key is derived from the password using `MD5 <http://en.wikipedia.org/wiki/Message_Digest_Algorithm_5>`_ 1000 times iteratively. The encryption algorithm itself is `DES <http://en.wikipedia.org/wiki/Data_Encryption_Standard>`_ (Data Encryption Standard). DES has an effective key length of 56 bits, which is not really a challenge for computer systems in these days.
-
-
-**Strong PBE** uses a much stronger encryption method based on an `AES <http://en.wikipedia.org/wiki/Advanced_Encryption_Standard>`_ 256-bit algorithm with `CBC <http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation>`_. The key length is 256 bit and is derived using `SHA-256 <http://en.wikipedia.org/wiki/SHA-2>`_ instead of MD5. Using Strong PBE is highly recommended.
+GeoServer supports three forms of PBE. **Standard PBE** (crypt1) uses AES-256 encryption with SHA-256 key derivation through the Bouncy Castle FIPS provider. **Strong PBE** (crypt2) uses the same AES-256 encryption but requires the unrestricted policy files. **AES-GCM PBE** (crypt3) uses AES-GCM encryption with PBKDF2 key derivation, providing the highest level of security with NIST-approved algorithms.
 
 As an example, the password ``geoserver`` is encrypted to ``crypt1:KWhO7jrTz/Gi0oTQRKsVeCmWIZY5VZaD``.
-``crypt1`` indicates the usage of Weak PBE. The prefix for Strong PBE is ``crypt2``. The ciphertext and the salt are base 64 encoded.
+``crypt1`` indicates the usage of Standard PBE. The prefix for Strong PBE is ``crypt2``, and for AES-GCM PBE is ``crypt3``. The ciphertext and the salt are base 64 encoded.
 
 .. _security_passwd_reversible:
 
@@ -69,13 +66,13 @@ Non-reversible passwords provide the highest level of security, and therefore sh
 Secret keys and the keystore
 ----------------------------
 
-For a reversible password to provide a meaningful level of security, access to the password must be restricted in some way. In GeoServer, encrypting and decrypting passwords involves the generation of secret shared keys, stored in a typical Java *keystore*. GeoServer uses its own keystore for this purpose named ``geoserver.jceks`` which is located in the ``security`` directory in the GeoServer data directory. This file is stored in the `JCEKS format rather than the default JKS <http://www.itworld.com/nl/java_sec/07202001>`_. JKS does not support storing shared keys.
+For a reversible password to provide a meaningful level of security, access to the password must be restricted in some way. In GeoServer, encrypting and decrypting passwords involves the generation of secret shared keys, stored in a typical Java *keystore*. GeoServer uses its own keystore for this purpose named ``geoserver.bcfks`` which is located in the ``security`` directory in the GeoServer data directory. This file is stored in the BCFKS (Bouncy Castle FIPS Keystore) format for FIPS compliance and enhanced security.
 
 The GeoServer keystore is password protected with a :ref:`security_master_passwd`. It is possible to access the contents of the keystore with external tools such as `keytool <http://docs.oracle.com/javase/6/docs/technotes/tools/solaris/keytool.html>`_. For example, this following command would prompt for the keystore password and list the contents of the keystore:
 
 .. code-block:: bash
 
-  $ keytool -list -keystore geoserver.jceks -storetype "JCEKS"
+  $ keytool -list -keystore geoserver.bcfks -storetype "BCFKS" -providerclass org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider -providerpath bc-fips.jar
 
 .. _security_master_passwd:
 

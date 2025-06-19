@@ -19,6 +19,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,6 +32,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.rmi.server.UID;
 import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.Security;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -56,6 +59,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -178,6 +182,26 @@ import org.springframework.util.StringUtils;
  * @author Justin Deoliveira, OpenGeo
  */
 public class GeoServerSecurityManager implements ApplicationContextAware, ApplicationListener {
+
+    static {
+        if (Security.getProvider("BCFIPS") == null) {
+            Security.addProvider(new BouncyCastleFipsProvider());
+        }
+    }
+
+    public KeyStore loadKeyStore(String keystorePath, String keystorePassword) throws Exception {
+        KeyStore keystore = KeyStore.getInstance("BCFKS", "BCFIPS");
+        try (FileInputStream fis = new FileInputStream(keystorePath)) {
+            keystore.load(fis, keystorePassword.toCharArray());
+        }
+        return keystore;
+    }
+
+    // Add method to configure AES-GCM for master password
+    public void configureMasterPasswordEncryption() {
+        System.setProperty("masterpw.cipher", "AES/GCM/NoPadding");
+        System.setProperty("masterpw.provider", "BCFIPS");
+    }
 
     private static final String VERSION_PROPERTIES = "version.properties";
 

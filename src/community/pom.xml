@@ -179,6 +179,7 @@
         <module>acl</module>
         <module>geoparquet</module>
         <module>wps-download-netcdf</module>
+        <module>singlestore</module>
       </modules>
     </profile>
     <profile>
@@ -558,6 +559,12 @@
       <id>wps-download-netcdf</id>
       <modules>
         <module>wps-download-netcdf</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>singlestore</id>
+      <modules>
+        <module>singlestore</module>
       </modules>
     </profile>
     <profile>

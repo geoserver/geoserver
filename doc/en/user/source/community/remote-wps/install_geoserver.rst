@@ -36,34 +36,26 @@ Configure the Java Virtual Environment
 
   # as root
   
-  $> wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackupcookie" http://download.oracle.com/otn-pub/java/jdk/8u65-b17/jdk-8u74-linux-x64.tar.gz
-  
-  $> tar xzvf jdk-8u65-linux-x64.tar.gz
-  $> mkdir /usr/java
-  $> mv jdk1.8.0_65/ /usr/java/
-  
-  $> alternatives --install /usr/bin/java java /usr/java/jdk1.8.0_65/bin/java 20000
-  
-  $> alternatives --install /usr/bin/javac javac /usr/java/jdk1.8.0_65/bin/javac 20000
-  
-  $> alternatives --install /usr/bin/jar jar /usr/java/jdk1.8.0_65/bin/jar 20000
-  
-  $> alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.8.0_65/bin/javaws 20000
-  
-  $> alternatives --set java /usr/java/jdk1.8.0_65/bin/java
-  $> alternatives --set javac /usr/java/jdk1.8.0_65/bin/javac
-  $> alternatives --set jar /usr/java/jdk1.8.0_65/bin/jar
-  $> alternatives --set javaws /usr/java/jdk1.8.0_65/bin/javaws
+  $> # Install OpenJDK 17 using the package manager
+  $> export SDKMAN_DIR="/usr/local/sdkman" && curl -s "https://get.sdkman.io" | bash
+  $> source "$HOME/.sdkman/bin/sdkman-init.sh"
+  $> sdk list java|grep "17.*\-tem"
+  $>             |     | 17.0.15      | tem     |            | 17.0.15-tem         
+  $>             |     | 17.0.14      | tem     |            | 17.0.14-tem
+  $> sdk install java 17.0.15-tem -y
+  $> # Make Java available to all users
+  $> echo 'export SDKMAN_DIR="/usr/local/sdkman"' >> /etc/bashrc
+  $> echo '[[ -s "/usr/local/sdkman/bin/sdkman-init.sh" ]] && source "/usr/local/sdkman/bin/sdkman-init.sh"' >> /etc/bashrc
   
   # Verify the proper installation on the JDK
   
   $> java -version
-    java version "1.8.0_65"
-    Java(TM) SE Runtime Environment (build 1.8.0_65-b17)
-    Java HotSpot(TM) 64-Bit Server VM (build 25.65-b01, mixed mode)
+    openjdk version "17.0.15" 2025-04-15
+    OpenJDK Runtime Environment Temurin-17.0.15+6 (build 17.0.15+6)
+    OpenJDK 64-Bit Server VM Temurin-17.0.15+6 (build 17.0.15+6, mixed mode, sharing)
   
   $> javac -version
-    javac 1.8.0_65
+    javac 17.0.15
     
 Installing Apache Tomcat
 ++++++++++++++++++++++++
@@ -74,7 +66,8 @@ Installing Apache Tomcat
   
   $> yum -y install tomcat-webapps
   $> systemctl disable tomcat.service
-
+  $> # Set JAVA_HOME for Tomcat service. Edit /etc/tomcat/tomcat.conf
+  $> # and replace JAVA_HOME="/usr/lib/jvm/jre" with JAVA_HOME="/usr/local/sdkman/candidates/java/current"
   $> cp /etc/sysconfig/tomcat /etc/sysconfig/geoserver
   $> ln -s /usr/share/tomcat/ /opt/tomcat
 
@@ -132,7 +125,7 @@ Set the ownership of the ``geoserver/`` related directories to user tomcat
 
     # Where your java installation lives
     #JAVA_HOME="/usr/lib/jvm/jre"
-    JAVA_HOME="/usr/java/jdk1.7.0_71"
+    JAVA_HOME="/usr/local/sdkman/candidates/java/current"
 
     # Where your tomcat installation lives
     CATALINA_HOME="/usr/share/tomcat"
@@ -181,17 +174,19 @@ Deploy And Configure GeoServer
   # Git and Maven must be installed on the system
   $> yum -y install git
   $> yum -y install maven
+  $> # Remove the JDK 8 installed with tomcat/maven
+  $> rpm -e --nodeps java-1.8.0-openjdk java-1.8.0-openjdk-devel java-1.8.0-openjdk-headless
+  $> source ~/.bashrc
   
-  # Verify the Maven installation and double check that the JDK recognized is the Java Sun 1.7+
+  # Verify the Maven installation and double check that the JDK recognized is OpenJDK 17+
   $> mvn -version
-  
-    Apache Maven 3.0.5 (Red Hat 3.0.5-16)
+    Apache Maven 3.0.5 (Red Hat 3.0.5-17)
     Maven home: /usr/share/maven
-    Java version: 1.8.0_65, vendor: Oracle Corporation
-    Java home: /usr/java/jdk1.8.0_65/jre
-    Default locale: en_US, platform encoding: UTF-8
-    OS name: "linux", version: "3.10.0-229.el7.x86_64", arch: "amd64", family: "unix"
-    
+    Java version: 17.0.15, vendor: Eclipse Adoptium
+    Java home: /usr/local/sdkman/candidates/java/17.0.15-tem
+    Default locale: en_US, platform encoding: ANSI_X3.4-1968
+    OS name: "linux", version: "6.10.14-linuxkit", arch: "aarch64", family: "unix"
+  
   # The following procedures allow to collect and compile the source code from the GIT repository.
   $> cd
   

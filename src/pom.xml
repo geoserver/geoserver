@@ -95,6 +95,11 @@
     <spring.security.version>5.8.16</spring.security.version>
     <spring-integration.version>5.5.18</spring-integration.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
+    <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+    <maven-pmd-plugin.version>3.24.0</maven-pmd-plugin.version>
+    <spotbugs-maven-plugin.version>4.7.3.4</spotbugs-maven-plugin.version>
+    <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
+    <sortpom-maven-plugin.version>2.15.0</sortpom-maven-plugin.version>
     <servlet-api.version>3.1.0</servlet-api.version>
     <jetty.version>9.4.57.v20241219</jetty.version>
     <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
@@ -1184,7 +1189,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>${maven-checkstyle-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1211,12 +1216,12 @@
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
           <artifactId>spotless-maven-plugin</artifactId>
-          <version>2.43.0</version>
+          <version>${spotless-maven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>com.github.ekryd.sortpom</groupId>
           <artifactId>sortpom-maven-plugin</artifactId>
-          <version>2.15.0</version>
+          <version>${sortpom-maven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
@@ -1237,6 +1242,16 @@
           <groupId>org.mortbay.jetty</groupId>
           <artifactId>maven-jetty-plugin</artifactId>
           <version>6.1.8</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-pmd-plugin</artifactId>
+          <version>${maven-pmd-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>${spotbugs-maven-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -1528,6 +1543,7 @@
         </configuration>
       </plugin>
 
+      <!-- doc-include-spotless-plugin-start (marker comment for documentation literalinclude directive) -->
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
@@ -1553,6 +1569,7 @@
         </configuration>
       </plugin>
 
+      <!-- doc-include-sortpom-plugin-start (marker comment for documentation literalinclude directive) -->
       <plugin>
         <groupId>com.github.ekryd.sortpom</groupId>
         <artifactId>sortpom-maven-plugin</artifactId>
@@ -2009,10 +2026,10 @@
       </activation>
       <build>
         <plugins>
+          <!-- doc-include-pmd-plugin-start (marker comment for documentation literalinclude directive) -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-pmd-plugin</artifactId>
-            <version>3.24.0</version>
             <executions>
               <execution>
                 <goals>
@@ -2195,10 +2212,10 @@
       </activation>
       <build>
         <plugins>
+          <!-- doc-include-spotbugs-plugin-start (marker comment for documentation literalinclude directive) -->
           <plugin>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-maven-plugin</artifactId>
-            <version>4.7.3.4</version>
             <executions>
               <execution>
                 <goals>
@@ -2227,10 +2244,10 @@
       </activation>
       <build>
         <plugins>
+          <!-- doc-include-checkstyle-plugin-start (marker comment for documentation literalinclude directive) -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.6.0</version>
             <executions>
               <execution>
                 <goals>

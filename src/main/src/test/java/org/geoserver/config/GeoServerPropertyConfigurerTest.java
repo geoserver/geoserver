@@ -41,9 +41,9 @@ public class GeoServerPropertyConfigurerTest {
         try (FileInputStream is = new FileInputStream("target/foo.properties")) {
             p.load(is);
         }
-        assertEquals(p.size(), 2);
-        assertEquals(p.get("prop1"), "value1");
-        assertEquals(p.get("prop2"), "value2");
+        assertEquals(2, p.size());
+        assertEquals("value1", p.get("prop1"));
+        assertEquals("value2", p.get("prop2"));
     }
 
     @Test

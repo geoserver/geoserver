@@ -6,7 +6,9 @@ package org.geoserver.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import net.sf.json.JSON;
@@ -73,7 +75,7 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
         assertNotNull(loggingInfo);
         assertEquals("TEST_LOGGING.xml", loggingInfo.get("level"));
         assertEquals("logs/geoserver-test.log", loggingInfo.get("location"));
-        assertEquals(true, loggingInfo.get("stdOutLogging"));
+        assertTrue((Boolean) loggingInfo.get("stdOutLogging"));
     }
 
     @Test
@@ -106,7 +108,7 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
         assertNotNull(loggingInfo);
         assertEquals("DEFAULT_LOGGING.xml", loggingInfo.get("level"));
         assertEquals("logs/geoserver-test-2.log", loggingInfo.get("location"));
-        assertEquals(false, loggingInfo.get("stdOutLogging"));
+        assertFalse((Boolean) loggingInfo.get("stdOutLogging"));
     }
 
     @Test

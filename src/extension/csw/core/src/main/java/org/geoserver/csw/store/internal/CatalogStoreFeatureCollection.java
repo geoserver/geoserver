@@ -38,7 +38,7 @@ import org.geotools.filter.visitor.DuplicatingFilterVisitor;
  */
 class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
 
-    private final class ResourceFilterVisitor extends DuplicatingFilterVisitor {
+    private static final class ResourceFilterVisitor extends DuplicatingFilterVisitor {
         @Override
         public Object visit(PropertyName expression, Object extraData) {
             return getFactory(extraData)

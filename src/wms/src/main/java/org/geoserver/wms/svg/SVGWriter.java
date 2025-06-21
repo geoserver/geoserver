@@ -267,7 +267,7 @@ class SVGWriter extends OutputStreamWriter {
         writerHandler.endFeature(featureWriter, ft);
     }
 
-    public class SVGFeatureWriterHandler {
+    public static class SVGFeatureWriterHandler {
         public void startFeature(SVGFeatureWriter featureWriter, SimpleFeature ft) throws IOException {
             featureWriter.startElement(ft);
         }

@@ -153,7 +153,7 @@ public interface Catalog extends CatalogInfo {
      * @param store the StoreInfo to be validated
      * @param isNew a boolean; if true then an existing store with the same name and workspace will cause a validation
      *     error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(StoreInfo store, boolean isNew);
 
@@ -613,7 +613,7 @@ public interface Catalog extends CatalogInfo {
      * @param resource the ResourceInfo to be validated
      * @param isNew a boolean; if true then an existing resource with the same name and store will cause a validation
      *     error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(ResourceInfo resource, boolean isNew);
 
@@ -973,7 +973,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param layer the LayerInfo to be validated
      * @param isNew a boolean; if true then an existing layer with the same name will cause a validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(LayerInfo layer, boolean isNew);
 
@@ -1074,7 +1074,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param layerGroup the LayerGroupInfo to be validated
      * @param isNew a boolean; if true then an existing layergroup with the same name will cause a validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew);
 
@@ -1154,7 +1154,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param style the StyleInfo to be validated
      * @param isNew a boolean; if true then an existing style with the same name will cause a validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(StyleInfo style, boolean isNew);
 
@@ -1235,7 +1235,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param namespace the NamespaceInfo to be validated
      * @param isNew a boolean; if true then an existing namespace with the same prefix will cause a validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(NamespaceInfo namespace, boolean isNew);
 
@@ -1299,7 +1299,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param workspace the WorkspaceInfo to be validated
      * @param isNew a boolean; if true then an existing workspace with the same name will cause a validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(WorkspaceInfo workspace, boolean isNew);
 

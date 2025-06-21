@@ -373,7 +373,7 @@ public class InternationalContentHelper {
         return this.supportedLocales;
     }
 
-    private class KeywordMatch implements Predicate<KeywordInfo> {
+    private static class KeywordMatch implements Predicate<KeywordInfo> {
 
         private Locale locale;
 

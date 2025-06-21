@@ -342,7 +342,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         tileCache.put(key, new CacheElement(tiles));
     }
 
-    class CacheElement {
+    static class CacheElement {
         RenderedImage[] tiles;
 
         public CacheElement(RenderedImage[] tiles) {

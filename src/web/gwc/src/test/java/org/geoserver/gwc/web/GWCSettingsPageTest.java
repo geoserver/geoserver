@@ -402,15 +402,15 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         config = gwc.getConfig();
         assertTrue(config.isPersistenceEnabled());
         assertEquals(
+                1,
                 config.getCacheConfigurations()
                         .get(GuavaCacheProvider.class.toString())
-                        .getConcurrencyLevel(),
-                1);
+                        .getConcurrencyLevel());
         assertEquals(
+                1,
                 config.getCacheConfigurations()
                         .get(GuavaCacheProvider.class.toString())
-                        .getHardMemoryLimit(),
-                1);
+                        .getHardMemoryLimit());
 
         // Start the page
         tester.startPage(new GWCSettingsPage());

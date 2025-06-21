@@ -177,7 +177,8 @@ public class KMLFileFormat extends VectorFormat {
         List<String> schemaNames = new ArrayList<>();
         List<SimpleFeatureType> schemas = new ArrayList<>();
         SimpleFeatureType aggregateFeatureType = null;
-        for (Object object : reader) {
+        while (reader.hasNext()) {
+            Object object = reader.next();
             if (object instanceof SimpleFeature) {
                 SimpleFeature feature = (SimpleFeature) object;
                 SimpleFeatureType ft = feature.getFeatureType();

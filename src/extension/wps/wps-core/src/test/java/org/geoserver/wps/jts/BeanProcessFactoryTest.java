@@ -44,7 +44,7 @@ import org.junit.Test;
  */
 public class BeanProcessFactoryTest extends WPSTestSupport {
 
-    public class BeanProcessFactory extends AnnotatedBeanProcessFactory {
+    public static class BeanProcessFactory extends AnnotatedBeanProcessFactory {
 
         public BeanProcessFactory() {
             super(

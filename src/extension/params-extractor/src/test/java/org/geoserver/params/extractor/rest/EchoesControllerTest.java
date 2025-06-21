@@ -98,7 +98,7 @@ public class EchoesControllerTest extends ParamsExtractorRestTestSupport {
         JSONObject param = json.getJSONObject("EchoParameter");
         assertEquals(0, param.get("id"));
         assertEquals("CQL_FILTER", param.get("parameter"));
-        assertEquals(true, param.get("activated"));
+        assertTrue((Boolean) param.get("activated"));
     }
 
     @Test

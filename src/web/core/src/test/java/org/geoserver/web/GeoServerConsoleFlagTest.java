@@ -42,9 +42,9 @@ public class GeoServerConsoleFlagTest extends GeoServerSystemTestSupport {
         // fetches files instead of delegating requests to wicket
         SimpleUrlHandlerMapping mapping = getWebDispatcherMapping(true);
 
-        assertEquals(mapping.getUrlMap().get(WEB_MAPPING), CONSOLE_DISABLED_PUBLISHER);
-        assertEquals(mapping.getUrlMap().get(WEB_WILDCARD_MAPPING), CONSOLE_DISABLED_PUBLISHER);
-        assertEquals(mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING), CONSOLE_DISABLED_PUBLISHER);
+        assertEquals(CONSOLE_DISABLED_PUBLISHER, mapping.getUrlMap().get(WEB_MAPPING));
+        assertEquals(CONSOLE_DISABLED_PUBLISHER, mapping.getUrlMap().get(WEB_WILDCARD_MAPPING));
+        assertEquals(CONSOLE_DISABLED_PUBLISHER, mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING));
     }
 
     @Test
@@ -53,9 +53,9 @@ public class GeoServerConsoleFlagTest extends GeoServerSystemTestSupport {
         // the gui is displayed
         SimpleUrlHandlerMapping mapping = getWebDispatcherMapping(false);
 
-        assertEquals(mapping.getUrlMap().get(WEB_MAPPING), CONSOLE_ENABLED_PUBLISHER);
-        assertEquals(mapping.getUrlMap().get(WEB_WILDCARD_MAPPING), CONSOLE_ENABLED_PUBLISHER);
-        assertEquals(mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING), CONSOLE_ENABLED_PUBLISHER);
+        assertEquals(CONSOLE_ENABLED_PUBLISHER, mapping.getUrlMap().get(WEB_MAPPING));
+        assertEquals(CONSOLE_ENABLED_PUBLISHER, mapping.getUrlMap().get(WEB_WILDCARD_MAPPING));
+        assertEquals(CONSOLE_ENABLED_PUBLISHER, mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING));
     }
 
     @After

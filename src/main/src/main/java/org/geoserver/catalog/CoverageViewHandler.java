@@ -83,7 +83,7 @@ class CoverageViewHandler {
         CoverageResolutionChooser getCoverageResolutionChooser();
     }
 
-    abstract class AbstractReaderResolutionComposer implements ReaderResolutionComposer {
+    abstract static class AbstractReaderResolutionComposer implements ReaderResolutionComposer {
         double[][] resolution;
 
         String referenceName = null;
@@ -100,7 +100,7 @@ class CoverageViewHandler {
     }
 
     /** Implementation returning the Best resolution of the visited elements */
-    class BestReaderResolutionComposer extends AbstractReaderResolutionComposer {
+    static class BestReaderResolutionComposer extends AbstractReaderResolutionComposer {
 
         @Override
         public void visit(GridCoverage2DReader reader) throws IOException {
@@ -128,7 +128,7 @@ class CoverageViewHandler {
     }
 
     /** Implementation returning the Worst resolution of the visited elements */
-    class WorstReaderResolutionComposer extends AbstractReaderResolutionComposer {
+    static class WorstReaderResolutionComposer extends AbstractReaderResolutionComposer {
 
         @Override
         public void visit(GridCoverage2DReader reader) throws IOException {
@@ -162,7 +162,7 @@ class CoverageViewHandler {
         GeneralBounds getOriginalEnvelope();
     }
 
-    abstract class AbstractEnvelopeComposer implements EnvelopeComposer {
+    abstract static class AbstractEnvelopeComposer implements EnvelopeComposer {
         GeneralBounds env = null;
 
         @Override
@@ -172,7 +172,7 @@ class CoverageViewHandler {
     }
 
     /** Implementation returning the union envelope of the visited elements */
-    class UnionEnvelopeComposer extends AbstractEnvelopeComposer {
+    static class UnionEnvelopeComposer extends AbstractEnvelopeComposer {
         @Override
         public void visit(GridCoverage2DReader reader) {
             GeneralBounds envelope = reader.getOriginalEnvelope();
@@ -185,7 +185,7 @@ class CoverageViewHandler {
     }
 
     /** Implementation returning the intersection envelope of the visited elements */
-    class IntersectionEnvelopeComposer extends AbstractEnvelopeComposer {
+    static class IntersectionEnvelopeComposer extends AbstractEnvelopeComposer {
         @Override
         public void visit(GridCoverage2DReader reader) {
             GeneralBounds envelope = reader.getOriginalEnvelope();
@@ -430,7 +430,7 @@ class CoverageViewHandler {
         MathTransform2D coverageGridToWorld2D = (MathTransform2D) geMapper.createTransform();
 
         // we do not have to change the pixel datum
-        if (pixInCell == PixelInCell.CELL_CENTER) return coverageGridToWorld2D;
+        if (PixelInCell.CELL_CENTER.equals(pixInCell)) return coverageGridToWorld2D;
 
         // we do have to change the pixel datum
         if (coverageGridToWorld2D instanceof AffineTransform) {

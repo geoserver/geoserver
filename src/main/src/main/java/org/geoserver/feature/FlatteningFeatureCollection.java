@@ -98,7 +98,7 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
     }
 
     /** Flattens the features in a streaming fashion */
-    class FlatteningFeatureIterator implements SimpleFeatureIterator {
+    static class FlatteningFeatureIterator implements SimpleFeatureIterator {
 
         private SimpleFeatureIterator delegate;
 

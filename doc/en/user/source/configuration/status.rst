@@ -36,7 +36,7 @@ The following table describes the current status indicators.
        
        Press :guilabel:`Free Memory` to recycle unused memory by running the garbage collector.
    * - JVM Version
-     - Denotes which version of the JVM (Java Virtual Machine) is being used to power the server. Here the JVM is AdoptOpenJDK 1.8.0_282.
+     - Denotes which version of the JVM (Java Virtual Machine) is being used to power the server. Here the JVM is AdoptOpenJDK 17.0.13.
    * - Java Rendering Engine
      - Shows the rendering engine used for vector operations.
    * - Available Fonts

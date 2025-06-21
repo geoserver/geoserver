@@ -146,7 +146,6 @@
       <!-- eclipse ide integration -->
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.5</version>
         <configuration>
           <additionalProjectnatures>
             <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>

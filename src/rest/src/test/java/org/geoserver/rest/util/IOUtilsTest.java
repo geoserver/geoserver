@@ -116,7 +116,7 @@ public class IOUtilsTest {
 
         URL uploadURL = new URL("https://geoserver.org/about");
         IOUtils.upload(uploadURL, newFile);
-        assertSame("uploaded", newFile.getType(), Resource.Type.RESOURCE);
+        assertSame("uploaded", Resource.Type.RESOURCE, newFile.getType());
 
         URL osgeoURL = new URL("https://geoserver.org/img/osgeo-logo.png");
         Resource logoFile = new GeoServerResourceLoader(destDir).get("osgeo-logo.png");
@@ -125,6 +125,6 @@ public class IOUtilsTest {
             fail("geoserver.org blocked");
         } catch (Exception failed) {
         }
-        assertSame("blocked", logoFile.getType(), Resource.Type.UNDEFINED);
+        assertSame("blocked", Resource.Type.UNDEFINED, logoFile.getType());
     }
 }

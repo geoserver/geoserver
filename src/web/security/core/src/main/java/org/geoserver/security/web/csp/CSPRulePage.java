@@ -94,7 +94,7 @@ public class CSPRulePage extends GeoServerSecuredPage {
         }
     }
 
-    private class FilterValidator implements IValidator<String> {
+    private static class FilterValidator implements IValidator<String> {
 
         private static final long serialVersionUID = -4027375126421815304L;
 

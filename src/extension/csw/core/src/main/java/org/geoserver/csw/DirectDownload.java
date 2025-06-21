@@ -45,7 +45,7 @@ public class DirectDownload {
      * Files collector class which populates a {@link File}s {@link List} by accessing a {@link FileGroupProvider}
      * instance.
      */
-    class FilesCollector {
+    static class FilesCollector {
 
         public FilesCollector(FileGroupProvider fileGroupProvider) {
             this.fileGroupProvider = fileGroupProvider;

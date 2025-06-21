@@ -135,7 +135,7 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
         assertEquals("cite:Forests", callback.layers.get(0).getTitle());
     }
 
-    private class TestCallback implements GetMapCallback {
+    private static class TestCallback implements GetMapCallback {
 
         private List<GetMapRequest> requests = new ArrayList<>();
 

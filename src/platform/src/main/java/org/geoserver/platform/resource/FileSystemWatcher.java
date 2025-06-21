@@ -99,7 +99,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
     }
 
     /** Record of a ResourceListener that wishes to be notified of changes to a path. */
-    private class Watch implements Comparable<Watch> {
+    private static class Watch implements Comparable<Watch> {
         /** File being watched */
         final File file;
 

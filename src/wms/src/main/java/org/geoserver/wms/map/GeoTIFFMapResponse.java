@@ -110,7 +110,7 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
             }
 
             writer = new GeoTiffWriter(imageOutStream);
-            writer.write(gc, null);
+            writer.write(gc);
         } finally {
             try {
                 if (writer != null) writer.dispose();

@@ -66,12 +66,9 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Lineal;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.Puntal;
 
 /**
  * Builder class which provides convenience methods for interacting with the catalog.
@@ -1028,8 +1025,7 @@ public class CatalogBuilder {
         }
         cinfo.setNativeCoverageName(nativeCoverageName);
 
-        cinfo.setDescription(
-                new StringBuilder("Generated from ").append(format.getName()).toString());
+        cinfo.setDescription("Generated from " + format.getName());
 
         // keywords
         cinfo.getKeywords().add(new Keyword("WCS"));
@@ -1037,13 +1033,7 @@ public class CatalogBuilder {
 
         // native format name
         cinfo.setNativeFormat(format.getName());
-        cinfo.getMetadata()
-                .put(
-                        "dirName",
-                        new StringBuilder(store.getName())
-                                .append("_")
-                                .append(nativeCoverageName)
-                                .toString());
+        cinfo.getMetadata().put("dirName", store.getName() + "_" + nativeCoverageName);
 
         // request and response SRS's
         if (cinfo.getSRS() != null) {
@@ -1546,14 +1536,12 @@ public class CatalogBuilder {
         }
 
         Class<?> gtype = gd.getType().getBinding();
-        if (Point.class.isAssignableFrom(gtype) || MultiPoint.class.isAssignableFrom(gtype)) {
+        if (Puntal.class.isAssignableFrom(gtype)) {
             styleName = StyleInfo.DEFAULT_POINT;
-        } else if (LineString.class.isAssignableFrom(gtype) || MultiLineString.class.isAssignableFrom(gtype)) {
+        } else if (Lineal.class.isAssignableFrom(gtype)) {
             styleName = StyleInfo.DEFAULT_LINE;
-        } else if (Polygon.class.isAssignableFrom(gtype) || MultiPolygon.class.isAssignableFrom(gtype)) {
+        } else if (Polygonal.class.isAssignableFrom(gtype)) {
             styleName = StyleInfo.DEFAULT_POLYGON;
-        } else if (Point.class.isAssignableFrom(gtype) || MultiPoint.class.isAssignableFrom(gtype)) {
-            styleName = StyleInfo.DEFAULT_POINT;
         } else {
             // fall back to the generic style
             styleName = StyleInfo.DEFAULT_GENERIC;

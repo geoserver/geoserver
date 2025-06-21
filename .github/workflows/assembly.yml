@@ -17,7 +17,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-22.04
-            jdk: 11
+            jdk: 17
             dist: 'temurin'
     steps:
     - uses: actions/checkout@v4

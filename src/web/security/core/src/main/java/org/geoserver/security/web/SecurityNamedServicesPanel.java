@@ -158,7 +158,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
         }
     }
 
-    class SecurityNamedServiceTablePanel<T extends SecurityNamedServiceConfig> extends GeoServerTablePanel<T> {
+    static class SecurityNamedServiceTablePanel<T extends SecurityNamedServiceConfig> extends GeoServerTablePanel<T> {
 
         public SecurityNamedServiceTablePanel(String id, SecurityNamedServiceProvider<T> dataProvider) {
             super(id, dataProvider, true);

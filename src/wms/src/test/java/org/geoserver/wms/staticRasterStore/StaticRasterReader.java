@@ -45,13 +45,13 @@ final class StaticRasterReader extends AbstractGridCoverage2DReader {
     }
 
     @Override
-    public GridCoverage2D read(String coverageName, GeneralParameterValue[] readParameters) throws IOException {
+    public GridCoverage2D read(String coverageName, GeneralParameterValue... readParameters) throws IOException {
         // return he static image
         return coverageFactory.create(coverageName, STATIC_IMAGE, originalEnvelope);
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IOException {
+    public GridCoverage2D read(GeneralParameterValue... parameters) throws IOException {
         // return he static image
         return coverageFactory.create(coverageName, STATIC_IMAGE, originalEnvelope);
     }

@@ -1060,7 +1060,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         });
     }
 
-    protected abstract class SecurityContextCopyingJob<T> extends Job<T> {
+    protected abstract static class SecurityContextCopyingJob<T> extends Job<T> {
         final RequestAttributes parentRequestAttributes;
         final Authentication auth;
         final Thread parentThread;

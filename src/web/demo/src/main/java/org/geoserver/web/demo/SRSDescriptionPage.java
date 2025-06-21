@@ -304,7 +304,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
     /*
      * Panel for displaying the well known text for the CRS
      */
-    class WKTPanel extends Panel {
+    static class WKTPanel extends Panel {
 
         public WKTPanel(String id, IModel<String> wktDescriptionModel, IModel<String> wktModel) {
             super(id);

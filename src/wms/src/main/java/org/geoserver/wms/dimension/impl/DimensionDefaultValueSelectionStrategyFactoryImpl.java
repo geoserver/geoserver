@@ -359,6 +359,9 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl
                 }
                 break;
             }
+            case BUILTIN:
+            default:
+                break;
         }
         return retval;
     }
@@ -431,6 +434,9 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl
                 retval = fixedValueStrategyFactory.createFixedValueStrategy(refNumber, referenceValue);
                 break;
             }
+            case BUILTIN:
+            default:
+                break;
         }
         return retval;
     }
@@ -522,6 +528,9 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl
                 retval = fixedValueStrategyFactory.createFixedValueStrategy(refValue);
                 break;
             }
+            case BUILTIN:
+            default:
+                break;
         }
         return retval;
     }

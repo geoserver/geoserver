@@ -88,73 +88,120 @@
   </distributionManagement>
 
   <properties>
+    <!-- ================================ -->
+    <!-- Project version management       -->
+    <!-- ================================ -->
     <gs.version>2.28-SNAPSHOT</gs.version>
     <gt.version>34-SNAPSHOT</gt.version>
     <gwc.version>1.28-SNAPSHOT</gwc.version>
     <spring.version>5.3.39</spring.version>
     <spring.security.version>5.8.16</spring.security.version>
-    <spring-integration.version>5.5.18</spring-integration.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
+    <spring-integration.version>5.5.18</spring-integration.version>
+    <wicket.version>9.21.0</wicket.version>
+
+    <!-- ================================ -->
+    <!-- Dependency version management    -->
+    <!-- ================================ -->
+    <ant.version>1.10.11</ant.version>
+    <compress-lzf.version>1.0.3</compress-lzf.version>
+    <eclipse.emf.version>2.15.0</eclipse.emf.version>
+    <errorProne.version>2.31.0</errorProne.version>
+    <gf.version>3.8.0</gf.version>
+    <hamcrest.version>3.0</hamcrest.version>
+    <hazelcast.version>5.3.8</hazelcast.version>
+    <hibernate-version>5.6.15.Final</hibernate-version>
+    <httpcore.version>4.4.16</httpcore.version>
+    <jacoco.version>0.8.13</jacoco.version>
+    <jasypt.version>1.9.3</jasypt.version>
+    <javac.version>9+181-r4173-1</javac.version>
+    <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
+    <jetty.version>9.4.57.v20241219</jetty.version>
+    <jmh.version>1.37</jmh.version>
+    <joda-time.version>2.8.1</joda-time.version>
+    <marlin.version>0.9.4.8</marlin.version>
+    <mf.version>2.3.3</mf.version>
+    <mockito.version>5.15.2</mockito.version>
+    <opengeo-geodb.version>0.9</opengeo-geodb.version>
+    <pmd.version>7.14.0</pmd.version>
+    <poi.version>5.4.0</poi.version>
+    <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
+    <servlet-api.version>3.1.0</servlet-api.version>
+    <xalan.version>2.7.3</xalan.version>
+
+    <!-- ================================ -->
+    <!-- Maven plugin version management -->
+    <!-- ================================ -->
+    <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
+    <directory-maven-plugin.version>1.0</directory-maven-plugin.version>
+    <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
+    <javacc-maven-plugin.version>3.1.1</javacc-maven-plugin.version>
+    <markdown-page-generator-plugin.version>2.4.0</markdown-page-generator-plugin.version>
+    <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
+    <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+    <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
+    <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
+    <maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
+    <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+    <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+    <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+    <maven-jetty-plugin.version>6.1.8</maven-jetty-plugin.version>
     <maven-pmd-plugin.version>3.24.0</maven-pmd-plugin.version>
+    <maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
+    <maven-site-plugin.version>3.0</maven-site-plugin.version>
+    <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
+    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+    <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
+    <sortpom-maven-plugin.version>2.15.0</sortpom-maven-plugin.version>
     <spotbugs-maven-plugin.version>4.7.3.4</spotbugs-maven-plugin.version>
     <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
-    <sortpom-maven-plugin.version>2.15.0</sortpom-maven-plugin.version>
-    <servlet-api.version>3.1.0</servlet-api.version>
-    <jetty.version>9.4.57.v20241219</jetty.version>
-    <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
-    <poi.version>5.4.0</poi.version>
-    <wicket.version>9.21.0</wicket.version>
-    <ant.version>1.10.11</ant.version>
-    <httpcore.version>4.4.16</httpcore.version>
-    <java.awt.headless>true</java.awt.headless>
-    <sun.java2d.d3d>true</sun.java2d.d3d>
-    <jvm.opts></jvm.opts>
-    <jalopy.phase>disabled</jalopy.phase>
-    <jalopy.srcExcludesPattern>disabled</jalopy.srcExcludesPattern>
-    <test.maxHeapSize>512M</test.maxHeapSize>
-    <test.excludedGroups></test.excludedGroups>
-    <test.exclude.pattern>none</test.exclude.pattern>
-    <quietTests>true</quietTests>
-    <remoteOwsTests>false</remoteOwsTests>
-    <maven.build.timestamp.format>dd-MMM-yyyy HH:mm</maven.build.timestamp.format>
-    <build.timestamp>${maven.build.timestamp}</build.timestamp>
-    <build.hudsonId>-1</build.hudsonId>
-    <fork.javac>false</fork.javac>
-    <javac.maxHeapSize>256M</javac.maxHeapSize>
-    <image.tests>true</image.tests>
-    <interactive.image>false</interactive.image>
-    <windows.leniency>true</windows.leniency>
-    <gf.version>3.8.0</gf.version>
-    <mf.version>2.3.3</mf.version>
-    <jasypt.version>1.9.3</jasypt.version>
-    <hibernate-version>5.6.15.Final</hibernate-version>
-    <opengeo-geodb.version>0.9</opengeo-geodb.version>
-    <joda-time.version>2.8.1</joda-time.version>
-    <git.commit.useNative>false</git.commit.useNative>
+    <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
+
+    <!-- ================================ -->
+    <!-- Maven plugin configuration      -->
+    <!-- ================================ -->
+    <checkstyle.skip>false</checkstyle.skip>
+    <errorProneFlags></errorProneFlags>
     <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
-    <eclipse.emf.version>2.15.0</eclipse.emf.version>
-    <hamcrest.version>3.0</hamcrest.version>
-    <compress-lzf.version>1.0.3</compress-lzf.version>
-    <marlin.version>0.9.4.8</marlin.version>
-    <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
-    <mockito.version>5.15.2</mockito.version>
-    <jacoco.version>0.8.13</jacoco.version>
-    <hazelcast.version>5.3.8</hazelcast.version>
-    <xalan.version>2.7.3</xalan.version>
-    <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=240m</argLine>
-    <spotless.action>apply</spotless.action>
-    <spotless.apply.skip>false</spotless.apply.skip>
+    <git.commit.useNative>false</git.commit.useNative>
+    <lint>deprecation,unchecked</lint>
     <pom.fmt.action>sort</pom.fmt.action>
     <pom.fmt.skip>${spotless.apply.skip}</pom.fmt.skip>
-    <errorProneFlags></errorProneFlags>
-    <errorProne.version>2.31.0</errorProne.version>
-    <javac.version>9+181-r4173-1</javac.version>
-    <pmd.version>7.14.0</pmd.version>
-    <checkstyle.skip>false</checkstyle.skip>
     <qa>false</qa>
-    <lint>deprecation,unchecked</lint>
-    <jmh.version>1.37</jmh.version>
+    <spotless.action>apply</spotless.action>
+    <spotless.apply.skip>false</spotless.apply.skip>
+
+    <!-- ================================ -->
+    <!-- Build configuration options     -->
+    <!-- ================================ -->
+    <build.hudsonId>-1</build.hudsonId>
+    <build.timestamp>${maven.build.timestamp}</build.timestamp>
+    <fork.javac>false</fork.javac>
+    <java.awt.headless>true</java.awt.headless>
+    <javac.maxHeapSize>256M</javac.maxHeapSize>
+    <jvm.opts></jvm.opts>
+    <maven.build.timestamp.format>dd-MMM-yyyy HH:mm</maven.build.timestamp.format>
+    <sun.java2d.d3d>true</sun.java2d.d3d>
+
+    <!-- ================================ -->
+    <!-- Test configuration              -->
+    <!-- ================================ -->
+    <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=240m</argLine>
+    <image.tests>true</image.tests>
+    <interactive.image>false</interactive.image>
+    <quietTests>true</quietTests>
+    <remoteOwsTests>false</remoteOwsTests>
+    <test.exclude.pattern>none</test.exclude.pattern>
+    <test.excludedGroups></test.excludedGroups>
+    <test.maxHeapSize>512M</test.maxHeapSize>
+    <windows.leniency>true</windows.leniency>
+
+    <!-- ================================ -->
+    <!-- Legacy/deprecated options       -->
+    <!-- ================================ -->
+    <jalopy.phase>disabled</jalopy.phase>
+    <jalopy.srcExcludesPattern>disabled</jalopy.srcExcludesPattern>
   </properties>
 
   <dependencyManagement>
@@ -1130,61 +1177,61 @@
         <!-- core org.apache.maven.plugins -->
         <plugin>
           <artifactId>maven-antrun-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>${maven-antrun-plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.7.1</version>
+          <version>${maven-assembly-plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.14.0</version>
+          <version>${maven-compiler-plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>${maven-dependency-plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.10</version>
+          <version>${maven-eclipse-plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
+          <version>${maven-jar-plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.11.2</version>
+          <version>${maven-javadoc-plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>${maven-resources-plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.2.1</version>
+          <version>${maven-source-plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>${maven-surefire-plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
-          <version>3.4.0</version>
+          <version>${maven-war-plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.0</version>
+          <version>${maven-site-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>${maven-enforcer-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
-          <version>2.18.0</version>
+          <version>${versions-maven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1194,24 +1241,24 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>javacc-maven-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>${javacc-maven-plugin.version}</version>
         </plugin>
 
         <!-- third-party plugins -->
         <plugin>
           <groupId>org.commonjava.maven.plugins</groupId>
           <artifactId>directory-maven-plugin</artifactId>
-          <version>1.0</version>
+          <version>${directory-maven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>com.ruleoftech</groupId>
           <artifactId>markdown-page-generator-plugin</artifactId>
-          <version>2.4.0</version>
+          <version>${markdown-page-generator-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>pl.project13.maven</groupId>
           <artifactId>git-commit-id-plugin</artifactId>
-          <version>4.9.10</version>
+          <version>${git-commit-id-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
@@ -1236,12 +1283,12 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>${build-helper-maven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.mortbay.jetty</groupId>
           <artifactId>maven-jetty-plugin</artifactId>
-          <version>6.1.8</version>
+          <version>${maven-jetty-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

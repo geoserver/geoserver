@@ -68,9 +68,4 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
             return pi;
         }
     }
-
-    public boolean isWrapperFor(Class<?> iface) throws java.sql.SQLException {
-        // TODO Auto-generated method stub
-        return iface != null && iface.isAssignableFrom(this.getClass());
-    }
 }

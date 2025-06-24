@@ -24,6 +24,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected boolean encodeFeatureMember = false;
     protected boolean hitsIgnoreMaxFeatures = false;
     protected boolean includeWFSRequestDumpFile = true;
+    protected boolean disableStoredQueriesManagement = false;
     protected List<String> srs = new ArrayList<>();
     protected Boolean allowGlobalQueries = true;
     protected Boolean simpleConversionEnabled = false;
@@ -196,6 +197,16 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     }
 
     @Override
+    public boolean isDisableStoredQueriesManagement() {
+        return disableStoredQueriesManagement;
+    }
+
+    @Override
+    public void setDisableStoredQueriesManagement(boolean disableStoredQueriesManagement) {
+        this.disableStoredQueriesManagement = disableStoredQueriesManagement;
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
@@ -213,6 +224,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         result = prime * result + (getFeatureOutputTypeCheckingEnabled ? 1231 : 1237);
         result = prime * result + ((getFeatureOutputTypes == null) ? 0 : getFeatureOutputTypes.hashCode());
         result = prime * result + ((csvDateFormat == null) ? 0 : csvDateFormat.hashCode());
+        result = prime * result + (disableStoredQueriesManagement ? 1231 : 1237);
         return result;
     }
 
@@ -254,6 +266,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
                 || !Objects.equals(csvDateFormat, other.getCsvDateFormat())) {
             return false;
         }
+        if (disableStoredQueriesManagement != other.isDisableStoredQueriesManagement()) return false;
         return true;
     }
 }

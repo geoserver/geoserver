@@ -254,21 +254,4 @@ public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo> impl
     public void setDisableOnConnFailure(boolean disableOnConnFailure) {
         delegate.setDisableOnConnFailure(disableOnConnFailure);
     }
-
-    public boolean isWrapperFor(Class<?> iface) throws java.sql.SQLException {
-        // TODO Auto-generated method stub
-        return iface != null && iface.isAssignableFrom(this.getClass());
-    }
-
-    public <T> T unwrap(Class<T> iface) throws java.sql.SQLException {
-        // TODO Auto-generated method stub
-        try {
-            if (iface != null && iface.isAssignableFrom(this.getClass())) {
-                return (T) this;
-            }
-            throw new java.sql.SQLException("Auto-generated unwrap failed; Revisit implementation");
-        } catch (Exception e) {
-            throw new java.sql.SQLException(e);
-        }
-    }
 }

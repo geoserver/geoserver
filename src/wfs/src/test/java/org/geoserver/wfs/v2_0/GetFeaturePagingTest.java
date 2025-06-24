@@ -522,9 +522,9 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
     void assertFilter(Filter expected, String filter) throws Exception {
         filter = filter.substring(1, filter.length() - 1);
         Filter f = (Filter) new Parser(new FESConfiguration()).parse(new ByteArrayInputStream(filter.getBytes()));
-        if (expected instanceof Id) {
+        if (expected instanceof Id id1) {
             Set<String> s1 = new HashSet<>();
-            for (Identifier id : ((Id) expected).getIdentifiers()) {
+            for (Identifier id : id1.getIdentifiers()) {
                 s1.add(id.toString());
             }
             Set<String> s2 = new HashSet<>();

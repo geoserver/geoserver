@@ -122,8 +122,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
             double width = -1;
             double height = -1;
 
-            if (map instanceof WMSMapContent) {
-                WMSMapContent wmsMap = (WMSMapContent) map;
+            if (map instanceof WMSMapContent wmsMap) {
                 width = wmsMap.getMapWidth();
                 height = wmsMap.getMapHeight();
             } else {

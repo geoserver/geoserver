@@ -115,8 +115,8 @@ public class GMLTemplateResponse extends BaseTemplateGetFeatureResponse {
             return null;
         }
         Object[] parameters = operation.getParameters();
-        if (parameters.length > 0 && parameters[0] instanceof GetFeatureType) {
-            return (GetFeatureType) parameters[0];
+        if (parameters.length > 0 && parameters[0] instanceof GetFeatureType gtf) {
+            return gft;
         }
         return null;
     }

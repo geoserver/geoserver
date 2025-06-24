@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.jdbc.config;
 
+import java.io.Serial;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
@@ -16,6 +17,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
  */
 public abstract class JDBCSecurityServiceConfig extends BaseSecurityNamedServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String propertyFileNameDDL;

@@ -86,8 +86,7 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
 
         // This instance of check is has to be here because this Geoserver cannot be injected
         // into LocalWorkspaceCatalog because it causes a circular reference
-        if (catalog instanceof LocalWorkspaceCatalog) {
-            LocalWorkspaceCatalog lwCatalog = (LocalWorkspaceCatalog) catalog;
+        if (catalog instanceof LocalWorkspaceCatalog lwCatalog) {
             lwCatalog.setGeoServer(this);
         }
     }
@@ -214,8 +213,8 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
-        if (factory instanceof ApplicationContextAware) {
-            ((ApplicationContextAware) factory).setApplicationContext(context);
+        if (factory instanceof ApplicationContextAware aware) {
+            aware.setApplicationContext(context);
         }
     }
 

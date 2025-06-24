@@ -6,6 +6,7 @@
 package org.geoserver.notification.common;
 
 import com.thoughtworks.xstream.XStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
  */
 public class NotificationConfiguration implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 2029473095919663064L;
 
     /**

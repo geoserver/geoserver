@@ -5,6 +5,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import java.util.List;
 public class GeoServerSecurityFilterChain implements Serializable {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     List<RequestFilterChain> requestChains = new ArrayList<>();

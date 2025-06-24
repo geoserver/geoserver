@@ -420,14 +420,14 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat impleme
                             jsonWriter.value(TemporalUtils.printDate((Date) value));
                         } else {
                             jsonWriter.key(ad.getLocalName());
-                            if ((value instanceof Double && Double.isNaN((Double) value))
-                                    || value instanceof Float && Float.isNaN((Float) value)) {
+                            if ((value instanceof Double double3 && Double.isNaN(double3))
+                                    || value instanceof Float float3 && Float.isNaN(float3)) {
                                 jsonWriter.value(null);
-                            } else if ((value instanceof Double && ((Double) value) == Double.POSITIVE_INFINITY)
-                                    || value instanceof Float && ((Float) value) == Float.POSITIVE_INFINITY) {
+                            } else if ((value instanceof Double double2 && double2 == Double.POSITIVE_INFINITY)
+                                    || value instanceof Float float2 && float2 == Float.POSITIVE_INFINITY) {
                                 jsonWriter.value("Infinity");
-                            } else if ((value instanceof Double && ((Double) value) == Double.NEGATIVE_INFINITY)
-                                    || value instanceof Float && ((Float) value) == Float.NEGATIVE_INFINITY) {
+                            } else if ((value instanceof Double double1 && double1 == Double.NEGATIVE_INFINITY)
+                                    || value instanceof Float float1 && float1 == Float.NEGATIVE_INFINITY) {
                                 jsonWriter.value("-Infinity");
                             } else {
                                 jsonWriter.value(value);

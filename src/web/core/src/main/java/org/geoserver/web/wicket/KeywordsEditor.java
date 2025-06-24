@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +27,9 @@ import org.geoserver.catalog.KeywordInfo;
 // TODO WICKET8 - Verify this page works OK
 public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     ListMultipleChoice<KeywordInfo> choices;
     TextField<String> newKeyword;
     TextField<String> vocabTextField;
@@ -42,6 +45,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
 
         choices = new ListMultipleChoice<>(
                 "keywords", new Model<>(), new ArrayList<>(keywords.getObject()), new ChoiceRenderer<>() {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -65,6 +69,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
 
         langChoice = new DropDownChoice<>(
                 "lang", new Model<>(), Arrays.asList(Locale.getISOLanguages()), new ChoiceRenderer<>() {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -92,6 +97,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
 
     private AjaxButton addKeywordsButton() {
         AjaxButton button = new AjaxButton("addKeyword") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -132,6 +138,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
     private AjaxButton removeKeywordsButton() {
         AjaxButton button = new AjaxButton("removeKeywords") {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

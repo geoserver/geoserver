@@ -5,7 +5,6 @@
  */
 package org.geoserver.wfs.request;
 
-import net.opengis.wfs.DescribeFeatureTypeType;
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -16,10 +15,10 @@ import org.eclipse.emf.ecore.EObject;
 public abstract class DescribeFeatureTypeRequest extends RequestObject {
 
     public static DescribeFeatureTypeRequest adapt(Object request) {
-        if (request instanceof DescribeFeatureTypeType) {
-            return new WFS11((EObject) request);
-        } else if (request instanceof net.opengis.wfs20.DescribeFeatureTypeType) {
-            return new WFS20((EObject) request);
+        if (request instanceof EObject type1) {
+            return new WFS11(type1);
+        } else if (request instanceof EObject type) {
+            return new WFS20(type);
         }
         return null;
     }

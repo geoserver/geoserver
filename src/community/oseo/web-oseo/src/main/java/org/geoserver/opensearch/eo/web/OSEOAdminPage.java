@@ -4,6 +4,7 @@
  */
 package org.geoserver.opensearch.eo.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +45,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
 
+    @Serial
     private static final long serialVersionUID = 3056925400600634877L;
 
     private static class QueryablesConverter implements IConverter<List<String>> {

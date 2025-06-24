@@ -95,8 +95,8 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
         }
 
         OWS20Exception ows2ex;
-        if (exception instanceof OWS20Exception) {
-            ows2ex = (OWS20Exception) exception;
+        if (exception instanceof OWS20Exception s20Exception) {
+            ows2ex = s20Exception;
         } else if (exception.getCause() != null && exception.getCause() instanceof OWS20Exception) {
             ows2ex = (OWS20Exception) exception.getCause();
         } else {

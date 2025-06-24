@@ -133,16 +133,16 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
             Object att = f.getAttribute(j);
             if (att != null) {
                 Cell cell = row.createCell(j + 1);
-                if (att instanceof Number) {
-                    cell.setCellValue(((Number) att).doubleValue());
-                } else if (att instanceof Date) {
-                    cell.setCellValue((Date) att);
+                if (att instanceof Number number) {
+                    cell.setCellValue(number.doubleValue());
+                } else if (att instanceof Date date) {
+                    cell.setCellValue(date);
                     cell.setCellStyle(styles.getDateStyle());
-                } else if (att instanceof Calendar) {
-                    cell.setCellValue((Calendar) att);
+                } else if (att instanceof Calendar calendar) {
+                    cell.setCellValue(calendar);
                     cell.setCellStyle(styles.getDateStyle());
-                } else if (att instanceof Boolean) {
-                    cell.setCellValue((Boolean) att);
+                } else if (att instanceof Boolean boolean1) {
+                    cell.setCellValue(boolean1);
                 } else {
                     // ok, it seems we have no better way than dump it as a string
                     String stringVal = att.toString();

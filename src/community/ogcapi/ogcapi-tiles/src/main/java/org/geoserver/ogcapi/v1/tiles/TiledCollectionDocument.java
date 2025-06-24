@@ -66,11 +66,9 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
         super(tileLayer);
         // basic info
         this.layer = tileLayer;
-        this.id = tileLayer instanceof GeoServerTileLayer
-                ? ((GeoServerTileLayer) tileLayer).getContextualName()
-                : tileLayer.getName();
-        if (tileLayer instanceof GeoServerTileLayer) {
-            PublishedInfo published = ((GeoServerTileLayer) tileLayer).getPublishedInfo();
+        this.id = tileLayer instanceof GeoServerTileLayer gstl ? gstl.getContextualName() : tileLayer.getName();
+        if (tileLayer instanceof GeoServerTileLayer serverTileLayer) {
+            PublishedInfo published = serverTileLayer.getPublishedInfo();
             setTitle(published.getTitle());
             setDescription(published.getAbstract());
             this.extent = getExtentsFromPublished(published);
@@ -119,10 +117,9 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                     .add(this);
 
             // style links
-            if (tileLayer instanceof GeoServerTileLayer) {
-                PublishedInfo published = ((GeoServerTileLayer) tileLayer).getPublishedInfo();
-                if (published instanceof LayerInfo) {
-                    LayerInfo layerInfo = (LayerInfo) published;
+            if (tileLayer instanceof GeoServerTileLayer serverTileLayer) {
+                PublishedInfo published = serverTileLayer.getPublishedInfo();
+                if (published instanceof LayerInfo layerInfo) {
                     LinkedHashSet<StyleInfo> stylesInfo =
                             new LinkedHashSet<>(Arrays.asList(layerInfo.getDefaultStyle()));
                     stylesInfo.addAll(layerInfo.getStyles());
@@ -208,10 +205,10 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
     private CollectionExtents getExtentsFromPublished(PublishedInfo published) {
         try {
             ReferencedEnvelope bbox = null;
-            if (published instanceof LayerInfo) {
-                bbox = ((LayerInfo) published).getResource().getLatLonBoundingBox();
-            } else if (published instanceof LayerGroupInfo) {
-                bbox = ((LayerGroupInfo) published).getBounds();
+            if (published instanceof LayerInfo info1) {
+                bbox = info1.getResource().getLatLonBoundingBox();
+            } else if (published instanceof LayerGroupInfo info) {
+                bbox = info.getBounds();
                 if (!CRS.equalsIgnoreMetadata(bbox, DefaultGeographicCRS.WGS84)) {
                     bbox = bbox.transform(DefaultGeographicCRS.WGS84, true);
                 }

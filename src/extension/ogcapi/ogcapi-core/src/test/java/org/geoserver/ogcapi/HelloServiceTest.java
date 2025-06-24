@@ -426,15 +426,17 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         // - the message is in the body
         // - service link generation
         // - resource link generation
-        String expected = "<html>\n"
-                + "<head>\n"
-                + "    <script src=\"http://localhost:8080/geoserver/webresources/ogcapi/hello.js\"></script>\n"
-                + "</head>\n"
-                + "<body>\n"
-                + "  <p>The message: hello</p>\n"
-                + "  <p><a class=\"wmsCapabilities\" href=\"http://localhost:8080/geoserver/wms?request=GetCapabilities&amp;service=WMS\">Capabilities URL</a></p>\n"
-                + "</body>\n"
-                + "</html>";
+        String expected =
+                """
+                <html>
+                <head>
+                    <script src="http://localhost:8080/geoserver/webresources/ogcapi/hello.js"></script>
+                </head>
+                <body>
+                  <p>The message: hello</p>
+                  <p><a class="wmsCapabilities" href="http://localhost:8080/geoserver/wms?request=GetCapabilities&amp;service=WMS">Capabilities URL</a></p>
+                </body>
+                </html>""";
         // windows line endings are normalized to unix
         String normalizedResponse = response.getContentAsString().replaceAll("\r\n", "\n");
         assertEquals(expected, normalizedResponse);

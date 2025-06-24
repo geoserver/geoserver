@@ -6,6 +6,7 @@
 package org.geoserver.wcs2_0.eo.response;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.security.decorators.DecoratingCoverageInfo;
@@ -25,7 +26,9 @@ import org.geotools.util.factory.Hints;
  * @author Andrea Aime - GeoSolutions
  */
 public class GranuleCoverageInfo extends DecoratingCoverageInfo {
+    @Serial
     private static final long serialVersionUID = 7877565589262804385L;
+
     private SimpleFeature feature;
     private List<DimensionDescriptor> dimensionDescriptors;
 
@@ -64,6 +67,23 @@ public class GranuleCoverageInfo extends DecoratingCoverageInfo {
             return boundingBox();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws java.sql.SQLException {
+        // TODO Auto-generated method stub
+        return iface != null && iface.isAssignableFrom(this.getClass());
+    }
+
+    public <T> T unwrap(Class<T> iface) throws java.sql.SQLException {
+        // TODO Auto-generated method stub
+        try {
+            if (iface != null && iface.isAssignableFrom(this.getClass())) {
+                return (T) this;
+            }
+            throw new java.sql.SQLException("Auto-generated unwrap failed; Revisit implementation");
+        } catch (Exception e) {
+            throw new java.sql.SQLException(e);
         }
     }
 }

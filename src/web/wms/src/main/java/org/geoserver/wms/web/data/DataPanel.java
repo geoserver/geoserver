@@ -6,6 +6,7 @@
 package org.geoserver.wms.web.data;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -35,6 +36,7 @@ import org.locationtech.jts.geom.Geometry;
 
 /** Panel for listing sample attributes of a FeatureTypeInfo resource. */
 public class DataPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = -2635691554700860434L;
 
     static final Logger LOGGER = Logging.getLogger(DataPanel.class);
@@ -64,6 +66,7 @@ public class DataPanel extends Panel {
 
         final GeoServerTablePanel<DataAttribute> attributes = new GeoServerTablePanel<>("attributes", summaries) {
 
+            @Serial
             private static final long serialVersionUID = 7753093373969576568L;
 
             @Override
@@ -73,6 +76,7 @@ public class DataPanel extends Panel {
                     Fragment f = new Fragment(id, "computeStatsFragment", DataPanel.this);
                     f.add(new AjaxLink<Void>("computeStats") {
 
+                        @Serial
                         private static final long serialVersionUID = 1L;
 
                         @Override

@@ -58,22 +58,22 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
         @Override
         public boolean canHandle(Object object, String xpath, Class target) {
             AttributeType type = null;
-            if (object instanceof Attribute) {
-                type = ((Attribute) object).getType();
-            } else if (object instanceof AttributeType) {
-                type = (AttributeType) object;
-            } else if (object instanceof AttributeDescriptor) type = ((AttributeDescriptor) object).getType();
+            if (object instanceof Attribute attribute) {
+                type = attribute.getType();
+            } else if (object instanceof AttributeType attributeType) {
+                type = attributeType;
+            } else if (object instanceof AttributeDescriptor descriptor) type = descriptor.getType();
             return type != null && type instanceof DynamicComplexType;
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public <T> T get(Object object, String xpath, Class<T> target) throws IllegalArgumentException {
-            if (object instanceof ComplexAttribute) {
+            if (object instanceof ComplexAttribute attribute) {
                 String[] pathParts;
                 if (xpath.indexOf('/') != -1) pathParts = xpath.split("/");
                 else pathParts = xpath.split("\\.");
-                return (T) walkComplexAttribute((ComplexAttribute) object, pathParts);
+                return (T) walkComplexAttribute(attribute, pathParts);
             } else if (object instanceof DynamicComplexType) {
                 return (T) ANYTYPE_TYPE;
             } else if (object instanceof AttributeDescriptor) {
@@ -87,8 +87,8 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
             for (int i = 0; i < path.length; i++) {
                 String pathPart = path[i];
                 result = walkComplexAttribute(complexAttribute, pathPart);
-                if (result instanceof ComplexAttribute) {
-                    complexAttribute = (ComplexAttribute) result;
+                if (result instanceof ComplexAttribute attribute) {
+                    complexAttribute = attribute;
                 } else if (result instanceof List) {
                     @SuppressWarnings("unchecked")
                     List<Object> attributes = List.class.cast(result);
@@ -145,8 +145,7 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
 
         private Object extractValue(Property property, String pathPart) {
             Object value;
-            if (property instanceof ComplexAttribute) {
-                ComplexAttribute complexProp = (ComplexAttribute) property;
+            if (property instanceof ComplexAttribute complexProp) {
                 String featurePath =
                         pathPart.substring(0, 1).toUpperCase() + pathPart.substring(1) + NESTED_FEATURE_SUFFIX;
                 value = complexProp.getProperty(featurePath);

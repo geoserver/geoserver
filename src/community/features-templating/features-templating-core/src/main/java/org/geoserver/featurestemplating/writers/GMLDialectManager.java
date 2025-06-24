@@ -54,18 +54,18 @@ abstract class GMLDialectManager {
 
     void writeGeometry(Geometry geometry) throws XMLStreamException {
         String gmlNsUri = namespaces.get(GML_PREFIX);
-        if (geometry instanceof Point) {
-            writePoint((Point) geometry, gmlNsUri);
-        } else if (geometry instanceof MultiPoint) {
-            writeMultiPoint((MultiPoint) geometry, gmlNsUri);
-        } else if (geometry instanceof LineString) {
-            writeLineString((LineString) geometry, gmlNsUri);
-        } else if (geometry instanceof MultiLineString) {
-            writeMultiLineString((MultiLineString) geometry, gmlNsUri);
-        } else if (geometry instanceof Polygon) {
-            writePolygon((Polygon) geometry, gmlNsUri);
-        } else if (geometry instanceof MultiPolygon) {
-            writeMultiPolygon((MultiPolygon) geometry, gmlNsUri);
+        if (geometry instanceof Point point1) {
+            writePoint(point1, gmlNsUri);
+        } else if (geometry instanceof MultiPoint point) {
+            writeMultiPoint(point, gmlNsUri);
+        } else if (geometry instanceof LineString string1) {
+            writeLineString(string1, gmlNsUri);
+        } else if (geometry instanceof MultiLineString string) {
+            writeMultiLineString(string, gmlNsUri);
+        } else if (geometry instanceof Polygon polygon1) {
+            writePolygon(polygon1, gmlNsUri);
+        } else if (geometry instanceof MultiPolygon polygon) {
+            writeMultiPolygon(polygon, gmlNsUri);
         }
     }
 

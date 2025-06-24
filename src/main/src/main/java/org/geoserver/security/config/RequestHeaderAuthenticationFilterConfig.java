@@ -6,6 +6,7 @@
 
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerRequestHeaderAuthenticationFilter;
 
 /**
@@ -20,6 +21,7 @@ public class RequestHeaderAuthenticationFilterConfig extends PreAuthenticatedUse
 
     private String principalHeaderAttribute;
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public String getPrincipalHeaderAttribute() {

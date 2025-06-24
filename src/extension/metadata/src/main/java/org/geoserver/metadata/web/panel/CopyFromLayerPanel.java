@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.SortedSet;
@@ -28,6 +29,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /** A panel that lets the user select a layer and copy its metadata to the current layer. */
 // TODO WICKET8 - Verify this page works OK
 public abstract class CopyFromLayerPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     private String resourceId;
@@ -70,6 +72,7 @@ public abstract class CopyFromLayerPanel extends Panel {
 
     private AjaxSubmitLink createCopyAction(final DropDownChoice<String> dropDown, GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
+            @Serial
             private static final long serialVersionUID = -8718015688839770852L;
 
             @Override
@@ -96,6 +99,7 @@ public abstract class CopyFromLayerPanel extends Panel {
                 dialog.setTitle(new ParamResourceModel("confirmCopyDialog.title", CopyFromLayerPanel.this));
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                    @Serial
                     private static final long serialVersionUID = -5552087037163833563L;
 
                     @Override

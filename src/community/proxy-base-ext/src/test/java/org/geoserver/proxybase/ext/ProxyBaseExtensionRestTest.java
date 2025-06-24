@@ -67,11 +67,13 @@ public class ProxyBaseExtensionRestTest extends ProxyBaseExtensionTestSupport {
 
     @Test
     public void testPutRuleXML() throws Exception {
-        String ruleXML = "<ProxyBaseExtensionRule id=\"1\"\n"
-                + "          activated=\"true\"\n"
-                + "          position=\"5\"\n"
-                + "          matcher=\"foobar\"\n"
-                + "          transformer=\"abc='$2'\"/>";
+        String ruleXML =
+                """
+                <ProxyBaseExtensionRule id="1"
+                          activated="true"
+                          position="5"
+                          matcher="foobar"
+                          transformer="abc='$2'"/>""";
         MockHttpServletResponse response =
                 putAsServletResponse("/rest/proxy-base-ext/rules/1", ruleXML, "application/xml");
         assertEquals(200, response.getStatus());
@@ -88,13 +90,16 @@ public class ProxyBaseExtensionRestTest extends ProxyBaseExtensionTestSupport {
 
     @Test
     public void testPutRuleJson() throws Exception {
-        String ruleJSON = "{\"ProxyBaseExtensionRule\": {\n"
-                + "  \"id\": 0,\n"
-                + "  \"activated\": \"true\",\n"
-                + "  \"position\": 5,\n"
-                + "  \"transformer\": \"abc='$2'\",\n"
-                + "  \"matcher\": \"foobar\"\n"
-                + "}}";
+        String ruleJSON =
+                """
+                {"ProxyBaseExtensionRule": {
+                  "id": 0,
+                  "activated": "true",
+                  "position": 5,
+                  "transformer": "abc='$2'",
+                  "matcher": "foobar"
+                }}\
+                """;
         MockHttpServletResponse response =
                 putAsServletResponse("/rest/proxy-base-ext/rules/0", ruleJSON, "application/json");
         assertEquals(200, response.getStatus());
@@ -112,11 +117,13 @@ public class ProxyBaseExtensionRestTest extends ProxyBaseExtensionTestSupport {
 
     @Test
     public void testPostRuleXML() throws Exception {
-        String ruleXML = "<ProxyBaseExtensionRule \n"
-                + "          activated=\"true\"\n"
-                + "          position=\"5\"\n"
-                + "          matcher=\"foobar\"\n"
-                + "          transformer=\"abc='$2'\"/>";
+        String ruleXML =
+                """
+                <ProxyBaseExtensionRule\s
+                          activated="true"
+                          position="5"
+                          matcher="foobar"
+                          transformer="abc='$2'"/>""";
         MockHttpServletResponse response =
                 postAsServletResponse("/rest/proxy-base-ext/rules", ruleXML, "application/xml");
         checkCreateWithPost(response);

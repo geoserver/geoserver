@@ -83,10 +83,7 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
         FeatureCollection<T, F> result = null;
         if (fc != null) {
             if (limitedAttributeSize > 0 && fc.getSchema().getDescriptors().size() > limitedAttributeSize) {
-                if (fc instanceof SimpleFeatureCollection) {
-                    // the datastore did not honour the query properties?? It's broken, but we can
-                    // fix it
-                    SimpleFeatureCollection sfc = (SimpleFeatureCollection) fc;
+                if (fc instanceof SimpleFeatureCollection sfc) {
                     SimpleFeatureType target =
                             SimpleFeatureTypeBuilder.retype(sfc.getSchema(), mixed.getPropertyNames());
                     @SuppressWarnings("unchecked")
@@ -113,8 +110,7 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
             }
         }
         AccessLimits limits = policy.getLimits();
-        if (limits instanceof VectorAccessLimits) {
-            VectorAccessLimits vectorLimits = (VectorAccessLimits) limits;
+        if (limits instanceof VectorAccessLimits vectorLimits) {
             result = decoratesForClipping(vectorLimits, result);
         }
         return result;
@@ -207,5 +203,22 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
         result.setSortBy(userQuery.getSortBy());
 
         return result;
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws java.sql.SQLException {
+        // TODO Auto-generated method stub
+        return iface != null && iface.isAssignableFrom(this.getClass());
+    }
+
+    public <T> T unwrap(Class<T> iface) throws java.sql.SQLException {
+        // TODO Auto-generated method stub
+        try {
+            if (iface != null && iface.isAssignableFrom(this.getClass())) {
+                return (T) this;
+            }
+            throw new java.sql.SQLException("Auto-generated unwrap failed; Revisit implementation");
+        } catch (Exception e) {
+            throw new java.sql.SQLException(e);
+        }
     }
 }

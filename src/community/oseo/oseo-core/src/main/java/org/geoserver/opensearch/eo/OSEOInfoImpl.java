@@ -4,12 +4,14 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.config.impl.ServiceInfoImpl;
 
 public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
+    @Serial
     private static final long serialVersionUID = -6834845955630638054L;
 
     String openSearchAccessStoreId;

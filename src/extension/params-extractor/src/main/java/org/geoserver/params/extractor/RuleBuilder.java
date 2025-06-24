@@ -27,7 +27,7 @@ public final class RuleBuilder {
         this.activated = other.getActivated();
         this.position = other.getPosition();
         if (position != null) {
-            this.matchPattern = Pattern.compile(String.format("^(?:/[^/]*){%d}(/([^/]+)).*$", position));
+            this.matchPattern = Pattern.compile("^(?:/[^/]*){%d}(/([^/]+)).*$".formatted(position));
         } else {
             this.matchPattern = null;
         }
@@ -57,7 +57,7 @@ public final class RuleBuilder {
     public RuleBuilder withPosition(Integer position) {
         if (position != null) {
             this.position = position;
-            matchPattern = Pattern.compile(String.format("^(?:/[^/]*){%d}(/([^/]+)).*$", position));
+            matchPattern = Pattern.compile("^(?:/[^/]*){%d}(/([^/]+)).*$".formatted(position));
         }
         return this;
     }

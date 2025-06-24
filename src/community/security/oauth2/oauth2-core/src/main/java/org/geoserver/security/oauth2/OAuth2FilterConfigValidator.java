@@ -25,8 +25,8 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
     @Override
     public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
 
-        if (config instanceof OAuth2FilterConfig) {
-            validateOAuth2FilterConfig((OAuth2FilterConfig) config);
+        if (config instanceof OAuth2FilterConfig filterConfig) {
+            validateOAuth2FilterConfig(filterConfig);
         } else {
             super.validateFilterConfig(config);
         }

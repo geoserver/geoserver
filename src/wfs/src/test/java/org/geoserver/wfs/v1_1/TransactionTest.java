@@ -1029,30 +1029,31 @@ public class TransactionTest extends WFSTestSupport {
     }
 
     private String xmlEntityExpansionLimitBody() {
-        return "<?xml version=\"1.0\" encoding=\"utf-8\"?><!DOCTYPE convert [ <!ENTITY lol \"lol\"><!ENTITY lol1 \"&lol;&lol;&lol;&lol;&lol;&lol;&lol;\"> ]>\n"
-                + "<Transaction xmlns=\"http://www.opengis.net/wfs\" service=\"WFS\" xmlns:xxx=\"https://www.be/cbb\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:gml=\"http://www.opengis.net/gml\" version=\"1.1.0\" xsi:schemaLocation=\"\">\n"
-                + "   <Insert xmlns=\"http://www.opengis.net/wfs\">\n"
-                + "    <xxx_all_service_city xmlns=\"https://www.be/cbb\">\n"
-                + "      <NAME xmlns=\"https://www.be/cbb\">GENT PTEST1</NAME>\n"
-                + "      <DESCRIPTION xmlns=\"https://www.be/cbb\">ptest1</DESCRIPTION>\n"
-                + "      <STATUS xmlns=\"https://www.be/cbb\">default</STATUS>\n"
-                + "      <CREATED_BY xmlns=\"https://www.be/cbb\">upload service</CREATED_BY>\n"
-                + "      <CREATED_DT xmlns=\"https://www.be/cbb\">2019-04-04Z</CREATED_DT>\n"
-                + "      <EXTERNAL_ID xmlns=\"https://www.be/cbb\">City1ptest1</EXTERNAL_ID>\n"
-                + "      <EXTERNAL_SOURCE xmlns=\"https://www.be/cbb\">RIAN</EXTERNAL_SOURCE>\n"
-                + "      <TYPE xmlns=\"https://www.be/cbb\">TYPE.CITY</TYPE>\n"
-                + "      <WAVE xmlns=\"https://www.be/cbb\">3</WAVE>\n"
-                + "      <GEOM xmlns=\"https://www.be/cbb\">\n"
-                + "        <gml:Polygon srsName=\"EPSG:31370\">\n"
-                + "          <gml:outerBoundaryIs>\n"
-                + "            <gml:LinearRing>\n"
-                + "              <gml:coordinates cs=\",\" ts=\" \">&lol1;</gml:coordinates>\n"
-                + "            </gml:LinearRing>\n"
-                + "          </gml:outerBoundaryIs>\n"
-                + "        </gml:Polygon>\n"
-                + "      </GEOM>\n"
-                + "    </xxx_all_service_city>\n"
-                + "  </Insert>\n"
-                + "</Transaction>";
+        return """
+                <?xml version="1.0" encoding="utf-8"?><!DOCTYPE convert [ <!ENTITY lol "lol"><!ENTITY lol1 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;"> ]>
+                <Transaction xmlns="http://www.opengis.net/wfs" service="WFS" xmlns:xxx="https://www.be/cbb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" version="1.1.0" xsi:schemaLocation="">
+                   <Insert xmlns="http://www.opengis.net/wfs">
+                    <xxx_all_service_city xmlns="https://www.be/cbb">
+                      <NAME xmlns="https://www.be/cbb">GENT PTEST1</NAME>
+                      <DESCRIPTION xmlns="https://www.be/cbb">ptest1</DESCRIPTION>
+                      <STATUS xmlns="https://www.be/cbb">default</STATUS>
+                      <CREATED_BY xmlns="https://www.be/cbb">upload service</CREATED_BY>
+                      <CREATED_DT xmlns="https://www.be/cbb">2019-04-04Z</CREATED_DT>
+                      <EXTERNAL_ID xmlns="https://www.be/cbb">City1ptest1</EXTERNAL_ID>
+                      <EXTERNAL_SOURCE xmlns="https://www.be/cbb">RIAN</EXTERNAL_SOURCE>
+                      <TYPE xmlns="https://www.be/cbb">TYPE.CITY</TYPE>
+                      <WAVE xmlns="https://www.be/cbb">3</WAVE>
+                      <GEOM xmlns="https://www.be/cbb">
+                        <gml:Polygon srsName="EPSG:31370">
+                          <gml:outerBoundaryIs>
+                            <gml:LinearRing>
+                              <gml:coordinates cs="," ts=" ">&lol1;</gml:coordinates>
+                            </gml:LinearRing>
+                          </gml:outerBoundaryIs>
+                        </gml:Polygon>
+                      </GEOM>
+                    </xxx_all_service_city>
+                  </Insert>
+                </Transaction>""";
     }
 }

@@ -190,7 +190,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
                 .map(clazz::cast)
                 .findFirst()
                 .map(s -> ModificationProxy.create(s, clazz));
-        if (!found.isPresent()) {
+        if (found.isEmpty()) {
             LOGGER.log(
                     Level.FINE,
                     "Could not locate service of type {0} in workspace {1}, available services were {2}",
@@ -231,7 +231,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
                 .findFirst()
                 .map(s -> ModificationProxy.create(s, clazz));
 
-        if (!found.isPresent() && LOGGER.isLoggable(Level.FINE)) {
+        if (found.isEmpty() && LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(
                     Level.FINE,
                     "Could not locate service of type {0} in workspace {1} and name \'{2}\', available services were {3}",

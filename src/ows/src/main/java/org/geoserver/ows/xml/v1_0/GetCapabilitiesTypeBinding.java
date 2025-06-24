@@ -96,8 +96,8 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         GetCapabilitiesType getCapabilities;
 
-        if ((value != null) && value instanceof GetCapabilitiesType) {
-            getCapabilities = (GetCapabilitiesType) value;
+        if ((value != null) && value instanceof GetCapabilitiesType type) {
+            getCapabilities = type;
         } else {
             getCapabilities = owsfactory.createGetCapabilitiesType();
         }

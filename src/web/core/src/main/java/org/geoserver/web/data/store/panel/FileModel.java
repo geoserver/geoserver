@@ -7,6 +7,7 @@ package org.geoserver.web.data.store.panel;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -25,6 +26,7 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - GeoSolutions
  */
 public class FileModel implements IModel<String> {
+    @Serial
     private static final long serialVersionUID = 3911203737278340528L;
 
     static final Logger LOGGER = Logging.getLogger(FileModel.class);
@@ -44,8 +46,7 @@ public class FileModel implements IModel<String> {
     @Override
     public String getObject() {
         Object obj = delegate.getObject();
-        if (obj instanceof URL) {
-            URL url = (URL) obj;
+        if (obj instanceof URL url) {
             return url.toExternalForm();
         }
         return (String) obj;

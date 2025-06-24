@@ -129,8 +129,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     public void purge() {
         for (Iterator i = open.iterator(); i.hasNext(); ) {
             Object resource = i.next();
-            if (resource instanceof Iterator) {
-                Iterator resourceIterator = (Iterator) resource;
+            if (resource instanceof Iterator resourceIterator) {
                 try {
                     closeIterator(resourceIterator);
                 } catch (Throwable e) {

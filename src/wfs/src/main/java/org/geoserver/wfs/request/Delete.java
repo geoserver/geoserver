@@ -94,17 +94,17 @@ public abstract class Delete extends TransactionElement {
             result = ff.or(filters);
         }
 
-        if (obj instanceof DeleteElementTypeImpl) {
-            ((DeleteElementTypeImpl) obj).setFilter(result);
-        } else if (obj instanceof DeleteTypeImpl) {
-            ((DeleteTypeImpl) obj).setFilter(result);
+        if (obj instanceof DeleteElementTypeImpl impl1) {
+            impl1.setFilter(result);
+        } else if (obj instanceof DeleteTypeImpl impl) {
+            impl.setFilter(result);
         }
     }
 
     private void flattenFilter(Filter filter, List<Filter> filters) {
         if (filter != null) {
-            if (filter instanceof Or) {
-                filters.addAll(((Or) filter).getChildren());
+            if (filter instanceof Or or) {
+                filters.addAll(or.getChildren());
             } else {
                 filters.add(filter);
             }

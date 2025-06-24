@@ -17,10 +17,10 @@ public class FilterVisitorSupport implements FilterVisitor {
 
     @Override
     public void visit(Filter f) {
-        if (f instanceof And) {
-            handleComposite((And) f, "AND");
-        } else if (f instanceof Or) {
-            handleComposite((Or) f, "OR");
+        if (f instanceof And and) {
+            handleComposite(and, "AND");
+        } else if (f instanceof Or or) {
+            handleComposite(or, "OR");
         } else {
             handleFilter(f);
         }

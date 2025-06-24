@@ -6,6 +6,7 @@
 package org.geoserver.web.data.workspace;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -45,6 +46,7 @@ import org.geoserver.web.wicket.XMLNameValidator;
 /** Allows creation of a new workspace */
 public class WorkspaceNewPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -4355978268880701910L;
 
     TextField<String> nsUriTextField;
@@ -62,6 +64,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
         tabs.add(new AbstractTab(new Model<>("Basic Info")) {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -77,6 +80,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         if (AccessDataRuleInfoManager.canAccess()) {
             tabs.add(new AbstractTab(new Model<>("Security")) {
 
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -96,12 +100,14 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
         tabbedPanel = new TabbedPanel<>("tabs", tabs) {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
             protected WebMarkupContainer newLink(String linkId, final int index) {
                 return new SubmitLink(linkId) {
 
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -122,6 +128,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
     private AjaxLink<Void> cancelLink() {
         return new AjaxLink<>("cancel") {
+            @Serial
             private static final long serialVersionUID = -1731475076965108576L;
 
             @Override
@@ -134,6 +141,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
     private SubmitLink submitLink() {
         return new SubmitLink("submit") {
 
+            @Serial
             private static final long serialVersionUID = -3462848930497720229L;
 
             @Override
@@ -235,7 +243,9 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
     class WsNewInfoPanel extends Panel {
 
+        @Serial
         private static final long serialVersionUID = 4286364808180616865L;
+
         boolean defaultWs;
 
         public WsNewInfoPanel(String id, IModel<WorkspaceInfo> model) {
@@ -245,6 +255,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
             nameTextField.add(new XMLNameValidator());
             nameTextField.add(new StringValidator() {
 
+                @Serial
                 private static final long serialVersionUID = -5475431734680134780L;
 
                 @Override

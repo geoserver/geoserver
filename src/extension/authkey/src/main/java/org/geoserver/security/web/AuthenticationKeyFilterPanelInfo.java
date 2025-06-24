@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web;
 
+import java.io.Serial;
 import org.geoserver.security.AuthenticationKeyFilterConfig;
 import org.geoserver.security.GeoServerAuthenticationKeyFilter;
 import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
@@ -17,6 +18,7 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 public class AuthenticationKeyFilterPanelInfo
         extends AuthenticationFilterPanelInfo<AuthenticationKeyFilterConfig, AuthenticationKeyFilterPanel> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public AuthenticationKeyFilterPanelInfo() {

@@ -57,8 +57,7 @@ public class DynamicFeatureType extends DynamicComplexTypeImpl implements Featur
             }
             if (crs == null) {
                 for (PropertyDescriptor property : getDescriptors()) {
-                    if (property instanceof GeometryDescriptor) {
-                        GeometryDescriptor geometry = (GeometryDescriptor) property;
+                    if (property instanceof GeometryDescriptor geometry) {
                         if (geometry.getType().getCoordinateReferenceSystem() != null) {
                             crs = geometry.getType().getCoordinateReferenceSystem();
                             break;

@@ -5,6 +5,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -18,6 +19,7 @@ import java.io.Serializable;
  * @author Andrea Aime - GeoSolutions
  */
 public class AccessLimits implements Serializable, Cloneable {
+    @Serial
     private static final long serialVersionUID = 8521276966116962954L;
 
     /** Gets the catalog mode for this layer */

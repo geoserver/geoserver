@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import org.geotools.util.factory.Hints;
 public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 659498790758954330L;
 
     protected String nativeFormat;

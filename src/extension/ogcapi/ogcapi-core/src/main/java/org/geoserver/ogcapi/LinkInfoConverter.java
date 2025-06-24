@@ -23,8 +23,8 @@ public class LinkInfoConverter {
      * them by service class
      */
     public static void addLinksToDocument(AbstractDocument document, PublishedInfo publishedInfo, Class serviceClass) {
-        if (publishedInfo instanceof LayerInfo) {
-            addLinksToDocument(document, ((LayerInfo) publishedInfo).getResource(), serviceClass);
+        if (publishedInfo instanceof LayerInfo info) {
+            addLinksToDocument(document, info.getResource(), serviceClass);
         }
     }
 

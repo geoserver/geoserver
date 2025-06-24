@@ -94,8 +94,8 @@ public class VerticalResampler {
                     String key = (String) entry.getKey();
                     try {
                         MathTransform mt = MT_FACTORY.createFromWKT(value);
-                        if (mt instanceof VerticalGridTransform) {
-                            CRS_MAPPING_TO_VERTICAL_GRID_TRANSFORM.put(key, (VerticalGridTransform) mt);
+                        if (mt instanceof VerticalGridTransform transform) {
+                            CRS_MAPPING_TO_VERTICAL_GRID_TRANSFORM.put(key, transform);
                         }
                     } catch (FactoryException e) {
                         if (LOGGER.isLoggable(Level.SEVERE)) {
@@ -227,8 +227,8 @@ public class VerticalResampler {
         if (noDataContainer == null) {
             RenderedImage image = PlanarImage.wrapRenderedImage(gridCoverage.getRenderedImage());
             Object property = image.getProperty(NoDataContainer.GC_NODATA);
-            if (property instanceof NoDataContainer) {
-                noDataContainer = ((NoDataContainer) property);
+            if (property instanceof NoDataContainer container) {
+                noDataContainer = container;
             }
         }
         if (noDataContainer != null) {

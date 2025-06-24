@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.dto.impl;
 
+import java.io.Serial;
 import org.geoserver.metadata.data.dto.GeonetworkConfiguration;
 
 /**
@@ -15,6 +16,7 @@ import org.geoserver.metadata.data.dto.GeonetworkConfiguration;
  */
 public class GeonetworkConfigurationImpl implements GeonetworkConfiguration {
 
+    @Serial
     private static final long serialVersionUID = -652210940618705299L;
 
     String name;

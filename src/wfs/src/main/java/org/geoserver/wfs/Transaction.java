@@ -221,14 +221,14 @@ public class Transaction {
                 try {
                     FeatureSource<? extends FeatureType, ? extends Feature> source = meta.getFeatureSource(null, null);
 
-                    if (source instanceof FeatureStore) {
+                    if (source instanceof FeatureStore featureStore) {
                         FeatureStore<? extends FeatureType, ? extends Feature> store =
                                 (FeatureStore<? extends FeatureType, ? extends Feature>) source;
                         store.setTransaction(transaction);
-                        stores.put(elementName, (FeatureStore) source);
+                        stores.put(elementName, featureStore);
 
                         if (elementNameDefault != null) {
-                            stores.put(elementNameDefault, (FeatureStore) source);
+                            stores.put(elementNameDefault, featureStore);
                         }
 
                         stores2.put(typeRef, source);
@@ -379,7 +379,7 @@ public class Transaction {
         if (exception != null) {
             // WFS 2.0 wants us to throw the exception
             if (request.getVersion() != null && request.getVersion().startsWith("2")) {
-                if (!(exception instanceof WFSException && ((WFSException) exception).getCode() != null)) {
+                if (!(exception instanceof WFSException sException && sException.getCode() != null)) {
                     // wrap to get the default code
                     exception = new WFSException(request, exception);
                 }
@@ -682,15 +682,13 @@ public class Transaction {
          * @return true, if the current target element for aggregation can accept the given element to aggregate
          */
         private boolean canAggregate(TransactionElement pElem) {
-            if (aggrTargetElement instanceof Insert && pElem instanceof Insert) {
-                return idGenEquals(getIdGen((Insert) aggrTargetElement), getIdGen((Insert) pElem));
+            if (aggrTargetElement instanceof Insert insert && pElem instanceof Insert insert1) {
+                return idGenEquals(getIdGen(insert), getIdGen(insert1));
             }
-            if (aggrTargetElement instanceof Delete && pElem instanceof Delete) {
+            if (aggrTargetElement instanceof Delete lTarget && pElem instanceof Delete lElem) {
                 if (aggrDeleteCount >= maxDeleteCount - 1) {
                     return false;
                 }
-                Delete lTarget = (Delete) aggrTargetElement;
-                Delete lElem = (Delete) pElem;
                 QName lTargetType = lTarget.getTypeName();
                 QName lElemType = lElem.getTypeName();
                 if (lTargetType != null && lTargetType.equals(lElemType)) {
@@ -702,8 +700,8 @@ public class Transaction {
 
         private IdentifierGenerationOptionType getIdGen(Insert insert) {
             EObject adaptee = insert.getAdaptee();
-            if (adaptee instanceof InsertElementType) {
-                return ((InsertElementType) adaptee).getIdgen();
+            if (adaptee instanceof InsertElementType type) {
+                return type.getIdgen();
             }
             return null;
         }
@@ -722,13 +720,11 @@ public class Transaction {
          */
         private void aggregate(TransactionElement pElem) {
             boolean lRemoveFromRequest = false;
-            if (aggrTargetElement instanceof Insert) {
-                Insert lTarget = (Insert) aggrTargetElement;
+            if (aggrTargetElement instanceof Insert lTarget) {
                 Insert lElem = (Insert) pElem;
                 lTarget.addFeatures(lElem.getFeatures());
                 lRemoveFromRequest = true;
-            } else if (aggrTargetElement instanceof Delete) {
-                Delete lTarget = (Delete) aggrTargetElement;
+            } else if (aggrTargetElement instanceof Delete lTarget) {
                 Delete lElem = (Delete) pElem;
                 lTarget.addFilter(lElem.getFilter());
                 aggrDeleteCount++;

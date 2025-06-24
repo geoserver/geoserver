@@ -228,8 +228,8 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
                 }
             }
         } catch (Exception ex) {
-            if (ex instanceof IOException) // avoid useless wrapping
-            throw (IOException) ex;
+            if (ex instanceof IOException exception) // avoid useless wrapping
+            throw exception;
             throw new IOException(ex);
         } finally {
             securityManager.disposePassword(passwd);
@@ -359,9 +359,9 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
                 String alias = enumeration.nextElement();
                 Key key = oldKS.getKey(alias, oldPassword);
                 KeyStore.Entry entry = null;
-                if (key instanceof SecretKey) entry = new KeyStore.SecretKeyEntry((SecretKey) key);
-                if (key instanceof PrivateKey)
-                    entry = new KeyStore.PrivateKeyEntry((PrivateKey) key, oldKS.getCertificateChain(alias));
+                if (key instanceof SecretKey secretKey) entry = new KeyStore.SecretKeyEntry(secretKey);
+                if (key instanceof PrivateKey privateKey)
+                    entry = new KeyStore.PrivateKeyEntry(privateKey, oldKS.getCertificateChain(alias));
                 if (key instanceof PublicKey) entry = new KeyStore.TrustedCertificateEntry(oldKS.getCertificate(alias));
                 if (entry == null)
                     LOGGER.warning("Unknown key in store, alias: "

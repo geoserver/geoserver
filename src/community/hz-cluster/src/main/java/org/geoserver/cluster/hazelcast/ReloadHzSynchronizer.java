@@ -5,7 +5,6 @@
  */
 package org.geoserver.cluster.hazelcast;
 
-import static java.lang.String.format;
 import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -69,7 +68,7 @@ public class ReloadHzSynchronizer extends HzSynchronizer {
             });
         } catch (RejectedExecutionException e) {
             if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.finest(format("%s - Reload in progress. Ignoring event %s", nodeId(), event));
+                LOGGER.finest("%s - Reload in progress. Ignoring event %s".formatted(nodeId(), event));
             }
             return null;
         }
@@ -82,7 +81,7 @@ public class ReloadHzSynchronizer extends HzSynchronizer {
             return;
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(format("%s - Publishing event %s", nodeId(), e));
+            LOGGER.fine("%s - Publishing event %s".formatted(nodeId(), e));
         }
         e.setSource(localAddress(cluster.getHz()));
         topic.publish(e);

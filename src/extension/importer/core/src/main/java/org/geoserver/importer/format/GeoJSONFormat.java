@@ -133,9 +133,9 @@ public class GeoJSONFormat extends VectorFormat {
     @Override
     public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) throws IOException {
 
-        if (data instanceof Directory) {
+        if (data instanceof Directory directory) {
             List<ImportTask> tasks = new ArrayList<>();
-            for (FileData file : ((Directory) data).getFiles()) {
+            for (FileData file : directory.getFiles()) {
                 tasks.add(task(file, catalog));
             }
             return tasks;
@@ -210,8 +210,8 @@ public class GeoJSONFormat extends VectorFormat {
     }
 
     File file(ImportData data, final ImportTask item) {
-        if (data instanceof Directory) {
-            return Iterables.find(((Directory) data).getFiles(), input -> FilenameUtils.getBaseName(
+        if (data instanceof Directory directory) {
+            return Iterables.find(directory.getFiles(), input -> FilenameUtils.getBaseName(
                                     input.getFile().getName())
                             .equals(item.getLayer().getName()))
                     .getFile();
@@ -221,8 +221,8 @@ public class GeoJSONFormat extends VectorFormat {
     }
 
     Optional<File> maybeFile(ImportData data) {
-        if (data instanceof FileData) {
-            return Optional.of(((FileData) data).getFile());
+        if (data instanceof FileData fileData) {
+            return Optional.of(fileData.getFile());
         }
         return Optional.absent();
     }

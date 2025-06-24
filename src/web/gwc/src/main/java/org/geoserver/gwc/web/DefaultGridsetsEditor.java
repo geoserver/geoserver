@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -41,6 +42,7 @@ import org.geowebcache.grid.GridSetBroker;
  */
 class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
 
+    @Serial
     private static final long serialVersionUID = 5098470663723800345L;
 
     private final IModel<? extends List<String>> selection;
@@ -50,6 +52,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
     private final DropDownChoice<String> availableGridSets;
 
     private class DefaultGridSetsTable extends GridSetListTablePanel {
+        @Serial
         private static final long serialVersionUID = -3301795024743630393L;
 
         public DefaultGridSetsTable(String id, GridSetTableProvider provider) {
@@ -70,6 +73,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         protected Component actionLink(final String id, String gridSetName) {
 
             Component removeLink = new ImageAjaxLink(id, GWCIconFactory.DELETE_ICON) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 /** Removes the selected item from the provider's model */
@@ -110,6 +114,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         selection = new Model<>(new ArrayList<>(model.getObject()));
 
         GridSetTableProvider provider = new GridSetTableProvider() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -131,6 +136,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         add(defaultGridsetsTable);
 
         IModel<List<String>> availableModel = new LoadableDetachableModel<>() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -150,6 +156,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         add(availableGridSets);
 
         GeoServerAjaxFormLink addGridsubsetLink = new GeoServerAjaxFormLink("addGridset") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

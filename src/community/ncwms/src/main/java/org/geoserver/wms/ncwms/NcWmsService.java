@@ -130,7 +130,7 @@ public class NcWmsService implements DisposableBean {
                     availableDates.addAll(foundTimes);
                 }
                 return availableDates.stream()
-                        .map(d -> d instanceof Date ? new DateRange((Date) d, (Date) d) : (DateRange) d)
+                        .map(d -> d instanceof Date d1 ? new DateRange(d1, d1) : (DateRange) d)
                         .collect(Collectors.toList());
             }
         };

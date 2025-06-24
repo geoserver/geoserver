@@ -263,8 +263,8 @@ public class PDFGetMapTest extends WMSTestSupport {
                     PDPattern colorSpace =
                             (PDPattern) context.getGraphicsState().getNonStrokingColorSpace();
                     PDAbstractPattern ap = colorSpace.getPattern(color);
-                    if (ap instanceof PDTilingPattern) {
-                        pattern.set((PDTilingPattern) ap);
+                    if (ap instanceof PDTilingPattern tilingPattern) {
+                        pattern.set(tilingPattern);
                     }
                 }
             }

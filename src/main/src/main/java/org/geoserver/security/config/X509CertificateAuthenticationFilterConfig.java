@@ -6,6 +6,7 @@
 
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerX509CertificateAuthenticationFilter;
 
 /**
@@ -18,5 +19,6 @@ import org.geoserver.security.filter.GeoServerX509CertificateAuthenticationFilte
 public class X509CertificateAuthenticationFilterConfig extends J2eeAuthenticationBaseFilterConfig
         implements SecurityAuthFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 }

@@ -54,12 +54,12 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
         if (a == null) return b;
         if (b == null) return a;
 
-        if (a instanceof VectorAccessLimits && b instanceof VectorAccessLimits) {
-            return intersection((VectorAccessLimits) a, (VectorAccessLimits) b);
-        } else if (a instanceof CoverageAccessLimits && b instanceof CoverageAccessLimits) {
-            return intersection((CoverageAccessLimits) a, (CoverageAccessLimits) b);
-        } else if (a instanceof WMSAccessLimits && b instanceof WMSAccessLimits) {
-            return intersection((WMSAccessLimits) a, (WMSAccessLimits) b);
+        if (a instanceof VectorAccessLimits limits3 && b instanceof VectorAccessLimits limits3) {
+            return intersection(limits3, limits3);
+        } else if (a instanceof CoverageAccessLimits limits2 && b instanceof CoverageAccessLimits limits2) {
+            return intersection(limits2, limits2);
+        } else if (a instanceof WMSAccessLimits limits && b instanceof WMSAccessLimits limits1) {
+            return intersection(limits, limits1);
         }
 
         throw new IllegalArgumentException(
@@ -96,12 +96,12 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
             else if (bFilter == null) rasterFilter = aFilter;
             else {
                 Geometry intersection = aFilter.intersection(bFilter);
-                if (intersection instanceof MultiPolygon) {
-                    rasterFilter = (MultiPolygon) intersection;
+                if (intersection instanceof MultiPolygon polygon1) {
+                    rasterFilter = polygon1;
                 } else {
                     final List<Polygon> accum = new ArrayList<>();
                     intersection.apply((GeometryComponentFilter) geom -> {
-                        if (geom instanceof Polygon) accum.add((Polygon) geom);
+                        if (geom instanceof Polygon polygon) accum.add(polygon);
                     });
 
                     rasterFilter = geomFactory.createMultiPolygon(accum.toArray(new Polygon[accum.size()]));

@@ -43,8 +43,8 @@ public class WKTPPIO extends CDataPPIO {
         Writer w = new OutputStreamWriter(os);
         try {
             Geometry g = (Geometry) value;
-            if (g instanceof LinearRing) {
-                g = g.getFactory().createLineString(((LinearRing) g).getCoordinateSequence());
+            if (g instanceof LinearRing ring) {
+                g = g.getFactory().createLineString(ring.getCoordinateSequence());
             }
             new WKTWriter().write(g, w);
         } finally {

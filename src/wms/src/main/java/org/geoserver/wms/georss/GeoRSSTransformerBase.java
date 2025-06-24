@@ -92,13 +92,11 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
 
             @Override
             public void encode(Geometry g, GeoRSSTranslatorSupport t) {
-                if (g instanceof Point) {
-                    Point p = (Point) g;
+                if (g instanceof Point p) {
                     t.element("georss:point", p.getY() + " " + p.getX());
                 }
 
-                if (g instanceof LineString) {
-                    LineString l = (LineString) g;
+                if (g instanceof LineString l) {
 
                     StringBuffer sb = new StringBuffer();
 
@@ -112,8 +110,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
                     t.element("georss:line", sb.toString());
                 }
 
-                if (g instanceof Polygon) {
-                    Polygon p = (Polygon) g;
+                if (g instanceof Polygon p) {
                     LineString line = p.getExteriorRing();
 
                     StringBuffer sb = new StringBuffer();
@@ -222,8 +219,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
                 Geometry g = (Geometry) feature.getDefaultGeometry();
 
                 // handle case of multi geometry with a single geometry in it
-                if (g instanceof GeometryCollection) {
-                    GeometryCollection mg = (GeometryCollection) g;
+                if (g instanceof GeometryCollection mg) {
 
                     if (mg.getNumGeometries() == 1) {
                         g = mg.getGeometryN(0);

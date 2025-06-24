@@ -75,8 +75,8 @@ public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
             }
 
             currLayer = new MapLayerInfo(layerInfo);
-            if (sl instanceof NamedLayer) {
-                NamedLayer namedLayer = ((NamedLayer) sl);
+            if (sl instanceof NamedLayer namedLayer1) {
+                NamedLayer namedLayer = namedLayer1;
                 currLayer.setLayerFeatureConstraints(namedLayer.getLayerFeatureConstraints());
             }
             return layerInfo;
@@ -142,8 +142,8 @@ public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
         if (currLayer != null) {
             layers.add(currLayer);
             styles.add(userStyle);
-        } else if (info != null && info instanceof LayerInfo) {
-            layers.add(new MapLayerInfo((LayerInfo) info));
+        } else if (info != null && info instanceof LayerInfo layerInfo) {
+            layers.add(new MapLayerInfo(layerInfo));
             styles.add(userStyle);
         }
     }

@@ -34,8 +34,8 @@ public class CollectionsCache implements GeoServerLifecycleHandler, OseoEventLis
                     FeatureSource<FeatureType, Feature> ps =
                             accessProvider.getOpenSearchAccess().getCollectionSource();
                     Filter filter = Filter.INCLUDE;
-                    if (o instanceof String) {
-                        filter = STACService.getCollectionFilter((String) o);
+                    if (o instanceof String string) {
+                        filter = STACService.getCollectionFilter(string);
                     }
                     Query q = new Query();
                     q.setMaxFeatures(1);
@@ -69,7 +69,7 @@ public class CollectionsCache implements GeoServerLifecycleHandler, OseoEventLis
             return collections.get(collectionId);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof IOException) throw (IOException) cause;
+            if (cause instanceof IOException exception) throw exception;
             throw new IOException(e);
         }
     }

@@ -53,7 +53,7 @@ public class ScaleRatioDecoration implements MapDecoration {
         final double scale = getScale(mapContent);
         if (format == null) {
             // by spec, the first argument is 1, that is, 1$ (1 based, not zero based)
-            return String.format("1 : %1$1.0f", scale);
+            return "1 : %1$1.0f".formatted(scale);
         } else {
             DecimalFormatSymbols decimalFormatSymbols;
             if (formatLanguage != null) {

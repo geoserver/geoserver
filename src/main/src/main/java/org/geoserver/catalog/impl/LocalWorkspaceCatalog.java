@@ -488,19 +488,18 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         private Object wrapNested(Object result) {
             // need to test type by type to build the right type of proxy
             // (would have otherwise tested for CatalogInfo instead)
-            if (result instanceof FeatureTypeInfo) {
-                return create((FeatureTypeInfo) result, FeatureTypeInfo.class);
-            } else if (result instanceof LayerInfo) {
-                return create((LayerInfo) result, LayerInfo.class);
-            } else if (result instanceof StyleInfo) {
-                return create((StyleInfo) result, StyleInfo.class);
-            } else if (result instanceof LayerGroupInfo) {
-                return create((LayerGroupInfo) result, LayerGroupInfo.class);
+            if (result instanceof FeatureTypeInfo info3) {
+                return create(info3, FeatureTypeInfo.class);
+            } else if (result instanceof LayerInfo info2) {
+                return create(info2, LayerInfo.class);
+            } else if (result instanceof StyleInfo info1) {
+                return create(info1, StyleInfo.class);
+            } else if (result instanceof LayerGroupInfo info) {
+                return create(info, LayerGroupInfo.class);
             }
 
             // when grabbing styles from layers, or layers and styles inside a group
-            if (result instanceof Collection) {
-                Collection<?> collection = (Collection<?>) result;
+            if (result instanceof Collection<?> collection) {
                 if (collection.stream().anyMatch(i -> i instanceof CatalogInfo)) {
                     return collection.stream()
                             .map(i -> wrapNested(i))
@@ -608,5 +607,10 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
             return LocalWorkspace.get();
         }
         return super.getDefaultWorkspace();
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws java.sql.SQLException {
+        // TODO Auto-generated method stub
+        return iface != null && iface.isAssignableFrom(this.getClass());
     }
 }

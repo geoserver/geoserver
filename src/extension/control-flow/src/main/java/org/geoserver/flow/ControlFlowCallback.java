@@ -189,8 +189,8 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
 
     private static String getControllerEnterMessage(FlowController controller, Request requestWithOperation) {
         String message = "Request [" + requestWithOperation + "] enter " + controller;
-        if (controller instanceof SingleQueueFlowController) {
-            int requests = ((SingleQueueFlowController) controller).getRequestsInQueue();
+        if (controller instanceof SingleQueueFlowController flowController) {
+            int requests = flowController.getRequestsInQueue();
             message += "/" + requests;
         }
         return message;
@@ -198,8 +198,8 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
 
     private static String getControllerExitMessage(FlowController controller, Request requestWithOperation) {
         String message = "Request [" + requestWithOperation + "] exit  " + controller;
-        if (controller instanceof SingleQueueFlowController) {
-            int requests = ((SingleQueueFlowController) controller).getRequestsInQueue();
+        if (controller instanceof SingleQueueFlowController flowController) {
+            int requests = flowController.getRequestsInQueue();
             message += "/" + requests;
         }
         return message;
@@ -207,9 +207,9 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        if (applicationContext instanceof ConfigurableApplicationContext) {
+        if (applicationContext instanceof ConfigurableApplicationContext context) {
             // register default beans if needed
-            registDefaultBeansIfNeeded((ConfigurableApplicationContext) applicationContext);
+            registDefaultBeansIfNeeded(context);
         } else {
             // we cannot regist default beans, there is nothing else we can do about this
             LOGGER.warning("Application context not configurable, control-flow default beans will not be registered.");

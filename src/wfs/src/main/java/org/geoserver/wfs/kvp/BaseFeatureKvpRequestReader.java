@@ -103,8 +103,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
 
             for (Object obj : typeNames) {
                 // we might get a list of qname, or a list of list of qname
-                if (obj instanceof QName) {
-                    QName qName = (QName) obj;
+                if (obj instanceof QName qName) {
                     qName = checkTypeName(qName, namespaces, eObject);
 
                     List<QName> l = new ArrayList<>();
@@ -349,18 +348,17 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
         // JD: use "" so that it applies to all geometries
         String name = "";
 
-        if (bbox instanceof ReferencedEnvelope3D) {
-            return filterFactory.bbox(name, (ReferencedEnvelope3D) bbox);
+        if (bbox instanceof ReferencedEnvelope3D envelope3D) {
+            return filterFactory.bbox(name, envelope3D);
         }
 
         // get the epsg code
         String epsgCode = null;
 
-        if (bbox instanceof SRSEnvelope) {
-            SRSEnvelope se = (SRSEnvelope) bbox;
+        if (bbox instanceof SRSEnvelope se) {
             epsgCode = se.getSrs();
-        } else if (bbox instanceof ReferencedEnvelope) {
-            CoordinateReferenceSystem crs = ((ReferencedEnvelope) bbox).getCoordinateReferenceSystem();
+        } else if (bbox instanceof ReferencedEnvelope envelope) {
+            CoordinateReferenceSystem crs = envelope.getCoordinateReferenceSystem();
             if (crs != null) {
                 epsgCode = GML2EncodingUtils.toURI(crs);
             }

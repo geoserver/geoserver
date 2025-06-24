@@ -98,8 +98,7 @@ public class WMSLayerIdentifier implements LayerIdentifier<SimpleFeatureCollecti
             parser.setStrict(false);
             parser.setEntityResolver(resolverProvider.getEntityResolver());
             Object result = parser.parse(is);
-            if (result instanceof FeatureCollectionType) {
-                FeatureCollectionType fcList = (FeatureCollectionType) result;
+            if (result instanceof FeatureCollectionType fcList) {
                 @SuppressWarnings("unchecked")
                 List<SimpleFeatureCollection> rawResults = fcList.getFeature();
 
@@ -161,7 +160,7 @@ public class WMSLayerIdentifier implements LayerIdentifier<SimpleFeatureCollecti
             return new ForceCoordinateSystemFeatureResults(featureCollection, crs);
         } catch (Exception exception) {
             throw new RuntimeException(
-                    String.format("Error forcing feature collection to use SRS '%s'.", CRS.toSRS(crs)), exception);
+                    "Error forcing feature collection to use SRS '%s'.".formatted(CRS.toSRS(crs)), exception);
         }
     }
 

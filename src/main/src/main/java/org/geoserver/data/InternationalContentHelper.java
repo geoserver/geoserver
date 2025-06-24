@@ -214,8 +214,7 @@ public class InternationalContentHelper {
      */
     public String getString(InternationalString internationalString, boolean nullable) {
         String result = null;
-        if (internationalString instanceof GrowableInternationalString) {
-            GrowableInternationalString growable = (GrowableInternationalString) internationalString;
+        if (internationalString instanceof GrowableInternationalString growable) {
             result = getFirstMatchingInternationalValue(growable, requestedLocales);
             // if a client specified * try with the supported locales
             if (result == null && anyMatch) {
@@ -330,8 +329,7 @@ public class InternationalContentHelper {
 
     private Set<Locale> getLocales(InternationalString internationalString) {
         Set<Locale> found;
-        if (internationalString instanceof GrowableInternationalString) {
-            GrowableInternationalString growable = (GrowableInternationalString) internationalString;
+        if (internationalString instanceof GrowableInternationalString growable) {
             found = growable.getLocales().stream().filter(l -> l != null).collect(Collectors.toSet());
         } else {
             found = Collections.emptySet();

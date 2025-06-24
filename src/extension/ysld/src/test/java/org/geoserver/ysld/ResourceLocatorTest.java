@@ -31,16 +31,19 @@ public class ResourceLocatorTest {
         // Want a real file to hold the YSLD
         File file = testFolder.newFile();
         try (PrintWriter out = new PrintWriter(file); ) {
-            out.print("feature-styles:\n"
-                    + "- name: name\n"
-                    + "  rules:\n"
-                    + "  - symbolizers:\n"
-                    + "    - point:\n"
-                    + "        size: 32\n"
-                    + "        symbols:\n"
-                    + "        - external:\n"
-                    + "            url: smileyface.png\n"
-                    + "            format: image/png\n");
+            out.print(
+                    """
+                    feature-styles:
+                    - name: name
+                      rules:
+                      - symbolizers:
+                        - point:
+                            size: 32
+                            symbols:
+                            - external:
+                                url: smileyface.png
+                                format: image/png
+                    """);
         }
 
         // A file in the same directory

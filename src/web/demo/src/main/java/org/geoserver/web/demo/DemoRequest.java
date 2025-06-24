@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.demo;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -15,6 +16,7 @@ import java.io.Serializable;
  * @since 2.0.x
  */
 public class DemoRequest implements Serializable {
+    @Serial
     private static final long serialVersionUID = -6605104556907827822L;
 
     /** The directory containing the demo files */

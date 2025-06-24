@@ -541,8 +541,8 @@ public class WMSRequests {
             Object val = entry.getValue();
 
             sb.append(key).append(":");
-            if (val instanceof Collection) {
-                Iterator i = ((Collection) val).iterator();
+            if (val instanceof Collection collection) {
+                Iterator i = collection.iterator();
                 while (i.hasNext()) {
                     sb.append(i.next()).append(",");
                 }

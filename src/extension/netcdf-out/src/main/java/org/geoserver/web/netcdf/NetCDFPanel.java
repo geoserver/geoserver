@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.netcdf;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponentPanel<T> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected final ListView<GlobalAttribute> globalAttributes;
@@ -204,8 +206,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
     @Override
     public void convertInput() {
         IVisitor<Component, Object> formComponentVisitor = (component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
+            if (component instanceof FormComponent<?> formComponent) {
                 formComponent.processInput();
             }
         };
@@ -228,8 +229,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         convertedInput.setCopyGlobalAttributes(copyGlobalAttributes.getModelObject());
 
         extensionPanels.visitChildren((component, visit) -> {
-            if (component instanceof NetCDFExtensionPanel) {
-                NetCDFExtensionPanel extension = (NetCDFExtensionPanel) component;
+            if (component instanceof NetCDFExtensionPanel extension) {
                 extension.convertInput(convertedInput);
             }
         });

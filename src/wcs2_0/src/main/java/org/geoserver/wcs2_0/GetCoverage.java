@@ -583,8 +583,8 @@ public class GetCoverage {
             for (Object o : elevationDomain) {
                 if (o instanceof Number) {
                     intersectionFound |= requestedElevationRange.contains((Comparable<?>) o);
-                } else if (o instanceof NumberRange) {
-                    intersectionFound |= requestedElevationRange.intersects((Range<?>) o);
+                } else if (o instanceof Range<?> range) {
+                    intersectionFound |= requestedElevationRange.intersects(range);
                 }
                 if (intersectionFound) {
                     break;
@@ -625,10 +625,10 @@ public class GetCoverage {
             TreeSet<Object> timeDomain = accessor.getTimeDomain();
             boolean intersectionFound = false;
             for (Object o : timeDomain) {
-                if (o instanceof Date) {
-                    intersectionFound |= requestedTimeSubset.contains((Date) o);
-                } else if (o instanceof DateRange) {
-                    intersectionFound |= requestedTimeSubset.intersects((Range<?>) o);
+                if (o instanceof Date date) {
+                    intersectionFound |= requestedTimeSubset.contains(date);
+                } else if (o instanceof Range<?> range) {
+                    intersectionFound |= requestedTimeSubset.intersects(range);
                 }
                 if (intersectionFound) {
                     break;
@@ -1673,8 +1673,7 @@ public class GetCoverage {
                 // loop
                 boolean add = false;
                 for (SampleDimension sd : bands) {
-                    if (sd instanceof GridSampleDimension) {
-                        final GridSampleDimension band = (GridSampleDimension) sd;
+                    if (sd instanceof GridSampleDimension band) {
                         final String name = band.getDescription().toString();
                         if (name.equals(startRangeComponent)) {
                             returnValue.add(startRangeComponent);

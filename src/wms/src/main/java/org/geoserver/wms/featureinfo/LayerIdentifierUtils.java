@@ -79,9 +79,8 @@ public final class LayerIdentifierUtils {
                 return new ReprojectFeatureResults(featureCollection, targetCrs);
             } catch (Exception exception) {
                 throw new RuntimeException(
-                        String.format(
-                                "Error reproject feature collection from SRS '%s' to SRS '%s'.",
-                                CRS.toSRS(sourceCrs), CRS.toSRS(targetCrs)),
+                        "Error reproject feature collection from SRS '%s' to SRS '%s'."
+                                .formatted(CRS.toSRS(sourceCrs), CRS.toSRS(targetCrs)),
                         exception);
             }
         }

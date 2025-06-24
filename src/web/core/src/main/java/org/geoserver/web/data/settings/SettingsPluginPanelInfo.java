@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.settings;
 
+import java.io.Serial;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.apache.wicket.WicketRuntimeException;
@@ -25,7 +26,9 @@ import org.geoserver.web.data.workspace.WorkspaceEditPage;
  * @author Nicola Lagomarsini Geosolutions S.A.S.
  */
 public class SettingsPluginPanelInfo extends ComponentInfo<SettingsPluginPanel> implements ExtensionPriority {
+    @Serial
     private static final long serialVersionUID = 3630664243092125954L;
+
     private int priority = 50;
 
     public SettingsPluginPanel getPluginPanel(String id, IModel<SettingsInfo> model)
@@ -56,6 +59,7 @@ public class SettingsPluginPanelInfo extends ComponentInfo<SettingsPluginPanel> 
         return new ListView<>(id, panels) {
 
             /** */
+            @Serial
             private static final long serialVersionUID = 3967381810650109343L;
 
             @Override

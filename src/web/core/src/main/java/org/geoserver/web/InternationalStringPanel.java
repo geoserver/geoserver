@@ -4,6 +4,7 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -128,6 +129,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         container.add(
                 geoServerAjaxFormLink = new GeoServerAjaxFormLink("addNew") {
 
+                    @Serial
                     private static final long serialVersionUID = -4136656891019857299L;
 
                     @Override
@@ -290,8 +292,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
     private boolean isSaveSubmit() {
         boolean result = false;
         IFormSubmitter submitBtn = getForm().findSubmitter();
-        if (submitBtn != null && submitBtn instanceof Component) {
-            Component submitLink = (Component) submitBtn;
+        if (submitBtn != null && submitBtn instanceof Component submitLink) {
             String id = submitLink.getId();
             result = id.equals("submit") || id.equals("save");
         }

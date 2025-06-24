@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
-import net.opengis.wfs.QueryType;
 import net.opengis.wfs.XlinkPropertyNameType;
 import org.eclipse.emf.ecore.EObject;
 import org.geotools.api.filter.Filter;
@@ -25,10 +24,10 @@ import org.geotools.api.filter.sort.SortBy;
 public abstract class Query extends RequestObject {
 
     public static Query adapt(Object query) {
-        if (query instanceof QueryType) {
-            return new WFS11((EObject) query);
-        } else if (query instanceof net.opengis.wfs20.QueryType) {
-            return new WFS20((EObject) query);
+        if (query instanceof EObject type1) {
+            return new WFS11(type1);
+        } else if (query instanceof EObject type) {
+            return new WFS20(type);
         }
         return null;
     }

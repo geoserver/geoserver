@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import javax.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 
@@ -20,7 +21,9 @@ import org.springframework.security.core.Authentication;
  */
 public class SecurityContextPersistenceFilterConfig extends SecurityFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private boolean allowSessionCreation;
 
     public boolean isAllowSessionCreation() {

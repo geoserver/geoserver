@@ -29,6 +29,6 @@ public interface IndexedDomainModelVisitor extends DomainModelVisitor {
      * @return true if the object has been visited by the visitor, false otherwise
      */
     static boolean isIndexedAndVisited(DomainModelVisitor visitor, Object object) {
-        return visitor instanceof IndexedDomainModelVisitor && ((IndexedDomainModelVisitor) visitor).isVisited(object);
+        return visitor instanceof IndexedDomainModelVisitor idmv && idmv.isVisited(object);
     }
 }

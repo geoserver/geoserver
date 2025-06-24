@@ -34,8 +34,8 @@ public class FilterPPIO extends XMLPPIO {
             return null;
         } else if (input instanceof Filter) {
             return input;
-        } else if (input instanceof String) {
-            return decode(IOUtils.toInputStream((String) input, "UTF-8"));
+        } else if (input instanceof String string) {
+            return decode(IOUtils.toInputStream(string, "UTF-8"));
         } else {
             throw new IllegalArgumentException("Cannot convert " + input + " into a Filter object");
         }

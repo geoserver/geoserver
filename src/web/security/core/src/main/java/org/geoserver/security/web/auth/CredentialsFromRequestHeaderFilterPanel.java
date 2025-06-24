@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import java.util.logging.Logger;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
@@ -21,6 +22,7 @@ import org.geotools.util.logging.Logging;
  */
 public class CredentialsFromRequestHeaderFilterPanel
         extends AuthenticationFilterPanel<CredentialsFromRequestHeaderFilterConfig> {
+    @Serial
     private static final long serialVersionUID = 1;
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");

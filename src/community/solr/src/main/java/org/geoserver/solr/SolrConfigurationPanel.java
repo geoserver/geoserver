@@ -5,6 +5,7 @@
 
 package org.geoserver.solr;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -30,6 +31,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  */
 public class SolrConfigurationPanel extends ResourceConfigurationPanel {
 
+    @Serial
     private static final long serialVersionUID = 3382530429105288433L;
 
     private LayerInfo _layerInfo;

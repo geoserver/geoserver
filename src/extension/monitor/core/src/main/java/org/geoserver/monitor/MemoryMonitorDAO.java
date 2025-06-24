@@ -234,11 +234,11 @@ public class MemoryMonitorDAO implements MonitorDAO {
         public boolean matches(RequestData data) {
             String property = null;
             Object value = null;
-            if (left instanceof String && OwsUtils.has(data, (String) left)) {
-                property = (String) left;
+            if (left instanceof String string1 && OwsUtils.has(data, string1)) {
+                property = string1;
                 value = right;
-            } else if (right instanceof String && OwsUtils.has(data, (String) right)) {
-                property = (String) right;
+            } else if (right instanceof String string && OwsUtils.has(data, string)) {
+                property = string;
                 value = left;
             }
             if (property == null) {
@@ -265,8 +265,8 @@ public class MemoryMonitorDAO implements MonitorDAO {
                 return !o.equals(value);
             }
 
-            if (o instanceof Comparable) {
-                return compare(value, (Comparable) o);
+            if (o instanceof Comparable comparable) {
+                return compare(value, comparable);
             } else {
                 throw new UnsupportedOperationException("Values of type "
                         + value.getClass().getName()
@@ -326,8 +326,8 @@ public class MemoryMonitorDAO implements MonitorDAO {
                 return 0;
             }
 
-            if (o1 instanceof Comparable) {
-                return ((Comparable) o1).compareTo(o2);
+            if (o1 instanceof Comparable comparable) {
+                return comparable.compareTo(o2);
             }
 
             return o1.toString().compareTo(o2.toString());

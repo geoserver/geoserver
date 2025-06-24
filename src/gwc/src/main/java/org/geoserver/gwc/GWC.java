@@ -469,12 +469,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 new TruncateBboxRequest(layerName, intersectingBounds, gridSetId)
                         .doTruncate(storageBroker, tileBreeder);
             } catch (StorageException | GeoWebCacheException e) {
-                log.log(
-                        Level.WARNING,
-                        e,
-                        () -> String.format(
-                                "Error while truncating modified bounds for layer %s gridset %s",
-                                layerName, gridSetId));
+                log.log(Level.WARNING, e, () -> "Error while truncating modified bounds for layer %s gridset %s"
+                        .formatted(layerName, gridSetId));
             }
         }
     }
@@ -1648,8 +1644,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public boolean isQueryable(final GeoServerTileLayer geoServerTileLayer) {
         WMS wmsMediator = WMS.get();
         PublishedInfo published = geoServerTileLayer.getPublishedInfo();
-        if (published instanceof LayerInfo) {
-            return wmsMediator.isQueryable((LayerInfo) published);
+        if (published instanceof LayerInfo info) {
+            return wmsMediator.isQueryable(info);
         }
         return wmsMediator.isQueryable((LayerGroupInfo) published);
     }
@@ -1826,11 +1822,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             // paranoid check in case the two lists are not in sync
             StyleInfo si = i < styleCount ? lg.getStyles().get(i) : null;
             PublishedInfo pi = i < layerCount ? lg.getLayers().get(i) : null;
-            if (pi instanceof LayerInfo) {
+            if (pi instanceof LayerInfo li) {
                 if (style.equals(si)) {
                     return true;
                 } else {
-                    LayerInfo li = (LayerInfo) pi;
                     if (style.equals(li.getDefaultStyle())) {
                         return true;
                     }
@@ -2063,16 +2058,16 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public boolean hasTileLayer(CatalogInfo source) {
         final String tileLayerName;
-        if (source instanceof ResourceInfo) {
-            LayerInfo layerInfo = getCatalog().getLayerByName(((ResourceInfo) source).prefixedName());
+        if (source instanceof ResourceInfo info2) {
+            LayerInfo layerInfo = getCatalog().getLayerByName(info2.prefixedName());
             if (layerInfo == null) {
                 return false;
             }
             tileLayerName = tileLayerName(layerInfo);
-        } else if (source instanceof LayerInfo) {
-            tileLayerName = tileLayerName((LayerInfo) source);
-        } else if (source instanceof LayerGroupInfo) {
-            tileLayerName = tileLayerName((LayerGroupInfo) source);
+        } else if (source instanceof LayerInfo info1) {
+            tileLayerName = tileLayerName(info1);
+        } else if (source instanceof LayerGroupInfo info) {
+            tileLayerName = tileLayerName(info);
         } else {
             return false;
         }
@@ -2086,12 +2081,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public GeoServerTileLayer getTileLayer(CatalogInfo source) {
         final String name;
-        if (source instanceof ResourceInfo) {
-            name = ((ResourceInfo) source).prefixedName();
-        } else if (source instanceof LayerInfo) {
-            name = tileLayerName((LayerInfo) source);
-        } else if (source instanceof LayerGroupInfo) {
-            name = tileLayerName((LayerGroupInfo) source);
+        if (source instanceof ResourceInfo info2) {
+            name = info2.prefixedName();
+        } else if (source instanceof LayerInfo info1) {
+            name = tileLayerName(info1);
+        } else if (source instanceof LayerGroupInfo info) {
+            name = tileLayerName(info);
         } else {
             return null;
         }
@@ -2101,8 +2096,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         } catch (GeoWebCacheException notFound) {
             return null;
         }
-        if (tileLayer instanceof GeoServerTileLayer) {
-            return (GeoServerTileLayer) tileLayer;
+        if (tileLayer instanceof GeoServerTileLayer layer) {
+            return layer;
         }
         return null;
     }
@@ -2153,13 +2148,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                             layerInfo, Proxy.getInvocationHandler(layerInfo).getClass());
                 }
 
-                if (layerInfo instanceof SecuredLayerInfo) {
-                    // test layer bbox limits
-                    SecuredLayerInfo securedLayerInfo = (SecuredLayerInfo) layerInfo;
+                if (layerInfo instanceof SecuredLayerInfo securedLayerInfo) {
                     WrapperPolicy policy = securedLayerInfo.getWrapperPolicy();
                     AccessLimits limits = policy.getLimits();
 
-                    if (limits instanceof DataAccessLimits) {
+                    if (limits instanceof DataAccessLimits accessLimits1) {
                         // ensure we are all using the same CRS
                         CoordinateReferenceSystem dataCrs =
                                 layerInfo.getResource().getCRS();
@@ -2174,7 +2167,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                         }
                         Envelope limitBox = new ReferencedEnvelope(ReferencedEnvelope.EVERYTHING, dataCrs);
 
-                        Filter filter = ((DataAccessLimits) limits).getReadFilter();
+                        Filter filter = accessLimits1.getReadFilter();
                         if (filter != null) {
                             // extract filter envelope from filter
                             Envelope box = (Envelope) filter.accept(ExtractBoundsFilterVisitor.BOUNDS_VISITOR, null);
@@ -2182,21 +2175,17 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                                 limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);
                             }
                         }
-                        if (limits instanceof CoverageAccessLimits) {
-                            if (((CoverageAccessLimits) limits).getRasterFilter() != null) {
-                                Envelope box = ((CoverageAccessLimits) limits)
-                                        .getRasterFilter()
-                                        .getEnvelopeInternal();
+                        if (limits instanceof CoverageAccessLimits accessLimits) {
+                            if (accessLimits.getRasterFilter() != null) {
+                                Envelope box = accessLimits.getRasterFilter().getEnvelopeInternal();
                                 if (box != null) {
                                     limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);
                                 }
                             }
                         }
-                        if (limits instanceof WMSAccessLimits) {
-                            if (((WMSAccessLimits) limits).getRasterFilter() != null) {
-                                Envelope box = ((WMSAccessLimits) limits)
-                                        .getRasterFilter()
-                                        .getEnvelopeInternal();
+                        if (limits instanceof WMSAccessLimits accessLimits) {
+                            if (accessLimits.getRasterFilter() != null) {
+                                Envelope box = accessLimits.getRasterFilter().getEnvelopeInternal();
                                 if (box != null) {
                                     limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);
                                 }
@@ -2221,8 +2210,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public CoordinateReferenceSystem getDeclaredCrs(final String geoServerTileLayerName) {
         GeoServerTileLayer layer = (GeoServerTileLayer) getTileLayerByName(geoServerTileLayerName);
         PublishedInfo published = layer.getPublishedInfo();
-        if (published instanceof LayerInfo) {
-            return ((LayerInfo) published).getResource().getCRS();
+        if (published instanceof LayerInfo info) {
+            return info.getResource().getCRS();
         }
         LayerGroupInfo layerGroupInfo = (LayerGroupInfo) published;
         ReferencedEnvelope bounds = layerGroupInfo.getBounds();

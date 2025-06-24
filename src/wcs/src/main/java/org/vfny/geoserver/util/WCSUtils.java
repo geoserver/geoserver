@@ -158,8 +158,7 @@ public class WCSUtils {
         if (getEnvelopeInRasterSpace(intersection, coverage.getGridGeometry()).isEmpty()) return null;
 
         Geometry roi;
-        if (crop instanceof Polygon) {
-            Polygon polygon = (Polygon) crop;
+        if (crop instanceof Polygon polygon) {
             roi = polygon.getFactory().createMultiPolygon(new Polygon[] {polygon});
         } else if (crop instanceof MultiPolygon) {
             roi = crop;
@@ -634,8 +633,7 @@ public class WCSUtils {
         Object filter = request.getKvp().get("FILTER");
         if (!(filter instanceof Filter)) {
             filter = request.getKvp().get("CQL_FILTER");
-            if (filter instanceof List) {
-                List list = (List) filter;
+            if (filter instanceof List list) {
                 if (!list.isEmpty()) {
                     filter = list.get(0);
                 }
@@ -645,8 +643,8 @@ public class WCSUtils {
             filter = request.getKvp().get("FEATURE_ID");
         }
 
-        if (filter instanceof Filter) {
-            return (Filter) filter;
+        if (filter instanceof Filter filter1) {
+            return filter1;
         } else {
             return null;
         }
@@ -921,14 +919,13 @@ public class WCSUtils {
      * existing GeoTools readers)
      */
     private static boolean isDeferredLoaded(RenderedImage ri) {
-        if (ri instanceof RenderedOp) {
-            RenderedOp rop = (RenderedOp) ri;
+        if (ri instanceof RenderedOp rop) {
             if ("ImageRead".equals(rop.getOperationName())) {
                 return true;
             }
             for (Object source : rop.getSources()) {
-                if (source instanceof RenderedImage) {
-                    if (isDeferredLoaded((RenderedImage) source)) {
+                if (source instanceof RenderedImage image) {
+                    if (isDeferredLoaded(image)) {
                         return true;
                     }
                 }

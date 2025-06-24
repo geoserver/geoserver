@@ -116,7 +116,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         Optional<TemplateRule> rule = layerConfig.getTemplateRules().stream()
                 .filter(r -> r.getRuleId().equals(identifier))
                 .findFirst();
-        if (!rule.isPresent()) {
+        if (rule.isEmpty()) {
             throw new RestException("Rule with id " + identifier + " not found", HttpStatus.NOT_FOUND);
         }
         return wrapObject(rule.get(), TemplateRule.class);
@@ -276,8 +276,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         @Override
         public void marshal(
                 Object o, HierarchicalStreamWriter hierarchicalStreamWriter, MarshallingContext marshallingContext) {
-            if (o instanceof TemplateRuleList) {
-                TemplateRuleList list = (TemplateRuleList) o;
+            if (o instanceof TemplateRuleList list) {
                 for (TemplateRule rule : list.getRules()) {
                     hierarchicalStreamWriter.startNode("Rules");
                     hierarchicalStreamWriter.startNode("ruleId");

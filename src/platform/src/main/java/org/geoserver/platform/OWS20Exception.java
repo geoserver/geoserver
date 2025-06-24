@@ -5,6 +5,7 @@
  */
 package org.geoserver.platform;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -21,6 +22,7 @@ public class OWS20Exception extends ServiceException {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(OWS20Exception.class);
 
     /** Serial UID */
+    @Serial
     private static final long serialVersionUID = 7254349181794561724L;
 
     public static class OWSExceptionCode {

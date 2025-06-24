@@ -236,8 +236,8 @@ public class RasterSymbolizerBuilderTest {
             try {
                 performAssert.accept(image);
             } finally {
-                if (image instanceof PlanarImage) {
-                    ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+                if (image instanceof PlanarImage planarImage) {
+                    ImageUtilities.disposePlanarImageChain(planarImage);
                 }
             }
         }

@@ -6,6 +6,7 @@
 package org.geoserver.security;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
@@ -18,6 +19,7 @@ import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 public class ServiceLoginFilterChain extends VariableFilterChain {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public ServiceLoginFilterChain(String... patterns) {

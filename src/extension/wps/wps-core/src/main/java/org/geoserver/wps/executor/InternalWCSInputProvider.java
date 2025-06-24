@@ -4,7 +4,6 @@
  */
 package org.geoserver.wps.executor;
 
-import net.opengis.wcs11.GetCoverageType;
 import net.opengis.wps10.InputReferenceType;
 import net.opengis.wps10.InputType;
 import net.opengis.wps10.MethodType;
@@ -54,15 +53,15 @@ public class InternalWCSInputProvider extends AbstractInputProvider {
         }
 
         // perform GetCoverage
-        if (getCoverage instanceof GetCoverageType) {
+        if (getCoverage instanceof net.opengis.wcs11.GetCoverageType type2) {
             WebCoverageService111 wcs = (WebCoverageService111) context.getBean("wcs111ServiceTarget");
-            return wcs.getCoverage((net.opengis.wcs11.GetCoverageType) getCoverage)[0];
-        } else if (getCoverage instanceof net.opengis.wcs10.GetCoverageType) {
+            return wcs.getCoverage(type2)[0];
+        } else if (getCoverage instanceof net.opengis.wcs10.GetCoverageType type1) {
             WebCoverageService100 wcs = (WebCoverageService100) context.getBean("wcs100ServiceTarget");
-            return wcs.getCoverage((net.opengis.wcs10.GetCoverageType) getCoverage)[0];
-        } else if (getCoverage instanceof net.opengis.wcs20.GetCoverageType) {
+            return wcs.getCoverage(type1)[0];
+        } else if (getCoverage instanceof net.opengis.wcs20.GetCoverageType type) {
             WebCoverageService20 wcs = (WebCoverageService20) context.getBean("wcs20ServiceTarget");
-            return wcs.getCoverage((net.opengis.wcs20.GetCoverageType) getCoverage);
+            return wcs.getCoverage(type);
         } else {
             throw new WPSException("Unrecognized request type " + getCoverage);
         }

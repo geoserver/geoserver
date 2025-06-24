@@ -175,9 +175,9 @@ public class NetCDFSettingsContainer implements Serializable {
         /** @see java.lang.Object#equals(java.lang.Object) */
         @Override
         public boolean equals(Object other) {
-            return other instanceof AbstractAttribute
-                    && getKey().equals(((AbstractAttribute) other).getKey())
-                    && getValue().equals(((AbstractAttribute) other).getValue());
+            return other instanceof AbstractAttribute aa
+                    && getKey().equals(aa.getKey())
+                    && getValue().equals(aa.getValue());
         }
 
         /** @see java.lang.Object#hashCode() */
@@ -279,10 +279,10 @@ public class NetCDFSettingsContainer implements Serializable {
         /** @see java.lang.Object#equals(java.lang.Object) */
         @Override
         public boolean equals(Object other) {
-            return other instanceof ExtraVariable
-                    && getSource().equals(((ExtraVariable) other).getSource())
-                    && getOutput().equals(((ExtraVariable) other).getOutput())
-                    && getDimensions().equals(((ExtraVariable) other).getDimensions());
+            return other instanceof ExtraVariable ev
+                    && getSource().equals(ev.getSource())
+                    && getOutput().equals(ev.getOutput())
+                    && getDimensions().equals(ev.getDimensions());
         }
 
         /** @see java.lang.Object#hashCode() */

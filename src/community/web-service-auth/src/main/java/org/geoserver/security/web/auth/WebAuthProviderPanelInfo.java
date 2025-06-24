@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import org.geoserver.security.auth.web.WebAuthenticationConfig;
 import org.geoserver.security.auth.web.WebServiceAuthenticationProvider;
 
@@ -12,6 +13,7 @@ public class WebAuthProviderPanelInfo
         extends AuthenticationProviderPanelInfo<WebAuthenticationConfig, WebAuthProviderPanel> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -2639046148651128781L;
 
     public WebAuthProviderPanelInfo() {

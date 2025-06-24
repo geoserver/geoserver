@@ -44,9 +44,8 @@ public class ClippedFeatureCollection<T extends FeatureType, F extends Feature>
 
     @SuppressWarnings("unchecked")
     private FeatureIterator<F> getClippedCollection(FeatureCollection<T, F> fc, Geometry clipGeom) {
-        if (fc instanceof SimpleFeatureCollection) {
-            return ((FeatureCollection<T, F>) new ClipProcess().execute((SimpleFeatureCollection) fc, clipGeom, false))
-                    .features();
+        if (fc instanceof SimpleFeatureCollection collection) {
+            return ((FeatureCollection<T, F>) new ClipProcess().execute(collection, clipGeom, false)).features();
         }
         return fc.features();
     }

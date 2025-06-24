@@ -283,6 +283,23 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
             Query newQuery = converter.convertQuery(featureTypeInfo, srcQuery);
             return super.getCount(newQuery);
         }
+
+        public boolean isWrapperFor(Class<?> iface) throws java.sql.SQLException {
+            // TODO Auto-generated method stub
+            return iface != null && iface.isAssignableFrom(this.getClass());
+        }
+
+        public <T> T unwrap(Class<T> iface) throws java.sql.SQLException {
+            // TODO Auto-generated method stub
+            try {
+                if (iface != null && iface.isAssignableFrom(this.getClass())) {
+                    return (T) this;
+                }
+                throw new java.sql.SQLException("Auto-generated unwrap failed; Revisit implementation");
+            } catch (Exception e) {
+                throw new java.sql.SQLException(e);
+            }
+        }
     }
 
     public static class TestRetypedFeatureCollection extends DecoratingSimpleFeatureCollection {
@@ -368,8 +385,8 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
             return ofNullable(simpleFeature.getProperty(name))
                     .flatMap(property -> ofNullable(property.getValue()))
                     .map(Object::toString)
-                    .orElseThrow(() ->
-                            new IllegalArgumentException(String.format("cannot get value of property [%s]", name)));
+                    .orElseThrow(
+                            () -> new IllegalArgumentException("cannot get value of property [%s]".formatted(name)));
         }
 
         public SimpleFeatureType defineGeometryAttributeFor(FeatureTypeInfo info, SimpleFeatureType src)

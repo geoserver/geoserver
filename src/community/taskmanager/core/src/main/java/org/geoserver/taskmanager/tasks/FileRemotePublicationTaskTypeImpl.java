@@ -174,8 +174,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
     }
 
     private String getLocation(StoreInfo storeInfo) {
-        if (storeInfo instanceof CoverageStoreInfo) {
-            return ((CoverageStoreInfo) storeInfo).getURL();
+        if (storeInfo instanceof CoverageStoreInfo info) {
+            return info.getURL();
         } else {
             // this will work for shapefiles and app-schemas
             // which I believe are the only file-based vector stores
@@ -212,8 +212,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
 
                 String nativeName = FilenameUtils.getBaseName(fileRef.getLatestVersion());
                 re.setNativeName(nativeName);
-                if (re instanceof GSCoverageEncoder) {
-                    ((GSCoverageEncoder) re).setNativeCoverageName(nativeName);
+                if (re instanceof GSCoverageEncoder encoder) {
+                    encoder.setNativeCoverageName(nativeName);
                 }
             }
         }

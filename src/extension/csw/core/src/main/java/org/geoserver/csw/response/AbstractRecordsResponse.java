@@ -66,11 +66,9 @@ public abstract class AbstractRecordsResponse extends Response {
 
     private String getRequestedSchema(Operation operation) {
         Object request = operation.getParameters()[0];
-        if (request instanceof GetRecordByIdType) {
-            GetRecordByIdType gr = (GetRecordByIdType) request;
+        if (request instanceof GetRecordByIdType gr) {
             return gr.getOutputSchema();
-        } else if (request instanceof GetRecordsType) {
-            GetRecordsType gr = (GetRecordsType) request;
+        } else if (request instanceof GetRecordsType gr) {
             return gr.getOutputSchema();
         } else {
             throw new IllegalArgumentException("Unsupported request object type: " + request);
@@ -106,8 +104,8 @@ public abstract class AbstractRecordsResponse extends Response {
     }
 
     private ResultType getResultType(RequestBaseType request) {
-        if (request instanceof GetRecordsType) {
-            return ((GetRecordsType) request).getResultType();
+        if (request instanceof GetRecordsType type) {
+            return type.getResultType();
         } else {
             return ResultType.RESULTS;
         }

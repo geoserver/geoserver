@@ -403,9 +403,7 @@ class QueryResultBuilder {
         if (timeSpec instanceof Date) {
             // range containment
             return FF.between(FF.literal(timeSpec), FF.property("timeStart"), FF.property("timeEnd"));
-        } else if (timeSpec instanceof DateRange) {
-            // range overlap filter
-            DateRange dateRange = (DateRange) timeSpec;
+        } else if (timeSpec instanceof DateRange dateRange) {
             Literal before = FF.literal(dateRange.getMinValue());
             Literal after = FF.literal(dateRange.getMaxValue());
             Filter lower = FF.lessOrEqual(FF.property("timeStart"), after);

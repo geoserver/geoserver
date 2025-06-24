@@ -193,8 +193,8 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         // for WFS 2.0 we changed the input object type to be the request object adapter, but there
         // is other code (like WMS GetFeatureInfo) that passes in the old objects, so do a check
-        if (value instanceof FeatureCollectionResponse) {
-            write((FeatureCollectionResponse) value, output, operation);
+        if (value instanceof FeatureCollectionResponse response) {
+            write(response, output, operation);
         } else {
             write(FeatureCollectionResponse.adapt(value), output, operation);
         }
@@ -205,8 +205,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
         FeatureTypeInfo fti;
         ResourceInfo meta = null;
         // if it's a complex feature collection get the proper ResourceInfo
-        if (features instanceof TypeInfoCollectionWrapper.Complex) {
-            TypeInfoCollectionWrapper.Complex fcollection = (TypeInfoCollectionWrapper.Complex) features;
+        if (features instanceof TypeInfoCollectionWrapper.Complex fcollection) {
             fti = fcollection.getFeatureTypeInfo();
             meta = catalog.getResourceByName(fti.getName(), ResourceInfo.class);
         } else {
@@ -214,8 +213,8 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
             FeatureType featureType = features.getSchema();
             meta = catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
         }
-        if (meta instanceof FeatureTypeInfo) {
-            fti = (FeatureTypeInfo) meta;
+        if (meta instanceof FeatureTypeInfo info) {
+            fti = info;
             return callback.apply(fti);
         }
         return null;
@@ -306,8 +305,8 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
 
         FeatureCollectionResponse response;
-        if (value instanceof FeatureCollectionResponse) {
-            response = (FeatureCollectionResponse) value;
+        if (value instanceof FeatureCollectionResponse collectionResponse) {
+            response = collectionResponse;
         } else {
             response = FeatureCollectionResponse.adapt(value);
         }

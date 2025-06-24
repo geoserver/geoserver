@@ -318,10 +318,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         for (Map.Entry<FeatureType, List<Feature>> entry : map.entrySet()) {
             FeatureType type = entry.getKey();
             List<Feature> list = entry.getValue();
-            if (type instanceof SimpleFeatureType) {
+            if (type instanceof SimpleFeatureType featureType) {
                 @SuppressWarnings("unchecked")
                 List<SimpleFeature> sf = new ArrayList<>((List) list);
-                result.add(new ListFeatureCollection((SimpleFeatureType) type, sf));
+                result.add(new ListFeatureCollection(featureType, sf));
             } else {
                 result.add(new ListComplexFeatureCollection(type, list));
             }
@@ -713,6 +713,23 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             result.remove(Hints.FEATURE_DETACHED);
             result.add(Hints.SCREENMAP);
             return result;
+        }
+
+        public boolean isWrapperFor(Class<?> iface) throws java.sql.SQLException {
+            // TODO Auto-generated method stub
+            return iface != null && iface.isAssignableFrom(this.getClass());
+        }
+
+        public <T> T unwrap(Class<T> iface) throws java.sql.SQLException {
+            // TODO Auto-generated method stub
+            try {
+                if (iface != null && iface.isAssignableFrom(this.getClass())) {
+                    return (T) this;
+                }
+                throw new java.sql.SQLException("Auto-generated unwrap failed; Revisit implementation");
+            } catch (Exception e) {
+                throw new java.sql.SQLException(e);
+            }
         }
     }
 }

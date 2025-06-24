@@ -4,6 +4,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.springframework.security.core.AuthenticationException;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class ConcurrentAuthenticationException extends AuthenticationException {
 
+    @Serial
     private static final long serialVersionUID = 6692144768515314827L;
 
     private String user;

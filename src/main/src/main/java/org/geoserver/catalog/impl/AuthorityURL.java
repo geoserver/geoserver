@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.io.Serial;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geotools.util.Utilities;
 
@@ -16,6 +17,7 @@ import org.geotools.util.Utilities;
  */
 public class AuthorityURL implements AuthorityURLInfo {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String name;

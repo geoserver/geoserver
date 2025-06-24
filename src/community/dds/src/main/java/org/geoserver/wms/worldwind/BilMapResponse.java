@@ -120,11 +120,11 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 
         Double outNoData = null;
         Object noDataParam = metadata.get(BilConfig.NO_DATA_OUTPUT);
-        if (noDataParam instanceof Number) {
-            outNoData = ((Number) noDataParam).doubleValue();
-        } else if (noDataParam instanceof String) {
+        if (noDataParam instanceof Number number) {
+            outNoData = number.doubleValue();
+        } else if (noDataParam instanceof String string) {
             try {
-                outNoData = Double.parseDouble((String) noDataParam);
+                outNoData = Double.parseDouble(string);
             } catch (NumberFormatException e) {
                 LOGGER.warning("Can't parse output no data attribute: " + e.getMessage()); // TODO localize
             }

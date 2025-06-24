@@ -150,39 +150,26 @@ public class CatalogResponseSerializationTest extends SerializationTest {
     }
 
     public @Test void styleList() throws IOException {
-        String raw = "{\n"
-                + //
-                "	\"styles\": \n"
-                + //
-                "	{\n"
-                + //
-                "		\"style\": \n"
-                + //
-                "		[\n"
-                + //
-                "			{\n"
-                + //
-                "				\"name\": \"generic\",\n"
-                + //
-                "				\"href\": \"http:\\/\\/localhost:8080\\/rest\\/styles\\/generic.json\"\n"
-                + //
-                "			},\n"
-                + //
-                "\n"
-                + //
-                "			{\n"
-                + //
-                "				\"name\": \"line\",\n"
-                + //
-                "				\"href\": \"http:\\/\\/localhost:8080\\/rest\\/styles\\/line.json\"\n"
-                + //
-                "			}\n"
-                + //
-                "		]\n"
-                + //
-                "	}\n"
-                + //
-                "}";
+        String raw =
+                """
+                {
+                	"styles":\s
+                	{
+                		"style":\s
+                		[
+                			{
+                				"name": "generic",
+                				"href": "http:\\/\\/localhost:8080\\/rest\\/styles\\/generic.json"
+                			},
+
+                			{
+                				"name": "line",
+                				"href": "http:\\/\\/localhost:8080\\/rest\\/styles\\/line.json"
+                			}
+                		]
+                	}
+                }\
+                """;
         StyleListWrapper wrapper = decode(raw, StyleListWrapper.class);
         assertNotNull(wrapper);
         assertEquals(2, wrapper.getStyles().getStyle().size());

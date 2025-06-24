@@ -85,11 +85,10 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
     @SuppressWarnings("unchecked")
     @Override
     public TemplateModel wrap(Object object) throws TemplateModelException {
-        if (object instanceof SimpleHash) {
-            return (SimpleHash) object;
+        if (object instanceof SimpleHash hash) {
+            return hash;
         }
-        if (object instanceof Collection) {
-            Collection c = (Collection) object;
+        if (object instanceof Collection c) {
             if (c.isEmpty() || clazz.isAssignableFrom(c.iterator().next().getClass())) {
                 SimpleHash hash = new SimpleHash(this.wrapper);
                 hash.put("values", new CollectionModel(c, this));
@@ -139,9 +138,9 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
             }
             String key = Character.toLowerCase(p.charAt(0)) + p.substring(1);
             Class<?> valueClass = getClassForUnwrapping(value);
-            if (value instanceof Collection) {
+            if (value instanceof Collection collection) {
                 List<Object> values = new ArrayList<>();
-                for (Object o : (Collection) value) {
+                for (Object o : collection) {
                     valueClass = getClassForUnwrapping(o);
                     if (valueClass == null) {
                         values.add(o == null ? "" : o.toString());

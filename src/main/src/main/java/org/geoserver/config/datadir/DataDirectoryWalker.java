@@ -128,10 +128,7 @@ class DataDirectoryWalker {
     }
 
     private Stream<LayerDirectory> layers(Path storeDirectory) {
-        return subdirectories(storeDirectory).stream()
-                .map(this::newLayer)
-                .filter(Optional::isPresent)
-                .map(Optional::get);
+        return subdirectories(storeDirectory).stream().map(this::newLayer).flatMap(Optional::stream);
     }
 
     private Optional<LayerDirectory> newLayer(Path layerDirectory) {
@@ -155,8 +152,7 @@ class DataDirectoryWalker {
         return subdirectories(workspaceDir).stream()
                 .filter(DataDirectoryWalker::storeDirnameFilter)
                 .map(this::newStore)
-                .filter(Optional::isPresent)
-                .map(Optional::get);
+                .flatMap(Optional::stream);
     }
 
     private Optional<StoreDirectory> newStore(Path directory) {

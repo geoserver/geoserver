@@ -303,10 +303,7 @@ public class WCSDimensionsSubsetHelper {
 
             // now decide what to do
             //            final String CRS= dim.getCRS();// TODO HOW DO WE USE THIS???
-            if (dim instanceof DimensionTrimType) {
-
-                // TRIMMING
-                final DimensionTrimType trim = (DimensionTrimType) dim;
+            if (dim instanceof DimensionTrimType trim) {
                 final double low = Double.parseDouble(trim.getTrimLow());
                 final double high = Double.parseDouble(trim.getTrimHigh());
 
@@ -326,10 +323,7 @@ public class WCSDimensionsSubsetHelper {
 
                 // notice how we choose the order of the axes
                 subsettingEnvelope.setRange(axisIndex, low, high);
-            } else if (dim instanceof DimensionSliceType) {
-
-                // SLICING
-                final DimensionSliceType slicing = (DimensionSliceType) dim;
+            } else if (dim instanceof DimensionSliceType slicing) {
                 final String slicePointS = slicing.getSlicePoint();
                 final double slicePoint = Double.parseDouble(slicePointS);
 
@@ -423,9 +417,7 @@ public class WCSDimensionsSubsetHelper {
                         getNearestTimeMatch(coverageInfo, ResourceInfo.TIME, Collections.singletonList(timeSubset));
                 if (dates != null && !dates.isEmpty()) {
                     Object result = dates.get(0);
-                    timeSubset = result instanceof DateRange
-                            ? (DateRange) result
-                            : new DateRange((Date) result, (Date) result);
+                    timeSubset = result instanceof DateRange dr ? dr : new DateRange((Date) result, (Date) result);
                 }
             }
         }
@@ -434,9 +426,7 @@ public class WCSDimensionsSubsetHelper {
 
     private DateRange parseTimeSubset(DimensionSubsetType dim) {
         try {
-            if (dim instanceof DimensionTrimType) {
-                // TRIMMING
-                final DimensionTrimType trim = (DimensionTrimType) dim;
+            if (dim instanceof DimensionTrimType trim) {
                 final Date low = PARSER.parseDateTime(trim.getTrimLow());
                 final Date high = PARSER.parseDateTime(trim.getTrimHigh());
 
@@ -449,9 +439,7 @@ public class WCSDimensionsSubsetHelper {
                 }
 
                 return new DateRange(low, high);
-            } else if (dim instanceof DimensionSliceType) {
-                // SLICING
-                final DimensionSliceType slicing = (DimensionSliceType) dim;
+            } else if (dim instanceof DimensionSliceType slicing) {
                 final String slicePointS = slicing.getSlicePoint();
                 final Date slicePoint = PARSER.parseDateTime(slicePointS);
                 return new DateRange(slicePoint, slicePoint);
@@ -496,19 +484,16 @@ public class WCSDimensionsSubsetHelper {
         //        }
 
         // check date ranges for containment
-        if (slicePoint instanceof Date) {
-            Date sliceDate = (Date) slicePoint;
+        if (slicePoint instanceof Date sliceDate) {
             for (Object curr : domain) {
-                if (curr instanceof Date) {
-                    Date date = (Date) curr;
+                if (curr instanceof Date date) {
                     int result = date.compareTo(sliceDate);
                     if (result > 0) {
                         return false;
                     } else if (result == 0) {
                         return true;
                     }
-                } else if (curr instanceof DateRange) {
-                    DateRange range = (DateRange) curr;
+                } else if (curr instanceof DateRange range) {
                     if (range.contains(sliceDate)) {
                         return true;
                     } else if (range.getMaxValue().compareTo(sliceDate) < 0) {
@@ -516,9 +501,7 @@ public class WCSDimensionsSubsetHelper {
                     }
                 }
             }
-        } else if (slicePoint instanceof Number) {
-            // TODO: Should we check for other data types?
-            Number sliceNumber = (Number) slicePoint;
+        } else if (slicePoint instanceof Number sliceNumber) {
             for (Object curr : domain) {
                 if (curr instanceof Number) {
                     Double num = (Double) curr;
@@ -528,8 +511,7 @@ public class WCSDimensionsSubsetHelper {
                     } else if (result == 0) {
                         return true;
                     }
-                } else if (curr instanceof NumberRange) {
-                    NumberRange range = (NumberRange) curr;
+                } else if (curr instanceof NumberRange range) {
                     if (range.contains(sliceNumber)) {
                         return true;
                     } else if (compareNumbers(range.getMaxValue(), sliceNumber) < 0) {
@@ -567,10 +549,7 @@ public class WCSDimensionsSubsetHelper {
                 }
 
                 // now decide what to do
-                if (dim instanceof DimensionTrimType) {
-
-                    // TRIMMING
-                    final DimensionTrimType trim = (DimensionTrimType) dim;
+                if (dim instanceof DimensionTrimType trim) {
                     final Double low = PARSER.parseDouble(trim.getTrimLow());
                     final Double high = PARSER.parseDouble(trim.getTrimHigh());
 
@@ -583,10 +562,7 @@ public class WCSDimensionsSubsetHelper {
                     }
 
                     elevationSubset = new NumberRange<>(Double.class, low, high);
-                } else if (dim instanceof DimensionSliceType) {
-
-                    // SLICING
-                    final DimensionSliceType slicing = (DimensionSliceType) dim;
+                } else if (dim instanceof DimensionSliceType slicing) {
                     final String slicePointS = slicing.getSlicePoint();
                     final Double slicePoint = PARSER.parseDouble(slicePointS);
 
@@ -676,16 +652,10 @@ public class WCSDimensionsSubsetHelper {
                     List<Object> selectedValues = new ArrayList<>();
 
                     // now decide what to do
-                    if (dim instanceof DimensionTrimType) {
-
-                        // TRIMMING
-                        final DimensionTrimType trim = (DimensionTrimType) dim;
+                    if (dim instanceof DimensionTrimType trim) {
                         setSubsetRangeValue(dimension, trim.getTrimLow(), trim.getTrimHigh(), selectedValues);
 
-                    } else if (dim instanceof DimensionSliceType) {
-
-                        // SLICING
-                        final DimensionSliceType slicing = (DimensionSliceType) dim;
+                    } else if (dim instanceof DimensionSliceType slicing) {
                         setSubsetValue(dimension, slicing.getSlicePoint(), selectedValues);
 
                     } else {
@@ -850,8 +820,8 @@ public class WCSDimensionsSubsetHelper {
             throws UnsupportedOperationException, IOException, MismatchedDimensionException, TransformException,
                     FactoryException {
         StructuredGridCoverage2DReader structuredReader = null;
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            structuredReader = (StructuredGridCoverage2DReader) reader;
+        if (reader instanceof StructuredGridCoverage2DReader dReader) {
+            structuredReader = dReader;
         } else {
             throw new IllegalArgumentException("The method is only supported for StructuredGridCoverage2DReaders");
         }
@@ -1154,12 +1124,10 @@ public class WCSDimensionsSubsetHelper {
             Object element = dimensionValues.get(0);
             Object min = null;
             Object max = null;
-            if (element instanceof DateRange) {
-                DateRange dateRange = (DateRange) element;
+            if (element instanceof DateRange dateRange) {
                 min = dateRange.getMinValue();
                 max = dateRange.getMaxValue();
-            } else if (element instanceof NumberRange) {
-                NumberRange numberRange = (NumberRange) element;
+            } else if (element instanceof NumberRange numberRange) {
                 min = numberRange.getMinValue();
                 max = numberRange.getMaxValue();
             } else if (element instanceof Date || element instanceof Number || element instanceof String) {
@@ -1236,8 +1204,8 @@ public class WCSDimensionsSubsetHelper {
             CoverageInfo coverageInfo)
             throws IOException {
         StructuredGridCoverage2DReader structuredReader;
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            structuredReader = (StructuredGridCoverage2DReader) reader;
+        if (reader instanceof StructuredGridCoverage2DReader dReader) {
+            structuredReader = dReader;
         } else {
             // TODO: only structuredGridCoverage2DReaders are currently supported.
             throw new UnsupportedOperationException("Only structuredGridCoverage2DReaders are currently supported");

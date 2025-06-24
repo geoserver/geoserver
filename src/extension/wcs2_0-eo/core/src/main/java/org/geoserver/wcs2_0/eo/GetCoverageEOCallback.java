@@ -40,9 +40,7 @@ public class GetCoverageEOCallback extends AbstractDispatcherCallback {
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
         Object[] parameters = operation.getParameters();
-        if (parameters != null && parameters.length > 0 && parameters[0] instanceof GetCoverageType) {
-            // check we are going against a granule
-            GetCoverageType gc = (GetCoverageType) parameters[0];
+        if (parameters != null && parameters.length > 0 && parameters[0] instanceof GetCoverageType gc) {
             String coverageId = gc.getCoverageId();
             if (coverageId == null) {
                 throw new WCS20Exception(

@@ -5,6 +5,7 @@
 package org.vfny.geoserver.global;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Objects;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
@@ -28,6 +29,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
  * @author Fernando Miño - Geosolutions
  */
 public class GeoserverComplexFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected static final FilterFactory FF = CommonFactoryFinder.getFilterFactory(null);
@@ -123,5 +125,22 @@ public class GeoserverComplexFeatureSource extends DecoratingFeatureSource<Featu
     private Filter nullSafeCheck(Filter filter) {
         if (filter == null) return Filter.INCLUDE;
         return filter;
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws java.sql.SQLException {
+        // TODO Auto-generated method stub
+        return iface != null && iface.isAssignableFrom(this.getClass());
+    }
+
+    public <T> T unwrap(Class<T> iface) throws java.sql.SQLException {
+        // TODO Auto-generated method stub
+        try {
+            if (iface != null && iface.isAssignableFrom(this.getClass())) {
+                return (T) this;
+            }
+            throw new java.sql.SQLException("Auto-generated unwrap failed; Revisit implementation");
+        } catch (Exception e) {
+            throw new java.sql.SQLException(e);
+        }
     }
 }

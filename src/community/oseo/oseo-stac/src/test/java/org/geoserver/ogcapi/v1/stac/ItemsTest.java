@@ -613,7 +613,7 @@ public class ItemsTest extends STACTestSupport {
         DocumentContext doc = getAsJSONPath(
                 "ogc/stac/v1/collections/SAS1/items?filter=s2:granule_id = 'S2A_OPER_MSI_L2A_TL_VGS1_20201206T095713_A028503_T37MDU_N02.143'",
                 200);
-        assertEquals(new Integer(0), doc.read("numberMatched", Integer.class));
+        assertEquals(Integer.valueOf(0), doc.read("numberMatched", Integer.class));
 
         GeoServer gs = getGeoServer();
         OSEOInfo service = gs.getService(OSEOInfo.class);
@@ -633,21 +633,21 @@ public class ItemsTest extends STACTestSupport {
     public void testTopLevelArrayProperty() throws Exception {
         // query with an existing keyword
         DocumentContext doc = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?filter=keywords = 'k1'", 200);
-        assertEquals(new Integer(1), doc.read("numberMatched", Integer.class));
+        assertEquals(Integer.valueOf(1), doc.read("numberMatched", Integer.class));
         assertEquals(
                 "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
                 readSingleContext(doc, "features").read("id"));
 
         // query with an existing keyword (
         doc = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?filter=keywords = 'k2'", 200);
-        assertEquals(new Integer(1), doc.read("numberMatched", Integer.class));
+        assertEquals(Integer.valueOf(1), doc.read("numberMatched", Integer.class));
         assertEquals(
                 "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
                 readSingleContext(doc, "features").read("id"));
 
         // query with a missing keyword
         doc = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?filter=keywords = 'notAKeyword'", 200);
-        assertEquals(new Integer(0), doc.read("numberMatched", Integer.class));
+        assertEquals(Integer.valueOf(0), doc.read("numberMatched", Integer.class));
     }
 
     @Test

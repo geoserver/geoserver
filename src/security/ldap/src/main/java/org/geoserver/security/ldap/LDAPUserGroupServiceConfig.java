@@ -4,12 +4,14 @@
  */
 package org.geoserver.security.ldap;
 
+import java.io.Serial;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 
 /** @author Niels Charlier */
 public class LDAPUserGroupServiceConfig extends LDAPBaseSecurityServiceConfig
         implements SecurityUserGroupServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 4699211240178341515L;
 
     String passwordEncoderName;

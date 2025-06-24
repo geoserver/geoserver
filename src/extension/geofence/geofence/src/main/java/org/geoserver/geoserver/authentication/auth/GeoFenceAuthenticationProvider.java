@@ -56,8 +56,7 @@ public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvi
         UsernamePasswordAuthenticationToken outTok = null;
         LOGGER.log(Level.FINE, "Auth request with {0}", authentication);
 
-        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            UsernamePasswordAuthenticationToken inTok = (UsernamePasswordAuthenticationToken) authentication;
+        if (authentication instanceof UsernamePasswordAuthenticationToken inTok) {
 
             AuthUser authUser = null;
             final String username = SecurityUtils.getUsername(inTok.getPrincipal());

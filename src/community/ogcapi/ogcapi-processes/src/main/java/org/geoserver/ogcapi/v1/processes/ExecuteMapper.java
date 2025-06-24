@@ -100,8 +100,7 @@ public class ExecuteMapper {
                 continue;
             }
 
-            if (inputValue instanceof ArrayInputValue) {
-                ArrayInputValue array = (ArrayInputValue) inputValue;
+            if (inputValue instanceof ArrayInputValue array) {
                 for (InputValue arrayEntry : array.getValues()) {
                     InputType inputType = getInputType(inputName, parameter, arrayEntry);
                     dataInputsType.getInput().add(inputType);
@@ -167,8 +166,8 @@ public class ExecuteMapper {
                     setResponseMediaType(output, resultInfo, mediaType);
                 } else {
                     ProcessParameterIO encoder = encoders.get(0);
-                    if (encoder instanceof ComplexPPIO) {
-                        output.setMimeType(((ComplexPPIO) encoder).getMimeType());
+                    if (encoder instanceof ComplexPPIO iO) {
+                        output.setMimeType(iO.getMimeType());
                     }
                 }
 
@@ -234,8 +233,7 @@ public class ExecuteMapper {
                     "Could not find process parameter for type " + parameter.key + "," + parameter.type);
         }
 
-        if (inputValue instanceof LiteralInputValue) {
-            LiteralInputValue literalValue = (LiteralInputValue) inputValue;
+        if (inputValue instanceof LiteralInputValue literalValue) {
             // handle the literal case
             if (ppios.get(0) instanceof LiteralPPIO) {
                 LiteralDataType literal = WPS_FACTORY.createLiteralDataType();
@@ -247,21 +245,18 @@ public class ExecuteMapper {
                 throw new RuntimeException(
                         "Unexpected situation, a literal should not map to a complex PPIO:" + literalValue);
             }
-        } else if (inputValue instanceof InlineFileInputValue) {
-            InlineFileInputValue fileValue = (InlineFileInputValue) inputValue;
+        } else if (inputValue instanceof InlineFileInputValue fileValue) {
             ComplexPPIO ppio = lookupPPIO(inputName, ppios, fileValue.getMediaType());
             ComplexDataType complex = getComplexInlineDataType(WPS_FACTORY, ppio, fileValue.getValue());
             DataType dataType = WPS_FACTORY.createDataType();
             inputType.setData(dataType);
             dataType.setComplexData(complex);
-        } else if (inputValue instanceof ReferenceInputValue) {
-            ReferenceInputValue referenceValue = (ReferenceInputValue) inputValue;
+        } else if (inputValue instanceof ReferenceInputValue referenceValue) {
             // look up the type among the PPIOs
             ComplexPPIO ppio = lookupPPIO(inputName, ppios, referenceValue.getType());
             InputReferenceType reference = getRefenceType(WPS_FACTORY, ppio, referenceValue.getHref());
             inputType.setReference(reference);
-        } else if (inputValue instanceof ComplexJSONInputValue) {
-            ComplexJSONInputValue complexValue = (ComplexJSONInputValue) inputValue;
+        } else if (inputValue instanceof ComplexJSONInputValue complexValue) {
             ComplexPPIO ppio =
                     lookupPPIO(inputName, ppios, mime -> mime.startsWith("application/") && mime.contains("json"));
 
@@ -271,8 +266,7 @@ public class ExecuteMapper {
             DataType dataType = WPS_FACTORY.createDataType();
             inputType.setData(dataType);
             dataType.setComplexData(complex);
-        } else if (inputValue instanceof BoundingBoxInputValue) {
-            BoundingBoxInputValue bboxValue = (BoundingBoxInputValue) inputValue;
+        } else if (inputValue instanceof BoundingBoxInputValue bboxValue) {
             BoundingBoxType bboxType = Ows11Factory.eINSTANCE.createBoundingBoxType();
             bboxType.setLowerCorner(bboxValue.getLowerCorner());
             bboxType.setUpperCorner(bboxValue.getUpperCorner());
@@ -466,8 +460,8 @@ public class ExecuteMapper {
                     setResponseMediaType(output, resultInfo, responseFormat);
                 } else {
                     ProcessParameterIO encoder = encoders.get(0);
-                    if (encoder instanceof ComplexPPIO) {
-                        output.setMimeType(((ComplexPPIO) encoder).getMimeType());
+                    if (encoder instanceof ComplexPPIO iO) {
+                        output.setMimeType(iO.getMimeType());
                     }
                 }
 
@@ -533,8 +527,7 @@ public class ExecuteMapper {
         List<ProcessParameterIO> encoders = ProcessParameterIO.findEncoder(result, context);
         // look for complex ones
         for (ProcessParameterIO encoder : encoders) {
-            if (encoder instanceof ComplexPPIO) {
-                ComplexPPIO complexEncoder = (ComplexPPIO) encoder;
+            if (encoder instanceof ComplexPPIO complexEncoder) {
                 if (formatsSet.contains(complexEncoder.getMimeType())) {
                     outputType.setMimeType(complexEncoder.getMimeType());
                     return;

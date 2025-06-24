@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -22,6 +23,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
  */
 public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTemplate> {
 
+    @Serial
     private static final long serialVersionUID = -8246320435114536132L;
 
     public static final Property<MetadataTemplate> NAME = new BeanProperty<>("name", "name");

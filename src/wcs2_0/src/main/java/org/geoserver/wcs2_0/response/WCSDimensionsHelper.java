@@ -218,11 +218,10 @@ public class WCSDimensionsHelper {
 
     /** Formats a dimension item into a string */
     public String format(Object o) {
-        if (o instanceof Range) {
-            Range range = (Range) o;
+        if (o instanceof Range range) {
             return format(range.getMinValue()) + "/" + format(range.getMaxValue());
-        } else if (o instanceof Date) {
-            return format((Date) o);
+        } else if (o instanceof Date date) {
+            return format(date);
         } else {
             return String.valueOf(o);
         }

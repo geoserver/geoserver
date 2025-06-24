@@ -132,13 +132,12 @@ public class CascadeRemovalReporterTest extends CascadeVisitorAbstractTest {
         List<PublishedInfo> layers = lg.getLayers();
         int size = 0;
         for (PublishedInfo l : layers) {
-            if (l instanceof LayerInfo) {
-                if (stores.contains(((LayerInfo) l).getResource().getStore())) {
+            if (l instanceof LayerInfo info1) {
+                if (stores.contains(info1.getResource().getStore())) {
                     size++;
                 }
-            } else if (l instanceof LayerGroupInfo) {
-                if (countStores((LayerGroupInfo) l, stores)
-                        == ((LayerGroupInfo) l).getLayers().size()) {
+            } else if (l instanceof LayerGroupInfo info) {
+                if (countStores(info, stores) == info.getLayers().size()) {
                     size++;
                 }
             }

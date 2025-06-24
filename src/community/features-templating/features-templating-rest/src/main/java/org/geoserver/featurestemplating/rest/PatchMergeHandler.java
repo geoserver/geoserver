@@ -80,10 +80,10 @@ public class PatchMergeHandler<T> {
         PropertyDescriptor[] descriptors = getDescriptors();
         for (Object k : keys) {
             Object o = patch.get(k);
-            if (o instanceof JSONObject) {
-                patchJSON((JSONObject) o, toPatch);
-            } else if (o instanceof JSONArray) {
-                patchJSON((JSONArray) o, toPatch);
+            if (o instanceof JSONObject object) {
+                patchJSON(object, toPatch);
+            } else if (o instanceof JSONArray array) {
+                patchJSON(array, toPatch);
             } else {
                 Optional<PropertyDescriptor> op = beanFieldFromJSON(descriptors, k);
                 if (op.isPresent()) {

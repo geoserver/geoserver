@@ -29,8 +29,7 @@ public class ImageMosaicAdditionalResourceWriter extends ImageMosaicAdditionalRe
 
     @Override
     public boolean canHandle(Object item) {
-        if (item instanceof CoverageStoreInfo
-                && ((CoverageStoreInfo) item).getType().equals(COVERAGE_TYPE)) {
+        if (item instanceof CoverageStoreInfo info && info.getType().equals(COVERAGE_TYPE)) {
             return true;
         }
         return false;

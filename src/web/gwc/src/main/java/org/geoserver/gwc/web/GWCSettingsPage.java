@@ -6,6 +6,7 @@
 package org.geoserver.gwc.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
@@ -54,6 +55,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         form.add(defaultCachingOptionsPanel);
 
         form.add(new Button("submit") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -63,6 +65,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         });
         form.add(applyLink(form));
         form.add(new GeoServerAjaxFormLink("cancel") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

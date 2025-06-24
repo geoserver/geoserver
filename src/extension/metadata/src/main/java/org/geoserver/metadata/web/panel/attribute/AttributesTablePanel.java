@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.Map;
 import org.apache.wicket.Component;
@@ -28,6 +29,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class AttributesTablePanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     private ResourceInfo rInfo;
@@ -56,6 +58,7 @@ public class AttributesTablePanel extends Panel {
             GeoServerDataProvider<AttributeConfiguration> dataProvider, Map<String, List<Integer>> derivedAtts) {
 
         return new GeoServerTablePanel<>("attributesTablePanel", dataProvider) {
+            @Serial
             private static final long serialVersionUID = 5267842353156378075L;
 
             @Override

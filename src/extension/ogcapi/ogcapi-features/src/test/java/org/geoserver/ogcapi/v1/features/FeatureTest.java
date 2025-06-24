@@ -564,10 +564,13 @@ public class FeatureTest extends FeaturesTestSupport {
 
         try {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-            String request = "{\n"
-                    + "  \"filter\": {\"op\":\"=\",\"args\":[{\"property\":\"name\"},\"name-f001\"]},"
-                    + "  \"filter-lang\": \"cql2-json\"\n"
-                    + "}";
+            String request =
+                    """
+                    {
+                      "filter": {"op":"=","args":[{"property":"name"},"name-f001"]},\
+                      "filter-lang": "cql2-json"
+                    }\
+                    """;
             DocumentContext json =
                     postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
@@ -586,10 +589,13 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testSearchCql2TextFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        String request = "{\n"
-                + "  \"filter\": \"BBOX(pointProperty,38,1,40,3)\",\n"
-                + "  \"filter-lang\": \"cql-text\"\n"
-                + "}";
+        String request =
+                """
+                {
+                  "filter": "BBOX(pointProperty,38,1,40,3)",
+                  "filter-lang": "cql-text"
+                }\
+                """;
 
         WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
         FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);

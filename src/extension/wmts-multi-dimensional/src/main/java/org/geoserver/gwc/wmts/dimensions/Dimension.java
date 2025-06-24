@@ -340,8 +340,7 @@ public abstract class Dimension {
             domain.accepts(visitor, null);
         } catch (IOException e) {
             throw new RuntimeException(
-                    String.format(
-                            "Error fetching histogram in formation from database for '%s'.", resourceInfo.getName()),
+                    "Error fetching histogram in formation from database for '%s'.".formatted(resourceInfo.getName()),
                     e);
         }
 
@@ -422,9 +421,8 @@ public abstract class Dimension {
             // for vectors this information easily available
             return Tuple.tuple(dimensionInfo.getAttribute(), dimensionInfo.getEndAttribute());
         }
-        if (resourceInfo instanceof CoverageInfo) {
-            return CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo)
-                    .getDimensionAttributesNames(getDimensionName());
+        if (resourceInfo instanceof CoverageInfo info) {
+            return CoverageDimensionsReader.instantiateFrom(info).getDimensionAttributesNames(getDimensionName());
         }
         return Tuple.tuple(null, null);
     }

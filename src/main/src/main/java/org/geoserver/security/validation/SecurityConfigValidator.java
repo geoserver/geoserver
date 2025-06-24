@@ -202,12 +202,12 @@ public class SecurityConfigValidator extends AbstractSecurityValidator {
             }
         }
 
-        if (requestChain instanceof VariableFilterChain) {
+        if (requestChain instanceof VariableFilterChain chain) {
             if (requestChain.isDisabled() == false
                     && requestChain.getFilterNames().isEmpty())
                 throw createSecurityException(SecurityConfigException.FILTER_CHAIN_EMPTY_$1, requestChain.getName());
 
-            String interceptorFilterName = ((VariableFilterChain) requestChain).getInterceptorName();
+            String interceptorFilterName = chain.getInterceptorName();
             if (StringUtils.hasLength(interceptorFilterName)) {
                 try {
                     if (proxy.lookupFilter(interceptorFilterName) == null) {
@@ -224,7 +224,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator {
                         SecurityConfigException.INTERCEPTOR_FILTER_MANDATORY_$1, requestChain.getName());
             }
 
-            String exceptionTranslationName = ((VariableFilterChain) requestChain).getExceptionTranslationName();
+            String exceptionTranslationName = chain.getExceptionTranslationName();
             if (StringUtils.hasLength(exceptionTranslationName)) {
                 try {
                     if (proxy.lookupFilter(exceptionTranslationName) == null) {

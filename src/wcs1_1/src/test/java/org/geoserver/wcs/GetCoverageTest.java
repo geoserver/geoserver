@@ -69,29 +69,31 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
 
     @Test
     public void testMissingInterpolation() throws Exception {
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-                + "<wcs:GetCoverage service=\"WCS\" "
-                + "xmlns:ows=\"http://www.opengis.net/ows/1.1\"\r\n"
-                + "  xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\"\r\n"
-                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \r\n"
-                + "  xsi:schemaLocation=\"http://www.opengis.net/wcs/1.1.1 "
-                + "                       schemas/wcs/1.1.1/wcsAll.xsd\"\r\n"
-                + "  version=\"1.1.1\" >\r\n"
-                + "  <ows:Identifier>wcs:BlueMarble</ows:Identifier>\r\n"
-                + "  <wcs:DomainSubset>\r\n"
-                + "    <ows:BoundingBox crs=\"urn:ogc:def:crs:EPSG:6.6:4326\">\r\n"
-                + "      <ows:LowerCorner>-90 -180</ows:LowerCorner>\r\n"
-                + "      <ows:UpperCorner>90 180</ows:UpperCorner>\r\n"
-                + "    </ows:BoundingBox>\r\n"
-                + "  </wcs:DomainSubset>\r\n"
-                + "  <wcs:RangeSubset>\n"
-                + "    <wcs:FieldSubset>\n"
-                + "      <ows:Identifier>contents</ows:Identifier>\n"
-                + "      <wcs:InterpolationType></wcs:InterpolationType>\n"
-                + "    </wcs:FieldSubset>\n"
-                + "  </wcs:RangeSubset>"
-                + "  <wcs:Output format=\"image/tiff\"/>\r\n"
-                + "</wcs:GetCoverage>";
+        String request =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <wcs:GetCoverage service="WCS" \
+                xmlns:ows="http://www.opengis.net/ows/1.1"
+                  xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 \
+                                       schemas/wcs/1.1.1/wcsAll.xsd"
+                  version="1.1.1" >
+                  <ows:Identifier>wcs:BlueMarble</ows:Identifier>
+                  <wcs:DomainSubset>
+                    <ows:BoundingBox crs="urn:ogc:def:crs:EPSG:6.6:4326">
+                      <ows:LowerCorner>-90 -180</ows:LowerCorner>
+                      <ows:UpperCorner>90 180</ows:UpperCorner>
+                    </ows:BoundingBox>
+                  </wcs:DomainSubset>
+                  <wcs:RangeSubset>
+                    <wcs:FieldSubset>
+                      <ows:Identifier>contents</ows:Identifier>
+                      <wcs:InterpolationType></wcs:InterpolationType>
+                    </wcs:FieldSubset>
+                  </wcs:RangeSubset>\
+                  <wcs:Output format="image/tiff"/>
+                </wcs:GetCoverage>""";
         try {
             executeGetCoverageXml(request);
             fail("missing interpolation - should have thrown an exception");
@@ -567,40 +569,44 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
 
     @Test
     public void testEntityExpansion() throws Exception {
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<!DOCTYPE wcs:GetCoverage [<!ELEMENT wcs:GetCoverage (ows:Identifier) >\n"
-                + "  <!ATTLIST wcs:GetCoverage\n"
-                + "    service CDATA #FIXED \"WCS\"\n"
-                + "            version CDATA #FIXED \"1.1.1\"\n"
-                + "            xmlns:ows CDATA #FIXED \"http://www.opengis.net/ows/1.1\"\n"
-                + "            xmlns:wcs CDATA #FIXED \"http://www.opengis.net/wcs/1.1.1\">\n"
-                + "  <!ELEMENT ows:Identifier (#PCDATA) >\n"
-                + "  <!ENTITY xxe SYSTEM \"FILE:///file/not/there?.XSD\" >]>\n"
-                + "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" "
-                + "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
-                + "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\">\n"
-                + "   <ows:Identifier>&xxe;</ows:Identifier>\n"
-                + "  </wcs:GetCoverage>";
+        String request =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <!DOCTYPE wcs:GetCoverage [<!ELEMENT wcs:GetCoverage (ows:Identifier) >
+                  <!ATTLIST wcs:GetCoverage
+                    service CDATA #FIXED "WCS"
+                            version CDATA #FIXED "1.1.1"
+                            xmlns:ows CDATA #FIXED "http://www.opengis.net/ows/1.1"
+                            xmlns:wcs CDATA #FIXED "http://www.opengis.net/wcs/1.1.1">
+                  <!ELEMENT ows:Identifier (#PCDATA) >
+                  <!ENTITY xxe SYSTEM "FILE:///file/not/there?.XSD" >]>
+                  <wcs:GetCoverage service="WCS" version="1.1.1" \
+                                   xmlns:ows="http://www.opengis.net/ows/1.1"
+                                   xmlns:wcs="http://www.opengis.net/wcs/1.1.1">
+                   <ows:Identifier>&xxe;</ows:Identifier>
+                  </wcs:GetCoverage>""";
 
         Document dom = postAsDOM("wcs", request);
         // print(dom);
         String error = xpath.evaluate("//ows:ExceptionText", dom);
         assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
 
-        request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<!DOCTYPE wcs:GetCoverage [<!ELEMENT wcs:GetCoverage (ows:Identifier) >\n"
-                + "  <!ATTLIST wcs:GetCoverage\n"
-                + "    service CDATA #FIXED \"WCS\"\n"
-                + "            version CDATA #FIXED \"1.1.1\"\n"
-                + "            xmlns:ows CDATA #FIXED \"http://www.opengis.net/ows/1.1\"\n"
-                + "            xmlns:wcs CDATA #FIXED \"http://www.opengis.net/wcs/1.1.1\">\n"
-                + "  <!ELEMENT ows:Identifier (#PCDATA) >\n"
-                + "  <!ENTITY xxe SYSTEM \"jar:file:///file/not/there?.xsd\" >]>\n"
-                + "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" "
-                + "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
-                + "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\">\n"
-                + "   <ows:Identifier>&xxe;</ows:Identifier>\n"
-                + "  </wcs:GetCoverage>";
+        request =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <!DOCTYPE wcs:GetCoverage [<!ELEMENT wcs:GetCoverage (ows:Identifier) >
+                  <!ATTLIST wcs:GetCoverage
+                    service CDATA #FIXED "WCS"
+                            version CDATA #FIXED "1.1.1"
+                            xmlns:ows CDATA #FIXED "http://www.opengis.net/ows/1.1"
+                            xmlns:wcs CDATA #FIXED "http://www.opengis.net/wcs/1.1.1">
+                  <!ELEMENT ows:Identifier (#PCDATA) >
+                  <!ENTITY xxe SYSTEM "jar:file:///file/not/there?.xsd" >]>
+                  <wcs:GetCoverage service="WCS" version="1.1.1" \
+                                   xmlns:ows="http://www.opengis.net/ows/1.1"
+                                   xmlns:wcs="http://www.opengis.net/wcs/1.1.1">
+                   <ows:Identifier>&xxe;</ows:Identifier>
+                  </wcs:GetCoverage>""";
 
         dom = postAsDOM("wcs", request);
         // print(dom);
@@ -615,25 +621,25 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
     @Test
     public void testRotatedPost() throws Exception {
         String request =
-                "<GetCoverage xmlns=\"http://www.opengis.net/wcs/1.1.1\" xmlns:gml=\"http://www.opengis.net/gml\"\n"
-                        + "             xmlns:ows11=\"http://www.opengis.net/ows/1.1\"\n"
-                        + "             xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
-                        + "             xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \r\n"
-                        + //
-                        "             xmlns:wcs=\"http://schemas.opengis.net/wcs/1.1.1\"\n"
-                        + "             xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
-                        + "             service=\"WCS\"\n"
-                        + "             version=\"1.1.1\"\n"
-                        + "             xsi:schemaLocation=\"http://www.opengis.net/wcs/1.1.1 http://schemas.opengis.net/wcs/1.1.1/wcsAll.xsd\">\n"
-                        + "   <ows11:Identifier>RotatedCad</ows11:Identifier>\n"
-                        + "   <DomainSubset>\n"
-                        + "      <ows11:BoundingBox crs=\"urn:ogc:def:crs:OGC:1.3:CRS84\">\n"
-                        + "         <ows11:LowerCorner>7.7634301664746515 45.14713380418506</ows11:LowerCorner>\n"
-                        + "         <ows11:UpperCorner>7.764350661575157 45.14763319238466</ows11:UpperCorner>\n"
-                        + "      </ows11:BoundingBox>\n"
-                        + "   </DomainSubset>\n"
-                        + "   <Output format=\"image/tiff\"/>\n"
-                        + "</GetCoverage>";
+                """
+                <GetCoverage xmlns="http://www.opengis.net/wcs/1.1.1" xmlns:gml="http://www.opengis.net/gml"
+                             xmlns:ows11="http://www.opengis.net/ows/1.1"
+                             xmlns:ows="http://www.opengis.net/ows/1.1"
+                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                             xmlns:wcs="http://schemas.opengis.net/wcs/1.1.1"
+                             xmlns:xlink="http://www.w3.org/1999/xlink"
+                             service="WCS"
+                             version="1.1.1"
+                             xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 http://schemas.opengis.net/wcs/1.1.1/wcsAll.xsd">
+                   <ows11:Identifier>RotatedCad</ows11:Identifier>
+                   <DomainSubset>
+                      <ows11:BoundingBox crs="urn:ogc:def:crs:OGC:1.3:CRS84">
+                         <ows11:LowerCorner>7.7634301664746515 45.14713380418506</ows11:LowerCorner>
+                         <ows11:UpperCorner>7.764350661575157 45.14763319238466</ows11:UpperCorner>
+                      </ows11:BoundingBox>
+                   </DomainSubset>
+                   <Output format="image/tiff"/>
+                </GetCoverage>""";
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 

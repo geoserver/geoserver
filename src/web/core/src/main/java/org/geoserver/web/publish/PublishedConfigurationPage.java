@@ -6,6 +6,7 @@
 package org.geoserver.web.publish;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -57,6 +58,7 @@ import org.geoserver.web.security.LayerAccessDataRulePanel;
 // TODO WICKET8 - Verify this page works OK
 public abstract class PublishedConfigurationPage<T extends PublishedInfo> extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 7870938096047218989L;
 
     public static final String NAME = "name";
@@ -90,7 +92,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
 
     @SuppressWarnings("unchecked")
     protected void setupPublished(T info) {
-        setupPublished(info instanceof LayerInfo ? (IModel<T>) new LayerModel((LayerInfo) info) : new Model<>(info));
+        setupPublished(info instanceof LayerInfo li ? (IModel<T>) new LayerModel(li) : new Model<>(info));
     }
 
     protected void setupPublished(IModel<T> infoModel) {
@@ -119,6 +121,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
 
         // add the "well known" tabs
         tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("ResourceConfigurationPage.Data")) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -128,6 +131,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
         });
 
         tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("ResourceConfigurationPage.Publishing")) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -159,6 +163,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
                 IModel<?> panelCustomModel = tabPanelInfo.createOwnModel(myModel, isNew);
                 tabPanelCustomModels.put(panelClass, panelCustomModel);
                 tabs.add(new AbstractTab(titleModel) {
+                    @Serial
                     private static final long serialVersionUID = -6637277497986497791L;
 
                     @Override
@@ -176,19 +181,21 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
         // element
         // will validate and write down into their
         tabbedPanel = new TabbedPanel<>("tabs", tabs) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
             protected WebMarkupContainer newLink(String linkId, final int index) {
                 return new SubmitLink(linkId) {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
                     public void onSubmit() {
                         WebMarkupContainer panel = tabs.get(index).getPanel("dataAccessPanel");
                         if (myModel.getObject() instanceof LayerGroupInfo
-                                && panel instanceof LayerAccessDataRulePanel) {
-                            ((LayerAccessDataRulePanel) panel).reloadOwnModel();
+                                && panel instanceof LayerAccessDataRulePanel rulePanel) {
+                            rulePanel.reloadOwnModel();
                         }
                         setSelectedTab(index);
                     }
@@ -262,6 +269,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
     private SubmitLink saveLink() {
         return new SubmitLink("save") {
 
+            @Serial
             private static final long serialVersionUID = 4615460713943555026L;
 
             @Override
@@ -332,6 +340,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
 
     private Link<?> cancelLink() {
         return new Link<>("cancel") {
+            @Serial
             private static final long serialVersionUID = -9007727127569731882L;
 
             @Override
@@ -375,6 +384,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
 
     protected abstract class ListEditTabPanel extends PublishedEditTabPanel<T> {
 
+        @Serial
         private static final long serialVersionUID = -7279044666531992361L;
 
         public ListEditTabPanel(String id) {
@@ -392,6 +402,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
     }
 
     protected class PublishingEditTabPanel extends ListEditTabPanel {
+        @Serial
         private static final long serialVersionUID = -6575960326680386479L;
 
         public PublishingEditTabPanel(String id) {
@@ -403,6 +414,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
             List<PublishedConfigurationPanelInfo<T>> pubPanels = filterPublishedPanels(
                     getGeoServerApplication().getBeansOfType(PublishedConfigurationPanelInfo.class));
             ListView<PublishedConfigurationPanelInfo<T>> pubPanelList = new ListView<>(id, pubPanels) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override

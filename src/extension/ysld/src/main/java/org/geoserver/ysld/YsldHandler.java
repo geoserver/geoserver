@@ -117,9 +117,9 @@ public class YsldHandler extends StyleHandler {
             Object input, Version version, @Nullable ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
 
-        if (resourceLocator == null && input instanceof File) {
+        if (resourceLocator == null && input instanceof File file) {
             resourceLocator = new DefaultResourceLocator();
-            ((DefaultResourceLocator) resourceLocator).setSourceUrl(URLs.fileToUrl((File) input));
+            ((DefaultResourceLocator) resourceLocator).setSourceUrl(URLs.fileToUrl(file));
         }
 
         return Ysld.parse(toReader(input), zoomFinders, resourceLocator, uomMapper);

@@ -153,8 +153,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         @Override
         public void handleServiceChange(
                 ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
-            if (service instanceof WMSInfo) {
-                WMSInfo info = (WMSInfo) service;
+            if (service instanceof WMSInfo info) {
                 CacheConfiguration newCacheCfg = info.getCacheConfiguration();
                 if (cacheCfg != null && !newCacheCfg.equals(cacheCfg)) {
                     // close the client, wait for the next time it's needed to re-create it
@@ -405,13 +404,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                     rawSortBy.remove(i);
                 }
             } else {
-                if (o instanceof LayerInfo) {
-                    newLayers.add(new MapLayerInfo((LayerInfo) o));
-                } else if (o instanceof LayerGroupInfo) {
-                    addGroupLayers(newLayers, (LayerGroupInfo) o, i, styleNameList);
-                } else if (o instanceof MapLayerInfo) {
+                if (o instanceof LayerInfo info2) {
+                    newLayers.add(new MapLayerInfo(info2));
+                } else if (o instanceof LayerGroupInfo info1) {
+                    addGroupLayers(newLayers, info1, i, styleNameList);
+                } else if (o instanceof MapLayerInfo info) {
                     // it was a remote OWS layer, add it directly
-                    newLayers.add((MapLayerInfo) o);
+                    newLayers.add(info);
                 }
                 i++;
             }
@@ -542,8 +541,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             for (int i = 0; i < requestedLayerInfos.size(); i++) {
                 Object o = requestedLayerInfos.get(i);
                 Map<String, String> layerParams = viewParams.get(i);
-                if (o instanceof LayerGroupInfo) {
-                    LayerGroupInfo groupInfo = (LayerGroupInfo) o;
+                if (o instanceof LayerGroupInfo groupInfo) {
                     List<LayerInfo> layers = groupInfo.layers();
                     if (layers != null) layers.stream().forEach(l -> replacement.add(layerParams));
                 } else {
@@ -598,15 +596,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 Object o = requestedLayerInfos.get(i);
                 Style style = oldStyles.isEmpty() ? null : oldStyles.get(i);
 
-                if (o instanceof LayerGroupInfo) {
-                    LayerGroupInfo groupInfo = (LayerGroupInfo) o;
+                if (o instanceof LayerGroupInfo groupInfo) {
                     resolveLayerGroup(i, groupStyleNames, groupInfo, newStyles, newFilters, newSortBy, filters, sortBy);
-                } else if (o instanceof LayerInfo) {
+                } else if (o instanceof LayerInfo layer) {
                     style = oldStyles.isEmpty() ? null : oldStyles.get(i);
                     if (style != null) {
                         newStyles.add(style);
                     } else {
-                        LayerInfo layer = (LayerInfo) o;
                         newStyles.add(getDefaultStyle(layer));
                     }
                     // add filter if needed
@@ -616,13 +612,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                     if (sortBy != null) {
                         newSortBy.add(getSortBy(sortBy, i));
                     }
-                } else if (o instanceof MapLayerInfo) {
+                } else if (o instanceof MapLayerInfo info) {
                     style = oldStyles.isEmpty() ? null : oldStyles.get(i);
                     if (style != null) {
                         newStyles.add(style);
                     } else {
-                        throw new ServiceException(
-                                "no style requested for layer " + ((MapLayerInfo) o).getName(), "NoDefaultStyle");
+                        throw new ServiceException("no style requested for layer " + info.getName(), "NoDefaultStyle");
                     }
                     // add filter if needed
                     if (filters != null) {
@@ -950,8 +945,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             Object o = requestedLayers.get(i);
             if (o instanceof LayerInfo) {
                 interpolations.add(interpolation);
-            } else if (o instanceof LayerGroupInfo) {
-                List<LayerInfo> subLayers = ((LayerGroupInfo) o).layers();
+            } else if (o instanceof LayerGroupInfo info) {
+                List<LayerInfo> subLayers = info.layers();
                 interpolations.addAll(Collections.nCopies(subLayers.size(), interpolation));
             } else {
                 throw new IllegalArgumentException("Unknown layer info type: " + o);
@@ -1136,21 +1131,21 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 styleName = styleNames.get(i);
             }
             Object o = requestedLayers.get(i);
-            if (o instanceof LayerInfo) {
-                currLayer = new MapLayerInfo((LayerInfo) o);
+            if (o instanceof LayerInfo info1) {
+                currLayer = new MapLayerInfo(info1);
 
-                if (styledLayers[i] instanceof NamedLayer) {
-                    NamedLayer namedLayer = ((NamedLayer) styledLayers[i]);
+                if (styledLayers[i] instanceof NamedLayer layer) {
+                    NamedLayer namedLayer = layer;
                     currLayer.setLayerFeatureConstraints(namedLayer.getLayerFeatureConstraints());
                 }
 
                 layers.add(currLayer);
                 Style style = findStyleOf(request, currLayer, styleName, styledLayers);
                 styles.add(style);
-            } else if (o instanceof LayerGroupInfo) {
-                List<LayerInfo> subLayers = ((LayerGroupInfo) o).layers();
+            } else if (o instanceof LayerGroupInfo info) {
+                List<LayerInfo> subLayers = info.layers();
                 for (LayerInfo layer : subLayers) {
-                    currLayer = new MapLayerInfo(layer, ((LayerGroupInfo) o).getMetadata());
+                    currLayer = new MapLayerInfo(layer, info.getMetadata());
                     layers.add(currLayer);
                     Style style = findStyleOf(request, currLayer, styleName, styledLayers);
                     styles.add(style);
@@ -1186,10 +1181,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
         Style[] layerStyles = null;
 
-        if (layer instanceof NamedLayer) {
-            layerStyles = ((NamedLayer) layer).getStyles();
-        } else if (layer instanceof UserLayer) {
-            layerStyles = ((UserLayer) layer).getUserStyles();
+        if (layer instanceof NamedLayer namedLayer) {
+            layerStyles = namedLayer.getStyles();
+        } else if (layer instanceof UserLayer userLayer) {
+            layerStyles = userLayer.getUserStyles();
         }
 
         // handle no styles -- use default
@@ -1259,8 +1254,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             sl = value;
 
             if (layerName.equals(sl.getName())) {
-                if (sl instanceof UserLayer) {
-                    Style[] styles = ((UserLayer) sl).getUserStyles();
+                if (sl instanceof UserLayer userLayer) {
+                    Style[] styles = userLayer.getUserStyles();
 
                     // if the style name has not been specified, look it up
                     // the default style, otherwise lookup the one requested
@@ -1268,8 +1263,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                         if (styleName == null || styleName.equals("") && styles[j].isDefault()) style = styles[j];
                         else if (styleName != null && styleName.equals(styles[j].getName())) style = styles[j];
                     }
-                } else if (sl instanceof NamedLayer) {
-                    Style[] styles = ((NamedLayer) sl).getStyles();
+                } else if (sl instanceof NamedLayer namedLayer) {
+                    Style[] styles = namedLayer.getStyles();
 
                     // if the style name has not been specified, look it up
                     // the default style, otherwise lookup the one requested
@@ -1297,14 +1292,14 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 sl = styledLayer;
 
                 if (layerName.equals(sl.getName())) {
-                    if (sl instanceof UserLayer) {
-                        Style[] styles = ((UserLayer) sl).getUserStyles();
+                    if (sl instanceof UserLayer userLayer) {
+                        Style[] styles = userLayer.getUserStyles();
 
                         if ((null != styles) && (0 < styles.length)) {
                             style = styles[0];
                         }
-                    } else if (sl instanceof NamedLayer) {
-                        Style[] styles = ((NamedLayer) sl).getStyles();
+                    } else if (sl instanceof NamedLayer namedLayer) {
+                        Style[] styles = namedLayer.getStyles();
 
                         if ((null != styles) && (0 < styles.length)) {
                             style = styles[0];
@@ -1565,8 +1560,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
     private void parseStyle(Object layer, String styleName, List<String> groupStyles, List<Style> styles)
             throws IOException {
-        if (layer instanceof LayerGroupInfo) {
-            LayerGroupInfo groupInfo = (LayerGroupInfo) layer;
+        if (layer instanceof LayerGroupInfo groupInfo) {
             boolean isDefaultStyle = isDefaultLgStyle(styleName, groupInfo);
             if (!isDefaultStyle && isGroupStyleName(styleName, groupInfo)) {
                 groupStyles.add(styleName);

@@ -174,12 +174,12 @@ public class GeomHelper {
      */
     public static CoordinateReferenceSystem getCRSFromInfo(CatalogInfo info) {
         CoordinateReferenceSystem crs = null;
-        if (info instanceof LayerInfo) {
-            crs = ((LayerInfo) info).getResource().getCRS();
-        } else if (info instanceof ResourceInfo) {
-            crs = ((ResourceInfo) info).getCRS();
-        } else if (info instanceof LayerGroupInfo) {
-            crs = ((LayerGroupInfo) info).getBounds().getCoordinateReferenceSystem();
+        if (info instanceof LayerInfo layerInfo) {
+            crs = layerInfo.getResource().getCRS();
+        } else if (info instanceof ResourceInfo resourceInfo) {
+            crs = resourceInfo.getCRS();
+        } else if (info instanceof LayerGroupInfo groupInfo) {
+            crs = groupInfo.getBounds().getCoordinateReferenceSystem();
         } else {
             throw new RuntimeException(
                     "Cannot retrieve CRS from info " + info.getClass().getSimpleName());

@@ -5,6 +5,7 @@
  */
 package org.geoserver.printing;
 
+import java.io.Serial;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -13,6 +14,7 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.geoserver.web.GeoServerBasePage;
 
 public class PrintDemoPage extends GeoServerBasePage implements IHeaderContributor {
+    @Serial
     private static final long serialVersionUID = 2904825847695306563L;
 
     @Override

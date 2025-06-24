@@ -149,7 +149,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         Document document = dom(content, true);
         // check that all the available mime types are present
         for (String mimeType : GetCapabilitiesTransformer.WMS_CAPS_AVAIL_MIME) {
-            assertXpathExists(String.format("//GetCapabilities[Format='%s']", mimeType), document);
+            assertXpathExists("//GetCapabilities[Format='%s']".formatted(mimeType), document);
         }
     }
 

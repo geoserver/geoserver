@@ -6,6 +6,7 @@
 package org.geoserver.web.data.store;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
@@ -28,6 +29,7 @@ import org.geotools.data.util.NullProgressListener;
  */
 public class DataAccessNewPage extends AbstractDataAccessPage {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

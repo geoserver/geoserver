@@ -431,8 +431,7 @@ public class KmlEncodingContext {
 
     /** Returns the current feature type is the current layer is made of vector features, null otherwise */
     public SimpleFeatureType getCurrentFeatureType() {
-        if (currentLayer instanceof FeatureLayer) {
-            FeatureLayer fl = (FeatureLayer) currentLayer;
+        if (currentLayer instanceof FeatureLayer fl) {
             return (SimpleFeatureType) fl.getFeatureSource().getSchema();
         }
         return null;
@@ -499,8 +498,8 @@ public class KmlEncodingContext {
         try {
             Envelope env = request.getBbox();
             ReferencedEnvelope re;
-            if (env instanceof ReferencedEnvelope) {
-                re = (ReferencedEnvelope) env;
+            if (env instanceof ReferencedEnvelope envelope) {
+                re = envelope;
                 if (re.getCoordinateReferenceSystem() == null) {
                     re = new ReferencedEnvelope(re, DefaultGeographicCRS.WGS84);
                 }

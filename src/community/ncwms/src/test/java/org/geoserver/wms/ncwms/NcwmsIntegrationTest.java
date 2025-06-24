@@ -311,15 +311,17 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("3", "//metadata/entry[@key = 'NcWMSInfo']/ncwms/timeSeriesPoolSize", dom);
 
         // run update
-        String xml = "<wms>\n"
-                + "<metadata>\n"
-                + "    <entry key=\"NcWMSInfo\">\n"
-                + "      <ncwms>\n"
-                + "        <timeSeriesPoolSize>7</timeSeriesPoolSize>\n"
-                + "      </ncwms>\n"
-                + "    </entry>\n"
-                + "  </metadata>\n"
-                + "</wms>";
+        String xml =
+                """
+                <wms>
+                <metadata>
+                    <entry key="NcWMSInfo">
+                      <ncwms>
+                        <timeSeriesPoolSize>7</timeSeriesPoolSize>
+                      </ncwms>
+                    </entry>
+                  </metadata>
+                </wms>""";
         MockHttpServletResponse response = putAsServletResponse("rest/services/wms/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
 

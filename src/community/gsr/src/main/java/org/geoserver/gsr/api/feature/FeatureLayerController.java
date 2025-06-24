@@ -383,8 +383,8 @@ public class FeatureLayerController extends AbstractGSRController {
      */
     private FeatureArray jsonStringToFeatureArray(String jsonString) {
         JSON json = JSONSerializer.toJSON(jsonString);
-        if (json instanceof JSONArray) {
-            return LayerEditsEncoder.featureArrayFromJSON((JSONArray) json);
+        if (json instanceof JSONArray array) {
+            return LayerEditsEncoder.featureArrayFromJSON(array);
         } else {
             LOGGER.info("Submitted JSON is not an array, as expected.");
             throw new JSONException();
@@ -400,8 +400,8 @@ public class FeatureLayerController extends AbstractGSRController {
      */
     private ServiceEdits jsonStringToServiceEdits(String jsonString) {
         JSON json = JSONSerializer.toJSON(jsonString);
-        if (json instanceof JSONArray) {
-            return LayerEditsEncoder.serviceEditsFromJSON((JSONArray) json);
+        if (json instanceof JSONArray array) {
+            return LayerEditsEncoder.serviceEditsFromJSON(array);
         } else {
             LOGGER.info("Submitted JSON is not an array, as expected.");
             throw new JSONException();

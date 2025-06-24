@@ -55,8 +55,7 @@ public abstract class JMSCatalogEventHandler extends JMSEventHandler<String, Cat
     public CatalogEvent deserialize(String s) throws Exception {
 
         final Object source = xstream.fromXML(s);
-        if (source instanceof CatalogEvent) {
-            final CatalogEvent ev = (CatalogEvent) source;
+        if (source instanceof CatalogEvent ev) {
             if (ev.getSource() != null) OwsUtils.resolveCollections(ev.getSource());
             if (LOGGER.isLoggable(Level.FINE)) {
                 final CatalogInfo info = ev.getSource();

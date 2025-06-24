@@ -5,6 +5,7 @@
 package org.geoserver.web.security;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 import java.util.Set;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -23,6 +24,7 @@ import org.geoserver.security.impl.DataAccessRule;
 
 public class AccessDataRulePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -5609090679199229976L;
 
     private IModel<List<DataAccessRuleInfo>> ownModel;
@@ -75,6 +77,7 @@ public class AccessDataRulePanel extends Panel {
         sa.setOutputMarkupId(true);
         sa.add(new AjaxFormComponentUpdatingBehavior("click") {
 
+            @Serial
             private static final long serialVersionUID = 1154921156065269691L;
 
             @Override

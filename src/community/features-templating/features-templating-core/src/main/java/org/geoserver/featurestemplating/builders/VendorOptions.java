@@ -45,8 +45,8 @@ public class VendorOptions extends HashMap<String, Object> {
     public <T> T get(String key, Class<T> cast) {
         Object value = get(key);
         T result = null;
-        if (value instanceof Expression && !Expression.class.isAssignableFrom(cast)) {
-            result = ((Expression) value).evaluate(null, cast);
+        if (value instanceof Expression expression && !Expression.class.isAssignableFrom(cast)) {
+            result = expression.evaluate(null, cast);
         } else {
             result = cast.cast(value);
         }

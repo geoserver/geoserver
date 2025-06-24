@@ -256,49 +256,51 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         // settings
         XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
 
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<wmsLayer>\n"
-                + "   <id>WMSLayerInfoImpl-622caab0:16ff63f5f7a:-7ffc</id>\n"
-                + "   <name>legacy_roads</name>\n"
-                + "   <nativeName>roads</nativeName>\n"
-                + "   <title>Legacy</title>\n"
-                + "   <description>Legacy</description>\n"
-                + "   <abstract>Legacy</abstract>\n"
-                + "   <keywords>\n"
-                + "      <string>census</string>\n"
-                + "      <string>united</string>\n"
-                + "      <string>boundaries</string>\n"
-                + "      <string>state</string>\n"
-                + "      <string>states</string>\n"
-                + "   </keywords>\n"
-                + "   <nativeCRS>GEOGCS[\"WGS 84\", &#xD;\n"
-                + "  DATUM[\"World Geodetic System 1984\", &#xD;\n"
-                + "    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], &#xD;\n"
-                + "    AUTHORITY[\"EPSG\",\"6326\"]], &#xD;\n"
-                + "  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], &#xD;\n"
-                + "  UNIT[\"degree\", 0.017453292519943295], &#xD;\n"
-                + "  AXIS[\"Geodetic longitude\", EAST], &#xD;\n"
-                + "  AXIS[\"Geodetic latitude\", NORTH], &#xD;\n"
-                + "  AUTHORITY[\"EPSG\",\"4326\"]]</nativeCRS>\n"
-                + "   <srs>EPSG:4326</srs>\n"
-                + "   <nativeBoundingBox>\n"
-                + "      <minx>-124.73142200000001</minx>\n"
-                + "      <maxx>-66.969849</maxx>\n"
-                + "      <miny>24.955967</miny>\n"
-                + "      <maxy>49.371735</maxy>\n"
-                + "      <crs>EPSG:4326</crs>\n"
-                + "   </nativeBoundingBox>\n"
-                + "   <latLonBoundingBox>\n"
-                + "      <minx>-124.731422</minx>\n"
-                + "      <maxx>-66.969849</maxx>\n"
-                + "      <miny>24.955967</miny>\n"
-                + "      <maxy>49.371735</maxy>\n"
-                + "      <crs>EPSG:4326</crs>\n"
-                + "   </latLonBoundingBox>\n"
-                + "   <projectionPolicy>FORCE_DECLARED</projectionPolicy>\n"
-                + "   <enabled>true</enabled>\n"
-                + "   <serviceConfiguration>false</serviceConfiguration>\n"
-                + "</wmsLayer>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <wmsLayer>
+                   <id>WMSLayerInfoImpl-622caab0:16ff63f5f7a:-7ffc</id>
+                   <name>legacy_roads</name>
+                   <nativeName>roads</nativeName>
+                   <title>Legacy</title>
+                   <description>Legacy</description>
+                   <abstract>Legacy</abstract>
+                   <keywords>
+                      <string>census</string>
+                      <string>united</string>
+                      <string>boundaries</string>
+                      <string>state</string>
+                      <string>states</string>
+                   </keywords>
+                   <nativeCRS>GEOGCS["WGS 84", &#xD;
+                  DATUM["World Geodetic System 1984", &#xD;
+                    SPHEROID["WGS 84", 6378137.0, 298.257223563, AUTHORITY["EPSG","7030"]], &#xD;
+                    AUTHORITY["EPSG","6326"]], &#xD;
+                  PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], &#xD;
+                  UNIT["degree", 0.017453292519943295], &#xD;
+                  AXIS["Geodetic longitude", EAST], &#xD;
+                  AXIS["Geodetic latitude", NORTH], &#xD;
+                  AUTHORITY["EPSG","4326"]]</nativeCRS>
+                   <srs>EPSG:4326</srs>
+                   <nativeBoundingBox>
+                      <minx>-124.73142200000001</minx>
+                      <maxx>-66.969849</maxx>
+                      <miny>24.955967</miny>
+                      <maxy>49.371735</maxy>
+                      <crs>EPSG:4326</crs>
+                   </nativeBoundingBox>
+                   <latLonBoundingBox>
+                      <minx>-124.731422</minx>
+                      <maxx>-66.969849</maxx>
+                      <miny>24.955967</miny>
+                      <maxy>49.371735</maxy>
+                      <crs>EPSG:4326</crs>
+                   </latLonBoundingBox>
+                   <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+                   <enabled>true</enabled>
+                   <serviceConfiguration>false</serviceConfiguration>
+                </wmsLayer>""";
 
         WMSLayerInfoImpl legacyWmsLayerInfo =
                 (WMSLayerInfoImpl) persister.load(new ByteArrayInputStream(xml.getBytes()), WMSLayerInfo.class);

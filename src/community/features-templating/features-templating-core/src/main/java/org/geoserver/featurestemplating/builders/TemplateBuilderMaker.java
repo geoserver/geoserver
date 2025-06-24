@@ -127,7 +127,7 @@ public class TemplateBuilderMaker {
      */
     public TemplateBuilderMaker content(Object content) {
         if (content instanceof String) textContent(content.toString());
-        else if (content instanceof JsonNode) jsonNode((JsonNode) content);
+        else if (content instanceof JsonNode node) jsonNode(node);
         else
             throw new UnsupportedOperationException(
                     "Unsupported content for builders. Content is of type " + content.getClass());

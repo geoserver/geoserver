@@ -7,6 +7,7 @@ package org.geoserver.gwc.web;
 
 import static org.geoserver.gwc.web.GWCSettingsPage.checkbox;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -16,6 +17,7 @@ import org.geoserver.gwc.config.GWCConfig;
 
 public class GWCServicesPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public GWCServicesPanel(final String id, final IModel<GWCConfig> gwcConfigModel) {

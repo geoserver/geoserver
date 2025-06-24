@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.io.Serial;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.web.GeoServerApplication;
@@ -12,6 +13,7 @@ import org.geoserver.web.GeoServerApplication;
 /** Model for layer groups */
 public class LayerGroupDetachableModel extends LoadableDetachableModel<LayerGroupInfo> {
 
+    @Serial
     private static final long serialVersionUID = 1945014162826151239L;
 
     String id;

@@ -319,8 +319,8 @@ public class ImportJSONWriter {
                     bbox(json, r.getNativeBoundingBox());
                 }
             }
-            if (r instanceof FeatureTypeInfo) {
-                featureType(json, (FeatureTypeInfo) r);
+            if (r instanceof FeatureTypeInfo info) {
+                featureType(json, info);
             }
             StyleInfo s = layer.getDefaultStyle();
             if (s != null) {
@@ -413,8 +413,7 @@ public class ImportJSONWriter {
         json.key("type").value(transform.getClass().getSimpleName());
         json.key("href").value(RequestInfo.get().servletURI(pathTo(parent) + "/transforms/" + index));
         if (expand > 0) {
-            if (transform instanceof DateFormatTransform) {
-                DateFormatTransform df = (DateFormatTransform) transform;
+            if (transform instanceof DateFormatTransform df) {
                 json.key("field").value(df.getField());
                 if (df.getDatePattern() != null) {
                     json.key("format").value(df.getDatePattern().dateFormat().toPattern());
@@ -427,18 +426,14 @@ public class ImportJSONWriter {
                 if (df.getPresentation() != null) {
                     json.key("presentation").value(df.getPresentation());
                 }
-            } else if (transform instanceof IntegerFieldToDateTransform) {
-                IntegerFieldToDateTransform df = (IntegerFieldToDateTransform) transform;
+            } else if (transform instanceof IntegerFieldToDateTransform df) {
                 json.key("field").value(df.getField());
-            } else if (transform instanceof CreateIndexTransform) {
-                CreateIndexTransform df = (CreateIndexTransform) transform;
+            } else if (transform instanceof CreateIndexTransform df) {
                 json.key("field").value(df.getField());
-            } else if (transform instanceof AttributeRemapTransform) {
-                AttributeRemapTransform art = (AttributeRemapTransform) transform;
+            } else if (transform instanceof AttributeRemapTransform art) {
                 json.key("field").value(art.getField());
                 json.key("target").value(art.getType().getName());
-            } else if (transform instanceof AttributeComputeTransform) {
-                AttributeComputeTransform act = (AttributeComputeTransform) transform;
+            } else if (transform instanceof AttributeComputeTransform act) {
                 json.key("field").value(act.getField());
                 json.key("fieldType").value(act.getType().getName());
                 json.key("cql").value(act.getCql());
@@ -514,20 +509,20 @@ public class ImportJSONWriter {
     public void data(FlushableJSONBuilder json, ImportData data, Object parent, int expand) throws IOException {
         if (data instanceof FileData) {
             if (data instanceof Directory) {
-                if (data instanceof Mosaic) {
-                    mosaic(json, (Mosaic) data, parent, expand);
+                if (data instanceof Mosaic mosaic) {
+                    mosaic(json, mosaic, parent, expand);
                 } else {
                     directory(json, (Directory) data, parent, expand);
                 }
             } else {
                 file(json, (FileData) data, parent, expand, false);
             }
-        } else if (data instanceof Database) {
-            database(json, (Database) data, parent, expand);
-        } else if (data instanceof Table) {
-            table(json, (Table) data, parent, expand);
-        } else if (data instanceof RemoteData) {
-            remote(json, (RemoteData) data, parent, expand);
+        } else if (data instanceof Database database) {
+            database(json, database, parent, expand);
+        } else if (data instanceof Table table) {
+            table(json, table, parent, expand);
+        } else if (data instanceof RemoteData remoteData) {
+            remote(json, remoteData, parent, expand);
         } else {
             throw new IllegalArgumentException(
                     "Unable to serialize " + data.getClass().getSimpleName() + " as ImportData");
@@ -594,17 +589,15 @@ public class ImportJSONWriter {
         json.key("file").value(filename);
         json.key("href").value(RequestInfo.get().servletURI(pathTo(data, parent) + "/files/" + filename));
         if (expand > 0) {
-            if (data instanceof SpatialFile) {
-                SpatialFile sf = (SpatialFile) data;
+            if (data instanceof SpatialFile sf) {
                 json.key("prj").value(sf.getPrjFile() != null ? sf.getPrjFile().getName() : null);
                 json.key("other").array();
-                for (File supp : ((SpatialFile) data).getSuppFiles()) {
+                for (File supp : sf.getSuppFiles()) {
                     json.value(supp.getName());
                 }
                 json.endArray();
 
-                if (sf instanceof Granule) {
-                    Granule g = (Granule) sf;
+                if (sf instanceof Granule g) {
                     if (g.getTimestamp() != null) {
                         json.key("timestamp").value(getISODateFormat().format(g.getTimestamp()));
                     }
@@ -792,10 +785,10 @@ public class ImportJSONWriter {
     }
 
     String pathTo(Object parent) {
-        if (parent instanceof ImportContext) {
-            return pathTo((ImportContext) parent);
-        } else if (parent instanceof ImportTask) {
-            return pathTo((ImportTask) parent);
+        if (parent instanceof ImportContext context) {
+            return pathTo(context);
+        } else if (parent instanceof ImportTask task) {
+            return pathTo(task);
         } else {
             throw new IllegalArgumentException("Don't recognize: " + parent);
         }

@@ -6,6 +6,7 @@
 package org.geoserver.web.data.resource;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +50,7 @@ import org.vfny.geoserver.util.DataStoreUtils;
 // TODO WICKET8 - Verify this page works OK
 public class BasicResourceConfig extends ResourceConfigurationPanel {
 
+    @Serial
     private static final long serialVersionUID = -552158739086379566L;
 
     public static final String URN_OGC_PREFIX = "urn:ogc:def:crs:EPSG::";
@@ -137,6 +139,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     AjaxSubmitLink computeNativeBoundsLink(final Form refForm, final EnvelopePanel nativeBBox) {
         return new AjaxSubmitLink("computeNative", refForm) {
 
+            @Serial
             private static final long serialVersionUID = 3106345307476297622L;
 
             @Override
@@ -173,6 +176,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     AjaxSubmitLink computeBoundsFromSRS(final Form<ResourceInfo> refForm, final EnvelopePanel nativeBoundsPanel) {
 
         return new AjaxSubmitLink("computeLatLonFromNativeSRS", refForm) {
+            @Serial
             private static final long serialVersionUID = 9211250161114770325L;
 
             @Override
@@ -201,6 +205,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
             final Form refForm, final EnvelopePanel nativeBBox, final EnvelopePanel latLonPanel) {
         return new AjaxSubmitLink("computeLatLon", refForm) {
 
+            @Serial
             private static final long serialVersionUID = -5981662004745936762L;
 
             @Override
@@ -243,6 +248,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
     class ProjectionPolicyRenderer extends ChoiceRenderer<ProjectionPolicy> {
 
+        @Serial
         private static final long serialVersionUID = -6593748590058977418L;
 
         @Override
@@ -258,6 +264,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
     /** Checks a resource name is actually a valid one (WFS/WMS wise), in particular, only word chars */
     static class ResourceNameValidator extends PatternValidator {
+        @Serial
         private static final long serialVersionUID = 2160813837236916013L;
 
         public ResourceNameValidator() {
@@ -271,6 +278,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
      */
     private static class ReprojectionIsPossibleValidator implements IFormValidator {
 
+        @Serial
         private static final long serialVersionUID = -8006718598046409480L;
 
         private FormComponent<?>[] dependentFormComponents;
@@ -352,12 +360,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     private List<String> getOtherSRS(ResourceInfo resourceInfo) {
         // first check if its WFS-NG
         List<String> otherSRS = Collections.emptyList();
-        if (resourceInfo instanceof FeatureTypeInfo)
-            otherSRS = DataStoreUtils.getOtherSRSFromWfsNg((FeatureTypeInfo) resourceInfo);
-        else if (resourceInfo instanceof WMSLayerInfo)
-            otherSRS = DataStoreUtils.getOtherSRSFromWMSStore((WMSLayerInfo) resourceInfo);
-        else if (resourceInfo instanceof WMTSLayerInfo)
-            otherSRS = DataStoreUtils.getOtherSRSFromWMTSStore((WMTSLayerInfo) resourceInfo);
+        if (resourceInfo instanceof FeatureTypeInfo info2) otherSRS = DataStoreUtils.getOtherSRSFromWfsNg(info2);
+        else if (resourceInfo instanceof WMSLayerInfo info1) otherSRS = DataStoreUtils.getOtherSRSFromWMSStore(info1);
+        else if (resourceInfo instanceof WMTSLayerInfo info) otherSRS = DataStoreUtils.getOtherSRSFromWMTSStore(info);
 
         return otherSRS;
     }
@@ -379,6 +384,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 new CRSPanel("nativeSRS", new PropertyModel<>(model, "nativeCRS"), otherSRS, !otherSRS.isEmpty()) {
 
                     /** serialVersionUID */
+                    @Serial
                     private static final long serialVersionUID = -7725670382699858126L;
 
                     @Override

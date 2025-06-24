@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,7 +32,9 @@ import org.geotools.util.Converters;
  */
 public class MetadataMap implements Map<String, Serializable>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -3267986531863264568L;
+
     protected String id;
 
     protected Map<String, Serializable> map;

@@ -145,21 +145,16 @@ public class DescribeCoverageTest extends WCSTestSupport {
     @Test
     public void testDescribeUnknownCoverageXml() throws Exception {
         List<Exception> errors = new ArrayList<>();
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-                + //
-                "<wcs:DescribeCoverage service=\"WCS\" "
-                + //
-                "xmlns:ows=\"http://www.opengis.net/ows/1.1\"\r\n"
-                + //
-                "  xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\"\r\n"
-                + //
-                "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \r\n"
-                + //
-                "  version=\"1.1.1\" >\r\n"
-                + //
-                "  <wcs:Identifier>plop</wcs:Identifier>\r\n"
-                + //
-                "</wcs:DescribeCoverage>";
+        String request =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <wcs:DescribeCoverage service="WCS" \
+                xmlns:ows="http://www.opengis.net/ows/1.1"
+                  xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  version="1.1.1" >
+                  <wcs:Identifier>plop</wcs:Identifier>
+                </wcs:DescribeCoverage>""";
         Document dom = postAsDOM(BASEPATH, request, errors);
         // print(dom);
         checkOws11Exception(dom);

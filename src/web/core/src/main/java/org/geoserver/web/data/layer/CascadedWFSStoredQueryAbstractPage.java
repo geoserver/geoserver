@@ -6,6 +6,7 @@
 package org.geoserver.web.data.layer;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +50,7 @@ import org.geotools.util.logging.Logging;
 public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecuredPage {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 3805287974674434336L;
 
     static final Logger LOGGER = Logging.getLogger(CascadedWFSStoredQueryAbstractPage.class);
@@ -80,6 +82,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
 
         parameters = new GeoServerTablePanel<>("parameters", parameterProvider) {
             /** serialVersionUID */
+            @Serial
             private static final long serialVersionUID = 8282438267732625198L;
 
             @Override
@@ -127,6 +130,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         // save and cancel at the bottom of the page
         form.add(new SubmitLink("save") {
             /** serialVersionUID */
+            @Serial
             private static final long serialVersionUID = 2540349398885832870L;
 
             @Override
@@ -137,6 +141,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         form.add(new Link<Void>("cancel") {
 
             /** serialVersionUID */
+            @Serial
             private static final long serialVersionUID = 451678049485016709L;
 
             @Override
@@ -190,9 +195,9 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
     protected WFSDataStore getContentDataStore() throws IOException {
         DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
         DataAccess<?, ?> da = store.getDataStore(null);
-        if (da instanceof Wrapper) {
+        if (da instanceof Wrapper wrapper) {
             try {
-                da = ((Wrapper) da).unwrap(DataAccess.class);
+                da = wrapper.unwrap(DataAccess.class);
             } catch (IllegalArgumentException e) {
                 throw new IOException(e);
             }
@@ -224,6 +229,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
     /** Attribute model for how a single stored query parameter is supposed to be handled. */
     public static class StoredQueryParameterAttribute implements Serializable {
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = -9213562985695412130L;
 
         private String parameterName;
@@ -380,6 +386,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
 
     public class ParameterMappingTypeRenderer extends ChoiceRenderer<ParameterMappingType> {
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 1875427995762137069L;
 
         @Override
@@ -397,6 +404,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
 
     public class StoredQueryParameterAttributeProvider extends GeoServerDataProvider<StoredQueryParameterAttribute> {
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 5295091510256421604L;
 
         private List<StoredQueryParameterAttribute> items = new ArrayList<>();

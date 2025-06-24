@@ -253,10 +253,10 @@ public class APIDispatcher extends AbstractController {
             Object returnValue = mav != null ? mav.getModel().get(RESPONSE_OBJECT) : null;
 
             // if it's an AbstractDocument call the DocumentCallback implementations
-            if (returnValue instanceof AbstractDocument) {
-                applyDocumentCallbacks(dr, (AbstractDocument) returnValue);
-            } else if (returnValue instanceof OpenAPI) {
-                applyOpenAPICallbacks(dr, (OpenAPI) returnValue);
+            if (returnValue instanceof AbstractDocument document) {
+                applyDocumentCallbacks(dr, document);
+            } else if (returnValue instanceof OpenAPI pI) {
+                applyOpenAPICallbacks(dr, pI);
             }
 
             // and then the dispatcher callbacks
@@ -372,7 +372,7 @@ public class APIDispatcher extends AbstractController {
                 && !(current instanceof ClientStreamAbortedException)
                 && !isSecurityException(current)
                 && !(current instanceof HttpErrorCodeException)) {
-            if (current instanceof SAXException) current = ((SAXException) current).getException();
+            if (current instanceof SAXException exception) current = exception.getException();
             else current = current.getCause();
         }
         if (current instanceof ClientStreamAbortedException) {
@@ -388,8 +388,7 @@ public class APIDispatcher extends AbstractController {
         LOGGER.log(Level.SEVERE, "Failed to dispatch API request", t);
 
         // is it meant to be a simple and straight answer?
-        if (current instanceof HttpErrorCodeException) {
-            HttpErrorCodeException hec = (HttpErrorCodeException) current;
+        if (current instanceof HttpErrorCodeException hec) {
             response.setContentType(hec.getContentType() != null ? hec.getContentType() : "text/plain");
             if (hec.getErrorCode() >= 400) {
                 response.sendError(hec.getErrorCode(), hec.getMessage());
@@ -399,9 +398,9 @@ public class APIDispatcher extends AbstractController {
             }
         } else {
             // for service unavailable, we want to return a 404, not a 500
-            if (t instanceof ServiceException
-                    && ((ServiceException) t).getCode() != null
-                    && ((ServiceException) t).getCode().equals(ServiceException.SERVICE_UNAVAILABLE)) {
+            if (t instanceof ServiceException exception
+                    && exception.getCode() != null
+                    && exception.getCode().equals(ServiceException.SERVICE_UNAVAILABLE)) {
                 if (request.getService() != null && request.getService().getId() != null) {
                     // The error message references the ServiceInfo name, which may not match the
                     // requested service id
@@ -546,8 +545,8 @@ public class APIDispatcher extends AbstractController {
     public List<MediaType> getProducibleMediaTypes(Class<?> responseType, boolean addHTML) {
         List<MediaType> result = new ArrayList<>();
         for (HttpMessageConverter<?> converter : this.messageConverters) {
-            if (converter instanceof GenericHttpMessageConverter) {
-                if (((GenericHttpMessageConverter<?>) converter).canWrite(responseType, responseType, null)) {
+            if (converter instanceof GenericHttpMessageConverter<?> messageConverter) {
+                if (messageConverter.canWrite(responseType, responseType, null)) {
                     result.addAll(converter.getSupportedMediaTypes());
                 }
             } else if (converter.canWrite(responseType, null)) {

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -30,6 +31,7 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
 /** Lists layer groups, allows removal and editing */
 public class LayerGroupPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 5039809655908312633L;
 
     GeoServerTablePanel<LayerGroupInfo> table;
@@ -42,6 +44,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         add(
                 table = new GeoServerTablePanel<>("table", provider, true) {
 
+                    @Serial
                     private static final long serialVersionUID = 714777934301159139L;
 
                     @Override

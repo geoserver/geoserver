@@ -77,19 +77,18 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             OwsUtils.resolveCollections(item);
         }
 
-        LOGGER.info(() -> String.format(
-                "Processing resource: %s - Progress: [%s]",
-                item, getCurrentJobExecution().getProgress()));
+        LOGGER.info(() -> "Processing resource: %s - Progress: [%s]"
+                .formatted(item, getCurrentJobExecution().getProgress()));
 
-        if (item instanceof WorkspaceInfo) return process((WorkspaceInfo) item);
-        if (item instanceof CoverageStoreInfo) return process((CoverageStoreInfo) item);
-        if (item instanceof DataStoreInfo) return process((DataStoreInfo) item);
-        if (item instanceof ResourceInfo) return process((ResourceInfo) item);
-        if (item instanceof LayerInfo) return process((LayerInfo) item);
-        if (item instanceof LayerGroupInfo) return process((LayerGroupInfo) item);
-        if (item instanceof StyleInfo) return process((StyleInfo) item);
-        if (item instanceof WMSStoreInfo) return process((WMSStoreInfo) item);
-        if (item instanceof WMTSStoreInfo) return process((WMTSStoreInfo) item);
+        if (item instanceof WorkspaceInfo info) return process(info);
+        if (item instanceof CoverageStoreInfo info) return process(info);
+        if (item instanceof DataStoreInfo info) return process(info);
+        if (item instanceof ResourceInfo info) return process(info);
+        if (item instanceof LayerInfo info) return process(info);
+        if (item instanceof LayerGroupInfo info) return process(info);
+        if (item instanceof StyleInfo info) return process(info);
+        if (item instanceof WMSStoreInfo info) return process(info);
+        if (item instanceof WMTSStoreInfo info) return process(info);
 
         return item;
     }
@@ -566,21 +565,21 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
     private WorkspaceInfo resolveWorkspace(CatalogInfo item) {
         WorkspaceInfo ws = null;
-        if (item instanceof WorkspaceInfo) {
-            ws = (WorkspaceInfo) item;
-        } else if (item instanceof StoreInfo) {
-            ws = ((StoreInfo) item).getWorkspace();
-        } else if (item instanceof ResourceInfo) {
-            StoreInfo store = ((ResourceInfo) item).getStore();
+        if (item instanceof WorkspaceInfo info5) {
+            ws = info5;
+        } else if (item instanceof StoreInfo info4) {
+            ws = info4.getWorkspace();
+        } else if (item instanceof ResourceInfo info3) {
+            StoreInfo store = info3.getStore();
             ws = store == null ? null : store.getWorkspace();
-        } else if (item instanceof LayerInfo) {
-            ResourceInfo resource = ((LayerInfo) item).getResource();
+        } else if (item instanceof LayerInfo info2) {
+            ResourceInfo resource = info2.getResource();
             StoreInfo store = resource == null ? null : resource.getStore();
             ws = store == null ? null : store.getWorkspace();
-        } else if (item instanceof LayerGroupInfo) {
-            ws = ((LayerGroupInfo) item).getWorkspace();
-        } else if (item instanceof StyleInfo) {
-            ws = ((StyleInfo) item).getWorkspace();
+        } else if (item instanceof LayerGroupInfo info1) {
+            ws = info1.getWorkspace();
+        } else if (item instanceof StyleInfo info) {
+            ws = info.getWorkspace();
         } else {
             throw new IllegalArgumentException("Don't know how to extract workspace from " + item);
         }

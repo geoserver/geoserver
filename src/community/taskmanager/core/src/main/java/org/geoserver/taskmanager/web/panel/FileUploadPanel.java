@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.web.panel;
 
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -39,6 +40,7 @@ public class FileUploadPanel extends Panel {
 
     private FeedbackPanel feedbackPanel;
 
+    @Serial
     private static final long serialVersionUID = -1821529746678003578L;
 
     private IModel<String> fileNameModel;
@@ -78,6 +80,7 @@ public class FileUploadPanel extends Panel {
                         new ArrayList<String>(
                                 TaskManagerBeans.get().getFileServices().names()),
                         new IChoiceRenderer<String>() {
+                            @Serial
                             private static final long serialVersionUID = -1102965730550597918L;
 
                             @Override
@@ -98,6 +101,7 @@ public class FileUploadPanel extends Panel {
                                 return id;
                             }
                         }) {
+                    @Serial
                     private static final long serialVersionUID = 2231004332244002574L;
 
                     @Override
@@ -108,6 +112,7 @@ public class FileUploadPanel extends Panel {
         add(fileServiceChoice.setNullValid(false));
 
         folderChoice = new DropDownChoice<String>("folderSelection", new Model<String>(), new ArrayList<>()) {
+            @Serial
             private static final long serialVersionUID = 3543687800810146647L;
 
             @Override
@@ -119,6 +124,7 @@ public class FileUploadPanel extends Panel {
         add(folderChoice);
 
         fileServiceChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -136,6 +142,7 @@ public class FileUploadPanel extends Panel {
         add(addFolderButton);
         add(
                 fileUploadField = new FileUploadField("fileInput") {
+                    @Serial
                     private static final long serialVersionUID = 4614183848423156996L;
 
                     @Override
@@ -206,6 +213,7 @@ public class FileUploadPanel extends Panel {
     protected AjaxSubmitLink createAddFolderButton(DropDownChoice<String> folderChoice) {
         return new AjaxSubmitLink("addNew") {
 
+            @Serial
             private static final long serialVersionUID = 7320342263365531859L;
 
             @Override
@@ -215,6 +223,7 @@ public class FileUploadPanel extends Panel {
                 dialog.setInitialWidth(630);
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                    @Serial
                     private static final long serialVersionUID = 7410393012930249966L;
 
                     private TextFieldPanel panel;
@@ -251,6 +260,7 @@ public class FileUploadPanel extends Panel {
     }
 
     public class PreventSubmitOnEnterBehavior extends Behavior {
+        @Serial
         private static final long serialVersionUID = 1496517082650792177L;
 
         private final String id;

@@ -148,19 +148,17 @@ public class DownloadEstimatorProcess implements GeoServerProcess {
         // 1. DataStore -> look for vectorial data download
         // 2. CoverageStore -> look for raster data download
         // ////
-        if (resourceInfo instanceof FeatureTypeInfo) {
+        if (resourceInfo instanceof FeatureTypeInfo featureTypeInfo) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Working with Vectorial dataset");
             }
-            final FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) resourceInfo;
 
             return new VectorEstimator(limits).execute(featureTypeInfo, roi, clip, filter, targetCRS, progressListener);
 
-        } else if (resourceInfo instanceof CoverageInfo) {
+        } else if (resourceInfo instanceof CoverageInfo coverage) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Working with Raster dataset");
             }
-            final CoverageInfo coverage = (CoverageInfo) resourceInfo;
             return new RasterEstimator(limits, catalog)
                     .execute(
                             progressListener,

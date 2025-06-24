@@ -4,6 +4,7 @@
  */
 package org.geoserver.opensearch.eo.store;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.geotools.data.DefaultRepository;
 
@@ -14,5 +15,6 @@ import org.geotools.data.DefaultRepository;
  */
 public class SerializableDefaultRepository extends DefaultRepository implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -4285310466894316161L;
 }

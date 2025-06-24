@@ -127,7 +127,7 @@ public final class ConsoleInfoUtils {
                     .map(maybePid -> Integer.valueOf(maybePid.get(0)))
                     .orElseThrow(() -> new IOException("Problem on getting the PID for the java process"));
 
-            final Process jmapProcess = Runtime.getRuntime().exec(String.format("jmap -histo:live %d", pid));
+            final Process jmapProcess = Runtime.getRuntime().exec("jmap -histo:live %d".formatted(pid));
             try (final BufferedReader stdConsole =
                     new BufferedReader(new InputStreamReader(jmapProcess.getInputStream()))) {
 
@@ -139,8 +139,7 @@ public final class ConsoleInfoUtils {
                 return accumulator.toString();
             }
         } catch (IOException e) {
-            return String.format(
-                    "Error reading the histo memory dump with the jmap command. Exception: %s", e.getMessage());
+            return "Error reading the histo memory dump with the jmap command. Exception: %s".formatted(e.getMessage());
         }
     }
 }

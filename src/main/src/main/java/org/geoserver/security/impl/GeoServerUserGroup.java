@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -14,6 +15,7 @@ import java.io.Serializable;
  */
 public class GeoServerUserGroup implements Comparable<GeoServerUserGroup>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final String groupname;
@@ -47,8 +49,8 @@ public class GeoServerUserGroup implements Comparable<GeoServerUserGroup>, Seria
 
     @Override
     public boolean equals(Object rhs) {
-        if (rhs instanceof GeoServerUserGroup) {
-            return getGroupname().equals(((GeoServerUserGroup) rhs).getGroupname());
+        if (rhs instanceof GeoServerUserGroup group) {
+            return getGroupname().equals(group.getGroupname());
         }
         return false;
     }

@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -24,6 +25,7 @@ import org.apache.wicket.util.io.IClusterable;
  */
 public class GSModalWindow extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 4093464097152933949L;
 
     private static final String TITLE_ID = "title";
@@ -50,6 +52,7 @@ public class GSModalWindow extends Panel {
         this.panel.add(new WebMarkupContainer(ModalDialog.CONTENT_ID));
         this.panel.add(new AjaxLink<>("close") {
 
+            @Serial
             private static final long serialVersionUID = 8414211581955106952L;
 
             @Override
@@ -158,6 +161,7 @@ public class GSModalWindow extends Panel {
 
     private static final class ContentsPanel extends Panel {
 
+        @Serial
         private static final long serialVersionUID = -8770328867678258989L;
 
         public ContentsPanel(String id) {

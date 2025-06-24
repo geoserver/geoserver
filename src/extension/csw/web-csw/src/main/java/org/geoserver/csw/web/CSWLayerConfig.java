@@ -4,6 +4,7 @@
  */
 package org.geoserver.csw.web;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -21,6 +22,7 @@ import org.geoserver.web.util.MetadataMapModel;
 /** A configuration panel for CoverageInfo properties that related to CSW publication */
 public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = 6204512572932860227L;
 
     protected final CheckBox directDownloadEnabled;

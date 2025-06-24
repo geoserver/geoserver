@@ -186,8 +186,8 @@ public class Utils {
         net.sf.json.JSON json = JSONSerializer.toJSON(text);
         try {
             org.locationtech.jts.geom.Geometry geometry = GeometryEncoder.jsonToJtsGeometry(json);
-            if (geometry instanceof org.locationtech.jts.geom.Point) {
-                return (org.locationtech.jts.geom.Point) geometry;
+            if (geometry instanceof org.locationtech.jts.geom.Point point) {
+                return point;
             } else {
                 return null;
             }
@@ -228,8 +228,8 @@ public class Utils {
         try {
             JSONObject jsonObject = JSONObject.fromObject(geometryText);
             Object sr = jsonObject.get("spatialReference");
-            if (sr instanceof JSONObject)
-                return SpatialReferenceEncoder.coordinateReferenceSystemFromJSON((JSONObject) sr);
+            if (sr instanceof JSONObject object)
+                return SpatialReferenceEncoder.coordinateReferenceSystemFromJSON(object);
             else return parseSpatialReference(srText);
         } catch (JSONException e) {
             return parseSpatialReference(srText);

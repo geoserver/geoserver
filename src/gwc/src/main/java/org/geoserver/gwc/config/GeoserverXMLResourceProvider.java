@@ -49,9 +49,8 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
             throws ConfigurationException {
         this.configFileName = configFileName;
         this.configDirectory = inferConfigDirectory(resourceStore, providedConfigDirectory);
-        LOGGER.config(String.format(
-                "Will look for '%s' in directory '%s'.",
-                configFileName, configDirectory.dir().getAbsolutePath()));
+        LOGGER.config("Will look for '%s' in directory '%s'."
+                .formatted(configFileName, configDirectory.dir().getAbsolutePath()));
     }
 
     public GeoserverXMLResourceProvider(final String configFileName, final ResourceStore resourceStore)
@@ -92,7 +91,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
             String propertyValue = GeoServerExtensions.getProperty(propertyName);
             if (propertyValue != null) {
                 // this property is defined so let's use is value
-                LOGGER.fine(String.format("Property '%s' is set with value '%s'.", propertyName, propertyValue));
+                LOGGER.fine("Property '%s' is set with value '%s'.".formatted(propertyName, propertyValue));
                 return Optional.of(propertyValue);
             }
         }

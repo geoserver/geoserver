@@ -22,11 +22,10 @@ public class FeatureSizeEstimator implements ObjectSizeEstimator {
 
     @Override
     public long getSizeOf(Object object) {
-        if (object instanceof SimpleFeature) {
-            SimpleFeatureType ft = ((SimpleFeature) object).getFeatureType();
+        if (object instanceof SimpleFeature feature) {
+            SimpleFeatureType ft = feature.getFeatureType();
             return estimateSizeByFeatureType(ft);
-        } else if (object instanceof SimpleFeatureCollection) {
-            SimpleFeatureCollection fc = (SimpleFeatureCollection) object;
+        } else if (object instanceof SimpleFeatureCollection fc) {
             int count = fc.size();
             if (count > 0) {
                 SimpleFeatureType ft = fc.getSchema();

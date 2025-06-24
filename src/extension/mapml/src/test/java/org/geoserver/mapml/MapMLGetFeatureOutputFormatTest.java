@@ -451,9 +451,9 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
 
         // check links for alternate projections
         String linkPath = "//html:map-head/html:map-link[@rel='alternate' and @projection='%s']/@href";
-        assertThat(xpath.evaluate(String.format(linkPath, "OSMTILE"), doc), containsString("SRSNAME=MapML:OSMTILE"));
-        assertThat(xpath.evaluate(String.format(linkPath, "CBMTILE"), doc), containsString("SRSNAME=MapML:CBMTILE"));
-        assertThat(xpath.evaluate(String.format(linkPath, "WGS84"), doc), containsString("SRSNAME=MapML:WGS84"));
+        assertThat(xpath.evaluate(linkPath.formatted("OSMTILE"), doc), containsString("SRSNAME=MapML:OSMTILE"));
+        assertThat(xpath.evaluate(linkPath.formatted("CBMTILE"), doc), containsString("SRSNAME=MapML:CBMTILE"));
+        assertThat(xpath.evaluate(linkPath.formatted("WGS84"), doc), containsString("SRSNAME=MapML:WGS84"));
     }
 
     @Test

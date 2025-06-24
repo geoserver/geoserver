@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.system.status;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.panel.Panel;
 
 /**
@@ -13,6 +14,7 @@ import org.apache.wicket.markup.html.panel.Panel;
  */
 public class SystemStatusMonitorPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -561663546856772557L;
 
     public SystemStatusMonitorPanel(String id) {

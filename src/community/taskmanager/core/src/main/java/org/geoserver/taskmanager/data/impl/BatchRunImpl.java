@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.hibernate.annotations.FetchMode;
 @Table(indexes = {@Index(name = "schedulerReferenceIndex", columnList = "schedulerReference")})
 public class BatchRunImpl extends BaseImpl implements BatchRun {
 
+    @Serial
     private static final long serialVersionUID = 2468505054020768482L;
 
     @Id

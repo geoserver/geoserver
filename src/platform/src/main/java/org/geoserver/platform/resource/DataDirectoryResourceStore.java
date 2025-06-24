@@ -6,6 +6,7 @@
 package org.geoserver.platform.resource;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import javax.servlet.ServletContext;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -19,6 +20,7 @@ import org.springframework.web.context.ServletContextAware;
  */
 public class DataDirectoryResourceStore extends FileSystemResourceStore implements ServletContextAware, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 5014766223630555410L;
 
     public DataDirectoryResourceStore() {

@@ -311,8 +311,7 @@ class CRSRequestHandler {
             throws FactoryException, TransformException, IOException {
         if (canUseTargetCRSAsNative()) {
             Object nativeBoundsTest = feature.getUserData().get(GranuleSource.NATIVE_BOUNDS_KEY);
-            if (nativeBoundsTest instanceof ReferencedEnvelope) {
-                ReferencedEnvelope re = (ReferencedEnvelope) nativeBoundsTest;
+            if (nativeBoundsTest instanceof ReferencedEnvelope re) {
                 return re.transform(getSelectedTargetCRS(), true);
             } else {
                 return computeBBoxReproject(feature, schemaCRS);

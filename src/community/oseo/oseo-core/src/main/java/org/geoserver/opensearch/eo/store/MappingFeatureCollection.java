@@ -74,35 +74,35 @@ class MappingFeatureCollection extends BaseFeatureCollection<FeatureType, Featur
     public void accepts(
             org.geotools.api.feature.FeatureVisitor visitor, org.geotools.api.util.ProgressListener progress)
             throws IOException {
-        if (visitor instanceof MinVisitor) {
-            Expression expression = ((MinVisitor) visitor).getExpression();
+        if (visitor instanceof MinVisitor minVisitor) {
+            Expression expression = minVisitor.getExpression();
             String expressionString = getExpressionString(expression);
             String sourceField = sourcePropertyMapper.getSourceName(expressionString);
             MinVisitor withFieldNameVisitor = new MinVisitor(sourceField);
             features.accepts(withFieldNameVisitor, progress);
-            ((MinVisitor) visitor).setValue(withFieldNameVisitor.getResult().getValue());
-        } else if (visitor instanceof MaxVisitor) {
-            Expression expression = ((MaxVisitor) visitor).getExpression();
+            minVisitor.setValue(withFieldNameVisitor.getResult().getValue());
+        } else if (visitor instanceof MaxVisitor maxVisitor) {
+            Expression expression = maxVisitor.getExpression();
             String expressionString = getExpressionString(expression);
             String sourceField = sourcePropertyMapper.getSourceName(expressionString);
             MaxVisitor withFieldNameVisitor = new MaxVisitor(sourceField);
             features.accepts(withFieldNameVisitor, progress);
-            ((MaxVisitor) visitor).setValue(withFieldNameVisitor.getResult().getValue());
-        } else if (visitor instanceof UniqueVisitor) {
-            Expression expression = ((UniqueVisitor) visitor).getExpression();
+            maxVisitor.setValue(withFieldNameVisitor.getResult().getValue());
+        } else if (visitor instanceof UniqueVisitor uniqueVisitor) {
+            Expression expression = uniqueVisitor.getExpression();
             String expressionString = getExpressionString(expression);
             String sourceField = sourcePropertyMapper.getSourceName(expressionString);
             UniqueVisitor withFieldNameVisitor = new UniqueVisitor(sourceField);
             features.accepts(withFieldNameVisitor, progress);
-            ((UniqueVisitor) visitor).setValue(withFieldNameVisitor.getResult().getValue());
+            uniqueVisitor.setValue(withFieldNameVisitor.getResult().getValue());
         } else {
             super.accepts(visitor, progress);
         }
     }
 
     private String getExpressionString(Expression expression) {
-        if (expression instanceof AttributeExpressionImpl) {
-            return ((AttributeExpressionImpl) expression).getPropertyName();
+        if (expression instanceof AttributeExpressionImpl impl) {
+            return impl.getPropertyName();
         } else {
             return expression.toString();
         }

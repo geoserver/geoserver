@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.model;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -17,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class BatchesModel extends GeoServerDataProvider<Batch> {
 
+    @Serial
     private static final long serialVersionUID = -8246320435114536132L;
 
     public static class StringReversePropertyComparator<T> implements Comparator<T> {
@@ -45,6 +47,7 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
     public static final Property<Batch> WORKSPACE = new BeanProperty<Batch>("workspace", "workspace");
     public static final Property<Batch> DESCRIPTION = new BeanProperty<Batch>("description", "description");
     public static final Property<Batch> FREQUENCY = new BeanProperty<Batch>("frequency", "frequency") {
+        @Serial
         private static final long serialVersionUID = -5039727601429342722L;
 
         @Override
@@ -55,6 +58,7 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
     public static final Property<Batch> ENABLED = new BeanProperty<Batch>("enabled", "enabled");
     public static final Property<Batch> NAME = new BeanProperty<Batch>("name", "name");
     public static final Property<Batch> STARTED = new AbstractProperty<Batch>("started") {
+        @Serial
         private static final long serialVersionUID = 6588177543318699677L;
 
         @Override
@@ -70,6 +74,7 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
 
     public static final Property<Batch> STATUS = new AbstractProperty<Batch>("status") {
 
+        @Serial
         private static final long serialVersionUID = 6588177543318699677L;
 
         @Override
@@ -85,6 +90,7 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
 
     public static final Property<Batch> RUN = new AbstractProperty<Batch>("run") {
 
+        @Serial
         private static final long serialVersionUID = -978472501994535469L;
 
         @Override
@@ -94,6 +100,7 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
     };
 
     public static final Property<Batch> FULL_NAME = new AbstractProperty<Batch>("name") {
+        @Serial
         private static final long serialVersionUID = 6588177543318699677L;
 
         @Override

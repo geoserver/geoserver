@@ -97,8 +97,6 @@ public class TilesAPIBuilder extends OpenAPIBuilder<TilesServiceInfo> {
     private List<String> getCollectionIds(Predicate<TileLayer> filter) {
         return Streams.stream(gwc.getTileLayers())
                 .filter(filter)
-                .map(tl ->
-                        tl instanceof GeoServerTileLayer ? ((GeoServerTileLayer) tl).getContextualName() : tl.getName())
                 .collect(Collectors.toList());
     }
 

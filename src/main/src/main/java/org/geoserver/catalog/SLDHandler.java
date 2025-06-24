@@ -201,8 +201,8 @@ public class SLDHandler extends StyleHandler {
     SLDParser createSld10Parser(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
         SLDParser parser;
-        if (input instanceof File) {
-            parser = new SLDParser(styleFactory, (File) input);
+        if (input instanceof File file) {
+            parser = new SLDParser(styleFactory, file);
         } else {
             parser = new SLDParser(styleFactory, toReader(input));
         }
@@ -217,9 +217,9 @@ public class SLDHandler extends StyleHandler {
     }
 
     Parser createSld11Parser(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver) {
-        if (resourceLocator == null && input instanceof File) {
+        if (resourceLocator == null && input instanceof File file) {
             // setup for resolution of relative paths
-            final java.net.URL surl = URLs.fileToUrl((File) input);
+            final java.net.URL surl = URLs.fileToUrl(file);
             DefaultResourceLocator defResourceLocator = new DefaultResourceLocator();
             defResourceLocator.setSourceUrl(surl);
             resourceLocator = defResourceLocator;
@@ -318,8 +318,8 @@ public class SLDHandler extends StyleHandler {
         @SuppressWarnings("PMD.CloseResource") // returned as part of the response
         BufferedReader reader = null;
 
-        if (input instanceof InputStream) {
-            reader = RequestUtils.getBufferedXMLReader((InputStream) input, XML_LOOKAHEAD);
+        if (input instanceof InputStream stream) {
+            reader = RequestUtils.getBufferedXMLReader(stream, XML_LOOKAHEAD);
         } else {
             reader = RequestUtils.getBufferedXMLReader(toReader(input), XML_LOOKAHEAD);
         }

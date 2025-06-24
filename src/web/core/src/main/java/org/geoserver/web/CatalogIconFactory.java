@@ -150,10 +150,10 @@ public class CatalogIconFactory implements Serializable {
         Catalog catalog = storeInfo.getCatalog();
         final ResourcePool resourcePool = catalog.getResourcePool();
 
-        if (storeInfo instanceof DataStoreInfo) {
+        if (storeInfo instanceof DataStoreInfo info1) {
             DataAccessFactory dataStoreFactory = null;
             try {
-                dataStoreFactory = resourcePool.getDataStoreFactory((DataStoreInfo) storeInfo);
+                dataStoreFactory = resourcePool.getDataStoreFactory(info1);
             } catch (IOException e) {
                 LOGGER.log(Level.INFO, "factory class for storeInfo " + storeInfo.getName() + " not found", e);
             }
@@ -162,8 +162,8 @@ public class CatalogIconFactory implements Serializable {
                 return getStoreIcon(dataStoreFactory.getClass());
             }
 
-        } else if (storeInfo instanceof CoverageStoreInfo) {
-            AbstractGridFormat format = resourcePool.getGridCoverageFormat((CoverageStoreInfo) storeInfo);
+        } else if (storeInfo instanceof CoverageStoreInfo info) {
+            AbstractGridFormat format = resourcePool.getGridCoverageFormat(info);
             if (format != null) {
                 return getStoreIcon(format.getClass());
             }

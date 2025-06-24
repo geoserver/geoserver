@@ -5,6 +5,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import java.util.Arrays;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.parameter.GeneralParameterValue;
@@ -17,6 +18,7 @@ import org.locationtech.jts.geom.MultiPolygon;
  */
 public class CoverageAccessLimits extends DataAccessLimits {
 
+    @Serial
     private static final long serialVersionUID = -4269595923034528171L;
 
     /** Used as a ROI filter on raster data */

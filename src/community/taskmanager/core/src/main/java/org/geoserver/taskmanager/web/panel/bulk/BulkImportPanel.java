@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.web.panel.bulk;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Scanner;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -27,6 +28,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 // TODO WICKET8 - Verify this page works OK
 public class BulkImportPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -7787191736336649903L;
 
     public BulkImportPanel(String id) {
@@ -56,6 +58,7 @@ public class BulkImportPanel extends Panel {
         add(cbValidated);
 
         AjaxSubmitLink importButton = new AjaxSubmitLink("import") {
+            @Serial
             private static final long serialVersionUID = -3288982013478650146L;
 
             @Override
@@ -67,6 +70,7 @@ public class BulkImportPanel extends Panel {
                     ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                 } else {
                     dialog.showOkCancel(target, new DialogDelegate() {
+                        @Serial
                         private static final long serialVersionUID = -8203963847815744909L;
 
                         @Override

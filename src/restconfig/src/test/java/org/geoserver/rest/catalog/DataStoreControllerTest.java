@@ -102,8 +102,8 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         Object datastores = ((JSONObject) json).getJSONObject("dataStores").get("dataStore");
         assertNotNull(datastores);
 
-        if (datastores instanceof JSONArray) {
-            assertEquals(catalog.getDataStoresByWorkspace("sf").size(), ((JSONArray) datastores).size());
+        if (datastores instanceof JSONArray array) {
+            assertEquals(catalog.getDataStoresByWorkspace("sf").size(), array.size());
         } else {
             assertEquals(1, catalog.getDataStoresByWorkspace("sf").size());
         }

@@ -171,10 +171,10 @@ class TileJSONBuilder {
         }
         tileJSON.setDescription(description);
 
-        if (published instanceof LayerInfo) {
-            decorateTileJSON((LayerInfo) published, tileJSON, isVector, subset);
-        } else if (published instanceof LayerGroupInfo) {
-            tileJSON = decorateTileJSON((LayerGroupInfo) published, tileJSON, isVector, subset);
+        if (published instanceof LayerInfo info1) {
+            decorateTileJSON(info1, tileJSON, isVector, subset);
+        } else if (published instanceof LayerGroupInfo info) {
+            tileJSON = decorateTileJSON(info, tileJSON, isVector, subset);
         }
         setTileJSONZoomLevels(tileJSON, subset);
         return tileJSON;

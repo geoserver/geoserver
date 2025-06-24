@@ -106,8 +106,8 @@ public class CurveTypeWrapper implements FeatureType {
         List<PropertyDescriptor> result = new ArrayList<>();
         Collection<PropertyDescriptor> descriptors = delegate.getDescriptors();
         for (PropertyDescriptor pd : descriptors) {
-            if (pd instanceof GeometryDescriptor) {
-                pd = wrapGeometryDescriptor((GeometryDescriptor) pd);
+            if (pd instanceof GeometryDescriptor descriptor) {
+                pd = wrapGeometryDescriptor(descriptor);
             }
             result.add(pd);
         }

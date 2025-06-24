@@ -227,16 +227,15 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
 
     private Iterator<Zone> getZoneIterator(Query query) {
         Filter filter = query.getFilter();
-        if (filter instanceof PropertyIsEqualTo) {
-            PropertyIsEqualTo pe = (PropertyIsEqualTo) filter;
+        if (filter instanceof PropertyIsEqualTo pe) {
             Expression ex1 = pe.getExpression1();
             Expression ex2 = pe.getExpression2();
-            if (ex1 instanceof DGGSSetFunction && ((DGGSSetFunction) ex1).isStable()) {
+            if (ex1 instanceof DGGSSetFunction function && function.isStable()) {
                 query.setFilter(Filter.INCLUDE); // replaced filter with source iterator
-                return ((DGGSSetFunction) ex1).getMatchedZones();
+                return function.getMatchedZones();
             } // should we handle backwards comparison too?
-            else if (ex1 instanceof PropertyName
-                    && ((PropertyName) ex1).getPropertyName().equals("zoneId")
+            else if (ex1 instanceof PropertyName name
+                    && name.getPropertyName().equals("zoneId")
                     && ex2 instanceof Literal) {
                 query.setFilter(Filter.INCLUDE); // replaced filter with source iterator
                 Zone zone = store.dggs.getZone(ex2.evaluate(null, String.class));
@@ -296,24 +295,23 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
 
     @Override
     protected boolean handleVisitor(Query query, FeatureVisitor visitor) throws IOException {
-        if (visitor instanceof FeatureAttributeVisitor) {
-            FeatureAttributeVisitor fav = (FeatureAttributeVisitor) visitor;
+        if (visitor instanceof FeatureAttributeVisitor fav) {
             Set<String> attributes = getAttributeSet(fav);
             // can optimize a few visits based on resolution alone
             if (attributes != null && attributes.equals(Collections.singleton(DGGSStore.RESOLUTION))) {
                 int[] resolutions = getDGGS().getResolutions();
-                if (fav instanceof MinVisitor) {
-                    ((MinVisitor) fav).setValue(resolutions[0]);
+                if (fav instanceof MinVisitor minVisitor) {
+                    minVisitor.setValue(resolutions[0]);
                     return true;
-                } else if (fav instanceof MaxVisitor) {
-                    ((MaxVisitor) fav).setValue(resolutions[resolutions.length - 1]);
+                } else if (fav instanceof MaxVisitor maxVisitor) {
+                    maxVisitor.setValue(resolutions[resolutions.length - 1]);
                     return true;
-                } else if (fav instanceof UniqueVisitor) {
+                } else if (fav instanceof UniqueVisitor uniqueVisitor) {
                     // converting an array to a list it's harder than it seems, Arrays.asList
                     // would produce a List with one item, the array given as a param
                     List<Integer> rl =
                             Arrays.stream(resolutions).mapToObj(v -> v).collect(Collectors.toList());
-                    ((UniqueVisitor) fav).setValue(rl);
+                    uniqueVisitor.setValue(rl);
                     return true;
                 }
             }

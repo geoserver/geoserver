@@ -77,7 +77,7 @@ public class WMSLoader extends LegacyServiceLoader<WMSInfo> {
         Catalog catalog = geoServer.getCatalog();
         // ... we need access to the actual catalog, not a filtered out view of the
         // layers accessible to the current user
-        if (catalog instanceof Wrapper) catalog = ((Wrapper) catalog).unwrap(Catalog.class);
+        if (catalog instanceof Wrapper wrapper) catalog = wrapper.unwrap(Catalog.class);
         CatalogFactory factory = catalog.getFactory();
 
         List<Map> baseMaps = (List<Map>) props.get("BaseMapGroups");

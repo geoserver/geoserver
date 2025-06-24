@@ -420,14 +420,14 @@ public class GeoServerDataDirectory {
      */
     private @Nonnull Resource config(StoreInfo si) {
         final Resource r;
-        if (si instanceof DataStoreInfo) {
-            r = config((DataStoreInfo) si);
-        } else if (si instanceof CoverageStoreInfo) {
-            r = config((CoverageStoreInfo) si);
-        } else if (si instanceof WMTSStoreInfo) {
-            r = config((WMTSStoreInfo) si);
-        } else if (si instanceof WMSStoreInfo) {
-            r = config((WMSStoreInfo) si);
+        if (si instanceof DataStoreInfo info3) {
+            r = config(info3);
+        } else if (si instanceof CoverageStoreInfo info2) {
+            r = config(info2);
+        } else if (si instanceof WMTSStoreInfo info1) {
+            r = config(info1);
+        } else if (si instanceof WMSStoreInfo info) {
+            r = config(info);
         } else {
             // It'd be nice if we could be generic and cover potential future StoreInfo types.
             throw new IllegalArgumentException(
@@ -445,14 +445,14 @@ public class GeoServerDataDirectory {
      */
     private @Nonnull Resource config(ResourceInfo si) {
         final Resource r;
-        if (si instanceof FeatureTypeInfo) {
-            r = config((FeatureTypeInfo) si);
-        } else if (si instanceof CoverageInfo) {
-            r = config((CoverageInfo) si);
-        } else if (si instanceof WMTSLayerInfo) {
-            r = config((WMTSLayerInfo) si);
-        } else if (si instanceof WMSLayerInfo) {
-            r = config((WMSLayerInfo) si);
+        if (si instanceof FeatureTypeInfo info3) {
+            r = config(info3);
+        } else if (si instanceof CoverageInfo info2) {
+            r = config(info2);
+        } else if (si instanceof WMTSLayerInfo info1) {
+            r = config(info1);
+        } else if (si instanceof WMSLayerInfo info) {
+            r = config(info);
         } else {
             // It'd be nice if we could be generic and cover potential future ResourceInfo types.
             throw new IllegalArgumentException(
@@ -604,7 +604,7 @@ public class GeoServerDataDirectory {
      * @return A {@link Resource}
      */
     public @Nonnull Resource config(LayerGroupInfo lgi) {
-        Resource r = get(lgi, String.format("%s.xml", lgi.getName()));
+        Resource r = get(lgi, "%s.xml".formatted(lgi.getName()));
         assert r != null;
         return r;
     }

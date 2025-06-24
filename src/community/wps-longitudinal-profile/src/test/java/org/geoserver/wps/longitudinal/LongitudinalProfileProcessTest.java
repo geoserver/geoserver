@@ -13,7 +13,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,7 +84,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
     }
 
     private String loadTemplate(String templateName, Map<String, String> values) throws IOException {
-        String template = new String(Files.readAllBytes(Paths.get("src/test/resources/" + templateName)));
+        String template = new String(Files.readAllBytes(Path.of("src/test/resources/" + templateName)));
         for (Map.Entry<String, String> entry : values.entrySet()) {
             template = template.replace("${" + entry.getKey() + "}", entry.getValue());
         }

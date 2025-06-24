@@ -446,7 +446,7 @@ public final class AppSchemaUtils {
                 }
             }
         } else {
-            throw new RuntimeException(String.format("FeatureTypeMapping '%s' is unknown.", targetElementValue));
+            throw new RuntimeException("FeatureTypeMapping '%s' is unknown.".formatted(targetElementValue));
         }
         return null;
     }
@@ -480,7 +480,7 @@ public final class AppSchemaUtils {
                 }
             }
         } else {
-            throw new RuntimeException(String.format("FeatureTypeMapping '%s' is unknown.", targetElementValue));
+            throw new RuntimeException("FeatureTypeMapping '%s' is unknown.".formatted(targetElementValue));
         }
         return ret;
     }

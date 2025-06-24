@@ -6,6 +6,7 @@
 package org.geoserver.security.web.role;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.WicketRuntimeException;
@@ -15,6 +16,7 @@ import org.geoserver.web.GeoServerApplication;
 
 public class RuleRolesModel extends RolesModel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override

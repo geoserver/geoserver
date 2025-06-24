@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.util;
 
+import java.io.Serial;
 import java.util.Map;
 import org.apache.wicket.model.IModel;
 
@@ -17,7 +18,9 @@ import org.apache.wicket.model.IModel;
  * @author Justin Deoliveira, The Open Planning Project
  */
 public class MapModel<T> implements IModel<T> {
+    @Serial
     private static final long serialVersionUID = 3122822158252376260L;
+
     IModel<? extends Map<String, ?>> model;
     String expression;
 
@@ -52,6 +55,7 @@ public class MapModel<T> implements IModel<T> {
     }
 
     private static class MapWrappingModel implements IModel<Map<String, ?>> {
+        @Serial
         private static final long serialVersionUID = -1474150801738143281L;
 
         private Map<String, ?> myMap;

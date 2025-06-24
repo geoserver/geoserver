@@ -280,8 +280,8 @@ public class STACService {
         Set values = unique.getUnique();
         return (Set<String>) values.stream()
                 .map(a -> {
-                    if (a instanceof Attribute) {
-                        return ((Attribute) a).getValue();
+                    if (a instanceof Attribute attribute) {
+                        return attribute.getValue();
                     } else {
                         return a.toString();
                     }
@@ -676,9 +676,7 @@ public class STACService {
         if (timeSpec instanceof Date) {
             // range containment
             return FF.between(FF.literal(timeSpec), FF.property("timeStart"), FF.property("timeEnd"));
-        } else if (timeSpec instanceof DateRange) {
-            // range overlap filter
-            DateRange dateRange = (DateRange) timeSpec;
+        } else if (timeSpec instanceof DateRange dateRange) {
             Literal before = FF.literal(dateRange.getMinValue());
             Literal after = FF.literal(dateRange.getMaxValue());
             Filter lower = FF.lessOrEqual(FF.property("timeStart"), after);

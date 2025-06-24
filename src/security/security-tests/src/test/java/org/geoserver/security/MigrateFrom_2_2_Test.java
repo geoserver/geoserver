@@ -77,8 +77,7 @@ public class MigrateFrom_2_2_Test extends GeoServerSystemTestSupport {
                 assertTrue(chain.isAllowSessionCreation());
             else assertFalse(chain.isAllowSessionCreation());
 
-            if (chain instanceof VariableFilterChain) {
-                VariableFilterChain vchain = (VariableFilterChain) chain;
+            if (chain instanceof VariableFilterChain vchain) {
 
                 assertEquals(
                         GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,

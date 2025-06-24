@@ -124,22 +124,22 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     public void writeValue(Object value) throws IOException {
         if (isNull(value)) {
             generator.writeNull();
-        } else if (value instanceof String) {
-            generator.writeString((String) value);
-        } else if (value instanceof Integer) {
-            generator.writeNumber((Integer) value);
-        } else if (value instanceof Double) {
-            generator.writeNumber((Double) value);
-        } else if (value instanceof Float) {
-            generator.writeNumber((Float) value);
-        } else if (value instanceof Long) {
-            generator.writeNumber((Long) value);
-        } else if (value instanceof BigInteger) {
-            generator.writeNumber((BigInteger) value);
-        } else if (value instanceof BigDecimal) {
-            generator.writeNumber((BigDecimal) value);
-        } else if (value instanceof Boolean) {
-            generator.writeBoolean((Boolean) value);
+        } else if (value instanceof String string) {
+            generator.writeString(string);
+        } else if (value instanceof Integer integer1) {
+            generator.writeNumber(integer1);
+        } else if (value instanceof Double double1) {
+            generator.writeNumber(double1);
+        } else if (value instanceof Float float1) {
+            generator.writeNumber(float1);
+        } else if (value instanceof Long long1) {
+            generator.writeNumber(long1);
+        } else if (value instanceof BigInteger integer) {
+            generator.writeNumber(integer);
+        } else if (value instanceof BigDecimal decimal) {
+            generator.writeNumber(decimal);
+        } else if (value instanceof Boolean boolean1) {
+            generator.writeBoolean(boolean1);
         } else if (value instanceof Date) {
             generator.writeString(new ISO8601Formatter().format(value));
         } else if (value.getClass().isArray()) {
@@ -186,23 +186,20 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
         if (result instanceof String || result instanceof Number || result instanceof Boolean) {
             writeElementName(key, null);
             writeValue(result);
-        } else if (result instanceof Date) {
-            Date timeStamp = (Date) result;
+        } else if (result instanceof Date timeStamp) {
             String formatted = new StdDateFormat().withColonInTimeZone(true).format(timeStamp);
             writeElementNameAndValue(key, formatted, encodingHints);
         } else if (result instanceof Geometry) {
             writeElementName(key, encodingHints);
             writeGeometry(result);
-        } else if (result instanceof ComplexAttribute) {
-            ComplexAttribute attr = (ComplexAttribute) result;
+        } else if (result instanceof ComplexAttribute attr) {
             writeElementNameAndValue(key, attr.getValue(), encodingHints);
-        } else if (result instanceof Attribute) {
-            Attribute attr = (Attribute) result;
+        } else if (result instanceof Attribute attr) {
             writeElementNameAndValue(key, attr.getValue(), encodingHints);
         } else if (result instanceof JsonNode) {
             writeStaticContent(key, result, encodingHints);
-        } else if (result instanceof List) {
-            writeList(key, (List) result, encodingHints, false);
+        } else if (result instanceof List list1) {
+            writeList(key, list1, encodingHints, false);
         } else if (result == null) {
             writeElementName(key, encodingHints);
             generator.writeNull();

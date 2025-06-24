@@ -5,6 +5,7 @@
 
 package org.geoserver.metadata.web.panel;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -24,6 +25,7 @@ public class ProgressPanel extends Panel {
         void onCanceled(AjaxRequestTarget target);
     }
 
+    @Serial
     private static final long serialVersionUID = -258488244844400514L;
 
     private GSModalWindow window;
@@ -52,6 +54,7 @@ public class ProgressPanel extends Panel {
     public void start(AjaxRequestTarget target, IModel<Float> model, EventHandler handler) {
         ProgressBar progressBar =
                 new ProgressBar("content", new ProgressionModel() {
+                    @Serial
                     private static final long serialVersionUID = 5716227987463146386L;
 
                     @Override
@@ -59,6 +62,7 @@ public class ProgressPanel extends Panel {
                         return new Progression(cancelMe ? 100 : Math.round(100 * model.getObject()));
                     }
                 }) {
+                    @Serial
                     private static final long serialVersionUID = 6384204231727968702L;
 
                     @Override
@@ -74,6 +78,7 @@ public class ProgressPanel extends Panel {
 
         window.setContent(progressBar);
         window.setCloseButtonCallback(new GSModalWindow.CloseButtonCallback() {
+            @Serial
             private static final long serialVersionUID = 5570427983448661370L;
 
             @Override
@@ -87,6 +92,7 @@ public class ProgressPanel extends Panel {
     }
 
     protected static class ProgressPage extends WebPage {
+        @Serial
         private static final long serialVersionUID = -6560263676965574430L;
 
         public ProgressPage(ProgressBar progressBar) {

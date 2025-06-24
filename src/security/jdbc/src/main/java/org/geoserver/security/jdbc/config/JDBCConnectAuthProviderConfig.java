@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.jdbc.config;
 
+import java.io.Serial;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -18,6 +19,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 public class JDBCConnectAuthProviderConfig extends BaseSecurityNamedServiceConfig
         implements SecurityAuthProviderConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String driverClassName;

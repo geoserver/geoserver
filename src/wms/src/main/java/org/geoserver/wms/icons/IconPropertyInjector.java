@@ -113,10 +113,10 @@ public final class IconPropertyInjector {
             List<Mark> markList = new ArrayList<>();
             List<ExternalGraphic> externalGraphicList = new ArrayList<>();
             for (GraphicalSymbol symbol : original.graphicalSymbols()) {
-                if (symbol instanceof Mark) {
-                    markList.add(injectMark(key, (Mark) symbol));
-                } else if (symbol instanceof ExternalGraphic) {
-                    externalGraphicList.add(injectExternalGraphic(key, (ExternalGraphic) symbol));
+                if (symbol instanceof Mark mark) {
+                    markList.add(injectMark(key, mark));
+                } else if (symbol instanceof ExternalGraphic graphic) {
+                    externalGraphicList.add(injectExternalGraphic(key, graphic));
                 }
             }
             marks = markList.toArray(new Mark[0]);

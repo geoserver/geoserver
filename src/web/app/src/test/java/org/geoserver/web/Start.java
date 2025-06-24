@@ -292,8 +292,8 @@ public class Start {
             String alias = e.nextElement();
             if (ks.isCertificateEntry(alias)) {
                 Certificate c = ks.getCertificate(alias);
-                if (c instanceof X509Certificate) {
-                    X500Principal p = ((X509Certificate) c).getSubjectX500Principal();
+                if (c instanceof X509Certificate certificate) {
+                    X500Principal p = certificate.getSubjectX500Principal();
                     if (p.getName().contains(hostname)) return true;
                 }
             }

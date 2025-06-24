@@ -155,8 +155,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
         if (this.hints != null && this.hints.containsKey(Hints.GRID_COVERAGE_FACTORY)) {
             final Object factory = this.hints.get(Hints.GRID_COVERAGE_FACTORY);
-            if (factory != null && factory instanceof GridCoverageFactory) {
-                this.coverageFactory = (GridCoverageFactory) factory;
+            if (factory != null && factory instanceof GridCoverageFactory gridCoverageFactory) {
+                this.coverageFactory = gridCoverageFactory;
             }
         }
         if (this.coverageFactory == null) {
@@ -830,9 +830,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
     /** Get a {@link GridCoverage2DReader} wrapping the provided delegate reader */
     public static GridCoverage2DReader wrap(
             GridCoverage2DReader reader, CoverageView coverageView, CoverageInfo coverageInfo, Hints hints) {
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            return new StructuredCoverageViewReader(
-                    (StructuredGridCoverage2DReader) reader, coverageView, coverageInfo, hints);
+        if (reader instanceof StructuredGridCoverage2DReader dReader) {
+            return new StructuredCoverageViewReader(dReader, coverageView, coverageInfo, hints);
         } else {
             return new CoverageViewReader(reader, coverageView, coverageInfo, hints);
         }
@@ -1093,8 +1092,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
             for (CoverageView.InputCoverageBand inputCoverageBand : band.getInputCoverageBands()) {
                 // get the reader for the coverage associated with this input coverage band
                 GridCoverageReader reader1 = readers.get(inputCoverageBand.getCoverageName());
-                if (reader1 instanceof GridCoverage2DReader) {
-                    GridCoverage2DReader bandReader = (GridCoverage2DReader) reader1;
+                if (reader1 instanceof GridCoverage2DReader bandReader) {
                     ResourceInfo resourceInfoBand = bandReader.getInfo(inputCoverageBand.getCoverageName());
                     // reader is associated with a PAM
                     if (resourceInfoBand instanceof PAMResourceInfo) {

@@ -12,9 +12,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import java.io.IOException;
+import java.io.Serial;
 
 public class KombuSourceDeserializer extends StdDeserializer<KombuSource> {
 
+    @Serial
     private static final long serialVersionUID = 6089865078148924995L;
 
     public KombuSourceDeserializer() {

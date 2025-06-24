@@ -221,8 +221,7 @@ public class ProcessesService {
             EList exceptions =
                     response.getStatus().getProcessFailed().getExceptionReport().getException();
             for (Object ex : exceptions) {
-                if (ex instanceof ExceptionType) {
-                    ExceptionType exceptionType = (ExceptionType) ex;
+                if (ex instanceof ExceptionType exceptionType) {
                     throw new APIException(
                             exceptionType.getExceptionCode(),
                             exceptionType.getExceptionText().get(0).toString(),
@@ -329,8 +328,7 @@ public class ProcessesService {
             return;
         }
 
-        if (result instanceof RawDataEncoderDelegate) {
-            RawDataEncoderDelegate encoder = (RawDataEncoderDelegate) result;
+        if (result instanceof RawDataEncoderDelegate encoder) {
             generator.writeStartObject();
             String mimeType = encoder.getRawData().getMimeType();
             generator.writeStringField("mediaType", mimeType);
@@ -338,10 +336,9 @@ public class ProcessesService {
             generator.writeRaw(": ");
             encoder.encode(generator);
             generator.writeEndObject();
-        } else if (result instanceof XMLEncoderDelegate) {
-            writeXMLOutput(generator, (XMLEncoderDelegate) result);
-        } else if (result instanceof CDataEncoderDelegate) {
-            CDataEncoderDelegate cdata = (CDataEncoderDelegate) result;
+        } else if (result instanceof XMLEncoderDelegate delegate) {
+            writeXMLOutput(generator, delegate);
+        } else if (result instanceof CDataEncoderDelegate cdata) {
             String mimeType = cdata.getPPIO().getMimeType();
 
             if (mimeType != null && APPLICATION_JSON.isCompatibleWith(MediaType.parseMediaType(mimeType))) {
@@ -356,28 +353,24 @@ public class ProcessesService {
                 generator.writeRaw("\"");
                 generator.writeEndObject();
             }
-        } else if (result instanceof BinaryEncoderDelegate) {
-            BinaryEncoderDelegate binary = (BinaryEncoderDelegate) result;
+        } else if (result instanceof BinaryEncoderDelegate binary) {
             generator.writeStartObject();
             generator.writeStringField("mediaType", binary.getPPIO().getMimeType());
             generator.writeFieldName("value");
             generator.writeRaw(": ");
             binary.encode(generator);
             generator.writeEndObject();
-        } else if (result instanceof String) {
-            generator.writeString((String) result);
-        } else if (result instanceof Number) {
-            generator.writeNumber(((Number) result).doubleValue());
-        } else if (result instanceof Boolean) {
-            generator.writeBoolean((Boolean) result);
-        } else if (result
-                instanceof FeatureCollectionType) { // these input happen while deserializing an async response
-            FeatureCollectionType fct = (FeatureCollectionType) result;
+        } else if (result instanceof String string) {
+            generator.writeString(string);
+        } else if (result instanceof Number number) {
+            generator.writeNumber(number.doubleValue());
+        } else if (result instanceof Boolean boolean1) {
+            generator.writeBoolean(boolean1);
+        } else if (result instanceof FeatureCollectionType fct) {
             FeatureCollection<?, ?> fc =
                     (FeatureCollection<?, ?>) fct.getFeature().get(0);
             writeXMLOutput(generator, new XMLEncoderDelegate(new WFSPPIO.WFS10(), fc));
-        } else if (result instanceof net.opengis.wfs20.FeatureCollectionType) {
-            net.opengis.wfs20.FeatureCollectionType fct = (net.opengis.wfs20.FeatureCollectionType) result;
+        } else if (result instanceof net.opengis.wfs20.FeatureCollectionType fct) {
             FeatureCollection<?, ?> fc =
                     (FeatureCollection<?, ?>) fct.getMember().get(0);
             writeXMLOutput(generator, new XMLEncoderDelegate(new WFSPPIO.WFS20(), fc));
@@ -435,28 +428,22 @@ public class ProcessesService {
     private void writeComplex(HttpServletResponse httpResponse, ComplexDataType complexData) {
         Object rawResult = complexData.getData().get(0);
         try {
-            if (rawResult instanceof RawDataEncoderDelegate) {
-                RawDataEncoderDelegate delegate = (RawDataEncoderDelegate) rawResult;
+            if (rawResult instanceof RawDataEncoderDelegate delegate) {
                 httpResponse.setContentType(delegate.getRawData().getMimeType());
                 delegate.encode(httpResponse.getOutputStream());
-            } else if (rawResult instanceof XMLEncoderDelegate) {
-                XMLEncoderDelegate delegate = (XMLEncoderDelegate) rawResult;
+            } else if (rawResult instanceof XMLEncoderDelegate delegate) {
                 TransformerHandler xmls =
                         ((SAXTransformerFactory) SAXTransformerFactory.newInstance()).newTransformerHandler();
                 xmls.setResult(new StreamResult(httpResponse.getOutputStream()));
                 httpResponse.setContentType(delegate.getPPIO().getMimeType());
                 delegate.encode(xmls);
-            } else if (rawResult instanceof CDataEncoderDelegate) {
-                CDataEncoderDelegate cdataDelegate = (CDataEncoderDelegate) rawResult;
+            } else if (rawResult instanceof CDataEncoderDelegate cdataDelegate) {
                 httpResponse.setContentType(cdataDelegate.getPPIO().getMimeType());
                 cdataDelegate.encode(httpResponse.getOutputStream());
-            } else if (rawResult instanceof BinaryEncoderDelegate) {
-                BinaryEncoderDelegate binaryDelegate = (BinaryEncoderDelegate) rawResult;
+            } else if (rawResult instanceof BinaryEncoderDelegate binaryDelegate) {
                 httpResponse.setContentType(binaryDelegate.getPPIO().getMimeType());
                 binaryDelegate.encode(httpResponse.getOutputStream());
-            } else if (rawResult instanceof String) {
-                // this is an already encoded string (async execution stored), just write it out
-                String result = (String) rawResult;
+            } else if (rawResult instanceof String result) {
                 httpResponse.setContentType(complexData.getMimeType());
                 httpResponse.getWriter().print(result);
             } else {

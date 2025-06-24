@@ -263,12 +263,12 @@ class RasterDirectDownloader {
         ParameterBlock params = read.getParameterBlock();
         Object source = params.getObjectParameter(0);
 
-        if (source instanceof FileImageInputStreamExtImpl) {
-            return ((FileImageInputStreamExtImpl) source).getFile();
-        } else if (source instanceof File) {
-            return (File) source;
-        } else if (source instanceof String) {
-            File file = new File((String) source);
+        if (source instanceof FileImageInputStreamExtImpl impl) {
+            return impl.getFile();
+        } else if (source instanceof File file1) {
+            return file1;
+        } else if (source instanceof String string) {
+            File file = new File(string);
             if (file.exists()) return file;
         }
 
@@ -415,8 +415,8 @@ class RasterDirectDownloader {
         if (!roi.getBounds().contains(source.getBounds())) return false;
 
         // quick check for ROIGeometry, rectangular geometry covering the whole source iamge
-        if (roi instanceof ROIGeometry) {
-            Geometry g = ((ROIGeometry) roi).getAsGeometry();
+        if (roi instanceof ROIGeometry geometry) {
+            Geometry g = geometry.getAsGeometry();
             if (g.isRectangle() && JTS.toRectangle2D(g.getEnvelopeInternal()).equals(source.getBounds())) return true;
         }
 

@@ -4,12 +4,14 @@
  */
 package org.geoserver.geofence.web.authentication;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProviderConfig;
 import org.geoserver.security.web.auth.AuthenticationProviderPanel;
 
 public class GeoFenceAuthProviderPanel extends AuthenticationProviderPanel<GeoFenceAuthenticationProviderConfig> {
 
+    @Serial
     private static final long serialVersionUID = 4454241105050831394L;
 
     public GeoFenceAuthProviderPanel(String id, IModel<GeoFenceAuthenticationProviderConfig> model) {

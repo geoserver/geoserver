@@ -6,6 +6,7 @@
 package org.geoserver.metadata.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,6 +49,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 // TODO WICKET8 - Verify this page works OK
 public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 2273966783474224452L;
 
     private ProgressPanel progressPanel;
@@ -101,6 +103,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
 
     private AjaxSubmitLink clearButton(GeoServerDialog dialog, CheckBox clearTemplates) {
         return new AjaxSubmitLink("clear") {
+            @Serial
             private static final long serialVersionUID = 6765654318639597167L;
 
             @Override
@@ -111,6 +114,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
 
             private DialogDelegate dialogDelegate() {
                 return new GeoServerDialog.DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = -9025890060280394005L;
 
                     private boolean ok = false;
@@ -169,6 +173,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
     private AjaxSubmitLink nativeToCustomButton(
             GeoServerDialog dialog, TextField<String> ruleList, FileUploadField csvCustom) {
         return new AjaxSubmitLink("custom") {
+            @Serial
             private static final long serialVersionUID = 6765654318639597167L;
 
             @Override
@@ -197,6 +202,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
 
             private DialogDelegate dialogDelegate(String csvData, List<Integer> indexes) {
                 return new GeoServerDialog.DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = -9025890060280394005L;
 
                     private boolean ok = false;
@@ -260,6 +266,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
     private AjaxSubmitLink importButton(
             GeoServerDialog dialog, DropDownChoice<String> geonetworkName, FileUploadField csvImport) {
         return new AjaxSubmitLink("import") {
+            @Serial
             private static final long serialVersionUID = 6765654318639597167L;
 
             @Override
@@ -277,6 +284,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
 
             private DialogDelegate dialogDelegate(DropDownChoice<String> geonetworkName, String csvData) {
                 return new GeoServerDialog.DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = -9025890060280394005L;
 
                     private boolean ok = false;
@@ -338,11 +346,13 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
 
     private AjaxLink<Object> fixButton(GeoServerDialog dialog) {
         return new AjaxLink<>("fix") {
+            @Serial
             private static final long serialVersionUID = 4636152085574084063L;
 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = 1462655770445974740L;
 
                     private boolean ok = false;
@@ -431,6 +441,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
     private void startProgress(AjaxRequestTarget target, GlobalModel<Float> progressModel, String title) {
         progressPanel.setTitle(new StringResourceModel(title, this));
         progressPanel.start(target, progressModel, new ProgressPanel.EventHandler() {
+            @Serial
             private static final long serialVersionUID = 8967087707332457974L;
 
             @Override

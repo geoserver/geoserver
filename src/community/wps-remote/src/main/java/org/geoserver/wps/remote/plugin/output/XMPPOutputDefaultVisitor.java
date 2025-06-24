@@ -66,7 +66,7 @@ public class XMPPOutputDefaultVisitor implements XMPPOutputVisitor {
             String targetWorkspace,
             String metadata)
             throws Exception {
-        if (value != null && value instanceof String && !((String) value).isEmpty()) {
+        if (value != null && value instanceof String string && !string.isEmpty()) {
             return visitor.produceOutput(
                     value,
                     type,

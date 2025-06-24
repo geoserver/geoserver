@@ -141,8 +141,8 @@ public class ChangesetIndexProvider {
         Geometry featureGeometry = (Geometry) feature.getDefaultGeometry();
         if (featureGeometry instanceof MultiPolygon) {
             return featureGeometry;
-        } else if (featureGeometry instanceof Polygon) {
-            return featureGeometry.getFactory().createMultiPolygon(new Polygon[] {(Polygon) featureGeometry});
+        } else if (featureGeometry instanceof Polygon polygon) {
+            return featureGeometry.getFactory().createMultiPolygon(new Polygon[] {polygon});
         } else {
             throw new IllegalArgumentException("Unexpected geometry (type) from checkpoint: " + featureGeometry);
         }

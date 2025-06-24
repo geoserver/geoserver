@@ -5,11 +5,13 @@
  */
 package org.geoserver.cluster;
 
+import java.io.Serial;
 import java.util.Properties;
 
 /** Configuration properties for clustered configuration/catalog. */
 public class ClusterConfig extends Properties {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** @return is clustering enabled */

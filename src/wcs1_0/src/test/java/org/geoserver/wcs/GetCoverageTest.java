@@ -429,35 +429,39 @@ public class GetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testEntityExpansion() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<!DOCTYPE GetCoverage [<!ELEMENT GetCoverage (sourceCoverage) >\n"
-                + "  <!ATTLIST GetCoverage\n"
-                + "            service CDATA #FIXED \"WCS\"\n"
-                + "            version CDATA #FIXED \"1.0.0\"\n"
-                + "            xmlns CDATA #FIXED \"http://www.opengis.net/wcs\">\n"
-                + "  <!ELEMENT sourceCoverage (#PCDATA) >\n"
-                + "  <!ENTITY xxe SYSTEM \"FILE:///file/not/there?.XSD\" >]>\n"
-                + "<GetCoverage version=\"1.0.0\" service=\"WCS\""
-                + " xmlns=\"http://www.opengis.net/wcs\" >\n"
-                + "  <sourceCoverage>&xxe;</sourceCoverage>\n"
-                + "</GetCoverage>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <!DOCTYPE GetCoverage [<!ELEMENT GetCoverage (sourceCoverage) >
+                  <!ATTLIST GetCoverage
+                            service CDATA #FIXED "WCS"
+                            version CDATA #FIXED "1.0.0"
+                            xmlns CDATA #FIXED "http://www.opengis.net/wcs">
+                  <!ELEMENT sourceCoverage (#PCDATA) >
+                  <!ENTITY xxe SYSTEM "FILE:///file/not/there?.XSD" >]>
+                <GetCoverage version="1.0.0" service="WCS"\
+                 xmlns="http://www.opengis.net/wcs" >
+                  <sourceCoverage>&xxe;</sourceCoverage>
+                </GetCoverage>""";
 
         Document dom = postAsDOM("wcs", xml);
         String error = xpath.evaluate("//ServiceException", dom);
         assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
 
-        xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<!DOCTYPE GetCoverage [<!ELEMENT GetCoverage (sourceCoverage) >\n"
-                + "  <!ATTLIST GetCoverage\n"
-                + "            service CDATA #FIXED \"WCS\"\n"
-                + "            version CDATA #FIXED \"1.0.0\"\n"
-                + "            xmlns CDATA #FIXED \"http://www.opengis.net/wcs\">\n"
-                + "  <!ELEMENT sourceCoverage (#PCDATA) >\n"
-                + "  <!ENTITY xxe SYSTEM \"jar:file:///file/not/there?.XSD\" >]>\n"
-                + "<GetCoverage version=\"1.0.0\" service=\"WCS\""
-                + " xmlns=\"http://www.opengis.net/wcs\" >\n"
-                + "  <sourceCoverage>&xxe;</sourceCoverage>\n"
-                + "</GetCoverage>";
+        xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <!DOCTYPE GetCoverage [<!ELEMENT GetCoverage (sourceCoverage) >
+                  <!ATTLIST GetCoverage
+                            service CDATA #FIXED "WCS"
+                            version CDATA #FIXED "1.0.0"
+                            xmlns CDATA #FIXED "http://www.opengis.net/wcs">
+                  <!ELEMENT sourceCoverage (#PCDATA) >
+                  <!ENTITY xxe SYSTEM "jar:file:///file/not/there?.XSD" >]>
+                <GetCoverage version="1.0.0" service="WCS"\
+                 xmlns="http://www.opengis.net/wcs" >
+                  <sourceCoverage>&xxe;</sourceCoverage>
+                </GetCoverage>""";
 
         dom = postAsDOM("wcs", xml);
         error = xpath.evaluate("//ServiceException", dom);

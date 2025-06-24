@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -36,11 +37,14 @@ import wicketdnd.theme.WebTheme;
  */
 public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
+    @Serial
     private static final long serialVersionUID = -6732973402966999112L;
+
     private final List<T> items;
 
     static class ReorderableDataProvider<T> extends GeoServerDataProvider<T> {
 
+        @Serial
         private static final long serialVersionUID = -5792726233183939109L;
 
         private List<T> items;
@@ -135,6 +139,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
         };
         ListView<Property<T>> items = new ListView<>("itemProperties", propertyList) {
 
+            @Serial
             private static final long serialVersionUID = -7089826211241039856L;
 
             @Override
@@ -194,6 +199,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
             label.setDefaultModel(new Model<>(rowContainer.getIndex() + 1));
             item.add(new Behavior() {
 
+                @Serial
                 private static final long serialVersionUID = 8429550827543813897L;
 
                 @Override

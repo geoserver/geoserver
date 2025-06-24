@@ -5,9 +5,12 @@
  */
 package org.geoserver.gwc;
 
+import java.io.Serial;
+
 /** This class is just used to detect what methods GeoServer actually invokes */
 class ServletDebugException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     ServletDebugException() {}

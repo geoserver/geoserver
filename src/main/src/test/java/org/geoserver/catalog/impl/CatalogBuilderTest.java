@@ -252,11 +252,13 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         cb.setStore(cat.getCoverageStoreByName(MockData.WORLD.getLocalPart()));
         CoverageInfo cinfo = cb.buildCoverage();
         cinfo.setSRS(null);
-        String wkt = "GEOGCS[\"ED50\",\n"
-                + "  DATUM[\"European Datum 1950\",\n"
-                + "  SPHEROID[\"International 1924\", 6378388.0, 297.0]],\n"
-                + "PRIMEM[\"Greenwich\", 0.0],\n"
-                + "UNIT[\"degree\", 0.017453292519943295]]";
+        String wkt =
+                """
+                GEOGCS["ED50",
+                  DATUM["European Datum 1950",
+                  SPHEROID["International 1924", 6378388.0, 297.0]],
+                PRIMEM["Greenwich", 0.0],
+                UNIT["degree", 0.017453292519943295]]""";
         CoordinateReferenceSystem testCRS = CRS.parseWKT(wkt);
         cinfo.setNativeCRS(testCRS);
         cb.initCoverage(cinfo, "srs lookup");
@@ -848,15 +850,17 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.LINES));
 
         // Sun CRS, without authority and code
-        String wkt = "GEOGCS[\"Sun (2015) - Sphere / Ocentric\",\n"
-                + "    DATUM[\"Sun (2015) - Sphere\",\n"
-                + "        SPHEROID[\"Sun (2015) - Sphere\",695700000,0,\n"
-                + "            AUTHORITY[\"IAU\",\"1000\"]],\n"
-                + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
-                + "    PRIMEM[\"Reference Meridian\",0,\n"
-                + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
-                + "    UNIT[\"degree\",0.0174532925199433,\n"
-                + "        AUTHORITY[\"EPSG\",\"9122\"]]]";
+        String wkt =
+                """
+                GEOGCS["Sun (2015) - Sphere / Ocentric",
+                    DATUM["Sun (2015) - Sphere",
+                        SPHEROID["Sun (2015) - Sphere",695700000,0,
+                            AUTHORITY["IAU","1000"]],
+                        AUTHORITY["IAU","1000"]],
+                    PRIMEM["Reference Meridian",0,
+                        AUTHORITY["IAU","1000"]],
+                    UNIT["degree",0.0174532925199433,
+                        AUTHORITY["EPSG","9122"]]]""";
         CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
         fti.setNativeCRS(crs);
 

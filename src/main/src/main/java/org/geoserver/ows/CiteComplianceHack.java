@@ -40,8 +40,7 @@ public class CiteComplianceHack implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        if (handler instanceof Dispatcher) {
-            Dispatcher dispatcher = (Dispatcher) handler;
+        if (handler instanceof Dispatcher dispatcher) {
             String service = findService(dispatcher, request, response);
             if (service != null
                     && (service.equalsIgnoreCase(getInfo().getId())

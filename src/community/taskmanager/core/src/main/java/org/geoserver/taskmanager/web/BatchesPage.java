@@ -4,12 +4,14 @@
  */
 package org.geoserver.taskmanager.web;
 
+import java.io.Serial;
 import org.geoserver.taskmanager.web.panel.BatchesPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 
 public class BatchesPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 2273966783474224452L;
 
     @Override

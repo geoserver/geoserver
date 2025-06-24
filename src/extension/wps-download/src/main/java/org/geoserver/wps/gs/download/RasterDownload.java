@@ -486,8 +486,8 @@ class RasterDownload {
             ProjectionHandler handler = null;
             if (!crsRequestHandler.canUseTargetCRSAsNative()) {
                 handler = ProjectionHandlerFinder.getHandler(rh.getReadEnvelope(), sourceCRS, true);
-                if (handler instanceof WrappingProjectionHandler) {
-                    ((WrappingProjectionHandler) handler).setDatelineWrappingCheckEnabled(false);
+                if (handler instanceof WrappingProjectionHandler projectionHandler) {
+                    projectionHandler.setDatelineWrappingCheckEnabled(false);
                 }
             }
             coverages = rh.readCoverages(readParameters, handler, GC_FACTORY);
@@ -837,9 +837,9 @@ class RasterDownload {
         Map encodingParams;
 
         // 1. Check if the gridCoverage is actually a GranuleStack
-        if (gridCoverage instanceof GranuleStackImpl) {
+        if (gridCoverage instanceof GranuleStackImpl impl) {
             encodingParams = getEncodingParams(writeParams, ci);
-            return encodeWithPPIO((GranuleStackImpl) gridCoverage, encodingParams, mimeType, GranuleStackImpl.class);
+            return encodeWithPPIO(impl, encodingParams, mimeType, GranuleStackImpl.class);
         }
 
         // 2. Simpler case where the gridCoverage is not a GranuleStack

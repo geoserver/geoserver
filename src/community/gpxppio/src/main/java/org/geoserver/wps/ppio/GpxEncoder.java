@@ -125,8 +125,7 @@ public class GpxEncoder {
                 SimpleFeature f = iter.next();
 
                 Geometry g = (Geometry) f.getDefaultGeometry();
-                if (g instanceof MultiLineString) {
-                    MultiLineString mls = (MultiLineString) g;
+                if (g instanceof MultiLineString mls) {
                     int numGeometries = mls.getNumGeometries();
                     writer.writeStartElement("trk");
                     if (writeExtendedData) {
@@ -137,17 +136,16 @@ public class GpxEncoder {
                         writeTrkSeg(writer, ls);
                     }
                     writer.writeEndElement();
-                } else if (g instanceof LineString) {
-                    writeRte(writer, (LineString) g, f);
-                } else if (g instanceof MultiPoint) {
-                    MultiPoint mpt = (MultiPoint) g;
+                } else if (g instanceof LineString string) {
+                    writeRte(writer, string, f);
+                } else if (g instanceof MultiPoint mpt) {
                     int numGeometries = mpt.getNumGeometries();
                     for (int i = 0; i < numGeometries; i++) {
                         Point pt = (Point) mpt.getGeometryN(i);
                         writeWpt(writer, pt, f);
                     }
-                } else if (g instanceof Point) {
-                    writeWpt(writer, (Point) g, f);
+                } else if (g instanceof Point point) {
+                    writeWpt(writer, point, f);
                 } else {
                     throw new IllegalArgumentException(
                             "Unsupported geometry type: " + g.getClass().getSimpleName());

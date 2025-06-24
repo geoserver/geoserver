@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.importer.ImportTask;
@@ -20,6 +21,7 @@ import org.locationtech.jts.geom.Geometry;
 
 public class ReprojectTransform extends AbstractTransform implements InlineVectorTransform {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     CoordinateReferenceSystem source, target;

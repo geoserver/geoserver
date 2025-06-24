@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import org.apache.commons.io.output.CountingOutputStream;
  */
 public abstract class AbstractCommandLineTransform extends AbstractTransform {
 
+    @Serial
     private static final long serialVersionUID = 5998049960852782644L;
 
     static final long DEFAULT_TIMEOUT = 60 * 60 * 1000; // one hour

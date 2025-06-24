@@ -799,8 +799,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         if (getRawKvp() != null) {
             String key = CUSTOM_DIM_PREFIX + dimensionName;
             Object value = getRawKvp().get(key);
-            if (value instanceof String) {
-                String s = (String) value;
+            if (value instanceof String s) {
                 final ArrayList<String> values = new ArrayList<>(1);
                 if (s.indexOf(",") > 0) {
                     String[] elements = s.split("\\s*,\\s*");

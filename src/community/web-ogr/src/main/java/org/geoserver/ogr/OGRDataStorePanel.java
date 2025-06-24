@@ -6,6 +6,7 @@
 package org.geoserver.ogr;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -95,6 +96,7 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
                 protected Component chooserButton(final String windowTitle) {
                     AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
 
+                        @Serial
                         private static final long serialVersionUID = -2860146532287292092L;
 
                         @Override
@@ -121,6 +123,7 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
                 class OGRDialogDelegate extends GeoServerDialog.DialogDelegate {
 
                     /** */
+                    @Serial
                     private static final long serialVersionUID = 1576266249751904398L;
 
                     @Override

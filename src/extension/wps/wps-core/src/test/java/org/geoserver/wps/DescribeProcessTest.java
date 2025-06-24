@@ -22,13 +22,15 @@ public class DescribeProcessTest extends WPSTestSupport {
 
     @Test
     public void testPostBuffer() throws Exception { // Standard Test A.4.3.2
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-                + "<DescribeProcess xmlns=\"http://www.opengis.net/wps/1.0.0\" "
-                + "xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
-                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n"
-                + "    <ows:Identifier>JTS:buffer</ows:Identifier>\r\n"
-                + "</DescribeProcess>";
+        String request =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <DescribeProcess xmlns="http://www.opengis.net/wps/1.0.0" \
+                xmlns:ows="http://www.opengis.net/ows/1.1" \
+                xmlns:xlink="http://www.w3.org/1999/xlink" \
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                    <ows:Identifier>JTS:buffer</ows:Identifier>
+                </DescribeProcess>""";
         Document d = postAsDOM(root(), request);
         // print(d);
         testBufferDescription(d);

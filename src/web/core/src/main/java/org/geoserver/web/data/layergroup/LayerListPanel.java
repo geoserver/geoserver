@@ -8,6 +8,7 @@ package org.geoserver.web.data.layergroup;
 import static org.geoserver.catalog.Predicates.sortBy;
 
 import com.google.common.collect.Lists;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +38,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
 
     protected abstract static class LayerListProvider extends LayerProvider {
 
+        @Serial
         private static final long serialVersionUID = -4793382279386643262L;
 
         @Override
@@ -45,6 +47,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
         }
     }
 
+    @Serial
     private static final long serialVersionUID = 3638205114048153057L;
 
     static Property<LayerInfo> NAME = new BeanProperty<>("name", "name");
@@ -56,6 +59,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
     public LayerListPanel(String id, final WorkspaceInfo workspace) {
         this(id, new LayerListProvider() {
 
+            @Serial
             private static final long serialVersionUID = 426375054014475107L;
 
             @Override
@@ -125,6 +129,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
         IModel<?> model = property.getModel(itemModel);
         if (NAME == property) {
             return new SimpleAjaxLink<>(id, (IModel<String>) model) {
+                @Serial
                 private static final long serialVersionUID = -2968338284881141281L;
 
                 @Override

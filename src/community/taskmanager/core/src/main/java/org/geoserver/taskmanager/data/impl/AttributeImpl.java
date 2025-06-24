@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.data.impl;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import java.io.Serial;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,6 +22,7 @@ import org.geoserver.taskmanager.data.Configuration;
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "configuration"})})
 public class AttributeImpl extends BaseImpl implements Attribute {
 
+    @Serial
     private static final long serialVersionUID = 7379737906910394714L;
 
     @Id

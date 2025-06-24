@@ -5,12 +5,14 @@
  */
 package org.geoserver.inspire.web;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.IModel;
 
 public class LanguageDropDownChoice extends DropDownChoice<String> {
 
+    @Serial
     private static final long serialVersionUID = 3722333014915584293L;
 
     public LanguageDropDownChoice(final String id, final IModel<String> model) {

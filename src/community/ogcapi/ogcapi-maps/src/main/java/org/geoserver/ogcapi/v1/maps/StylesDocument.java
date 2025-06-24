@@ -75,8 +75,7 @@ public class StylesDocument extends AbstractDocument {
 
     private List<StyleInfo> getStyleInfos() {
         List<StyleInfo> result = new ArrayList<>();
-        if (published instanceof LayerInfo) {
-            LayerInfo layer = (LayerInfo) this.published;
+        if (published instanceof LayerInfo layer) {
             result.addAll(layer.getStyles());
             StyleInfo defaultStyle = layer.getDefaultStyle();
             if (!result.contains(defaultStyle)) result.add(defaultStyle);

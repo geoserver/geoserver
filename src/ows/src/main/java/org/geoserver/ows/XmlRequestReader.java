@@ -152,9 +152,9 @@ public abstract class XmlRequestReader {
         if (t instanceof IOException) {
             return createParseException(t);
         }
-        if (t instanceof SAXException) {
+        if (t instanceof SAXException exception) {
             // Double check SAXException does not echo caused by message
-            return cleanSaxException((SAXException) t);
+            return cleanSaxException(exception);
         }
         return t;
     }

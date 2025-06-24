@@ -175,28 +175,28 @@ public abstract class StyleHandler {
      * @param input A {@link Reader}, {@link java.io.InputStream}, {@link File}, or {@link Resource}.
      */
     protected Reader toReader(Object input) throws IOException {
-        if (input instanceof Reader) {
-            return (Reader) input;
+        if (input instanceof Reader reader) {
+            return reader;
         }
 
-        if (input instanceof InputStream) {
-            return new InputStreamReader((InputStream) input);
+        if (input instanceof InputStream stream) {
+            return new InputStreamReader(stream);
         }
 
-        if (input instanceof String) {
-            return new StringReader((String) input);
+        if (input instanceof String string) {
+            return new StringReader(string);
         }
 
-        if (input instanceof URL) {
-            return new InputStreamReader(((URL) input).openStream());
+        if (input instanceof URL rL) {
+            return new InputStreamReader(rL.openStream());
         }
 
-        if (input instanceof File) {
-            return new FileReader((File) input);
+        if (input instanceof File file) {
+            return new FileReader(file);
         }
 
-        if (input instanceof Resource) {
-            return toReader(((Resource) input).in());
+        if (input instanceof Resource resource) {
+            return toReader(resource.in());
         }
 
         throw new IllegalArgumentException("Unable to turn " + input + " into reader");

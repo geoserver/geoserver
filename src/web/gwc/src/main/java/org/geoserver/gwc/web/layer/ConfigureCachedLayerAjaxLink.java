@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -26,6 +27,7 @@ import org.geowebcache.layer.TileLayer;
  */
 class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Class<? extends Page> returnPage;
@@ -48,17 +50,15 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
         }
         final GeoServerTileLayer geoserverTileLayer = (GeoServerTileLayer) getModelObject();
         PublishedInfo publishedInfo = geoserverTileLayer.getPublishedInfo();
-        if (publishedInfo instanceof LayerInfo) {
-            ResourceConfigurationPage resourceConfigPage =
-                    new ResourceConfigurationPage((LayerInfo) publishedInfo, false);
+        if (publishedInfo instanceof LayerInfo info) {
+            ResourceConfigurationPage resourceConfigPage = new ResourceConfigurationPage(info, false);
             // tell the resource/layer edit page to start up on the tile cache tab
             resourceConfigPage.setSelectedTab(LayerCacheOptionsTabPanel.class);
             if (returnPage != null) {
                 resourceConfigPage.setReturnPage(returnPage);
             }
             setResponsePage(resourceConfigPage);
-        } else if (publishedInfo instanceof LayerGroupInfo) {
-            LayerGroupInfo layerGroup = (LayerGroupInfo) publishedInfo;
+        } else if (publishedInfo instanceof LayerGroupInfo layerGroup) {
             WorkspaceInfo workspace = layerGroup.getWorkspace();
             String wsName = workspace == null ? null : workspace.getName();
             PageParameters parameters = new PageParameters();

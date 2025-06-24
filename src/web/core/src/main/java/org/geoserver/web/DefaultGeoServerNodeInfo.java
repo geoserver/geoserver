@@ -5,6 +5,7 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,6 +31,7 @@ import org.geoserver.web.spring.security.GeoServerSession;
  */
 public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -8731277645321595181L;
 
     static final String GEOSERVER_NODE_OPTS = GeoServerNodeData.GEOSERVER_NODE_OPTS;
@@ -51,6 +53,7 @@ public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo, Serializable
         Map<String, String> properties = NODE_DATA.getIdStyle();
         if (properties != null && !properties.isEmpty()) {
             container.add(new Behavior() {
+                @Serial
                 private static final long serialVersionUID = -7945010069411202354L;
 
                 @Override

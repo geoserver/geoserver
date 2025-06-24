@@ -1363,8 +1363,9 @@ public class MapMLWMSTest extends MapMLTestSupport {
             template = new File(parent, MAPML_XML_HEAD_FTL);
             FileUtils.write(
                     template,
-                    "<map-style>.polygon-r1-s1{stroke-opacity:3.0; stroke-dashoffset:4; stroke-width:2.0; fill:#AAAAAA; fill-opacity:3.0; stroke:#DD0000; stroke-linecap:butt}</map-style>\n"
-                            + "<map-link href=\"${serviceLink(\"${base}\",\"${path}\",\"${kvp}\")}\" rel=\"${rel}\" title=\"templateinsertedstyle\"/>",
+                    """
+                    <map-style>.polygon-r1-s1{stroke-opacity:3.0; stroke-dashoffset:4; stroke-width:2.0; fill:#AAAAAA; fill-opacity:3.0; stroke:#DD0000; stroke-linecap:butt}</map-style>
+                    <map-link href="${serviceLink("${base}","${path}","${kvp}")}" rel="${rel}" title="templateinsertedstyle"/>""",
                     "UTF-8");
 
             MockRequestResponse requestResponse = getMockRequestResponse(
@@ -1402,7 +1403,12 @@ public class MapMLWMSTest extends MapMLTestSupport {
             FileUtils.write(template, "<link rel=\"stylesheet\" href=\"mystyle.css\">", "UTF-8");
             FileUtils.write(
                     template,
-                    "<style>\n" + " body {\n" + "  background-color: linen;\n" + " }\n" + "</style>",
+                    """
+                    <style>
+                     body {
+                      background-color: linen;
+                     }
+                    </style>""",
                     "UTF-8",
                     true);
 
@@ -2056,8 +2062,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         List<Object> lo = e.getInputOrDatalistOrLink();
         for (Object o : lo) {
-            if (o instanceof Link) {
-                Link link = (Link) o;
+            if (o instanceof Link link) {
                 assertNull("map-extent/map-link@href unexpected.", link.getHref());
                 assertNotNull("map-extent/map-link@href must not be null/empty", link.getTref());
                 assertFalse(
@@ -2069,8 +2074,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                                 || link.getRel() == RelType.QUERY
                                 || link.getRel() == RelType.TILE));
                 // lots of stuff that is better covered by validation.
-            } else if (o instanceof Input) {
-                Input input = (Input) o;
+            } else if (o instanceof Input input) {
                 assertTrue(
                         "inputs must be of type zoom, location, width or height",
                         input.getType() == InputType.ZOOM
@@ -2187,8 +2191,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
      * @return the potentially localized label string for a layer or layer group
      */
     String getLabel(PublishedInfo p, String def, HttpServletRequest request) {
-        if (p instanceof LayerGroupInfo) {
-            LayerGroupInfo li = (LayerGroupInfo) p;
+        if (p instanceof LayerGroupInfo li) {
             if (li.getInternationalTitle() != null
                     && li.getInternationalTitle().toString(request.getLocale()) != null) {
                 // use international title per request or default locale

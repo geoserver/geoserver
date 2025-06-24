@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
 
 /**
@@ -17,7 +18,9 @@ import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
  */
 public class BasicAuthenticationFilterConfig extends SecurityFilterConfig implements SecurityAuthFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private boolean useRememberMe;
 
     public boolean isUseRememberMe() {

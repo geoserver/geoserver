@@ -169,11 +169,11 @@ public class RetypingDataStore extends DecoratingDataStore {
         updateMap(map, false);
         SimpleFeatureSource source = wrapped.getFeatureSource(map.getOriginalName());
         if (map.isUnchanged()) return source;
-        if (source instanceof FeatureLocking) {
-            SimpleFeatureLocking locking = DataUtilities.simple((FeatureLocking) source);
+        if (source instanceof FeatureLocking featureLocking) {
+            SimpleFeatureLocking locking = DataUtilities.simple(featureLocking);
             return new RetypingFeatureLocking(this, locking, map);
-        } else if (source instanceof FeatureStore) {
-            SimpleFeatureStore store = DataUtilities.simple((FeatureStore) source);
+        } else if (source instanceof FeatureStore featureStore) {
+            SimpleFeatureStore store = DataUtilities.simple(featureStore);
             return new RetypingFeatureStore(this, store, map);
         }
         return new RetypingFeatureSource(this, source, map);
@@ -336,5 +336,22 @@ public class RetypingDataStore extends DecoratingDataStore {
     @Override
     public void removeSchema(Name typeName) throws IOException {
         removeSchema(typeName.getLocalPart());
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws java.sql.SQLException {
+        // TODO Auto-generated method stub
+        return iface != null && iface.isAssignableFrom(this.getClass());
+    }
+
+    public <T> T unwrap(Class<T> iface) throws java.sql.SQLException {
+        // TODO Auto-generated method stub
+        try {
+            if (iface != null && iface.isAssignableFrom(this.getClass())) {
+                return (T) this;
+            }
+            throw new java.sql.SQLException("Auto-generated unwrap failed; Revisit implementation");
+        } catch (Exception e) {
+            throw new java.sql.SQLException(e);
+        }
     }
 }

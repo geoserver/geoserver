@@ -422,12 +422,12 @@ public abstract class LegendGraphicBuilder {
     protected Feature createSampleFeature(FeatureType schema) throws ServiceException {
         Feature sampleFeature;
         try {
-            if (schema instanceof SimpleFeatureType) {
-                if (hasMixedGeometry((SimpleFeatureType) schema)) {
+            if (schema instanceof SimpleFeatureType type) {
+                if (hasMixedGeometry(type)) {
                     // we can't create a sample for a generic Geometry type
                     sampleFeature = null;
                 } else {
-                    sampleFeature = SimpleFeatureBuilder.template((SimpleFeatureType) schema, null);
+                    sampleFeature = SimpleFeatureBuilder.template(type, null);
                 }
             } else {
                 sampleFeature = DataUtilities.templateFeature(schema);
@@ -478,15 +478,13 @@ public abstract class LegendGraphicBuilder {
             Expression exp = fts.getTransformation();
             if (exp != null) {
                 Map<String, Parameter<?>> outputs = Collections.emptyMap();
-                if (exp instanceof ProcessFunction) {
-                    ProcessFunction processFunction = (ProcessFunction) exp;
+                if (exp instanceof ProcessFunction processFunction) {
                     Name processName = processFunction.getProcessName();
                     outputs = Processors.getResultInfo(processName, null);
                     if (outputs.isEmpty()) {
                         continue;
                     }
-                } else if (exp instanceof Function) {
-                    Function function = (Function) exp;
+                } else if (exp instanceof Function function) {
                     FunctionName functionName = function.getFunctionName();
                     if (functionName != null
                             && functionName.getReturn() != null

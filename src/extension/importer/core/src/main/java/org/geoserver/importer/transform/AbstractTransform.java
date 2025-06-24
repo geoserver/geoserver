@@ -5,11 +5,13 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.util.logging.Logger;
 import org.geotools.util.logging.Logging;
 
 public abstract class AbstractTransform implements ImportTransform {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     final transient Logger LOGGER = Logging.getLogger(getClass());

@@ -15,8 +15,7 @@ public class GeometrySizeEstimator implements ObjectSizeEstimator {
 
     @Override
     public long getSizeOf(Object object) {
-        if (object instanceof Geometry) {
-            Geometry g = (Geometry) object;
+        if (object instanceof Geometry g) {
             // super-lenient, just assuming double storage and no object overhead
             return 2 * g.getNumPoints() * 8;
         }

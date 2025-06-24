@@ -105,7 +105,7 @@ public class DynamicDimensionsTest extends CoverageTestSupport {
         String url = "wcs?service=WCS&version=1.0.0&request=GetCoverage"
                 + "&sourceCoverage=%s&format=GEOTIFF&width=25&height=24"
                 + "&crs=EPSG:4326&bbox=0.237,40.562,14.593,44.558&%s=%s";
-        return String.format(url, getLayerId(WATTEMP), DIMENSION_NAME, dimensionValue);
+        return url.formatted(getLayerId(WATTEMP), DIMENSION_NAME, dimensionValue);
     }
 
     private String getWaterTempRequest(String dimensionValue) {

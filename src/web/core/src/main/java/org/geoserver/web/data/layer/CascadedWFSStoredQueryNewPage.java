@@ -6,6 +6,7 @@
 package org.geoserver.web.data.layer;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ import org.geotools.util.logging.Logging;
 public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstractPage {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 5430480206314316146L;
 
     static final Logger LOGGER = Logging.getLogger(CascadedWFSStoredQueryNewPage.class);
@@ -128,6 +130,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         dropdown.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             /** serialVersionUID */
+            @Serial
             private static final long serialVersionUID = -7195159596309736905L;
 
             @Override
@@ -143,6 +146,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
 
     private class StoredQueryListModel extends LoadableDetachableModel<List<StoredQuery>> {
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 2434460260811775002L;
 
         @Override
@@ -162,6 +166,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
 
     private static class StoredQueryListRenderer extends ChoiceRenderer<StoredQuery> {
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 7539702994237874704L;
 
         @Override
@@ -176,6 +181,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
     }
 
     public static class StoredQuery implements Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private String title;
@@ -200,6 +206,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
 
     class ViewNameValidator implements IValidator<String> {
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 8023559657640603820L;
 
         @Override

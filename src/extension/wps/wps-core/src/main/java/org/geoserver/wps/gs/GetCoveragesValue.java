@@ -186,29 +186,25 @@ public class GetCoveragesValue implements GeoServerProcess {
     }
 
     private Number[] convertPrimitiveArrayToNumberArray(Object evaluate) {
-        if (evaluate instanceof double[]) {
-            double[] doubleArray = (double[]) evaluate;
+        if (evaluate instanceof double[] doubleArray) {
             Number[] numberArray = new Number[doubleArray.length];
             for (int i = 0; i < doubleArray.length; i++) {
                 numberArray[i] = doubleArray[i];
             }
             return numberArray;
-        } else if (evaluate instanceof int[]) {
-            int[] intArray = (int[]) evaluate;
+        } else if (evaluate instanceof int[] intArray) {
             Number[] numberArray = new Number[intArray.length];
             for (int i = 0; i < intArray.length; i++) {
                 numberArray[i] = intArray[i];
             }
             return numberArray;
-        } else if (evaluate instanceof float[]) {
-            float[] floatArray = (float[]) evaluate;
+        } else if (evaluate instanceof float[] floatArray) {
             Number[] numberArray = new Number[floatArray.length];
             for (int i = 0; i < floatArray.length; i++) {
                 numberArray[i] = floatArray[i];
             }
             return numberArray;
-        } else if (evaluate instanceof byte[]) {
-            byte[] byteArray = (byte[]) evaluate;
+        } else if (evaluate instanceof byte[] byteArray) {
             Number[] numberArray = new Number[byteArray.length];
             for (int i = 0; i < byteArray.length; i++) {
                 numberArray[i] = byteArray[i];

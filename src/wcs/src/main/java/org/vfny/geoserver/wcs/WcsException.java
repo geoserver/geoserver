@@ -5,6 +5,7 @@
  */
 package org.vfny.geoserver.wcs;
 
+import java.io.Serial;
 import org.geoserver.platform.ServiceException;
 
 /**
@@ -17,6 +18,7 @@ import org.geoserver.platform.ServiceException;
  */
 public class WcsException extends ServiceException {
     /** */
+    @Serial
     private static final long serialVersionUID = -6110652531274829497L;
 
     public enum WcsExceptionCode {

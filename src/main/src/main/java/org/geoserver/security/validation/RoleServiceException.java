@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.validation;
 
+import java.io.Serial;
 import org.geoserver.security.impl.GeoServerRole;
 
 /**
@@ -13,6 +14,7 @@ import org.geoserver.security.impl.GeoServerRole;
  * @author christian
  */
 public class RoleServiceException extends AbstractSecurityException {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String NAME_REQUIRED = "NAME_REQUIRED";

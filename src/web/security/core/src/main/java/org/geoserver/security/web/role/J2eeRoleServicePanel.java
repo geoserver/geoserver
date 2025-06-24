@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.role;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.config.J2eeRoleServiceConfig;
 
@@ -15,6 +16,7 @@ import org.geoserver.security.config.J2eeRoleServiceConfig;
  */
 public class J2eeRoleServicePanel extends RoleServicePanel<J2eeRoleServiceConfig> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public J2eeRoleServicePanel(String id, IModel<J2eeRoleServiceConfig> model) {

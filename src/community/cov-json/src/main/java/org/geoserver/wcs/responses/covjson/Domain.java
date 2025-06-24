@@ -127,10 +127,10 @@ public abstract class Domain extends CoverageJson {
                 for (GridCoverage2D granule : granuleStack.getGranules()) {
                     Object object = granule.getProperty(dimensionName);
                     Number value = null;
-                    if (object instanceof Number) {
-                        value = (Number) object;
-                    } else if (object instanceof NumberRange) {
-                        value = ((NumberRange) object).getMinimum();
+                    if (object instanceof Number number) {
+                        value = number;
+                    } else if (object instanceof NumberRange range) {
+                        value = range.getMinimum();
                     }
                     if (value != null) {
                         uniqueValues.add(value);
@@ -158,10 +158,10 @@ public abstract class Domain extends CoverageJson {
                 for (GridCoverage2D granule : granuleStack.getGranules()) {
                     Object object = granule.getProperty(dimensionName);
                     Date value = null;
-                    if (object instanceof Date) {
-                        value = (Date) object;
-                    } else if (object instanceof DateRange) {
-                        value = ((DateRange) object).getMinValue();
+                    if (object instanceof Date date) {
+                        value = date;
+                    } else if (object instanceof DateRange range) {
+                        value = range.getMinValue();
                     }
                     uniqueValues.add(isoFormatter.format(value));
                 }

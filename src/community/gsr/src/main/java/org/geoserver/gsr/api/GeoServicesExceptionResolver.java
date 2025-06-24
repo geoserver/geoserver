@@ -56,8 +56,8 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
     protected ModelAndView doResolveException(
             HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         ServiceErrorWrapper exception;
-        if (ex instanceof ServiceException) {
-            exception = new ServiceErrorWrapper(((ServiceException) ex).error);
+        if (ex instanceof ServiceException serviceException) {
+            exception = new ServiceErrorWrapper(serviceException.error);
         } else {
             exception = new ServiceErrorWrapper(
                     new ServiceError(500, "Internal Server Error", Collections.singletonList(ex.getMessage())));

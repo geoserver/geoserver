@@ -6,6 +6,7 @@ package org.geoserver.security.keycloak;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
@@ -29,6 +30,7 @@ public class GeoServerKeycloakFilterConfig extends PreAuthenticatedUserNameFilte
 
     private static final Logger LOG = Logging.getLogger(GeoServerKeycloakFilterConfig.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected String id;

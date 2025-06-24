@@ -401,7 +401,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
             final int numBands = sampleModel.getNumBands();
             inputCoverageBands.put(coverage, numBands);
             String coverageBand =
-                    String.format("%s (%d band, %s)", coverage, numBands, getDataTypeName(sampleModel.getDataType()));
+                    "%s (%d band, %s)".formatted(coverage, numBands, getDataTypeName(sampleModel.getDataType()));
             bands.add(coverageBand);
             inputCoverageNamesModel.setObject(new ArrayList<>(inputCoverageBands.keySet()));
         }

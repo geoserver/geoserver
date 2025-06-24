@@ -61,7 +61,7 @@ public class TransformFeatureTypeCallback {
 
     private DataStore getDataStore(FeatureTypeInfo fti) throws IOException {
         DataAccess da = fti.getStore().getDataStore(null);
-        if (da instanceof DataStore) return (DataStore) da;
+        if (da instanceof DataStore store) return store;
 
         // should not have gotten here, validation should have prevented it
         throw new ServiceException(

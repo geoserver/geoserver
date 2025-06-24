@@ -68,8 +68,8 @@ public class CompositeBuilder extends SourceBuilder {
         if (filtered.size() == children.size()) {
             int falseCounter = 0;
             for (TemplateBuilder b : filtered) {
-                if (b instanceof AbstractTemplateBuilder) {
-                    if (!((AbstractTemplateBuilder) b).canWrite(context)) falseCounter++;
+                if (b instanceof AbstractTemplateBuilder builder) {
+                    if (!builder.canWrite(context)) falseCounter++;
                 }
             }
             if (falseCounter == filtered.size()) return false;

@@ -122,11 +122,11 @@ public class GridFormat extends RasterFormat {
     public AbstractGridCoverage2DReader gridReader(ImportData data) throws IOException {
         // try file based
         File f = null;
-        if (data instanceof SpatialFile) {
-            f = ((SpatialFile) data).getFile();
+        if (data instanceof SpatialFile file) {
+            f = file.getFile();
         }
-        if (data instanceof Directory) {
-            f = ((Directory) data).getFile();
+        if (data instanceof Directory directory) {
+            f = directory.getFile();
         }
         if (f != null) {
             AbstractGridFormat gridFormat = gridFormat();
@@ -138,11 +138,11 @@ public class GridFormat extends RasterFormat {
     File file(ImportData data) {
         // try file based
         File f = null;
-        if (data instanceof SpatialFile) {
-            f = ((SpatialFile) data).getFile();
+        if (data instanceof SpatialFile file) {
+            f = file.getFile();
         }
-        if (data instanceof Directory) {
-            f = ((Directory) data).getFile();
+        if (data instanceof Directory directory) {
+            f = directory.getFile();
         }
         return f;
     }

@@ -4,6 +4,7 @@
  */
 package org.geoserver.system.status;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 public class BaseSystemInfoCollector implements SystemInfoCollector, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 5031022719592227250L;
 
     public static String DEFAULT_VALUE = "NOT AVAILABLE";

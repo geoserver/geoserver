@@ -10,6 +10,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +39,7 @@ public abstract class RabbitMQSender implements NotificationSender, Serializable
 
     private static Logger LOGGER = Logging.getLogger(RabbitMQSender.class);
 
+    @Serial
     private static final long serialVersionUID = 1370640635300148935L;
 
     protected String host;

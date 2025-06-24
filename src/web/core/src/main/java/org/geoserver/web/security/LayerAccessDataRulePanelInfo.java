@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.security;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.Set;
 import org.apache.wicket.model.IModel;
@@ -15,6 +16,7 @@ import org.geoserver.web.publish.CommonPublishedEditTabPanelInfo;
 
 public class LayerAccessDataRulePanelInfo extends CommonPublishedEditTabPanelInfo {
 
+    @Serial
     private static final long serialVersionUID = -2621468069548681109L;
 
     @Override

@@ -170,9 +170,8 @@ public final class IntegrationTestsUtils {
         } else if (infoA instanceof GeoServerInfo) {
             geoServer.save(updateInfoImpl(infoA, infoB, GeoServerInfo.class));
         } else {
-            throw new RuntimeException(String.format(
-                    "Don't know how to handle info of type '%s'.",
-                    infoA.getClass().getSimpleName()));
+            throw new RuntimeException("Don't know how to handle info of type '%s'."
+                    .formatted(infoA.getClass().getSimpleName()));
         }
     }
 
@@ -180,11 +179,11 @@ public final class IntegrationTestsUtils {
     private static <U> U updateInfoImpl(Info infoA, Info infoB, Class<U> type) {
         // make sure that we are dealing with infos that are compatible
         if (!type.isAssignableFrom(infoA.getClass()) || !type.isAssignableFrom(infoB.getClass())) {
-            throw new RuntimeException(String.format(
-                    "Info objects should be of type '%s', but are of types '%s' and '%s'.",
-                    type.getSimpleName(),
-                    infoA.getClass().getSimpleName(),
-                    infoB.getClass().getSimpleName()));
+            throw new RuntimeException("Info objects should be of type '%s', but are of types '%s' and '%s'."
+                    .formatted(
+                            type.getSimpleName(),
+                            infoA.getClass().getSimpleName(),
+                            infoB.getClass().getSimpleName()));
         }
         // create a modification proxy for the second info
         U proxy = ModificationProxy.create(type.cast(infoB), type);
@@ -198,23 +197,21 @@ public final class IntegrationTestsUtils {
                 if (propertyValue instanceof Info) {
                     // we are dealing with an info object, check that both properties are compatible
                     Object otherPropertyValue = OwsUtils.get(infoB, propertyName);
-                    if (otherPropertyValue instanceof Info) {
+                    if (otherPropertyValue instanceof Info info) {
                         // recursively update this info
-                        propertyValue = updateInfoImpl(
-                                (Info) propertyValue,
-                                (Info) otherPropertyValue,
-                                getInfoInterface(propertyValue.getClass()));
+                        propertyValue =
+                                updateInfoImpl((Info) propertyValue, info, getInfoInterface(propertyValue.getClass()));
                     }
                 }
                 // if the property value is not a info clone it if possible
-                if (propertyValue instanceof Serializable && !(propertyValue instanceof Proxy)) {
-                    propertyValue = SerializationUtils.clone((Serializable) propertyValue);
+                if (propertyValue instanceof Serializable serializable && !(propertyValue instanceof Proxy)) {
+                    propertyValue = SerializationUtils.clone(serializable);
                 }
                 // update second info value
                 OwsUtils.set(proxy, propertyName, propertyValue);
             } catch (IllegalArgumentException exception) {
                 // ignore non existing property
-                LOGGER.log(Level.FINE, String.format("Error setting property '%s'.", propertyName), exception);
+                LOGGER.log(Level.FINE, "Error setting property '%s'.".formatted(propertyName), exception);
             }
         }
         // return modification proxy of second info
@@ -236,36 +233,35 @@ public final class IntegrationTestsUtils {
 
     /** Add info object to the provided GeoServer instance. */
     private static void add(GeoServer geoServer, Catalog catalog, Info info) {
-        if (info instanceof WorkspaceInfo) {
-            catalog.add((WorkspaceInfo) info);
-        } else if (info instanceof NamespaceInfo) {
-            catalog.add((NamespaceInfo) info);
-        } else if (info instanceof DataStoreInfo) {
-            catalog.add((DataStoreInfo) info);
-        } else if (info instanceof CoverageStoreInfo) {
-            catalog.add((CoverageStoreInfo) info);
-        } else if (info instanceof WMSStoreInfo) {
-            catalog.add((WMSStoreInfo) info);
-        } else if (info instanceof FeatureTypeInfo) {
-            catalog.add((FeatureTypeInfo) info);
-        } else if (info instanceof CoverageInfo) {
-            catalog.add((CoverageInfo) info);
-        } else if (info instanceof LayerInfo) {
-            catalog.add((LayerInfo) info);
-        } else if (info instanceof StyleInfo) {
-            catalog.add((StyleInfo) info);
-        } else if (info instanceof LayerGroupInfo) {
-            catalog.add((LayerGroupInfo) info);
-        } else if (info instanceof WMSLayerInfo) {
-            catalog.add((WMSLayerInfo) info);
-        } else if (info instanceof SettingsInfo) {
-            geoServer.add((SettingsInfo) info);
-        } else if (info instanceof ServiceInfo) {
-            geoServer.add((ServiceInfo) info);
+        if (info instanceof WorkspaceInfo workspaceInfo) {
+            catalog.add(workspaceInfo);
+        } else if (info instanceof NamespaceInfo namespaceInfo) {
+            catalog.add(namespaceInfo);
+        } else if (info instanceof DataStoreInfo storeInfo2) {
+            catalog.add(storeInfo2);
+        } else if (info instanceof CoverageStoreInfo storeInfo1) {
+            catalog.add(storeInfo1);
+        } else if (info instanceof WMSStoreInfo storeInfo) {
+            catalog.add(storeInfo);
+        } else if (info instanceof FeatureTypeInfo typeInfo) {
+            catalog.add(typeInfo);
+        } else if (info instanceof CoverageInfo coverageInfo) {
+            catalog.add(coverageInfo);
+        } else if (info instanceof LayerInfo layerInfo1) {
+            catalog.add(layerInfo1);
+        } else if (info instanceof StyleInfo styleInfo) {
+            catalog.add(styleInfo);
+        } else if (info instanceof LayerGroupInfo groupInfo) {
+            catalog.add(groupInfo);
+        } else if (info instanceof WMSLayerInfo layerInfo) {
+            catalog.add(layerInfo);
+        } else if (info instanceof SettingsInfo settingsInfo) {
+            geoServer.add(settingsInfo);
+        } else if (info instanceof ServiceInfo serviceInfo) {
+            geoServer.add(serviceInfo);
         } else {
-            throw new RuntimeException(String.format(
-                    "Don't know how to handle info of type '%s'.",
-                    info.getClass().getSimpleName()));
+            throw new RuntimeException("Don't know how to handle info of type '%s'."
+                    .formatted(info.getClass().getSimpleName()));
         }
     }
 
@@ -273,36 +269,35 @@ public final class IntegrationTestsUtils {
     private static void remove(GeoServer geoServer, Catalog cat, Info info) {
         // go low level, bypass the catalog checks
         CatalogFacade cf = cat.getFacade();
-        if (info instanceof WorkspaceInfo) {
-            cf.remove((WorkspaceInfo) info);
-        } else if (info instanceof NamespaceInfo) {
-            cf.remove((NamespaceInfo) info);
-        } else if (info instanceof DataStoreInfo) {
-            cf.remove((DataStoreInfo) info);
-        } else if (info instanceof CoverageStoreInfo) {
-            cf.remove((CoverageStoreInfo) info);
-        } else if (info instanceof WMSStoreInfo) {
-            cf.remove((WMSStoreInfo) info);
-        } else if (info instanceof FeatureTypeInfo) {
-            cf.remove((FeatureTypeInfo) info);
-        } else if (info instanceof CoverageInfo) {
-            cf.remove((CoverageInfo) info);
-        } else if (info instanceof LayerInfo) {
-            cf.remove((LayerInfo) info);
-        } else if (info instanceof StyleInfo) {
-            cf.remove((StyleInfo) info);
-        } else if (info instanceof LayerGroupInfo) {
-            cf.remove((LayerGroupInfo) info);
-        } else if (info instanceof WMSLayerInfo) {
-            cf.remove((WMSLayerInfo) info);
-        } else if (info instanceof SettingsInfo) {
-            geoServer.remove((SettingsInfo) info);
-        } else if (info instanceof ServiceInfo) {
-            geoServer.remove((ServiceInfo) info);
+        if (info instanceof WorkspaceInfo workspaceInfo) {
+            cf.remove(workspaceInfo);
+        } else if (info instanceof NamespaceInfo namespaceInfo) {
+            cf.remove(namespaceInfo);
+        } else if (info instanceof DataStoreInfo storeInfo2) {
+            cf.remove(storeInfo2);
+        } else if (info instanceof CoverageStoreInfo storeInfo1) {
+            cf.remove(storeInfo1);
+        } else if (info instanceof WMSStoreInfo storeInfo) {
+            cf.remove(storeInfo);
+        } else if (info instanceof FeatureTypeInfo typeInfo) {
+            cf.remove(typeInfo);
+        } else if (info instanceof CoverageInfo coverageInfo) {
+            cf.remove(coverageInfo);
+        } else if (info instanceof LayerInfo layerInfo1) {
+            cf.remove(layerInfo1);
+        } else if (info instanceof StyleInfo styleInfo) {
+            cf.remove(styleInfo);
+        } else if (info instanceof LayerGroupInfo groupInfo) {
+            cf.remove(groupInfo);
+        } else if (info instanceof WMSLayerInfo layerInfo) {
+            cf.remove(layerInfo);
+        } else if (info instanceof SettingsInfo settingsInfo) {
+            geoServer.remove(settingsInfo);
+        } else if (info instanceof ServiceInfo serviceInfo) {
+            geoServer.remove(serviceInfo);
         } else {
-            throw new RuntimeException(String.format(
-                    "Don't know how to handle info of type '%s'.",
-                    info.getClass().getSimpleName()));
+            throw new RuntimeException("Don't know how to handle info of type '%s'."
+                    .formatted(info.getClass().getSimpleName()));
         }
     }
 }

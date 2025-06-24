@@ -12,6 +12,7 @@ import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
 
+import java.io.Serial;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import org.geoserver.wfs.WFSInfo;
 /** Panel for the service admin page to set the service INSPIRE extension preferences. */
 public class InspireAdminPanel extends AdminPagePanel {
 
+    @Serial
     private static final long serialVersionUID = -7670555379263411393L;
 
     public InspireAdminPanel(final String id, final IModel<ServiceInfo> model) {
@@ -80,6 +82,7 @@ public class InspireAdminPanel extends AdminPagePanel {
         container.add(configs);
 
         createInspireExtendedCapabilities.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -111,6 +114,7 @@ public class InspireAdminPanel extends AdminPagePanel {
         IModel<String> urlTypeModel = new MapModel<>(metadata, SERVICE_METADATA_TYPE.key);
 
         IChoiceRenderer<String> urlTypeChoiceRenderer = new ChoiceRenderer<>() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

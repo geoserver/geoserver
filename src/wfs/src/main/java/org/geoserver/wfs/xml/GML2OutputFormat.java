@@ -129,9 +129,8 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat implements Compl
                 // don't blindly assume it's a feature type, this class is used also by WMS
                 // FeatureInfo
                 // meaning it might be a coverage or a remote wms layer
-                if (meta instanceof FeatureTypeInfo) {
-                    String location =
-                            typeSchemaLocation(geoServer.getGlobal(), (FeatureTypeInfo) meta, request.getBaseUrl());
+                if (meta instanceof FeatureTypeInfo info) {
+                    String location = typeSchemaLocation(geoServer.getGlobal(), info, request.getBaseUrl());
                     ftNamespaces.put(uri, location);
                 }
             }
@@ -156,16 +155,16 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat implements Compl
             // track num decimals, in cases where the query has multiple types we choose the max
             // of all the values (same deal as above, might not be a vector due to GetFeatureInfo
             // reusing this)
-            if (meta instanceof FeatureTypeInfo) {
-                int ftiDecimals = ((FeatureTypeInfo) meta).getNumDecimals();
+            if (meta instanceof FeatureTypeInfo info) {
+                int ftiDecimals = info.getNumDecimals();
                 if (ftiDecimals > 0) {
                     numDecimals = numDecimals == -1 ? ftiDecimals : Math.max(numDecimals, ftiDecimals);
                 }
-                boolean pad = ((FeatureTypeInfo) meta).getPadWithZeros();
+                boolean pad = info.getPadWithZeros();
                 if (pad) {
                     padWithZeros = true;
                 }
-                boolean force = ((FeatureTypeInfo) meta).getForcedDecimal();
+                boolean force = info.getForcedDecimal();
                 if (force) {
                     forcedDecimal = true;
                 }

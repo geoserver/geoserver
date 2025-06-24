@@ -363,8 +363,7 @@ public class GeoPackageProcess implements GeoServerProcess {
             ReferencedEnvelope bbox = null;
             for (PublishedInfo p : publisheds) {
                 ReferencedEnvelope b = null;
-                if (p instanceof LayerInfo) {
-                    LayerInfo l = (LayerInfo) p;
+                if (p instanceof LayerInfo l) {
                     ResourceInfo r = l.getResource();
                     b = r.getLatLonBoundingBox().transform(crs, true);
                 } else {
@@ -388,8 +387,8 @@ public class GeoPackageProcess implements GeoServerProcess {
     }
 
     private CoordinateReferenceSystem getCRS(PublishedInfo publishedInfo) {
-        if (publishedInfo instanceof LayerInfo) {
-            return ((LayerInfo) publishedInfo).getResource().getCRS();
+        if (publishedInfo instanceof LayerInfo info) {
+            return info.getResource().getCRS();
         } else {
             return ((LayerGroupInfo) publishedInfo).getBounds().getCoordinateReferenceSystem();
         }

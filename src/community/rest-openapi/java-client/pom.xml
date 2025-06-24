@@ -73,6 +73,11 @@
               <artifactId>mapstruct-processor</artifactId>
               <version>${mapstruct.version}</version>
             </path>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok-mapstruct-binding</artifactId>
+              <version>0.2.0</version>
+            </path>
           </annotationProcessorPaths>
           <generatedSourcesDirectory>${project.build.directory}/generated-sources/mapstruct</generatedSourcesDirectory>
         </configuration>

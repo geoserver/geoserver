@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.publish;
 
+import java.io.Serial;
 import org.geoserver.catalog.LayerInfo;
 
 /**
@@ -13,6 +14,7 @@ import org.geoserver.catalog.LayerInfo;
  */
 public class LayerEditTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = -388475157541960108L;
 
     @Override

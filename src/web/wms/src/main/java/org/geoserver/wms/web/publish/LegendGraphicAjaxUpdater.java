@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.web.publish;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -23,6 +24,7 @@ import org.geoserver.catalog.StyleInfo;
  */
 class LegendGraphicAjaxUpdater implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 5543647283072466506L;
 
     private Image image;

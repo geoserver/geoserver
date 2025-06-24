@@ -204,7 +204,7 @@ public class BatchManagerTest {
                 lTransaction, transactionListener, stores, transactionResponse, element2Handlers, batchSizeForDeletion);
         sut.run();
 
-        String message = String.format("First %d DELETEs have been merged", batchSizeForDeletion);
+        String message = "First %d DELETEs have been merged".formatted(batchSizeForDeletion);
         assertTrue(message, delete1.getFilter() instanceof Or);
         int lOrCount = ((Or) delete1.getFilter()).getChildren().size();
         assertEquals(message, 40, lOrCount);

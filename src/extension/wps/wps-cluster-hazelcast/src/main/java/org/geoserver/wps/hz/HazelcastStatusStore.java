@@ -163,9 +163,8 @@ public class HazelcastStatusStore implements ProcessStatusStore {
 
             // are we actually have to page?
             ArrayList<ExecutionStatus> result = new ArrayList<>();
-            if (predicate instanceof PagingPredicate) {
+            if (predicate instanceof PagingPredicate pp) {
                 int position = 0;
-                PagingPredicate pp = (PagingPredicate) predicate;
                 while (position < startIndex - maxFeatures) {
                     pp.nextPage();
                     position += maxFeatures;

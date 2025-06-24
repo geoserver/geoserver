@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.dto.impl;
 
+import java.io.Serial;
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
 import org.geoserver.metadata.data.dto.MappingTypeEnum;
 
@@ -17,6 +18,7 @@ import org.geoserver.metadata.data.dto.MappingTypeEnum;
  */
 public class AttributeMappingConfigurationImpl implements AttributeMappingConfiguration {
 
+    @Serial
     private static final long serialVersionUID = -2528238667226248014L;
 
     String geoserver;

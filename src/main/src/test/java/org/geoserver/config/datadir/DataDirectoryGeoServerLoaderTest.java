@@ -127,7 +127,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
 
         String prefix = typeName.getPrefix();
         String name = typeName.getLocalPart();
-        String prefixedName = String.format("%s:%s", prefix, name);
+        String prefixedName = "%s:%s".formatted(prefix, name);
         assertNotNull(catalog.getWorkspaceByName(prefix));
         assertNotNull(catalog.getLayerByName(prefixedName));
     }

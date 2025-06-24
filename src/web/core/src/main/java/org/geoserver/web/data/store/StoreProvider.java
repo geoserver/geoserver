@@ -9,6 +9,7 @@ import static org.geoserver.catalog.Predicates.sortBy;
 import static org.geoserver.config.CatalogModificationUserUpdater.TRACK_USER;
 
 import com.google.common.collect.Lists;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -71,14 +72,13 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
             }
             try {
                 ResourcePool resourcePool = item.getCatalog().getResourcePool();
-                if (item instanceof DataStoreInfo) {
-                    DataStoreInfo dsInfo = (DataStoreInfo) item;
+                if (item instanceof DataStoreInfo dsInfo) {
                     DataAccessFactory factory = resourcePool.getDataStoreFactory(dsInfo);
                     if (factory != null) {
                         return factory.getDisplayName();
                     }
-                } else if (item instanceof CoverageStoreInfo) {
-                    Format format = resourcePool.getGridCoverageFormat((CoverageStoreInfo) item);
+                } else if (item instanceof CoverageStoreInfo info) {
+                    Format format = resourcePool.getGridCoverageFormat(info);
                     if (format != null) {
                         return format.getName();
                     }
@@ -148,6 +148,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     /** A StoreInfo detachable model that holds the store id to retrieve it on demand from the catalog */
     static class StoreInfoDetachableModel extends LoadableDetachableModel<StoreInfo> {
 
+        @Serial
         private static final long serialVersionUID = -6829878983583733186L;
 
         String id;

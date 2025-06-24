@@ -61,9 +61,9 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     @Override
     protected boolean isAvailable(String serviceType, ServiceInfo serviceInfo, PublishedInfo layerInfo) {
-        if (layerInfo != null && layerInfo instanceof LayerInfo) {
+        if (layerInfo != null && layerInfo instanceof LayerInfo info) {
             WCSResourceVoter voter = new WCSResourceVoter();
-            if (voter.hideService(serviceType, ((LayerInfo) layerInfo).getResource())) {
+            if (voter.hideService(serviceType, info.getResource())) {
                 return false;
             }
         }

@@ -6,6 +6,7 @@
 package org.geoserver.web.wicket.browser;
 
 import java.io.File;
+import java.io.Serial;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -152,6 +153,7 @@ public abstract class FileDataView extends Panel {
             fileContent.setOutputMarkupId(true);
             fileContent.add(AttributeModifier.replace("class", "overflowAuto"));
             fileContent.add(new Behavior() {
+                @Serial
                 private static final long serialVersionUID = 4820788798632906484L;
 
                 @Override

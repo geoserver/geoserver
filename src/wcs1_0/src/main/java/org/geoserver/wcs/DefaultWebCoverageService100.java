@@ -440,8 +440,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             if (coverage != null) {
                 CoverageCleanerCallback.addCoverages(coverage);
             }
-            if (e instanceof WcsException) {
-                throw (WcsException) e;
+            if (e instanceof WcsException exception) {
+                throw exception;
             } else {
                 throw new WcsException(e);
             }

@@ -943,8 +943,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     } catch (Exception exception) {
                         LOGGER.log(
                                 Level.WARNING,
-                                String.format(
-                                        "Failed to transform layer group '%s' bounds to WGS84.", layerGroup.getName()),
+                                "Failed to transform layer group '%s' bounds to WGS84.".formatted(layerGroup.getName()),
                                 exception);
                     }
                 }
@@ -1301,10 +1300,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 layersAlreadyProcessed.addAll(layerGroup.layers());
             } else if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
                 for (PublishedInfo child : layerGroup.getLayers()) {
-                    if (child instanceof LayerInfo) {
-                        LayerInfo layer = (LayerInfo) child;
+                    if (child instanceof LayerInfo layer) {
                         if (isExposable(layer)) {
-                            layersAlreadyProcessed.add((LayerInfo) child);
+                            layersAlreadyProcessed.add(layer);
                         }
                     } else {
                         getLayersInGroup((LayerGroupInfo) child, layersAlreadyProcessed);
@@ -1457,10 +1455,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             if (!LayerGroupInfo.Mode.OPAQUE_CONTAINER.equals(layerGroup.getMode())
                     && !LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
                 for (PublishedInfo child : layerGroup.getLayers()) {
-                    if (child instanceof LayerInfo) {
-                        LayerInfo layer = (LayerInfo) child;
+                    if (child instanceof LayerInfo layer) {
                         if (isExposable(layer)) {
-                            handleLayer((LayerInfo) child, false);
+                            handleLayer(layer, false);
                         }
                     } else {
                         handleLayerGroup((LayerGroupInfo) child, false);

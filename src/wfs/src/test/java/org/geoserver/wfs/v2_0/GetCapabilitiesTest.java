@@ -170,7 +170,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
                 "//ows:Operation[@name=\"%s\"]/ows:Parameter[@name=\"resolve\"]/ows:AllowedValues[ows:Value='%s']";
         for (String op : new String[] {"GetFeature", "GetFeatureWithLock", "GetPropertyValue"}) {
             for (String value : new String[] {"none", "local"}) {
-                String xpath = String.format(xpathTemplate, op, value);
+                String xpath = xpathTemplate.formatted(op, value);
                 assertXpathExists(xpath, doc);
             }
         }
@@ -212,7 +212,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
             "ImplementsSorting",
             "ImplementsMinimumXPath"
         }) {
-            String xpath = String.format(xpathTemplate, constraint);
+            String xpath = xpathTemplate.formatted(constraint);
             assertXpathEvaluatesTo("TRUE", xpath, doc);
         }
     }

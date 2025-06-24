@@ -535,8 +535,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
      */
     private Filter getResidualFilter(Filter filter, String parentId) {
         PropertyIsEqualTo expectedParentFilter = FF.equals(FF.property(PARENT_ID_KEY), FF.literal(parentId));
-        if (filter instanceof And) {
-            And and = (And) filter;
+        if (filter instanceof And and) {
             List<Filter> children = and.getChildren();
             assertEquals(expectedParentFilter, children.get(0));
             if (children.size() == 2) return children.get(1);

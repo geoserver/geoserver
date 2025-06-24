@@ -133,8 +133,7 @@ public class StylePage extends GeoServerSecuredPage {
     }
 
     protected static boolean isDefaultStyle(CatalogInfo catalogInfo) {
-        if (catalogInfo instanceof StyleInfo) {
-            StyleInfo s = (StyleInfo) catalogInfo;
+        if (catalogInfo instanceof StyleInfo s) {
 
             return s.getWorkspace() == null
                     && (StyleInfo.DEFAULT_POINT.equals(s.getName())

@@ -88,10 +88,8 @@
       <artifactId>commons-text</artifactId>
     </dependency>
     <dependency>
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
-      <version>1.3.5</version>
-      <scope>provided</scope>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>

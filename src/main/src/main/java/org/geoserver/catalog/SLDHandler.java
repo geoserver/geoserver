@@ -313,9 +313,9 @@ public class SLDHandler extends StyleHandler {
     }
 
     /** Helper method for finding which style handler/version to use from the actual content. */
+    @SuppressWarnings("PMD.CloseResource") // reader returned as part of the response, instanceof InputStream stream
     Object[] getVersionAndReader(Object input, boolean needReader) throws IOException {
         // need to determine version of sld from actual content
-        @SuppressWarnings("PMD.CloseResource") // returned as part of the response
         BufferedReader reader = null;
 
         if (input instanceof InputStream stream) {

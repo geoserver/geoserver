@@ -1965,6 +1965,7 @@ public class ResourcePool {
         return entityResolver;
     }
 
+    @SuppressWarnings("PMD.CloseResource") // mtClient
     private HTTPClient getHTTPClient(HTTPStoreInfo info) {
         String capabilitiesURL = info.getCapabilitiesURL();
 
@@ -2499,6 +2500,7 @@ public class ResourcePool {
     static class WMSCache extends CatalogResourceCache<String, WebMapServer> {
 
         @Override
+        @SuppressWarnings("PMD.CloseResource") // closeable
         protected void dispose(String key, WebMapServer server) {
             HTTPClient client = server.getHTTPClient();
             if (client instanceof Closeable closeable) {
@@ -2514,6 +2516,7 @@ public class ResourcePool {
     static class WMTSCache extends CatalogResourceCache<String, WebMapTileServer> {
 
         @Override
+        @SuppressWarnings("PMD.CloseResource") // closeable
         protected void dispose(String key, WebMapTileServer server) {
             HTTPClient client = server.getHTTPClient();
             if (client instanceof Closeable closeable) {

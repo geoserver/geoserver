@@ -206,6 +206,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // context
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         if (applicationContext instanceof ConfigurableApplicationContext context) {
             // register default beans if needed

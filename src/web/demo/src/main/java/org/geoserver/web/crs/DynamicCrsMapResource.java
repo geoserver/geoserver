@@ -6,7 +6,11 @@
 package org.geoserver.web.crs;
 
 import java.awt.image.RenderedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serial;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;

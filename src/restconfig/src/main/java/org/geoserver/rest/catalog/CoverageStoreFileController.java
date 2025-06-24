@@ -94,8 +94,8 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         }
 
         GridCoverageReader reader = info.getGridCoverageReader(null, null);
-        if (reader instanceof StructuredGridCoverage2DReader sr) {
-            if (sr.isReadOnly()) {
+        if (reader instanceof StructuredGridCoverage2DReader sgcr) {
+            if (sgcr.isReadOnly()) {
                 throw new RestException(
                         "Coverage store found, but it cannot harvest extra resources", HttpStatus.METHOD_NOT_ALLOWED);
             }

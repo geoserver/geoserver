@@ -110,9 +110,4 @@ public class GeoServerDataSource extends BasicDataSource {
         return db.getProperty("url")
                 .replace("%GEOSERVER_DATA_DIR%", dataDirectory.root().getAbsolutePath());
     }
-
-    public java.util.logging.Logger getParentLogger() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

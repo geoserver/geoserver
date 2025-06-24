@@ -608,9 +608,4 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         }
         return super.getDefaultWorkspace();
     }
-
-    public boolean isWrapperFor(Class<?> iface) throws java.sql.SQLException {
-        // TODO Auto-generated method stub
-        return iface != null && iface.isAssignableFrom(this.getClass());
-    }
 }

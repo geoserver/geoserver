@@ -1610,9 +1610,4 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         }
         return manager instanceof DefaultResourceAccessManager;
     }
-
-    public boolean isWrapperFor(Class<?> iface) throws java.sql.SQLException {
-        // TODO Auto-generated method stub
-        return iface != null && iface.isAssignableFrom(this.getClass());
-    }
 }

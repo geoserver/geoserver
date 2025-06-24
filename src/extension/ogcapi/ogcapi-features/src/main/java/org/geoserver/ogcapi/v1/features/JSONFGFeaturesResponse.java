@@ -134,8 +134,7 @@ public class JSONFGFeaturesResponse extends RFCGeoJSONFeaturesResponse {
         if (schema == null) return;
 
         jw.key("featureType");
-        if (collection instanceof TypeInfoCollectionWrapper) {
-            TypeInfoCollectionWrapper wrapper = (TypeInfoCollectionWrapper) collection;
+        if (collection instanceof TypeInfoCollectionWrapper wrapper) {
             jw.value(wrapper.getFeatureTypeInfo().prefixedName());
         } else {
             jw.value(schema.getName().getLocalPart());

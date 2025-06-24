@@ -10,6 +10,7 @@ import static org.geoserver.importer.ImporterUtils.resolve;
 import com.google.common.collect.Iterables;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import org.geotools.util.logging.Logging;
 public class ImportContext implements Serializable {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 8790675013874051197L;
 
     static final Logger LOGGER = Logging.getLogger(ImportContext.class);
@@ -191,10 +193,11 @@ public class ImportContext implements Serializable {
         // apply the default transformations
         TransformChain chain = task.getTransform();
         for (ImportTransform tx : defaultTransforms) {
-            if (chain instanceof RasterTransformChain && tx instanceof RasterTransform) {
-                ((RasterTransformChain) chain).add((RasterTransform) tx);
-            } else if (chain instanceof VectorTransformChain && tx instanceof VectorTransform) {
-                ((VectorTransformChain) chain).add((VectorTransform) tx);
+            if (chain instanceof RasterTransformChain transformChain1 && tx instanceof RasterTransform transform1) {
+                transformChain1.add(transform1);
+            } else if (chain instanceof VectorTransformChain transformChain
+                    && tx instanceof VectorTransform transform) {
+                transformChain.add(transform);
             }
         }
     }

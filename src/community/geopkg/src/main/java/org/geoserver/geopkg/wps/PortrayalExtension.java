@@ -118,7 +118,7 @@ public class PortrayalExtension extends GeoPkgExtension {
     }
 
     public void addStyle(GeoPkgStyle gs) throws SQLException {
-        String sql = format("INSERT INTO %s(style, description, uri) VALUES(?, ?, ?)", STYLES_TABLE);
+        String sql = "INSERT INTO %s(style, description, uri) VALUES(?, ?, ?)".formatted(STYLES_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setString(1, gs.getStyle());
@@ -141,7 +141,7 @@ public class PortrayalExtension extends GeoPkgExtension {
     }
 
     public void addStylesheet(GeoPkgStyleSheet styleSheet) throws SQLException {
-        String sql = format("INSERT INTO %s(style_id, format, stylesheet) VALUES(?, ?, ?)", STYLESHEETS_TABLE);
+        String sql = "INSERT INTO %s(style_id, format, stylesheet) VALUES(?, ?, ?)".formatted(STYLESHEETS_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setLong(1, styleSheet.getStyle().getId());
@@ -212,7 +212,7 @@ public class PortrayalExtension extends GeoPkgExtension {
     }
 
     public void addSymbol(GeoPkgSymbol symbol) throws SQLException {
-        String sql = String.format("INSERT INTO %s(symbol, description, uri) VALUES (?, ?, ?)", SYMBOLS_TABLE);
+        String sql = "INSERT INTO %s(symbol, description, uri) VALUES (?, ?, ?)".formatted(SYMBOLS_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setString(1, symbol.getSymbol());
@@ -230,7 +230,7 @@ public class PortrayalExtension extends GeoPkgExtension {
 
             // add the content
             String contentSql =
-                    String.format("INSERT INTO %s(format, content, uri) VALUES (?, ?, ?)", SYMBOL_CONTENTS_TABLE);
+                    "INSERT INTO %s(format, content, uri) VALUES (?, ?, ?)".formatted(SYMBOL_CONTENTS_TABLE);
             try (PreparedStatement ps = cx.prepareStatement(contentSql)) {
                 ps.setString(1, image.getFormat());
                 ps.setBytes(2, image.getContent());
@@ -241,7 +241,7 @@ public class PortrayalExtension extends GeoPkgExtension {
             }
 
             // add the image entry (ignore the sprite support for the moment)
-            String imageSql = String.format("INSERT INTO %s(symbol_id, content_id) VALUES (?, ?)", SYMBOL_IMAGES_TABLE);
+            String imageSql = "INSERT INTO %s(symbol_id, content_id) VALUES (?, ?)".formatted(SYMBOL_IMAGES_TABLE);
             try (PreparedStatement ps = cx.prepareStatement(imageSql)) {
                 ps.setLong(1, image.getSymbol().getId());
                 ps.setLong(2, contentId);

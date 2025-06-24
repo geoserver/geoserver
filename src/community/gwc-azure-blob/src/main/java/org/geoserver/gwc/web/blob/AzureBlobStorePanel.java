@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import java.io.Serial;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
@@ -15,6 +16,7 @@ import org.geowebcache.azure.AzureBlobStoreInfo;
 /** Panel for AzureBlobStore */
 public class AzureBlobStorePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -8237328668463257329L;
 
     public AzureBlobStorePanel(String id, final IModel<AzureBlobStoreInfo> configModel) {

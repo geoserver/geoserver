@@ -115,11 +115,11 @@ public class RulesBuilder {
                         functionName, FF.property(property), FF.literal(classNumber), FF.literal(outputPercentages));
             }
             Classifier groups = (Classifier) classify.evaluate(features);
-            if (groups instanceof RangedClassifier)
-                if (open) return openRangedRules((RangedClassifier) groups, property, propertyType, normalize);
-                else return closedRangedRules((RangedClassifier) groups, property, propertyType, normalize);
-            else if (groups instanceof ExplicitClassifier)
-                return this.explicitRules((ExplicitClassifier) groups, property, propertyType);
+            if (groups instanceof RangedClassifier classifier1)
+                if (open) return openRangedRules(classifier1, property, propertyType, normalize);
+                else return closedRangedRules(classifier1, property, propertyType, normalize);
+            else if (groups instanceof ExplicitClassifier classifier)
+                return this.explicitRules(classifier, property, propertyType);
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))

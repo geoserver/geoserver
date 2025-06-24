@@ -71,14 +71,14 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
         }
 
         private void encodeProperty(Feature f, Property p) {
-            if (p instanceof ComplexAttribute) {
+            if (p instanceof ComplexAttribute attribute) {
 
                 String prefix =
                         MetaDataDescriptor.NAMESPACES.getPrefix(p.getName().getNamespaceURI());
 
                 AttributesImpl atts = new AttributesImpl();
                 if (p.isNillable()) {
-                    Property prop = ((ComplexAttribute) p).getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
+                    Property prop = attribute.getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
                     boolean nil = prop == null
                             || prop.getValue() == null
                             || prop.getValue().equals("");
@@ -87,7 +87,7 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
                     }
                 }
 
-                for (Property p2 : ((ComplexAttribute) p).getProperties()) {
+                for (Property p2 : attribute.getProperties()) {
                     if (p2.getName().getLocalPart().substring(0, 1).equals("@")) {
                         String name = p2.getName().getLocalPart().substring(1);
                         String ns = p2.getName().getNamespaceURI();
@@ -103,20 +103,20 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
 
                 start(prefix + ":" + p.getName().getLocalPart(), atts);
 
-                Property pSimple = ((ComplexAttribute) p).getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
+                Property pSimple = attribute.getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
                 if (pSimple != null) {
                     chars(pSimple.getValue().toString());
                 }
 
                 for (PropertyDescriptor pd : ((ComplexType) p.getType()).getDescriptors()) {
                     if (!pd.getName().getLocalPart().substring(0, 1).equals("@")) {
-                        encodeProperties(f, ((ComplexAttribute) p).getProperties(pd.getName()));
+                        encodeProperties(f, attribute.getProperties(pd.getName()));
                         @SuppressWarnings("unchecked")
                         Collection<PropertyDescriptor> substitionGroup = (Collection<PropertyDescriptor>)
                                 pd.getUserData().get("substitutionGroup");
                         if (substitionGroup != null) {
                             for (PropertyDescriptor pdSub : substitionGroup) {
-                                encodeProperties(f, ((ComplexAttribute) p).getProperties(pdSub.getName()));
+                                encodeProperties(f, attribute.getProperties(pdSub.getName()));
                             }
                         }
                     }

@@ -77,8 +77,7 @@ public class GWCIconFactory implements Serializable {
     }
 
     public static CachedLayerType getCachedLayerType(final TileLayer layer) {
-        if (layer instanceof GeoServerTileLayer) {
-            GeoServerTileLayer gsTileLayer = (GeoServerTileLayer) layer;
+        if (layer instanceof GeoServerTileLayer gsTileLayer) {
             PublishedInfo published = gsTileLayer.getPublishedInfo();
             PublishedType publishedType = published.getType();
             return CachedLayerType.valueOf(publishedType.getCode());
@@ -103,11 +102,10 @@ public class GWCIconFactory implements Serializable {
 
     /** Returns the appropriate icon for the specified layer type. */
     public static PackageResourceReference getSpecificLayerIcon(final TileLayer layer) {
-        if (layer instanceof GeoServerTileLayer) {
-            GeoServerTileLayer gsTileLayer = (GeoServerTileLayer) layer;
+        if (layer instanceof GeoServerTileLayer gsTileLayer) {
             PublishedInfo published = gsTileLayer.getPublishedInfo();
-            if (published instanceof LayerInfo) {
-                return CatalogIconFactory.get().getSpecificLayerIcon((LayerInfo) published);
+            if (published instanceof LayerInfo info) {
+                return CatalogIconFactory.get().getSpecificLayerIcon(info);
             }
             return CatalogIconFactory.GROUP_ICON;
         }

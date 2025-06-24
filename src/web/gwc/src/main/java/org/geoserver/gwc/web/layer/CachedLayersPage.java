@@ -14,6 +14,7 @@ import static org.geoserver.gwc.web.layer.CachedLayerProvider.QUOTA_LIMIT;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.QUOTA_USAGE;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.TYPE;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +66,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
     private static Logger log = Logging.getLogger(CachedLayersPage.class);
 
+    @Serial
     private static final long serialVersionUID = -6795610175856538774L;
 
     private static final PackageResourceReference JS_FILE =
@@ -81,6 +83,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     public CachedLayersPage() {
 
         table = new GeoServerTablePanel<>("table", provider, true) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @SuppressWarnings({"unchecked"})
@@ -201,6 +204,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         IModel<String> labelModel = new ResourceModel("truncate");
 
         SimpleAjaxLink<String> link = new SimpleAjaxLink<>(id, model, labelModel) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -210,6 +214,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 dialog.setDefaultModel(getDefaultModel());
 
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -341,6 +346,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
             // if there is something to cancel, let's warn the user about what
             // could go wrong, and if the user accepts, let's delete what's needed
             dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override

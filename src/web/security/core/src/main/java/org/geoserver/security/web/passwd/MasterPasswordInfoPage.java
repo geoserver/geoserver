@@ -7,6 +7,7 @@ package org.geoserver.security.web.passwd;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.Form;
@@ -34,6 +35,7 @@ class MasterPasswordInfoPage extends AbstractSecurityPage {
         form.add(new TextField<>("fileName"));
 
         form.add(new SubmitLink("save", form) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -54,6 +56,7 @@ class MasterPasswordInfoPage extends AbstractSecurityPage {
             }
         });
         form.add(new AjaxLink<>("back") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

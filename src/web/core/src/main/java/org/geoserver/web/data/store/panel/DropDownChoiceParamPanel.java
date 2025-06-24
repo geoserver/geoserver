@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import org.geoserver.web.wicket.Select2DropDownChoice;
 /** A DataStore parameter panel that presents a dropdown choice */
 public class DropDownChoiceParamPanel extends Panel implements ParamPanel<Serializable> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private DropDownChoice<Serializable> choice;

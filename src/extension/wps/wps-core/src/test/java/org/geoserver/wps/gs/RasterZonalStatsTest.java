@@ -110,44 +110,46 @@ public class RasterZonalStatsTest extends WPSTestSupport {
 
     @Test
     public void testStatisticsSfDem() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                + "  <ows:Identifier>gs:RasterZonalStatistics</ows:Identifier>\n"
-                + "  <wps:DataInputs>\n"
-                + "    <wps:Input>\n"
-                + "      <ows:Identifier>data</ows:Identifier>\n"
-                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
-                + "        <wps:Body>\n"
-                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
-                + "            <ows:Identifier>sf:sfdem</ows:Identifier>\n"
-                + "            <wcs:DomainSubset>\n"
-                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#26713\">\n"
-                + "                <ows:LowerCorner>589980.0 4913700.0</ows:LowerCorner>\n"
-                + "                <ows:UpperCorner>609000.0 4928010.0</ows:UpperCorner>\n"
-                + "              </gml:BoundingBox>\n"
-                + "            </wcs:DomainSubset>\n"
-                + "            <wcs:Output format=\"image/tiff\"/>\n"
-                + "          </wcs:GetCoverage>\n"
-                + "        </wps:Body>\n"
-                + "      </wps:Reference>\n"
-                + "    </wps:Input>\n"
-                + "    <wps:Input>\n"
-                + "      <ows:Identifier>zones</ows:Identifier>\n"
-                + "      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n"
-                + "        <wps:Body>\n"
-                + "          <wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\">\n"
-                + "            <wfs:Query typeName=\"sf:restricted\"/>\n"
-                + "          </wfs:GetFeature>\n"
-                + "        </wps:Body>\n"
-                + "      </wps:Reference>\n"
-                + "    </wps:Input>\n"
-                + "  </wps:DataInputs>\n"
-                + "  <wps:ResponseForm>\n"
-                + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=wfs-collection/1.0\">\n"
-                + "      <ows:Identifier>statistics</ows:Identifier>\n"
-                + "    </wps:RawDataOutput>\n"
-                + "  </wps:ResponseForm>\n"
-                + "</wps:Execute>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+                  <ows:Identifier>gs:RasterZonalStatistics</ows:Identifier>
+                  <wps:DataInputs>
+                    <wps:Input>
+                      <ows:Identifier>data</ows:Identifier>
+                      <wps:Reference mimeType="image/tiff" xlink:href="http://geoserver/wcs" method="POST">
+                        <wps:Body>
+                          <wcs:GetCoverage service="WCS" version="1.1.1">
+                            <ows:Identifier>sf:sfdem</ows:Identifier>
+                            <wcs:DomainSubset>
+                              <gml:BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#26713">
+                                <ows:LowerCorner>589980.0 4913700.0</ows:LowerCorner>
+                                <ows:UpperCorner>609000.0 4928010.0</ows:UpperCorner>
+                              </gml:BoundingBox>
+                            </wcs:DomainSubset>
+                            <wcs:Output format="image/tiff"/>
+                          </wcs:GetCoverage>
+                        </wps:Body>
+                      </wps:Reference>
+                    </wps:Input>
+                    <wps:Input>
+                      <ows:Identifier>zones</ows:Identifier>
+                      <wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">
+                        <wps:Body>
+                          <wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">
+                            <wfs:Query typeName="sf:restricted"/>
+                          </wfs:GetFeature>
+                        </wps:Body>
+                      </wps:Reference>
+                    </wps:Input>
+                  </wps:DataInputs>
+                  <wps:ResponseForm>
+                    <wps:RawDataOutput mimeType="text/xml; subtype=wfs-collection/1.0">
+                      <ows:Identifier>statistics</ows:Identifier>
+                    </wps:RawDataOutput>
+                  </wps:ResponseForm>
+                </wps:Execute>""";
 
         Document dom = postAsDOM(root(), xml);
         // print(dom);

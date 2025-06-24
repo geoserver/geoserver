@@ -12,6 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,6 +35,7 @@ import org.geotools.referencing.CRS;
 
 public class SpatialFile extends FileData {
 
+    @Serial
     private static final long serialVersionUID = -280215815681792790L;
 
     /** .prj file */

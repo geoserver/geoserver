@@ -39,8 +39,7 @@ public class FilterFunction_gridCoverageStats extends FunctionExpressionImpl {
         try { // attempt to get value and perform conversion
             arg0 = (getExpression(0).evaluate(feature, String.class));
             Object val = null;
-            if (feature instanceof GridCoverage2D) {
-                GridCoverage2D coverage = (GridCoverage2D) feature;
+            if (feature instanceof GridCoverage2D coverage) {
                 val = evaluate(coverage, arg0);
             }
             if (val != null) {
@@ -63,8 +62,7 @@ public class FilterFunction_gridCoverageStats extends FunctionExpressionImpl {
     public Object evaluate(final GridCoverage2D coverage, final String statName) {
         Utilities.ensureNonNull("coverage", coverage);
         final Object prop = coverage.getProperty(Utils.PAM_DATASET);
-        if (prop != null && prop instanceof PAMDataset) {
-            final PAMDataset dataset = (PAMDataset) prop;
+        if (prop != null && prop instanceof PAMDataset dataset) {
             // Need to play with channel selection to deal with different raster bands
             final PAMRasterBand band = dataset.getPAMRasterBand().get(0);
             if (band != null) {

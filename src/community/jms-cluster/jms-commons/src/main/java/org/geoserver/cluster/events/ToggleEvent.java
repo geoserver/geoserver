@@ -5,6 +5,7 @@
  */
 package org.geoserver.cluster.events;
 
+import java.io.Serial;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.context.ApplicationEvent;
  */
 public class ToggleEvent extends ApplicationEvent {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final ToggleType toggleType;

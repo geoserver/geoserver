@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.netcdf.layer;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -51,6 +52,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
     }
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final TextField<String> standardName;
@@ -145,8 +147,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
     @Override
     public void convertInput() {
         IVisitor<Component, Object> formComponentVisitor = (component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
+            if (component instanceof FormComponent<?> formComponent) {
                 formComponent.processInput();
             }
         };
@@ -173,8 +174,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         convertedInput.setLayerUOM(uom.getModelObject());
 
         extensionPanels.visitChildren((component, visit) -> {
-            if (component instanceof NetCDFExtensionPanel) {
-                NetCDFExtensionPanel extension = (NetCDFExtensionPanel) component;
+            if (component instanceof NetCDFExtensionPanel extension) {
                 extension.convertInput(convertedInput);
             }
         });

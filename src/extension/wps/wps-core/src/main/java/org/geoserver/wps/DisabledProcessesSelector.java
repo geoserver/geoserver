@@ -43,8 +43,8 @@ public class DisabledProcessesSelector extends ProcessSelector implements GeoSer
         geoServer.addListener(new ConfigurationListenerAdapter() {
             @Override
             public void handlePostServiceChange(ServiceInfo service) {
-                if (service instanceof WPSInfo) {
-                    updateFilters((WPSInfo) service);
+                if (service instanceof WPSInfo info) {
+                    updateFilters(info);
                 }
             }
         });

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.IValidator;
 import org.geoserver.web.wicket.browser.DirectoryInput;
@@ -17,6 +18,7 @@ import org.geoserver.web.wicket.browser.FileInput;
  */
 public class DirectoryParamPanel extends FileParamPanel {
 
+    @Serial
     private static final long serialVersionUID = -8317791966175845831L;
 
     /** @param validators any extra validator that should be added to the input field, or {@code null} */

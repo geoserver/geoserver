@@ -75,8 +75,8 @@ public class IconService extends AbstractController {
             Map<String, String> kvp = new HashMap<>();
             for (String key : properties.keySet()) {
                 Object value = properties.get(key);
-                if (value instanceof String) {
-                    kvp.put(key, (String) value);
+                if (value instanceof String string) {
+                    kvp.put(key, string);
                 } else {
                     String[] values = (String[]) value;
                     kvp.put(key, values[0]);

@@ -235,22 +235,22 @@ public class WebAuthProviderTest extends AbstractAuthenticationProviderTest {
             Authentication auth = getCache().deserializeAuthentication(entry.getValue());
             Object o = auth.getPrincipal();
 
-            if (o instanceof UserDetails) {
-                if (user.equals(((UserDetails) o).getUsername())) {
+            if (o instanceof UserDetails details) {
+                if (user.equals(details.getUsername())) {
                     result = auth;
                     cacheKey = entry.getKey();
                     break;
                 }
             }
-            if (o instanceof Principal) {
-                if (user.equals(((Principal) o).getName())) {
+            if (o instanceof Principal principal) {
+                if (user.equals(principal.getName())) {
                     result = auth;
                     cacheKey = entry.getKey();
                     break;
                 }
             }
-            if (o instanceof String) {
-                if (user.equals(((String) o))) {
+            if (o instanceof String string) {
+                if (user.equals(string)) {
                     result = auth;
                     cacheKey = entry.getKey();
                     break;

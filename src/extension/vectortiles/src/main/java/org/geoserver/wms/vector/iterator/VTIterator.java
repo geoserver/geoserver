@@ -30,8 +30,8 @@ public interface VTIterator extends Closeable {
      */
     static VTIterator getIterator(FeatureIterator<?> delegate, boolean coalesce) {
         VTIterator result;
-        if (delegate instanceof SimpleFeatureIterator) {
-            result = new SimpleVTIterator((SimpleFeatureIterator) delegate);
+        if (delegate instanceof SimpleFeatureIterator iterator) {
+            result = new SimpleVTIterator(iterator);
         } else {
             result = new ComplexVTIterator(delegate);
         }

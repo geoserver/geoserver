@@ -242,8 +242,8 @@ public class OwsUtils {
             if (message != null && !"".equals(message)) {
                 if (xmlEscape) s.append(ResponseUtils.encodeXML(message));
                 else s.append(message);
-                if (ex instanceof ServiceException) {
-                    for (String value : ((ServiceException) ex).getExceptionText()) {
+                if (ex instanceof ServiceException exception) {
+                    for (String value : exception.getExceptionText()) {
                         s.append("\n");
                         String msg = value;
                         if (!lastMessage.equals(msg)) {

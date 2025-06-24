@@ -59,9 +59,9 @@ public class JSONMerger {
             if (ov == null) {
                 // keep original
                 merged.set(name, bv);
-            } else if (ov instanceof ObjectNode && bv instanceof ObjectNode) {
+            } else if (ov instanceof ObjectNode node && bv instanceof ObjectNode node1) {
                 // recurse merge
-                JsonNode mergedChild = mergeTrees((ObjectNode) bv, (ObjectNode) ov);
+                JsonNode mergedChild = mergeTrees(node1, node);
                 merged.set(name, mergedChild);
             } else if (isRootCollectionArray(name, bv, ov)) {
                 // special case for the features array, drill down

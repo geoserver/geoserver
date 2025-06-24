@@ -33,8 +33,8 @@ public class DGGSFilterVisitor extends DuplicatingFilterVisitor {
         Function clone = (Function) super.visit(expression, extraData);
 
         // extend with DGGS parameter if needed
-        if (clone instanceof DGGSFunction) {
-            ((DGGSFunction) clone).setDGGSInstance(dggs);
+        if (clone instanceof DGGSFunction function) {
+            function.setDGGSInstance(dggs);
         }
 
         return clone;

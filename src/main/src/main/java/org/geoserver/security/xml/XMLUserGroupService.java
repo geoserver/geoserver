@@ -78,8 +78,8 @@ public class XMLUserGroupService extends AbstractUserGroupService {
         }
         enc.initializeFor(this);
 
-        if (config instanceof XMLSecurityServiceConfig) {
-            validatingXMLSchema = ((XMLSecurityServiceConfig) config).isValidating();
+        if (config instanceof XMLSecurityServiceConfig serviceConfig) {
+            validatingXMLSchema = serviceConfig.isValidating();
             // copy schema file
             Resource xsdFile = getConfigRoot().get(XMLConstants.FILE_UR_SCHEMA);
             if (xsdFile.getType() == Type.UNDEFINED) {
@@ -87,8 +87,8 @@ public class XMLUserGroupService extends AbstractUserGroupService {
             }
         }
 
-        if (config instanceof FileBasedSecurityServiceConfig) {
-            String fileName = ((FileBasedSecurityServiceConfig) config).getFileName();
+        if (config instanceof FileBasedSecurityServiceConfig serviceConfig) {
+            String fileName = serviceConfig.getFileName();
             File userFile = new File(fileName);
             if (userFile.isAbsolute()) {
                 userResource = Files.asResource(userFile);

@@ -6,6 +6,7 @@
 
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -26,10 +27,12 @@ import org.geowebcache.filter.parameters.StringParameterFilter;
  */
 public class StringParameterFilterSubform extends AbstractParameterFilterSubform<StringParameterFilter> {
 
+    @Serial
     private static final long serialVersionUID = -3815153551079914831L;
 
     private static final IConverter<List<String>> CONVERT = new IConverter<>() {
 
+        @Serial
         private static final long serialVersionUID = -7486127358227242772L;
 
         @Override
@@ -65,6 +68,7 @@ public class StringParameterFilterSubform extends AbstractParameterFilterSubform
 
         final TextArea<List<String>> values = new TextArea<>("values", new PropertyModel<>(model, "values")) {
             /** serialVersionUID */
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @SuppressWarnings("unchecked")

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
@@ -20,6 +21,7 @@ import org.apache.wicket.validation.IValidator;
  */
 public class TextParamPanel<T> extends Panel implements ParamPanel<T> {
 
+    @Serial
     private static final long serialVersionUID = 5498443514886175158L;
 
     private TextField<T> textField;

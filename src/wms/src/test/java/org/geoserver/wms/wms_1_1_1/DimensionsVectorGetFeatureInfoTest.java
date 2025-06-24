@@ -500,8 +500,8 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
     public void testCustomDimensionStringInvalidException() throws Exception {
         setupVectorDimension("dim_custom", "shared_key", LIST, null, UNITS, UNIT_SYMBOL);
         setExceptionsOnInvalidDimension(true);
-        Document dom = getAsDOM(String.format(
-                "%s&info_format=text/plain&x=%d&y=%d&dim_custom=IAmNotThere", baseFeatureInfoCustom, 20, 10));
+        Document dom = getAsDOM(
+                "%s&info_format=text/plain&x=%d&y=%d&dim_custom=IAmNotThere".formatted(baseFeatureInfoCustom, 20, 10));
 
         String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "DIM_CUSTOM");
         assertEquals("Could not find a match for 'custom' value: 'IAmNotThere'", message.trim());

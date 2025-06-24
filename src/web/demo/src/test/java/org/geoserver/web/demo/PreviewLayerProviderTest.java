@@ -70,7 +70,7 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
 
         for (String key : keysToCheck) {
             if (!wmsKeys.contains(key)) {
-                Assert.fail(String.format("Parameter '%s' not specified in WmsLink URL of Layer.", key));
+                Assert.fail("Parameter '%s' not specified in WmsLink URL of Layer.".formatted(key));
             }
         }
     }

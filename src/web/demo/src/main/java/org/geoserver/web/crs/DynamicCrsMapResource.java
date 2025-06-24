@@ -6,10 +6,7 @@
 package org.geoserver.web.crs;
 
 import java.awt.image.RenderedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,6 +38,7 @@ public class DynamicCrsMapResource extends AbstractResource {
 
     static final Logger LOGGER = Logging.getLogger(DynamicCrsMapResource.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final CoordinateReferenceSystem crs;
@@ -95,6 +93,7 @@ public class DynamicCrsMapResource extends AbstractResource {
 
     private static class ByteArrayResourceStream extends AbstractResourceStream {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private final byte[] content;

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +30,9 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
 
     protected static class StyleListProvider extends GeoServerDataProvider<StyleInfo> {
+        @Serial
         private static final long serialVersionUID = -5061497681708482229L;
+
         private PublishedInfo publishedInfo;
 
         protected StyleListProvider(PublishedInfo publishedInfo) {
@@ -41,7 +44,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
         @Override
         protected List<StyleInfo> getItems() {
             List<StyleInfo> items;
-            if (publishedInfo instanceof LayerGroupInfo) items = groupStyles((LayerGroupInfo) publishedInfo);
+            if (publishedInfo instanceof LayerGroupInfo info) items = groupStyles(info);
             else items = new ArrayList<>(getCatalog().getStyles());
             return items;
         }
@@ -66,6 +69,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
         }
     }
 
+    @Serial
     private static final long serialVersionUID = -811883647153309626L;
 
     static Property<StyleInfo> NAME = new BeanProperty<>("name", "name");
@@ -85,6 +89,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
         final StyleInfo style = itemModel.getObject();
         if (property == NAME) {
             return new SimpleAjaxLink<>(id, (IModel<String>) NAME.getModel(itemModel)) {
+                @Serial
                 private static final long serialVersionUID = -2537227506881638001L;
 
                 @Override

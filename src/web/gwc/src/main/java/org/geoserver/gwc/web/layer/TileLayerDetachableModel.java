@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.gwc.GWC;
 import org.geowebcache.layer.TileLayer;
@@ -17,6 +18,7 @@ import org.geowebcache.layer.TileLayer;
  */
 class TileLayerDetachableModel extends LoadableDetachableModel<TileLayer> {
 
+    @Serial
     private static final long serialVersionUID = -2511578156425555123L;
 
     private String name;

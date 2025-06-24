@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerDigestAuthenticationFilter;
 
 /**
@@ -18,7 +19,9 @@ import org.geoserver.security.filter.GeoServerDigestAuthenticationFilter;
  */
 public class DigestAuthenticationFilterConfig extends SecurityFilterConfig implements SecurityAuthFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private String userGroupServiceName;
     private int nonceValiditySeconds = 300;
 

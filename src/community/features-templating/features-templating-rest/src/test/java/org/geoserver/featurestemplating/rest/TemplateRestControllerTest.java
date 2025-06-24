@@ -47,58 +47,62 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class TemplateRestControllerTest extends CatalogRESTTestSupport {
 
-    private static final String XHTML_TEMPLATE = "<gft:Template>\n"
-            + "  <ul>\n"
-            + "    <li><span>MeteoStations</span>\n"
-            + "      <ul>\n"
-            + "        <li><span >Code</span>\n"
-            + "          <ul>\n"
-            + "            <li>\n"
-            + "              $${strConcat('Station_',st:code)}\n"
-            + "            </li>\n"
-            + "          </ul>\n"
-            + "        </li>\n"
-            + "        <li><span>Name</span>\n"
-            + "          <ul>\n"
-            + "            <li>\n"
-            + "              ${st:common_name}\n"
-            + "            </li>\n"
-            + "          </ul>\n"
-            + "        </li>\n"
-            + "        <li><span>Geometry</span>\n"
-            + "          <ul>\n"
-            + "            <li>\n"
-            + "              ${st:position}\n"
-            + "            </li>\n"
-            + "          </ul>\n"
-            + "        </li>\n"
-            + "      </ul>\n"
-            + "    </li>\n"
-            + "  </ul>\n"
-            + "</gft:Template>";
+    private static final String XHTML_TEMPLATE =
+            """
+            <gft:Template>
+              <ul>
+                <li><span>MeteoStations</span>
+                  <ul>
+                    <li><span >Code</span>
+                      <ul>
+                        <li>
+                          $${strConcat('Station_',st:code)}
+                        </li>
+                      </ul>
+                    </li>
+                    <li><span>Name</span>
+                      <ul>
+                        <li>
+                          ${st:common_name}
+                        </li>
+                      </ul>
+                    </li>
+                    <li><span>Geometry</span>
+                      <ul>
+                        <li>
+                          ${st:position}
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </gft:Template>""";
 
-    private static final String XHTML_TEMPLATE_2 = "<gft:Template>\n"
-            + "  <ul>\n"
-            + "    <li><span>MeteoStations</span>\n"
-            + "      <ul>\n"
-            + "        <li><span>Name</span>\n"
-            + "          <ul>\n"
-            + "            <li>\n"
-            + "              ${st:common_name}\n"
-            + "            </li>\n"
-            + "          </ul>\n"
-            + "        </li>\n"
-            + "        <li><span>Geometry</span>\n"
-            + "          <ul>\n"
-            + "            <li>\n"
-            + "              ${st:position}\n"
-            + "            </li>\n"
-            + "          </ul>\n"
-            + "        </li>\n"
-            + "      </ul>\n"
-            + "    </li>\n"
-            + "  </ul>\n"
-            + "</gft:Template>";
+    private static final String XHTML_TEMPLATE_2 =
+            """
+            <gft:Template>
+              <ul>
+                <li><span>MeteoStations</span>
+                  <ul>
+                    <li><span>Name</span>
+                      <ul>
+                        <li>
+                          ${st:common_name}
+                        </li>
+                      </ul>
+                    </li>
+                    <li><span>Geometry</span>
+                      <ul>
+                        <li>
+                          ${st:position}
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </gft:Template>""";
 
     private static final String JSON_TEMPLATE = "{"
             + "  \"@context\": {"
@@ -162,33 +166,37 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
             + "  ]"
             + "}";
 
-    private static final String GML_TEMPLATE = "<gft:Template>\n"
-            + "<gft:Options>\n"
-            + "  <gft:Namespaces xmlns:topp=\"http://www.openplans.org/topp\"/>\n"
-            + "  <gft:SchemaLocation xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0 http://brgm-dev.geo-solutions.it/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd\"/>\n"
-            + "</gft:Options>\n"
-            + "  <topp:states gml:id=\"${@id}\">\n"
-            + "  \t<topp:name code=\"${STATE_ABBR}\">${STATE_NAME}</topp:name>\n"
-            + "  \t<topp:region>${SUB_REGION}</topp:region>\n"
-            + "    <topp:population>${PERSONS}</topp:population>\n"
-            + "    <topp:males>${MALE}</topp:males>\n"
-            + "  \t<topp:females>${FEMALE}</topp:females>\n"
-            + "  \t<topp:active_population>${WORKERS}</topp:active_population>\n"
-            + "  \t<topp:wkt_geom>$${toWKT(the_geom)}</topp:wkt_geom>\n"
-            + "  </topp:states>\n"
-            + "</gft:Template>";
+    private static final String GML_TEMPLATE =
+            """
+            <gft:Template>
+            <gft:Options>
+              <gft:Namespaces xmlns:topp="http://www.openplans.org/topp"/>
+              <gft:SchemaLocation xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://brgm-dev.geo-solutions.it/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+            </gft:Options>
+              <topp:states gml:id="${@id}">
+              	<topp:name code="${STATE_ABBR}">${STATE_NAME}</topp:name>
+              	<topp:region>${SUB_REGION}</topp:region>
+                <topp:population>${PERSONS}</topp:population>
+                <topp:males>${MALE}</topp:males>
+              	<topp:females>${FEMALE}</topp:females>
+              	<topp:active_population>${WORKERS}</topp:active_population>
+              	<topp:wkt_geom>$${toWKT(the_geom)}</topp:wkt_geom>
+              </topp:states>
+            </gft:Template>""";
 
-    private static final String GML_TEMPLATE_2 = "<gft:Template>\n"
-            + "<gft:Options>\n"
-            + "  <gft:Namespaces xmlns:topp=\"http://www.openplans.org/topp\"/>\n"
-            + "  <gft:SchemaLocation xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0 http://brgm-dev.geo-solutions.it/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd\"/>\n"
-            + "</gft:Options>\n"
-            + "  <topp:states gml:id=\"${@id}\">\n"
-            + "  \t<topp:name code=\"${STATE_ABBR}\">${STATE_NAME}</topp:name>\n"
-            + "  \t<topp:region>${SUB_REGION}</topp:region>\n"
-            + "  \t<topp:wkt_geom>$${toWKT(the_geom)}</topp:wkt_geom>\n"
-            + "  </topp:states>\n"
-            + "</gft:Template>";
+    private static final String GML_TEMPLATE_2 =
+            """
+            <gft:Template>
+            <gft:Options>
+              <gft:Namespaces xmlns:topp="http://www.openplans.org/topp"/>
+              <gft:SchemaLocation xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://brgm-dev.geo-solutions.it/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+            </gft:Options>
+              <topp:states gml:id="${@id}">
+              	<topp:name code="${STATE_ABBR}">${STATE_NAME}</topp:name>
+              	<topp:region>${SUB_REGION}</topp:region>
+              	<topp:wkt_geom>$${toWKT(the_geom)}</topp:wkt_geom>
+              </topp:states>
+            </gft:Template>""";
     public static final String XHTMLTEMPLATE_NAME = "xhtmltemplate";
 
     @Test

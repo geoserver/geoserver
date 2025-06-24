@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -17,6 +18,7 @@ import org.apache.wicket.util.convert.IConverter;
  */
 public class DecimalListTextField extends TextField<List> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     DecimalListConverter decimalListConverter;

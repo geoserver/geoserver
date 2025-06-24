@@ -79,8 +79,8 @@ public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
     @SuppressWarnings("unchecked")
     private DataAccess<? extends FeatureType, ? extends Feature> unwrap(
             DataAccess<? extends FeatureType, ? extends Feature> store) {
-        if (store instanceof Wrapper) {
-            store = ((Wrapper) store).unwrap(DataAccess.class);
+        if (store instanceof Wrapper wrapper) {
+            store = wrapper.unwrap(DataAccess.class);
         }
         return store;
     }

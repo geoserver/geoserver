@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.io.Serial;
 import java.util.UUID;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -13,6 +14,7 @@ import org.apache.wicket.model.IModel;
 
 public class UUIDFieldPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -1829729746678003578L;
 
     public UUIDFieldPanel(String id, IModel<String> model) {
@@ -23,6 +25,7 @@ public class UUIDFieldPanel extends Panel {
         add(textfield);
 
         add(new AjaxLink<>("generateUUID") {
+            @Serial
             private static final long serialVersionUID = 3581476968062788921L;
 
             @Override

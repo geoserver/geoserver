@@ -78,8 +78,8 @@ public class RememberMeServicesFactoryBean implements FactoryBean<RememberMeServ
         @Override
         public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
             RememberMeServices rms = rms();
-            if (rms instanceof LogoutHandler) {
-                ((LogoutHandler) rms).logout(request, response, authentication);
+            if (rms instanceof LogoutHandler handler) {
+                handler.logout(request, response, authentication);
             }
         }
 
@@ -96,8 +96,8 @@ public class RememberMeServicesFactoryBean implements FactoryBean<RememberMeServ
                         (Class<RememberMeServices>) Class.forName(rmsConfig.getClassName());
                 rms = rmsClass.getConstructor(String.class, UserDetailsService.class)
                         .newInstance(rmsConfig.getKey(), new RememberMeUserDetailsService(securityManager));
-                if (rms instanceof AbstractRememberMeServices) {
-                    ((AbstractRememberMeServices) rms).setParameter(PARAMETER_NAME);
+                if (rms instanceof AbstractRememberMeServices services) {
+                    services.setParameter(PARAMETER_NAME);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);

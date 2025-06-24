@@ -8,6 +8,7 @@ package org.geoserver.web.data.layergroup;
 import static org.geoserver.catalog.Predicates.sortBy;
 
 import com.google.common.collect.Streams;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +43,7 @@ import org.springframework.lang.Nullable;
  */
 public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
+    @Serial
     private static final long serialVersionUID = 4806818198949114395L;
 
     public static Property<LayerGroupInfo> NAME = new BeanProperty<>("name", "name");

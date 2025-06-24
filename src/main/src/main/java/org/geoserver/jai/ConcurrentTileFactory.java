@@ -158,18 +158,15 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
         int type = sampleModel.getTransferType();
         long numBanks = 0;
         long size = 0;
-        if (sampleModel instanceof ComponentSampleModel) {
-            ComponentSampleModel csm = (ComponentSampleModel) sampleModel;
+        if (sampleModel instanceof ComponentSampleModel csm) {
             numBanks = getNumBanksCSM(csm);
             size = getBufferSizeCSM(csm);
-        } else if (sampleModel instanceof MultiPixelPackedSampleModel) {
-            MultiPixelPackedSampleModel mppsm = (MultiPixelPackedSampleModel) sampleModel;
+        } else if (sampleModel instanceof MultiPixelPackedSampleModel mppsm) {
             numBanks = 1;
             int dataTypeSize = DataBuffer.getDataTypeSize(type);
             size = mppsm.getScanlineStride() * mppsm.getHeight()
                     + (mppsm.getDataBitOffset() + dataTypeSize - 1) / dataTypeSize;
-        } else if (sampleModel instanceof SinglePixelPackedSampleModel) {
-            SinglePixelPackedSampleModel sppsm = (SinglePixelPackedSampleModel) sampleModel;
+        } else if (sampleModel instanceof SinglePixelPackedSampleModel sppsm) {
             numBanks = 1;
             size = sppsm.getScanlineStride() * (sppsm.getHeight() - 1) + sppsm.getWidth();
         }

@@ -384,8 +384,8 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             start("wcs:temporalDomain");
             if (timeInfo.getPresentation() == DimensionPresentation.LIST) {
                 for (Object item : dimensions.getTimeDomain()) {
-                    if (item instanceof Date) {
-                        element("gml:timePosition", timeFormat.format((Date) item));
+                    if (item instanceof Date date) {
+                        element("gml:timePosition", timeFormat.format(date));
                     } else {
                         DateRange range = (DateRange) item;
                         start("wcs:timePeriod");
@@ -540,8 +540,8 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                     // their mid point
                     TreeSet<Double> elevations = new TreeSet<>();
                     for (Object raw : rawElevations) {
-                        if (raw instanceof Double) {
-                            elevations.add((Double) raw);
+                        if (raw instanceof Double double1) {
+                            elevations.add(double1);
                         } else {
                             @SuppressWarnings("unchecked")
                             NumberRange<Double> range = (NumberRange<Double>) raw;

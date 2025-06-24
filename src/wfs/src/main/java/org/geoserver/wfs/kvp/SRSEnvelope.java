@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.kvp;
 
+import java.io.Serial;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.NoSuchAuthorityCodeException;
@@ -18,7 +19,9 @@ import org.geotools.referencing.CRS;
  * @author Andrea Aime - GeoSolutions
  */
 class SRSEnvelope extends ReferencedEnvelope {
+    @Serial
     private static final long serialVersionUID = 4510785331988235178L;
+
     String srs;
 
     public SRSEnvelope(double x1, double x2, double y1, double y2, String srs)

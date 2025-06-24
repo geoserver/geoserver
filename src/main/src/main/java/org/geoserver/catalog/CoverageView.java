@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.geotools.util.Utilities;
 public class CoverageView implements Serializable {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 5504720319141832424L;
 
     @Override
@@ -102,6 +104,7 @@ public class CoverageView implements Serializable {
         public InputCoverageBand() {}
 
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = -2200641260788001394L;
 
         @Override
@@ -176,6 +179,7 @@ public class CoverageView implements Serializable {
     public static class CoverageBand implements Serializable {
 
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = -7223081117287911988L;
 
         public CoverageBand() {}

@@ -67,8 +67,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
             StoreInfo store = getCatalog().getStore(storeId, StoreInfo.class);
 
             Map<String, Resource> resources = new HashMap<>();
-            if (store instanceof DataStoreInfo) {
-                DataStoreInfo dstore = (DataStoreInfo) store;
+            if (store instanceof DataStoreInfo dstore) {
                 DataStoreInfo expandedStore = getCatalog().getResourcePool().clone(dstore, true);
 
                 // collect all the type names and turn them into resources
@@ -84,8 +83,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
                     }
                 }
 
-            } else if (store instanceof CoverageStoreInfo) {
-                CoverageStoreInfo cstore = (CoverageStoreInfo) store;
+            } else if (store instanceof CoverageStoreInfo cstore) {
                 CoverageStoreInfo expandedStore = getCatalog().getResourcePool().clone(cstore, true);
 
                 NamespaceInfo ns = getCatalog()
@@ -110,8 +108,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
                     resources.put(name.getLocalPart(), new Resource(name));
                 }
 
-            } else if (store instanceof WMTSStoreInfo) {
-                WMTSStoreInfo wmsInfo = (WMTSStoreInfo) store;
+            } else if (store instanceof WMTSStoreInfo wmsInfo) {
                 WMTSStoreInfo expandedStore = getCatalog().getResourcePool().clone(wmsInfo, true);
 
                 CatalogBuilder builder = new CatalogBuilder(getCatalog());
@@ -126,8 +123,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
 
                     resources.put(l.getName(), new Resource(new NameImpl(l.getName())));
                 }
-            } else if (store instanceof WMSStoreInfo) {
-                WMSStoreInfo wmsInfo = (WMSStoreInfo) store;
+            } else if (store instanceof WMSStoreInfo wmsInfo) {
                 WMSStoreInfo expandedStore = getCatalog().getResourcePool().clone(wmsInfo, true);
 
                 CatalogBuilder builder = new CatalogBuilder(getCatalog());
@@ -149,8 +145,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
                 // compare with native name, which is what the DataStore provides through getNames()
                 // above
                 Resource resource;
-                if (type instanceof CoverageInfo) {
-                    CoverageInfo ci = (CoverageInfo) type;
+                if (type instanceof CoverageInfo ci) {
                     if (ci.getNativeCoverageName() != null) {
                         resource = resources.get(ci.getNativeCoverageName());
                     } else {

@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.text.StringEscapeUtils;
@@ -40,6 +41,7 @@ import org.geowebcache.layer.TileLayer;
 // TODO WICKET8 - Verify this page works OK
 public class BlobStorePage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -59024268194792891L;
 
     private DropDownChoice<BlobStoreType> typeOfBlobStore;
@@ -71,6 +73,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
         typeOfBlobStore.setOutputMarkupId(true);
         typeOfBlobStore.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 359589121400814043L;
 
             @Override
@@ -126,6 +129,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         }
 
         blobStoreForm.add(new AbstractFormValidator() {
+            @Serial
             private static final long serialVersionUID = 5240602030478856537L;
 
             @Override
@@ -145,6 +149,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         });
 
         blobStoreForm.add(new AbstractFormValidator() {
+            @Serial
             private static final long serialVersionUID = 5240602030478856537L;
 
             @Override
@@ -218,7 +223,9 @@ public class BlobStorePage extends GeoServerSecuredPage {
     }
 
     private class SaveLink extends AjaxSubmitLink {
+        @Serial
         private static final long serialVersionUID = 3735176778941168701L;
+
         private final BlobStoreInfo originalStore;
         private final List<String> assignedLayers;
 
@@ -238,6 +245,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
                     && !blobStore.isEnabled()
                     && !assignedLayers.isEmpty()) {
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = 5257987095800108993L;
 
                     private boolean success;

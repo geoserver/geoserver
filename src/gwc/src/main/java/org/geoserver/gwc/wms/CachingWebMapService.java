@@ -91,8 +91,8 @@ public class CachingWebMapService implements MethodInterceptor {
         final byte[] tileBytes;
         {
             final Resource mapContents = cachedTile.getBlob();
-            if (mapContents instanceof ByteArrayResource) {
-                tileBytes = ((ByteArrayResource) mapContents).getContents();
+            if (mapContents instanceof ByteArrayResource resource) {
+                tileBytes = resource.getContents();
             } else {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 mapContents.transferTo(Channels.newChannel(out));

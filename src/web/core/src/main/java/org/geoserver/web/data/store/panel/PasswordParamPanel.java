@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -19,6 +20,7 @@ import org.geoserver.web.data.store.PasswordTextFieldWriteOnlyModel;
  */
 public class PasswordParamPanel extends Panel implements ParamPanel<String> {
 
+    @Serial
     private static final long serialVersionUID = -7801141820174575611L;
 
     private final PasswordTextField passwordField;

@@ -557,7 +557,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         try {
             value = Double.parseDouble(rawValue);
         } catch (NumberFormatException exception) {
-            fail(String.format("Value '%s' is not a number.", rawValue));
+            fail("Value '%s' is not a number.".formatted(rawValue));
         }
         // compare the parsed double value with the expected one
         double difference = Math.abs(expected - value);

@@ -47,10 +47,10 @@ public class TimeExtentCalculator {
         DimensionInfo time = ri.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) return null;
 
-        if (ri instanceof FeatureTypeInfo) {
-            return getTimeExtent((FeatureTypeInfo) ri, time);
-        } else if (ri instanceof CoverageInfo) {
-            return getTimeExtent((CoverageInfo) ri);
+        if (ri instanceof FeatureTypeInfo info1) {
+            return getTimeExtent(info1, time);
+        } else if (ri instanceof CoverageInfo info) {
+            return getTimeExtent(info);
         }
 
         LOGGER.fine("Time extent calculation support not yet available for " + ri);

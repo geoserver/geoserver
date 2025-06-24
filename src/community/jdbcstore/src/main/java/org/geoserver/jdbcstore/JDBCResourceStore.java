@@ -350,8 +350,8 @@ public class JDBCResourceStore implements ResourceStore {
             List<ResourceNotification.Event> eventsRename =
                     SimpleResourceNotificationDispatcher.createRenameEvents(this, dest);
             boolean result;
-            if (dest instanceof JDBCResource) {
-                result = entry.renameTo(((JDBCResource) dest).entry);
+            if (dest instanceof JDBCResource resource) {
+                result = entry.renameTo(resource.entry);
             } else {
                 result = Resources.renameByCopy(this, dest);
             }

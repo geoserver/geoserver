@@ -426,9 +426,7 @@ class ComplexGeoJsonWriter {
     }
 
     private void encodeProperty(String attributeName, Property property, Map<NameImpl, Object> attributes) {
-        if (property instanceof ComplexAttribute) {
-            // check if we have a simple content
-            ComplexAttribute complexAttribute = (ComplexAttribute) property;
+        if (property instanceof ComplexAttribute complexAttribute) {
 
             if (isSimpleContent(complexAttribute.getType())) {
                 Object value = getSimpleContentValue(complexAttribute);
@@ -450,9 +448,9 @@ class ComplexGeoJsonWriter {
                     encodeComplexAttribute(attributeName, complexAttribute, attributes);
                 }
             }
-        } else if (property instanceof Attribute) {
+        } else if (property instanceof Attribute attribute) {
             // check if we have a feature or list of features (chained features)
-            List<Feature> features = getFeatures((Attribute) property);
+            List<Feature> features = getFeatures(attribute);
             if (features != null) {
                 encodeChainedFeatures(attributeName, features);
             } else {
@@ -461,9 +459,9 @@ class ComplexGeoJsonWriter {
             }
         } else {
             // unsupported attribute type provided, this will unlikely happen
-            throw new RuntimeException(String.format(
-                    "Invalid property '%s' of type '%s', only 'Attribute' and 'ComplexAttribute' properties types are supported.",
-                    property.getName(), property.getClass().getCanonicalName()));
+            throw new RuntimeException(
+                    "Invalid property '%s' of type '%s', only 'Attribute' and 'ComplexAttribute' properties types are supported."
+                            .formatted(property.getName(), property.getClass().getCanonicalName()));
         }
     }
 
@@ -523,9 +521,9 @@ class ComplexGeoJsonWriter {
      */
     private List<Feature> getFeatures(Attribute attribute) {
         Object value = attribute.getValue();
-        if (value instanceof Feature) {
+        if (value instanceof Feature feature) {
             // feature found return it in a single ton list
-            return Collections.singletonList((Feature) value);
+            return Collections.singletonList(feature);
         }
         if (!(value instanceof Collection)) {
             // not a feature or list of features
@@ -546,7 +544,7 @@ class ComplexGeoJsonWriter {
         for (Object object : collection) {
             if (!(object instanceof Feature)) {
                 // not a feature this is a mixed collection
-                throw new RuntimeException(String.format("Unable to handle attribute '%s'.", attribute));
+                throw new RuntimeException("Unable to handle attribute '%s'.".formatted(attribute));
             }
             features.add((Feature) object);
         }

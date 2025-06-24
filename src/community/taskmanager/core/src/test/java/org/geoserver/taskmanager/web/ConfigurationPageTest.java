@@ -450,12 +450,11 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         final IModel<List<FeedbackMessage>> model = fbp.getFeedbackMessagesModel();
         final List<FeedbackMessage> renderedMessages = model.getObject();
         if (renderedMessages == null) {
-            fail(String.format("feedback panel at path [%s] returned null messages", path));
+            fail("feedback panel at path [%s] returned null messages".formatted(path));
         }
         if (numberOfMessages != renderedMessages.size()) {
-            fail(String.format(
-                    "you expected '%d' messages for the feedback panel [%s], but there were actually '%d'",
-                    numberOfMessages, path, renderedMessages.size()));
+            fail("you expected '%d' messages for the feedback panel [%s], but there were actually '%d'"
+                    .formatted(numberOfMessages, path, renderedMessages.size()));
         }
     }
 

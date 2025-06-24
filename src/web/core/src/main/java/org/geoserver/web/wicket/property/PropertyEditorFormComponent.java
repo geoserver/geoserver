@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket.property;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +34,9 @@ import org.springframework.util.StringUtils;
  */
 public class PropertyEditorFormComponent extends FormComponentPanel<Properties> {
 
+    @Serial
     private static final long serialVersionUID = -1960584178014140068L;
+
     ListView<Tuple> listView;
     List<Tuple> invalidTuples = null;
 
@@ -53,6 +56,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
         add(container);
 
         listView = new ListView<>("list") {
+            @Serial
             private static final long serialVersionUID = -7250612551499360015L;
 
             @Override
@@ -61,6 +65,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
                 item.add(new TextField<String>("key").add(getEmptyBlurBehavior()));
                 item.add(new TextField<String>("value").add(getEmptyBlurBehavior()));
                 item.add(new AjaxLink<>("remove", item.getModel()) {
+                    @Serial
                     private static final long serialVersionUID = 3201264868229144613L;
 
                     @Override
@@ -74,6 +79,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
 
             private AjaxFormComponentUpdatingBehavior getEmptyBlurBehavior() {
                 return new AjaxFormComponentUpdatingBehavior("blur") {
+                    @Serial
                     private static final long serialVersionUID = 5416373713193788662L;
 
                     @Override
@@ -85,6 +91,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
         container.add(listView);
 
         add(new AjaxLink<Void>("add") {
+            @Serial
             private static final long serialVersionUID = 4741595573705562351L;
 
             @Override
@@ -160,6 +167,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
     }
 
     static class Tuple implements Serializable, Comparable<Tuple> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private String key;

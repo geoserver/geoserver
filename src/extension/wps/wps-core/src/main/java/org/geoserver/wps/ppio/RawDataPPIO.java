@@ -57,8 +57,8 @@ public class RawDataPPIO extends ComplexPPIO {
     @Override
     public String getFileExtension(Object value) {
         RawData rd;
-        if (value instanceof RawDataEncoderDelegate) {
-            rd = ((RawDataEncoderDelegate) value).getRawData();
+        if (value instanceof RawDataEncoderDelegate delegate) {
+            rd = delegate.getRawData();
         } else {
             rd = (RawData) value;
         }

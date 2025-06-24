@@ -5,6 +5,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,7 +28,9 @@ import org.geoserver.security.config.SecurityFilterConfig;
  */
 public class AuthenticationKeyFilterConfig extends SecurityFilterConfig implements SecurityAuthFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private String authKeyMapperName;
     private String authKeyParamName = KeyAuthenticationToken.DEFAULT_URL_PARAM;
     private String userGroupServiceName;

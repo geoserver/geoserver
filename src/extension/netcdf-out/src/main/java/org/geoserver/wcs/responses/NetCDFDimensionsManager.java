@@ -346,8 +346,7 @@ public class NetCDFDimensionsManager {
         private Object getValue(Object input, boolean isTime, boolean endValue) {
             if (isTime) {
                 return getTime(input, endValue);
-            } else if (input instanceof NumberRange) {
-                NumberRange range = (NumberRange) input;
+            } else if (input instanceof NumberRange range) {
                 return endValue ? range.getMaxValue() : range.getMinValue();
             }
             // Simply return back the value
@@ -362,16 +361,16 @@ public class NetCDFDimensionsManager {
          */
         private Double getTime(Object input, boolean endTime) {
             long time = 0;
-            if (input instanceof Timestamp) {
-                time = ((Timestamp) input).getTime();
-            } else if (input instanceof DateRange) {
+            if (input instanceof Timestamp timestamp) {
+                time = timestamp.getTime();
+            } else if (input instanceof DateRange range) {
                 if (!endTime) {
-                    time = ((DateRange) input).getMinValue().getTime();
+                    time = range.getMinValue().getTime();
                 } else {
-                    time = ((DateRange) input).getMaxValue().getTime();
+                    time = range.getMaxValue().getTime();
                 }
-            } else if (input instanceof Date) {
-                time = ((Date) input).getTime();
+            } else if (input instanceof Date date) {
+                time = date.getTime();
             } else {
                 throw new IllegalArgumentException("Unsupported time");
             }

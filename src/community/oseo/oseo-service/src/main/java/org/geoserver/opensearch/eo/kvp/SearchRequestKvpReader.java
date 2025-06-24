@@ -391,10 +391,9 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     private Filter buildBoundingBoxFilter(Object value) throws Exception {
         Filter filter;
         Object parsed = bboxParser.parse((String) value);
-        if (parsed instanceof ReferencedEnvelope) {
-            filter = FF.bbox(DEFAULT_GEOMETRY, (ReferencedEnvelope) parsed, MatchAction.ANY);
-        } else if (parsed instanceof ReferencedEnvelope[]) {
-            ReferencedEnvelope[] envelopes = (ReferencedEnvelope[]) parsed;
+        if (parsed instanceof ReferencedEnvelope envelope) {
+            filter = FF.bbox(DEFAULT_GEOMETRY, envelope, MatchAction.ANY);
+        } else if (parsed instanceof ReferencedEnvelope[] envelopes) {
             BBOX bbox1 = FF.bbox(DEFAULT_GEOMETRY, envelopes[0], MatchAction.ANY);
             BBOX bbox2 = FF.bbox(DEFAULT_GEOMETRY, envelopes[1], MatchAction.ANY);
             return FF.or(bbox1, bbox2);
@@ -525,8 +524,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
         PropertyName pn = OpenSearchParameters.getFilterPropertyFor(gs.getService(OSEOInfo.class), FF, parameter);
 
-        if (value instanceof String[]) {
-            String[] values = (String[]) value;
+        if (value instanceof String[] values) {
             List<Filter> filters = new ArrayList<>();
             for (String v : values) {
                 Filter filter = buildEOFilterForSingleValue(parameter, v, type, pn);

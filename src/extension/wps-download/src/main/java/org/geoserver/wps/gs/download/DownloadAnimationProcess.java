@@ -248,8 +248,8 @@ public class DownloadAnimationProcess implements GeoServerProcess {
 
     private BufferedImage toBufferedImage(RenderedImage image) {
         BufferedImage frame;
-        if (image instanceof BufferedImage) {
-            frame = (BufferedImage) image;
+        if (image instanceof BufferedImage bufferedImage) {
+            frame = bufferedImage;
         } else {
             frame = PlanarImage.wrapRenderedImage(image).getAsBufferedImage();
             RasterCleaner.disposeImage(image);
@@ -259,10 +259,9 @@ public class DownloadAnimationProcess implements GeoServerProcess {
 
     private String toWmsTimeSpecification(Object parsedTime) {
         String mapTime;
-        if (parsedTime instanceof Date) {
-            mapTime = formatter.format(((Date) parsedTime).toInstant());
-        } else if (parsedTime instanceof DateRange) {
-            DateRange range = (DateRange) parsedTime;
+        if (parsedTime instanceof Date date) {
+            mapTime = formatter.format(date.toInstant());
+        } else if (parsedTime instanceof DateRange range) {
             mapTime = formatter.format(range.getMinValue().toInstant())
                     + "/"
                     + formatter.format(range.getMinValue().toInstant());

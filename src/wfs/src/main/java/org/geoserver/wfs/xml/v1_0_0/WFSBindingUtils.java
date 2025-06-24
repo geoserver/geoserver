@@ -89,8 +89,8 @@ public class WFSBindingUtils {
             return null;
         }
 
-        if (number instanceof BigInteger) {
-            return (BigInteger) number;
+        if (number instanceof BigInteger integer) {
+            return integer;
         }
 
         return BigInteger.valueOf(number.longValue());

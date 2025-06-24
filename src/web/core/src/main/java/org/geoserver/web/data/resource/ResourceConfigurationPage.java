@@ -6,6 +6,7 @@
 package org.geoserver.web.data.resource;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import org.apache.wicket.WicketRuntimeException;
@@ -44,6 +45,7 @@ import org.geotools.util.factory.GeoTools;
  */
 public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = 7870938096047218989L;
 
     IModel<ResourceInfo> myResourceModel;
@@ -122,6 +124,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
 
     protected class DataLayerEditTabPanel extends ListEditTabPanel {
 
+        @Serial
         private static final long serialVersionUID = -3442310698941800127L;
 
         public DataLayerEditTabPanel(String id) {
@@ -134,6 +137,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
                     getGeoServerApplication().getBeansOfType(ResourceConfigurationPanelInfo.class));
             ListView<ResourceConfigurationPanelInfo> dataPanelList = new ListView<>(id, dataPanels) {
 
+                @Serial
                 private static final long serialVersionUID = -845785165778837024L;
 
                 @Override
@@ -173,8 +177,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
         myResourceModel.setObject(info);
         updateResourceInLayerModel(info);
         visitChildren((component, visit) -> {
-            if (component instanceof ResourceConfigurationPanel) {
-                ResourceConfigurationPanel rcp = (ResourceConfigurationPanel) component;
+            if (component instanceof ResourceConfigurationPanel rcp) {
                 rcp.resourceUpdated(target);
                 visit.dontGoDeeper();
             }
@@ -193,23 +196,18 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
         validateByChildren(resourceInfo);
         // allow panels to update the model in case they are not directly editing its properties
         visitChildren((component, visit) -> {
-            if (component instanceof ResourceConfigurationPanel) {
-                ResourceConfigurationPanel rcp = (ResourceConfigurationPanel) component;
+            if (component instanceof ResourceConfigurationPanel rcp) {
                 rcp.onSave();
             }
         });
         visitChildren((component, visit) -> {
-            if (component instanceof PublishedConfigurationPanel) {
-                PublishedConfigurationPanel rcp = (PublishedConfigurationPanel) component;
+            if (component instanceof PublishedConfigurationPanel rcp) {
                 rcp.save();
             }
         });
         if (isNew) {
             // updating grid if is a coverage
-            if (resourceInfo instanceof CoverageInfo) {
-                // the coverage bounds computation path is a bit more linear, the
-                // readers always return the bounds and in the proper CRS (afaik)
-                CoverageInfo cinfo = (CoverageInfo) resourceInfo;
+            if (resourceInfo instanceof CoverageInfo cinfo) {
                 GridCoverage2DReader reader =
                         (GridCoverage2DReader) cinfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
 
@@ -253,8 +251,8 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
     private void validateByChildren(final ResourceInfo resourceInfo) {
         if (resourceInfo == null || resourceInfo.getMetadata() == null) return;
         visitChildren((component, visitor) -> {
-            if (component instanceof MetadataMapValidator) {
-                ((MetadataMapValidator) component).validate(resourceInfo.getMetadata());
+            if (component instanceof MetadataMapValidator validator) {
+                validator.validate(resourceInfo.getMetadata());
             }
         });
     }

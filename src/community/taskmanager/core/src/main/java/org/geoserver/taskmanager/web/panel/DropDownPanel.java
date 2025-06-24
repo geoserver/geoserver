@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -18,6 +19,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 public class DropDownPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -1829729746678003578L;
 
     public DropDownPanel(
@@ -59,6 +61,7 @@ public class DropDownPanel extends Panel {
         if (custom) {
             setOutputMarkupId(true);
             getDropDownChoice().add(new OnChangeAjaxBehavior() {
+                @Serial
                 private static final long serialVersionUID = 7823984472638368286L;
 
                 @Override
@@ -76,6 +79,7 @@ public class DropDownPanel extends Panel {
             });
         } else if (!inList) {
             getDropDownChoice().add(new OnChangeAjaxBehavior() {
+                @Serial
                 private static final long serialVersionUID = -7816987770470912413L;
 
                 @Override

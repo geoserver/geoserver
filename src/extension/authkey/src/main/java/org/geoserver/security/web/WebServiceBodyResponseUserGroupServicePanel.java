@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web;
 
+import java.io.Serial;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.TextField;
@@ -18,6 +19,7 @@ public class WebServiceBodyResponseUserGroupServicePanel
         extends UserGroupServicePanel<WebServiceBodyResponseUserGroupServiceConfig> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -5204330095571014979L;
 
     public WebServiceBodyResponseUserGroupServicePanel(

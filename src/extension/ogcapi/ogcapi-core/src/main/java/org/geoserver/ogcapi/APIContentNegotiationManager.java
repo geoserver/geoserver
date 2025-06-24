@@ -61,8 +61,7 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
     private static class OpenAPIContentNegotiationStrategy implements ContentNegotiationStrategy {
         @Override
         public List<MediaType> resolveMediaTypes(NativeWebRequest nativeWebRequest) {
-            if (nativeWebRequest instanceof ServletWebRequest) {
-                ServletWebRequest servletWebRequest = (ServletWebRequest) nativeWebRequest;
+            if (nativeWebRequest instanceof ServletWebRequest servletWebRequest) {
                 if (servletWebRequest.getRequest().getRequestURI().endsWith("/openapi.json")) {
                     return Arrays.asList(OPEN_API_MEDIA_TYPE);
                 } else if (servletWebRequest.getRequest().getRequestURI().endsWith("/openapi.yaml")) {

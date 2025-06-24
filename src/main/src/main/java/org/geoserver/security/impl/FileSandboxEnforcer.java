@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -60,14 +59,11 @@ public class FileSandboxEnforcer extends AbstractCatalogListener {
         CatalogInfo source = event.getSource();
         if (!(source instanceof StoreInfo)) return;
 
-        if (source instanceof DataStoreInfo) {
-            DataStoreInfo store = (DataStoreInfo) source;
+        if (source instanceof DataStoreInfo store) {
             checkDataStoreParameters(store, store.getConnectionParameters());
-        } else if (source instanceof CoverageStoreInfo) {
-            CoverageStoreInfo store = (CoverageStoreInfo) source;
+        } else if (source instanceof CoverageStoreInfo store) {
             checkAccess(store.getURL(), store);
-        } else if (source instanceof HTTPStoreInfo) {
-            HTTPStoreInfo store = (HTTPStoreInfo) source;
+        } else if (source instanceof HTTPStoreInfo store) {
             checkAccess(store.getCapabilitiesURL(), store);
         } else {
             // the above should cover all the store types, but let's make sure we're not missing
@@ -87,17 +83,15 @@ public class FileSandboxEnforcer extends AbstractCatalogListener {
             if (params instanceof Map) {
                 checkDataStoreParameters((DataStoreInfo) source, (Map<String, Serializable>) params);
             }
-        } else if (source instanceof CoverageStoreInfo) {
-            CoverageStoreInfo store = (CoverageStoreInfo) source;
+        } else if (source instanceof CoverageStoreInfo store) {
             Object url = getNewPropertyValue(event, "uRL");
-            if (url instanceof String) {
-                checkAccess((String) url, store);
+            if (url instanceof String string) {
+                checkAccess(string, store);
             }
             if (url instanceof URL) {
                 checkAccess(url.toString(), store);
             }
-        } else if (source instanceof HTTPStoreInfo) {
-            HTTPStoreInfo store = (HTTPStoreInfo) source;
+        } else if (source instanceof HTTPStoreInfo store) {
             String capabilitiesURL = (String) getNewPropertyValue(event, "capabilitiesURL");
             if (capabilitiesURL != null) {
                 checkAccess(capabilitiesURL, store);
@@ -153,10 +147,9 @@ public class FileSandboxEnforcer extends AbstractCatalogListener {
 
     private void checkAccess(String url, CoverageStoreInfo storeInfo) {
         Object converted = ResourcePool.getCoverageStoreSource(url, null, storeInfo, new Hints());
-        if (converted instanceof File) {
-            checkAccess((File) converted);
-        } else if (converted instanceof URL) {
-            URL u = (URL) converted;
+        if (converted instanceof File file) {
+            checkAccess(file);
+        } else if (converted instanceof URL u) {
             if ("file".equals(u.getProtocol()) || u.getProtocol() == null) {
                 checkAccess(URLs.urlToFile(u));
             }
@@ -176,7 +169,7 @@ public class FileSandboxEnforcer extends AbstractCatalogListener {
             } catch (URISyntaxException e) {
                 // not a valid URI, but it may still be a Windows path
                 try {
-                    Path path = Paths.get(url);
+                    Path path = Path.of(url);
                     checkAccess(path.toFile());
                 } catch (InvalidPathException ex) {
                     LOGGER.log(Level.FINEST, "Not a valid URI/Path in coverage store, not validating it", ex);

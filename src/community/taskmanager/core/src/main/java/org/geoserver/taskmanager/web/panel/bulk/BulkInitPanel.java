@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel.bulk;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -32,6 +33,7 @@ import org.geotools.util.logging.Logging;
 // TODO WICKET8 - Verify this page works OK
 public class BulkInitPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -7787191736336649903L;
 
     private static final Logger LOGGER = Logging.getLogger(BulkInitPanel.class);
@@ -71,6 +73,7 @@ public class BulkInitPanel extends Panel {
 
         Label configsFound =
                 new Label("configsFound", new ParamResourceModel("configsFound", this, new IModel<String>() {
+                    @Serial
                     private static final long serialVersionUID = -6328441242635771092L;
 
                     @Override
@@ -87,6 +90,7 @@ public class BulkInitPanel extends Panel {
         add(configsFound.setOutputMarkupId(true));
 
         AjaxSubmitLink run = new AjaxSubmitLink("run") {
+            @Serial
             private static final long serialVersionUID = -3288982013478650146L;
 
             @Override
@@ -96,6 +100,7 @@ public class BulkInitPanel extends Panel {
                     ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                 } else {
                     dialog.showOkCancel(target, new DialogDelegate() {
+                        @Serial
                         private static final long serialVersionUID = -8203963847815744909L;
 
                         @Override
@@ -145,6 +150,7 @@ public class BulkInitPanel extends Panel {
         add(run);
 
         workspace.add(new AjaxFormSubmitBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 3397757222203749030L;
 
             @Override
@@ -155,6 +161,7 @@ public class BulkInitPanel extends Panel {
             }
         });
         configuration.add(new AjaxFormSubmitBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 3397757222203749030L;
 
             @Override

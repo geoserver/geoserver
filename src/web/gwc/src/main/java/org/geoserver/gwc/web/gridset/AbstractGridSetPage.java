@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.gridset;
 
+import java.io.Serial;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +49,7 @@ import org.geowebcache.grid.GridSetBroker;
 // TODO WICKET8 - Verify this page works OK
 abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 2977633539319630433L;
 
     protected static final Logger LOGGER = Logging.getLogger(AbstractGridSetPage.class);
@@ -133,6 +135,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         add(form);
 
         tileWidth.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("blur") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -141,6 +144,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             }
         });
         tileHeight.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("blur") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -150,6 +154,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         });
 
         addLevelLink = new GeoServerAjaxFormLink("addZoomLevel", form) {
+            @Serial
             private static final long serialVersionUID = 1202251941625034786L;
 
             @Override
@@ -184,6 +189,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     private Component computeBoundsLink(Form<GridSetInfo> form) {
 
         GeoServerAjaxFormLink link = new GeoServerAjaxFormLink("computeBounds", form) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -217,12 +223,14 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     private EnvelopePanel bounds(IModel<GridSetInfo> model) {
 
         class UpdatingEnvelopePanel extends EnvelopePanel {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             public UpdatingEnvelopePanel(String id, IModel<ReferencedEnvelope> e) {
                 super(id, e);
 
                 class UpdateTableBehavior extends AjaxFormSubmitBehavior {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     public UpdateTableBehavior() {
@@ -316,6 +324,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     /** @author groldan */
     protected static class GridSetCRSPanel extends CRSPanel {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private Label units;
@@ -348,6 +357,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         protected SRSListPanel srsListPanel() {
             SRSListPanel srsList = new SRSListPanel(popupWindow.getContentId()) {
 
+                @Serial
                 private static final long serialVersionUID = 2869219395676091081L;
 
                 @Override
@@ -439,6 +449,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     private Component saveLink(Form<GridSetInfo> form) {
         return new AjaxSubmitLink("save", form) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -457,6 +468,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     protected abstract void onSave(AjaxRequestTarget target, Form<?> form);
 
     private static class UniqueNameValidator implements IValidator<String> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private final String previousName;

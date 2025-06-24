@@ -5,6 +5,7 @@
  */
 package org.geoserver.config.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import javax.media.jai.JAI;
 import javax.media.jai.TileCache;
@@ -15,6 +16,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
 
     public static final String KEY = "jai.info";
 
+    @Serial
     private static final long serialVersionUID = 7121137497699361776L;
 
     boolean allowInterpolation;

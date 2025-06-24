@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.web.publish;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -27,6 +28,7 @@ import org.geoserver.web.wicket.SRSListTextArea;
 
 public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = 4264296611272179367L;
 
     protected GeoServerDialog dialog;
@@ -84,6 +86,7 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         srsList.setVisible(Boolean.TRUE.equals(overrideServiceSRSModel.getObject()));
         otherSrsContainer.add(srsList);
         overrideServiceSRS.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
             private static final long serialVersionUID = -6590810763209350915L;
 
             @Override
@@ -94,6 +97,7 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
             }
         });
         add(new AjaxLink<String>("skipNumberMatchedHelp") {
+            @Serial
             private static final long serialVersionUID = 9222171216768726057L;
 
             @Override
@@ -105,6 +109,7 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
             }
         });
         add(new AjaxLink<String>("otherSRSHelp") {
+            @Serial
             private static final long serialVersionUID = -1239179491855142211L;
 
             @Override
@@ -116,6 +121,7 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
             }
         });
         add(new AjaxLink<String>("coordinatesEncodingHelp") {
+            @Serial
             private static final long serialVersionUID = 926171216768726057L;
 
             @Override

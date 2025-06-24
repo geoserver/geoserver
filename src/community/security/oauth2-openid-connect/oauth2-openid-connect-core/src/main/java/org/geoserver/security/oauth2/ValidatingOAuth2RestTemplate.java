@@ -105,8 +105,7 @@ class ValidatingOAuth2RestTemplate extends OAuth2RestTemplate {
 
     private void validate(OAuth2AccessToken token) {
         Object maybeIdToken = token.getAdditionalInformation().get("id_token");
-        if (maybeIdToken instanceof String) {
-            String idToken = (String) maybeIdToken;
+        if (maybeIdToken instanceof String idToken) {
             setAsRequestAttribute(OpenIdConnectAuthenticationFilter.ID_TOKEN_VALUE, idToken);
             // among other things, this verifies the token
             if (store != null) {

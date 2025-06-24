@@ -153,7 +153,7 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         setMemoryLimit(8196);
         int[] sizes = {20, 200, 1000, 2000};
         for (int size : sizes) {
-            MockHttpServletResponse response = getAsServletResponse(String.format(template, size, size));
+            MockHttpServletResponse response = getAsServletResponse(template.formatted(size, size));
             if (size < 2000) {
                 assertEquals("image/png", getBaseMimeType(response.getContentType()));
             } else {

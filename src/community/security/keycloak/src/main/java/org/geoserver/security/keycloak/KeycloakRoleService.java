@@ -63,8 +63,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService implem
         adminRoleName = ((SecurityRoleServiceConfig) config).getAdminRoleName();
         groupAdminRoleName = ((SecurityRoleServiceConfig) config).getGroupAdminRoleName();
 
-        if (config instanceof KeycloakRoleServiceConfig) {
-            KeycloakRoleServiceConfig keycloakConfig = (KeycloakRoleServiceConfig) config;
+        if (config instanceof KeycloakRoleServiceConfig keycloakConfig) {
             List<String> idsOfClients = null;
             if (!StringUtils.isEmpty(keycloakConfig.getIdsOfClientsList())) {
                 idsOfClients =

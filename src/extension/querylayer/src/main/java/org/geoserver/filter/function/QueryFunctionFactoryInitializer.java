@@ -46,8 +46,7 @@ public class QueryFunctionFactoryInitializer implements GeoServerLifecycleHandle
 
         Set<FunctionFactory> factories = CommonFactoryFinder.getFunctionFactories(null);
         for (FunctionFactory ff : factories) {
-            if (ff instanceof QueryLayerFunctionFactory) {
-                QueryLayerFunctionFactory factory = (QueryLayerFunctionFactory) ff;
+            if (ff instanceof QueryLayerFunctionFactory factory) {
                 if (maxFeatures != null) {
                     factory.setMaxFeatures(maxFeatures);
                 }

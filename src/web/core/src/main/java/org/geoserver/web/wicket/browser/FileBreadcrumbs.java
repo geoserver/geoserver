@@ -6,6 +6,7 @@
 package org.geoserver.web.wicket.browser;
 
 import java.io.File;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.apache.wicket.model.IModel;
  */
 // TODO WICKET8 - Verify this page works OK
 public abstract class FileBreadcrumbs extends Panel {
+    @Serial
     private static final long serialVersionUID = 2821319341957784628L;
 
     IModel<File> rootFile;
@@ -37,6 +39,7 @@ public abstract class FileBreadcrumbs extends Panel {
         this.rootFile = rootFile;
         add(new ListView<>("path", new BreadcrumbModel(rootFile, currentFile)) {
 
+            @Serial
             private static final long serialVersionUID = -855582301247703291L;
 
             @Override
@@ -48,6 +51,7 @@ public abstract class FileBreadcrumbs extends Panel {
                 Label name = new Label("pathItem", file.getName() + "/");
                 Link<File> link = new IndicatingAjaxFallbackLink<>("pathItemLink", item.getModel()) {
 
+                    @Serial
                     private static final long serialVersionUID = 4295991386838610752L;
 
                     @Override
@@ -73,6 +77,7 @@ public abstract class FileBreadcrumbs extends Panel {
     protected abstract void pathItemClicked(File file, Optional<AjaxRequestTarget> target);
 
     static class BreadcrumbModel implements IModel<List<File>> {
+        @Serial
         private static final long serialVersionUID = -3497123851146725406L;
 
         IModel<File> rootFileModel;

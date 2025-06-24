@@ -210,8 +210,8 @@ public class MonitorFilter implements GeoServerFilter {
         postProcessExecutor.execute(task);
 
         if (error != null) {
-            if (error instanceof RuntimeException) {
-                throw (RuntimeException) error;
+            if (error instanceof RuntimeException exception) {
+                throw exception;
             } else {
                 throw new RuntimeException(error);
             }

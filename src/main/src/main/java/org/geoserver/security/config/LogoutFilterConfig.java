@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 
 /**
@@ -14,6 +15,7 @@ import org.geoserver.security.filter.GeoServerLogoutFilter;
  */
 public class LogoutFilterConfig extends SecurityFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

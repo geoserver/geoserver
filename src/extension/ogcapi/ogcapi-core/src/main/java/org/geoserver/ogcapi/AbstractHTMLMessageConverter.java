@@ -179,9 +179,9 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     }
 
     private Object unwrapArgument(Object v) {
-        if (v instanceof TemplateModel) {
+        if (v instanceof TemplateModel model) {
             try {
-                return DeepUnwrap.permissiveUnwrap((TemplateModel) v);
+                return DeepUnwrap.permissiveUnwrap(model);
             } catch (TemplateModelException e) {
                 LOGGER.log(Level.WARNING, "", e);
             }

@@ -70,8 +70,7 @@ public class DynamicBufferEstimator extends AbstractStyleVisitor {
 
             // no fixed size, proceed
             for (GraphicalSymbol gs : gr.graphicalSymbols()) {
-                if (gs instanceof ExternalGraphic) {
-                    ExternalGraphic eg = (ExternalGraphic) gs;
+                if (gs instanceof ExternalGraphic eg) {
                     Icon icon = null;
                     if (eg.getInlineContent() != null) {
                         icon = eg.getInlineContent();

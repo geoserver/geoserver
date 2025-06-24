@@ -91,8 +91,8 @@ public class MonitorRequestController extends RestBaseController {
         Object object = results.getResult();
 
         // HTML specific bits
-        if (object instanceof RequestData) {
-            return wrapObject((RequestData) object, RequestData.class);
+        if (object instanceof RequestData data1) {
+            return wrapObject(data1, RequestData.class);
         } else {
             final List<RequestData> requests = new ArrayList<>();
             BaseMonitorConverter.handleRequests(object, (data, aggregates) -> requests.add(data), monitor);

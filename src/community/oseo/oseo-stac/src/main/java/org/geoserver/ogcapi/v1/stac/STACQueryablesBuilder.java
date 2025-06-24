@@ -201,8 +201,7 @@ public class STACQueryablesBuilder {
 
     private AbstractTemplateBuilder lookupBuilder(TemplateBuilder parent, String key) {
         for (TemplateBuilder child : parent.getChildren()) {
-            if (child instanceof AbstractTemplateBuilder) {
-                AbstractTemplateBuilder atb = (AbstractTemplateBuilder) child;
+            if (child instanceof AbstractTemplateBuilder atb) {
                 if (key.equals(atb.getKey(null))) {
                     return atb;
                 } else if (atb instanceof CompositeBuilder && atb.getKey(null) == null) {
@@ -219,8 +218,7 @@ public class STACQueryablesBuilder {
             binding = (Class<?>) db.getEncodingHints().get(JSON_PROPERTY_TYPE);
         } else if (db.getXpath() != null) {
             Object result = db.getXpath().evaluate(itemsSchema);
-            if (result instanceof PropertyDescriptor) {
-                PropertyDescriptor pd = (PropertyDescriptor) result;
+            if (result instanceof PropertyDescriptor pd) {
                 binding = pd.getType().getBinding();
             }
         } else if (db.getCql() != null) {

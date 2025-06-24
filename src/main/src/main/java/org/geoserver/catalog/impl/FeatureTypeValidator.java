@@ -52,8 +52,8 @@ class FeatureTypeValidator {
             if (!(access instanceof DataStore)) return;
             DataStore ds = (DataStore) access;
 
-            if (vt != null && ds instanceof JDBCDataStore) {
-                jds = (JDBCDataStore) ds;
+            if (vt != null && ds instanceof JDBCDataStore store) {
+                jds = store;
                 typeName = setupTempVirtualTable(vt, jds);
                 temporaryVirtualTable = true;
             }

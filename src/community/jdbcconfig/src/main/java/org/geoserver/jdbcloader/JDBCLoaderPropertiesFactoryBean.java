@@ -246,10 +246,8 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
 
     protected String getDataDirStr() {
         if (dataDirectory == null) {
-            if (resourceStore instanceof GeoServerResourceLoader) {
-                dataDirectory = ((GeoServerResourceLoader) resourceStore)
-                        .getBaseDirectory()
-                        .getAbsolutePath();
+            if (resourceStore instanceof GeoServerResourceLoader loader) {
+                dataDirectory = loader.getBaseDirectory().getAbsolutePath();
             } else {
                 throw new IllegalStateException("Data directory could not be determined.");
             }

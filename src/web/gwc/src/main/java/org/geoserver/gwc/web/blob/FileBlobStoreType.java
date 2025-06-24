@@ -4,11 +4,13 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geowebcache.config.FileBlobStoreInfo;
 
 public class FileBlobStoreType implements BlobStoreType<FileBlobStoreInfo> {
+    @Serial
     private static final long serialVersionUID = 6825505034831901062L;
 
     @Override

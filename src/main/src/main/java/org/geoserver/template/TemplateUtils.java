@@ -61,8 +61,7 @@ public class TemplateUtils {
         templateConfig.setDefaultEncoding(StandardCharsets.UTF_8.name());
         templateConfig.setNewBuiltinClassResolver((name, env, template) -> {
             if (ILLEGAL_FREEMARKER_CLASSES.stream().anyMatch(name::equals)) {
-                throw new TemplateException(
-                        String.format("Class %s is not allowed in Freemarker templates", name), env);
+                throw new TemplateException("Class %s is not allowed in Freemarker templates".formatted(name), env);
             }
             if (LEGAL_FREEMARKER_CLASSES.stream().anyMatch(name::equals)) {
                 try {

@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.worldwind.web;
 
+import java.io.Serial;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ import org.geotools.util.logging.Logging;
  * @author Parker Abercrombie
  */
 public class BilLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
+    @Serial
     private static final long serialVersionUID = -7082211085566621848L;
 
     private static final Logger LOGGER = Logging.getLogger(BilLayerConfigPanel.class);
@@ -56,6 +58,7 @@ public class BilLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> 
     /** Renderer to display a localized string for the Byte Order drop down. */
     private class ByteOrderRenderer extends ChoiceRenderer<String> {
 
+        @Serial
         private static final long serialVersionUID = 9198622236589910965L;
 
         @Override

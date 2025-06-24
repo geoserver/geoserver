@@ -6,6 +6,7 @@
 package org.geoserver.security.web.role;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -25,6 +26,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 public class SelectionRoleRemovalLink extends AjaxLink<Object> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     GeoServerTablePanel<GeoServerRole> roles;
@@ -53,12 +55,14 @@ public class SelectionRoleRemovalLink extends AjaxLink<Object> {
         dialog.showOkCancel(
                 target,
                 delegate = new GeoServerDialog.DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
                     protected Component getContents(String id) {
                         // show a confirmation panel for all the objects we have to remove
                         return removePanel = new ConfirmRemovalRolePanel(id, selection) {
+                            @Serial
                             private static final long serialVersionUID = 1L;
 
                             @Override

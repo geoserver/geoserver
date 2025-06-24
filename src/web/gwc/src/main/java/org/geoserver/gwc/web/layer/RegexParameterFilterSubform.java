@@ -6,6 +6,7 @@
 
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.apache.wicket.Component;
@@ -26,6 +27,7 @@ public class RegexParameterFilterSubform extends AbstractParameterFilterSubform<
 
     private static final IValidator<String> REGEXP_VALIDATOR = new IValidator<>() {
 
+        @Serial
         private static final long serialVersionUID = 3753607592277740081L;
 
         @Override
@@ -43,6 +45,7 @@ public class RegexParameterFilterSubform extends AbstractParameterFilterSubform<
     };
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public RegexParameterFilterSubform(String id, IModel<RegexParameterFilter> model) {

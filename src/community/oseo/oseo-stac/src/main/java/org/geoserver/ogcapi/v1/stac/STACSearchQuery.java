@@ -63,8 +63,7 @@ public class STACSearchQuery extends APISearchQuery {
     public void setSortBy(JsonNode node) {
         // Based on STAC API Extension for Sort
         // https://github.com/stac-api-extensions/sort?tab=readme-ov-file#http-post-json-entity
-        if (node instanceof ArrayNode) {
-            ArrayNode arrayNode = (ArrayNode) node;
+        if (node instanceof ArrayNode arrayNode) {
             SortBy[] sortBIES = new SortBy[arrayNode.size()];
             for (int i = 0; i < arrayNode.size(); i++) {
                 if (arrayNode.get(i).isObject()

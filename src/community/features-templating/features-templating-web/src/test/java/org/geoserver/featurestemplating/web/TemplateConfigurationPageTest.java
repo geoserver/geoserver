@@ -81,174 +81,180 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
             + "  ]"
             + "}";
 
-    private static final String GML_TEMPLATE = "<gft:Template>\n"
-            + "<gft:Options>\n"
-            + "  <gft:Namespaces xmlns:topp=\"http://www.openplans.org/topp\"/>\n"
-            + "  <gft:SchemaLocation xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0 http://brgm-dev.geo-solutions.it/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd\"/>\n"
-            + "</gft:Options>\n"
-            + "  <topp:states gml:id=\"${@id}\">\n"
-            + "  \t<topp:name code=\"${STATE_ABBR}\">${STATE_NAME}</topp:name>\n"
-            + "  \t<topp:region>${SUB_REGION}</topp:region>\n"
-            + "    <topp:population>${PERSONS}</topp:population>\n"
-            + "    <topp:males>${MALE}</topp:males>\n"
-            + "  \t<topp:females>${FEMALE}</topp:females>\n"
-            + "  \t<topp:active_population>${WORKERS}</topp:active_population>\n"
-            + "  \t<topp:wkt_geom>$${toWKT(the_geom)}</topp:wkt_geom>\n"
-            + "  </topp:states>\n"
-            + "</gft:Template>";
+    private static final String GML_TEMPLATE =
+            """
+            <gft:Template>
+            <gft:Options>
+              <gft:Namespaces xmlns:topp="http://www.openplans.org/topp"/>
+              <gft:SchemaLocation xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://brgm-dev.geo-solutions.it/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+            </gft:Options>
+              <topp:states gml:id="${@id}">
+              	<topp:name code="${STATE_ABBR}">${STATE_NAME}</topp:name>
+              	<topp:region>${SUB_REGION}</topp:region>
+                <topp:population>${PERSONS}</topp:population>
+                <topp:males>${MALE}</topp:males>
+              	<topp:females>${FEMALE}</topp:females>
+              	<topp:active_population>${WORKERS}</topp:active_population>
+              	<topp:wkt_geom>$${toWKT(the_geom)}</topp:wkt_geom>
+              </topp:states>
+            </gft:Template>""";
 
-    private static final String HTML_TEMPLATE = "<gft:Template>\n"
-            + "  <gft:Options>\n"
-            + "    <style>\n"
-            + "      <![CDATA[\n"
-            + "ul, #myUL {\n"
-            + "  list-style-type: none;\n"
-            + "}\n"
-            + "\n"
-            + "#myUL {\n"
-            + "  margin: 0;\n"
-            + "  padding: 0;\n"
-            + "}\n"
-            + "\n"
-            + ".caret {\n"
-            + "  cursor: pointer;\n"
-            + "  -webkit-user-select: none; /* Safari 3.1+ */\n"
-            + "  -moz-user-select: none; /* Firefox 2+ */\n"
-            + "  -ms-user-select: none; /* IE 10+ */\n"
-            + "  user-select: none;\n"
-            + "}\n"
-            + "\n"
-            + ".caret::before {\n"
-            + "  content: \"\\25B6\";\n"
-            + "  color: black;\n"
-            + "  display: inline-block;\n"
-            + "  margin-right: 6px;\n"
-            + "}\n"
-            + "\n"
-            + ".caret-down::before {\n"
-            + "  -ms-transform: rotate(90deg); /* IE 9 */\n"
-            + "  -webkit-transform: rotate(90deg); /* Safari */'\n"
-            + "  transform: rotate(90deg);  \n"
-            + "}\n"
-            + "\n"
-            + ".nested {\n"
-            + "  display: none;\n"
-            + "}\n"
-            + "\n"
-            + ".active {\n"
-            + "  display: block;\n"
-            + "}\n"
-            + "]]>\n"
-            + "    </style>\n"
-            + "    <script>\n"
-            + "      <![CDATA[\n"
-            + "  window.onload = function() {\n"
-            + "  var toggler = document.getElementsByClassName(\"caret\");\n"
-            + "  for (let item of toggler){\n"
-            + "    item.addEventListener(\"click\", function() {\n"
-            + "    this.parentElement.querySelector(\".nested\").classList.toggle(\"active\");\n"
-            + "    this.classList.toggle(\"caret-down\");\n"
-            + "  });\n"
-            + "  }\n"
-            + "  }\n"
-            + "]]>\n"
-            + "    </script>\n"
-            + "  </gft:Options>\n"
-            + "  <ul id=\"myUL\">\n"
-            + "    <li><span class=\"caret\">MeteoStations</span>\n"
-            + "      <ul class=\"nested\">\n"
-            + "        <li><span class=\"caret\">Code</span>\n"
-            + "          <ul class=\"nested\">\n"
-            + "            <li>\n"
-            + "              $${strConcat('Station_',st:code)}\n"
-            + "            </li>\n"
-            + "          </ul>\n"
-            + "        </li>\n"
-            + "        <li><span class=\"caret\">Name</span>\n"
-            + "          <ul class=\"nested\">\n"
-            + "            <li>\n"
-            + "              ${st:common_name}\n"
-            + "            </li>\n"
-            + "          </ul>\n"
-            + "        </li>\n"
-            + "        <li><span class=\"caret\">Geometry</span>\n"
-            + "          <ul class=\"nested\">\n"
-            + "            <li>\n"
-            + "              ${st:position}\n"
-            + "            </li>\n"
-            + "          </ul>\n"
-            + "        </li>\n"
-            + "        <li gft:isCollection=\"true\" gft:source=\"st:meteoObservations/st:MeteoObservationsFeature\" gft:filter=\"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'temperature'\">\n"
-            + "          <span class=\"caret\">Temperature</span>\n"
-            + "          <ul class=\"nested\">\n"
-            + "            <li><span class=\"caret\">Time</span>\n"
-            + "              <ul class=\"nested\">\n"
-            + "                <li>\n"
-            + "                  ${st:time}\n"
-            + "                </li>\n"
-            + "              </ul>\n"
-            + "            </li>\n"
-            + "            <li><span class=\"caret\">Value</span>\n"
-            + "              <ul class=\"nested\">\n"
-            + "                <li>\n"
-            + "                  ${st:time}\n"
-            + "                </li>\n"
-            + "              </ul>\n"
-            + "            </li>\n"
-            + "          </ul>\n"
-            + "        </li>\n"
-            + "        <li gft:isCollection=\"true\" gft:source=\"st:meteoObservations/st:MeteoObservationsFeature\" gft:filter=\"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'pressure'\">\n"
-            + "          <span class=\"caret\">Pressure</span>\n"
-            + "          <ul class=\"nested\">\n"
-            + "            <li><span class=\"caret\">Time</span>\n"
-            + "              <ul class=\"nested\">\n"
-            + "                <li>\n"
-            + "                  ${st:time}\n"
-            + "                </li>\n"
-            + "              </ul>\n"
-            + "            </li>\n"
-            + "            <li><span class=\"caret\">Value</span>\n"
-            + "              <ul class=\"nested\">\n"
-            + "                <li>\n"
-            + "                  ${st:time}\n"
-            + "                </li>\n"
-            + "              </ul>\n"
-            + "            </li>\n"
-            + "          </ul>\n"
-            + "        </li>\n"
-            + "        <li gft:isCollection=\"true\" gft:source=\"st:meteoObservations/st:MeteoObservationsFeature\" gft:filter=\"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'\">\n"
-            + "          <span class=\"caret\">Wind Speed</span>\n"
-            + "          <ul class=\"nested\">\n"
-            + "            <li><span class=\"caret\">Time</span>\n"
-            + "              <ul class=\"nested\">\n"
-            + "                <li>\n"
-            + "                  ${st:time}\n"
-            + "                </li>\n"
-            + "              </ul>\n"
-            + "            </li>\n"
-            + "            <li><span class=\"caret\">Value</span>\n"
-            + "              <ul class=\"nested\">\n"
-            + "                <li>\n"
-            + "                  ${st:time}\n"
-            + "                </li>\n"
-            + "              </ul>\n"
-            + "            </li>\n"
-            + "          </ul>\n"
-            + "        </li>\n"
-            + "      </ul>\n"
-            + "    </li>\n"
-            + "  </ul>\n"
-            + "</gft:Template>";
+    private static final String HTML_TEMPLATE =
+            """
+            <gft:Template>
+              <gft:Options>
+                <style>
+                  <![CDATA[
+            ul, #myUL {
+              list-style-type: none;
+            }
 
-    private static final String GML_STATIC_TEMPLATE = "<gft:Template>\n"
-            + "<gft:Options>\n"
-            + "  <gft:Namespaces xmlns:topp=\"http://www.openplans.org/topp\"/>\n"
-            + "  <gft:SchemaLocation xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0 http://brgm-dev.geo-solutions.it/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd\"/>\n"
-            + "</gft:Options>\n"
-            + "  <theFeature gml:id=\"idVal\">\n"
-            + "  \t<name>name</name>\n"
-            + "  </theFeature>\n"
-            + "</gft:Template>";
+            #myUL {
+              margin: 0;
+              padding: 0;
+            }
+
+            .caret {
+              cursor: pointer;
+              -webkit-user-select: none; /* Safari 3.1+ */
+              -moz-user-select: none; /* Firefox 2+ */
+              -ms-user-select: none; /* IE 10+ */
+              user-select: none;
+            }
+
+            .caret::before {
+              content: "\\25B6";
+              color: black;
+              display: inline-block;
+              margin-right: 6px;
+            }
+
+            .caret-down::before {
+              -ms-transform: rotate(90deg); /* IE 9 */
+              -webkit-transform: rotate(90deg); /* Safari */'
+              transform: rotate(90deg); \s
+            }
+
+            .nested {
+              display: none;
+            }
+
+            .active {
+              display: block;
+            }
+            ]]>
+                </style>
+                <script>
+                  <![CDATA[
+              window.onload = function() {
+              var toggler = document.getElementsByClassName("caret");
+              for (let item of toggler){
+                item.addEventListener("click", function() {
+                this.parentElement.querySelector(".nested").classList.toggle("active");
+                this.classList.toggle("caret-down");
+              });
+              }
+              }
+            ]]>
+                </script>
+              </gft:Options>
+              <ul id="myUL">
+                <li><span class="caret">MeteoStations</span>
+                  <ul class="nested">
+                    <li><span class="caret">Code</span>
+                      <ul class="nested">
+                        <li>
+                          $${strConcat('Station_',st:code)}
+                        </li>
+                      </ul>
+                    </li>
+                    <li><span class="caret">Name</span>
+                      <ul class="nested">
+                        <li>
+                          ${st:common_name}
+                        </li>
+                      </ul>
+                    </li>
+                    <li><span class="caret">Geometry</span>
+                      <ul class="nested">
+                        <li>
+                          ${st:position}
+                        </li>
+                      </ul>
+                    </li>
+                    <li gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature" gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'temperature'">
+                      <span class="caret">Temperature</span>
+                      <ul class="nested">
+                        <li><span class="caret">Time</span>
+                          <ul class="nested">
+                            <li>
+                              ${st:time}
+                            </li>
+                          </ul>
+                        </li>
+                        <li><span class="caret">Value</span>
+                          <ul class="nested">
+                            <li>
+                              ${st:time}
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                    <li gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature" gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'pressure'">
+                      <span class="caret">Pressure</span>
+                      <ul class="nested">
+                        <li><span class="caret">Time</span>
+                          <ul class="nested">
+                            <li>
+                              ${st:time}
+                            </li>
+                          </ul>
+                        </li>
+                        <li><span class="caret">Value</span>
+                          <ul class="nested">
+                            <li>
+                              ${st:time}
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                    <li gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature" gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'">
+                      <span class="caret">Wind Speed</span>
+                      <ul class="nested">
+                        <li><span class="caret">Time</span>
+                          <ul class="nested">
+                            <li>
+                              ${st:time}
+                            </li>
+                          </ul>
+                        </li>
+                        <li><span class="caret">Value</span>
+                          <ul class="nested">
+                            <li>
+                              ${st:time}
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </gft:Template>""";
+
+    private static final String GML_STATIC_TEMPLATE =
+            """
+            <gft:Template>
+            <gft:Options>
+              <gft:Namespaces xmlns:topp="http://www.openplans.org/topp"/>
+              <gft:SchemaLocation xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://brgm-dev.geo-solutions.it/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+            </gft:Options>
+              <theFeature gml:id="idVal">
+              	<name>name</name>
+              </theFeature>
+            </gft:Template>""";
 
     @Test
     public void testNew() {

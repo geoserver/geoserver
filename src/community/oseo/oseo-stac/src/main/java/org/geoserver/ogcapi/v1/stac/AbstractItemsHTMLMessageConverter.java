@@ -36,8 +36,8 @@ public abstract class AbstractItemsHTMLMessageConverter<T extends AbstractItemsR
 
         Map<String, Object> model = new HashMap<>();
         model.put("baseURL", APIRequestInfo.get().getBaseURL());
-        if (value instanceof ItemsResponse) {
-            model.put("collection", ((ItemsResponse) value).getCollectionId());
+        if (value instanceof ItemsResponse response) {
+            model.put("collection", response.getCollectionId());
         }
         addLinkFunctions(APIRequestInfo.get().getBaseURL(), model);
 

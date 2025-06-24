@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.publish;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.ComponentInfo;
@@ -22,6 +23,7 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
 public abstract class PublishedEditTabPanelInfo<T extends PublishedInfo>
         extends ComponentInfo<PublishedEditTabPanel<T>> {
 
+    @Serial
     private static final long serialVersionUID = 4849692244366766812L;
 
     /** order of the panel with respect to other panels. */

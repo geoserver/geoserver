@@ -6,6 +6,7 @@
 
 package org.geoserver.security.password;
 
+import java.io.Serial;
 import org.geoserver.security.impl.UserDetailsWrapper;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class UserDetailsPasswordWrapper extends UserDetailsWrapper {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public UserDetailsPasswordWrapper(UserDetails details, String password) {

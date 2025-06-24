@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.data.store.cog.panel;
 
+import java.io.Serial;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -80,6 +81,7 @@ public class CogRasterEditPanel extends StoreEditPanel {
         cogSettingsPanel.setVisible(checkBox.getModelObject().booleanValue());
         container.add(cogSettingsPanel);
         checkBox.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -157,8 +159,7 @@ public class CogRasterEditPanel extends StoreEditPanel {
         @Override
         public String getObject() {
             Object obj = delegate.getObject();
-            if (obj instanceof URL) {
-                URL url = (URL) obj;
+            if (obj instanceof URL url) {
                 return url.toExternalForm();
             }
             return (String) obj;

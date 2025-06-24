@@ -5,6 +5,7 @@
 package org.geoserver.metadata.data.service.impl;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,7 @@ import org.geotools.util.logging.Logging;
 @org.springframework.stereotype.Component
 public class DomainGenerator implements ComplexAttributeGenerator {
 
+    @Serial
     private static final long serialVersionUID = 3179273148205046941L;
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTabPanel.class);

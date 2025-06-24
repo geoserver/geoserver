@@ -382,15 +382,18 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         String path = "geotiff/EmissiveCampania.tif.bz2";
         try (InputStream stream = ImporterTestSupport.class.getResourceAsStream("test-data/" + path)) {
 
-            String creationRequest = "{\n"
-                    + "   \"import\": {\n"
-                    + "      \"targetWorkspace\": {\n"
-                    + "         \"workspace\": {\n"
-                    + "            \"name\": \"sf\"\n"
-                    + "         }\n"
-                    + "      }\n"
-                    + "   }\n"
-                    + "}";
+            String creationRequest =
+                    """
+                    {
+                       "import": {
+                          "targetWorkspace": {
+                             "workspace": {
+                                "name": "sf"
+                             }
+                          }
+                       }
+                    }\
+                    """;
             ImportContext context = uploadGeotiffAndVerify(
                     new File(path).getName(),
                     stream,
@@ -585,12 +588,15 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         assertEquals("READY", task.get("state"));
 
         // now rename the layer
-        String renamer = "{\n"
-                + "  \"layer\": {\n"
-                + "\t\t\t\"name\": \"test123\",\n"
-                + "\t\t  \"nativeName\": \"test123\",\n"
-                + "\t\t}\n"
-                + "}";
+        String renamer =
+                """
+                {
+                  "layer": {
+                			"name": "test123",
+                		  "nativeName": "test123",
+                		}
+                }\
+                """;
         JSONObject response = (JSONObject) putAsJSON(
                 RestBaseController.ROOT_PATH + "/imports/" + context.getId() + "/tasks/0/layer",
                 renamer,

@@ -6,6 +6,7 @@
 
 package org.geoserver.security.validation;
 
+import java.io.Serial;
 import org.geoserver.platform.exception.GeoServerException;
 
 /**
@@ -14,6 +15,7 @@ import org.geoserver.platform.exception.GeoServerException;
  * @author christian
  */
 public class AbstractSecurityException extends GeoServerException {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

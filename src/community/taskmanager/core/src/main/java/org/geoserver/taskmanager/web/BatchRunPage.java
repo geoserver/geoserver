@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
@@ -24,6 +25,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
 public class BatchRunPage extends GeoServerSecuredPage {
+    @Serial
     private static final long serialVersionUID = -5111795911981486778L;
 
     private IModel<Batch> batchModel;
@@ -43,6 +45,7 @@ public class BatchRunPage extends GeoServerSecuredPage {
         super.onInitialize();
 
         add(new SimpleAjaxLink<String>("nameLink", new PropertyModel<String>(batchModel, "fullName")) {
+            @Serial
             private static final long serialVersionUID = -9184383036056499856L;
 
             @Override
@@ -55,6 +58,7 @@ public class BatchRunPage extends GeoServerSecuredPage {
 
         add(new AjaxLink<Object>("refresh") {
 
+            @Serial
             private static final long serialVersionUID = 3905640474193868255L;
 
             @Override
@@ -71,6 +75,7 @@ public class BatchRunPage extends GeoServerSecuredPage {
         runsPanel.setSelectable(false);
 
         add(new AjaxLink<Object>("close") {
+            @Serial
             private static final long serialVersionUID = -6892944747517089296L;
 
             @Override
@@ -83,6 +88,7 @@ public class BatchRunPage extends GeoServerSecuredPage {
     protected GeoServerTablePanel<Run> runPanel() {
         return new GeoServerTablePanel<Run>("runPanel", new RunsModel(batchRunModel), true) {
 
+            @Serial
             private static final long serialVersionUID = -8943273843044917552L;
 
             @Override

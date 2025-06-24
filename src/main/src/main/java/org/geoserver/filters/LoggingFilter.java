@@ -105,8 +105,7 @@ public class LoggingFilter implements GeoServerFilter {
         String path = "";
 
         if (enabled) {
-            if (req instanceof HttpServletRequest) {
-                HttpServletRequest hreq = (HttpServletRequest) req;
+            if (req instanceof HttpServletRequest hreq) {
 
                 path = RequestUtils.getRemoteAddr(hreq) + " \"" + hreq.getMethod() + " " + hreq.getRequestURI();
                 if (hreq.getQueryString() != null) {

@@ -66,8 +66,7 @@ public class ProxifyingURLMangler implements URLMangler {
 
     {
         Arrays.asList(ForwardedComponents.values()).forEach((comp) -> {
-            FORWARDED_PATTERNS.put(
-                    comp.asString(), Pattern.compile(String.format("(.*)%s=([^;^ ]+)(.*)", comp.asString())));
+            FORWARDED_PATTERNS.put(comp.asString(), Pattern.compile("(.*)%s=([^;^ ]+)(.*)".formatted(comp.asString())));
         });
     }
 
@@ -208,6 +207,6 @@ public class ProxifyingURLMangler implements URLMangler {
     }
 
     private String toTemplate(String header) {
-        return String.format("%s%s%s", TEMPLATE_PREFIX, header, TEMPLATE_POSTFIX);
+        return "%s%s%s".formatted(TEMPLATE_PREFIX, header, TEMPLATE_POSTFIX);
     }
 }

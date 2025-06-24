@@ -364,7 +364,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionMosaicTileGmaps() throws Exception {
         doPermissionMosaicTileTest(
-                (layer) -> String.format("gwc/service/gmaps?LAYERS=%s&FORMAT=image/png&ZOOM=0&X=0&Y=0", layer),
+                (layer) -> "gwc/service/gmaps?LAYERS=%s&FORMAT=image/png&ZOOM=0&X=0&Y=0".formatted(layer),
                 SECURITY_ERROR_TYPE,
                 NOT_FOUND_ERROR_TYPE);
     }
@@ -372,7 +372,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionMosaicTileMGmaps() throws Exception {
         doPermissionMosaicTileTest(
-                (layer) -> String.format("gwc/service/mgmaps?LAYERS=%s&FORMAT=image/png&ZOOM=17&X=0&Y=0", layer),
+                (layer) -> "gwc/service/mgmaps?LAYERS=%s&FORMAT=image/png&ZOOM=17&X=0&Y=0".formatted(layer),
                 SECURITY_ERROR_TYPE,
                 NOT_FOUND_ERROR_TYPE);
     }
@@ -380,7 +380,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionMosaicTileTms() throws Exception {
         doPermissionMosaicTileTest(
-                (layer) -> String.format("gwc/service/tms/1.0.0/%s@EPSG:900913@png/0/0/0.png", layer),
+                (layer) -> "gwc/service/tms/1.0.0/%s@EPSG:900913@png/0/0/0.png".formatted(layer),
                 SECURITY_ERROR_TYPE,
                 NOT_FOUND_ERROR_TYPE);
     }
@@ -388,16 +388,14 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionMosaicTileKml() throws Exception {
         doPermissionMosaicTileTest(
-                (layer) -> String.format("gwc/service/kml/%s/x0y0z0.png", layer),
-                SECURITY_ERROR_TYPE,
-                NOT_FOUND_ERROR_TYPE);
+                (layer) -> "gwc/service/kml/%s/x0y0z0.png".formatted(layer), SECURITY_ERROR_TYPE, NOT_FOUND_ERROR_TYPE);
     }
 
     @Test
     public void testPermissionCropTileTms() throws Exception {
         doPermissionCropTileTest(
-                (layer, index) -> String.format(
-                        "gwc/service/tms/1.0.0/%s@EPSG:900913@png/%d/%d/%d.png", layer, index[2], index[0], index[1]),
+                (layer, index) -> "gwc/service/tms/1.0.0/%s@EPSG:900913@png/%d/%d/%d.png"
+                        .formatted(layer, index[2], index[0], index[1]),
                 SECURITY_ERROR_TYPE,
                 TestGridset.GoogleMapsCompatible);
     }
@@ -438,9 +436,8 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionCropTileGmaps() throws Exception {
         doPermissionCropTileTest(
-                (layer, index) -> String.format(
-                        "gwc/service/gmaps?LAYERS=%s&FORMAT=image/png&ZOOM=%d&X=%d&Y=%d",
-                        layer, index[2], index[0], (1 << index[2]) - index[1] - 1),
+                (layer, index) -> "gwc/service/gmaps?LAYERS=%s&FORMAT=image/png&ZOOM=%d&X=%d&Y=%d"
+                        .formatted(layer, index[2], index[0], (1 << index[2]) - index[1] - 1),
                 SECURITY_ERROR_TYPE,
                 TestGridset.GoogleMapsCompatible);
     }
@@ -448,9 +445,8 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionCropTileMGmaps() throws Exception {
         doPermissionCropTileTest(
-                (layer, index) -> String.format(
-                        "gwc/service/mgmaps?LAYERS=%s&FORMAT=image/png&ZOOM=%d&X=%d&Y=%d",
-                        layer, 17 - index[2], index[0], (1 << index[2]) - index[1] - 1),
+                (layer, index) -> "gwc/service/mgmaps?LAYERS=%s&FORMAT=image/png&ZOOM=%d&X=%d&Y=%d"
+                        .formatted(layer, 17 - index[2], index[0], (1 << index[2]) - index[1] - 1),
                 SECURITY_ERROR_TYPE,
                 TestGridset.GoogleMapsCompatible);
     }
@@ -458,8 +454,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionCropTileKml() throws Exception {
         doPermissionCropTileTest(
-                (layer, index) ->
-                        String.format("gwc/service/kml/%s/x%dy%dz%d.png", layer, index[0], index[1], index[2]),
+                (layer, index) -> "gwc/service/kml/%s/x%dy%dz%d.png".formatted(layer, index[0], index[1], index[2]),
                 SECURITY_ERROR_TYPE,
                 TestGridset.GlobalCRS84Geometric);
     }
@@ -481,7 +476,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
                             VEConverter.convert(quadKey),
                             equalTo(index)); // Check that the test key is correct. Failure means
                     // the test is broken
-                    return String.format("gwc/service/ve?layers=%s&format=image/png&quadKey=%s", layer, quadKey);
+                    return "gwc/service/ve?layers=%s&format=image/png&quadKey=%s".formatted(layer, quadKey);
                 },
                 SECURITY_ERROR_TYPE,
                 TestGridset.GoogleMapsCompatible);
@@ -521,13 +516,13 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionMosaicKmlRasterSuperOverlay() throws Exception {
         doPermissionKmlOverlay(
-                (layer) -> String.format("gwc/service/kml/%s.png.kmz", layer), "application/vnd.google-earth.kmz");
+                (layer) -> "gwc/service/kml/%s.png.kmz".formatted(layer), "application/vnd.google-earth.kmz");
     }
 
     @Test
     public void testPermissionMosaicKmlVectorSuperOverlay() throws Exception {
         doPermissionKmlOverlay(
-                (layer) -> String.format("gwc/service/kml/%s.kml.kmz", layer), "application/vnd.google-earth.kmz");
+                (layer) -> "gwc/service/kml/%s.kml.kmz".formatted(layer), "application/vnd.google-earth.kmz");
     }
 
     @Test

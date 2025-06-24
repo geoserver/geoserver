@@ -41,16 +41,15 @@ public class StyleDocumentCallback implements DocumentCallback {
 
     @Override
     public void apply(Request dr, AbstractDocument document) {
-        if (document instanceof AbstractCollectionDocument) {
-            AbstractCollectionDocument<?> collection = (AbstractCollectionDocument) document;
+        if (document instanceof AbstractCollectionDocument<?> collection) {
             Object subject = collection.getSubject();
             if (subject instanceof ResourceInfo) {
                 addResourceStyles(collection);
             } else if (!collection.getStyles().isEmpty()) {
                 addLinks(collection.getStyles());
             }
-        } else if (document instanceof StyleDocument) {
-            addStyleLinks((StyleDocument) document);
+        } else if (document instanceof StyleDocument styleDocument) {
+            addStyleLinks(styleDocument);
         }
     }
 

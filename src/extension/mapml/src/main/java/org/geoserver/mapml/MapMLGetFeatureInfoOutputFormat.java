@@ -265,8 +265,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         FeatureTypeInfo fti;
         ResourceInfo meta = null;
         // if it's a complex feature collection get the proper ResourceInfo
-        if (features instanceof TypeInfoCollectionWrapper.Complex) {
-            TypeInfoCollectionWrapper.Complex fcollection = (TypeInfoCollectionWrapper.Complex) features;
+        if (features instanceof TypeInfoCollectionWrapper.Complex fcollection) {
             fti = fcollection.getFeatureTypeInfo();
             meta = catalog.getResourceByName(fti.getName(), ResourceInfo.class);
         } else {
@@ -274,8 +273,8 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
             FeatureType featureType = features.getSchema();
             meta = catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
         }
-        if (meta instanceof FeatureTypeInfo) {
-            fti = (FeatureTypeInfo) meta;
+        if (meta instanceof FeatureTypeInfo info) {
+            fti = info;
             return callback.apply(fti);
         }
         return null;

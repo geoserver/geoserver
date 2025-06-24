@@ -7,6 +7,7 @@ package org.geoserver.taskmanager.external.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,6 +37,7 @@ import org.geotools.util.logging.Logging;
  */
 public class ResourceFileServiceImpl extends SecuredImpl implements FileService {
 
+    @Serial
     private static final long serialVersionUID = -1948411877746516243L;
 
     private static final Logger LOGGER = Logging.getLogger(ResourceFileServiceImpl.class);

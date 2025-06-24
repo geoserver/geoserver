@@ -140,18 +140,18 @@ public class StoreExtensionPoints {
         final ResourcePool resourcePool = catalog.getResourcePool();
 
         Class<?> factoryClass = null;
-        if (storeInfo instanceof DataStoreInfo) {
+        if (storeInfo instanceof DataStoreInfo info1) {
             DataAccessFactory storeFactory;
             try {
-                storeFactory = resourcePool.getDataStoreFactory((DataStoreInfo) storeInfo);
+                storeFactory = resourcePool.getDataStoreFactory(info1);
             } catch (IOException e) {
                 throw new IllegalArgumentException("no factory found for StoreInfo " + storeInfo);
             }
             if (storeFactory != null) {
                 factoryClass = storeFactory.getClass();
             }
-        } else if (storeInfo instanceof CoverageStoreInfo) {
-            AbstractGridFormat gridFormat = resourcePool.getGridCoverageFormat((CoverageStoreInfo) storeInfo);
+        } else if (storeInfo instanceof CoverageStoreInfo info) {
+            AbstractGridFormat gridFormat = resourcePool.getGridCoverageFormat(info);
             if (gridFormat != null) {
                 factoryClass = gridFormat.getClass();
             }

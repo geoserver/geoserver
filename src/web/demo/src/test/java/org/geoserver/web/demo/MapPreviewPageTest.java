@@ -174,8 +174,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                 "table:listContainer:items:4:itemProperties:4:component:menu:wfs:wfsFormats:3");
         assertEquals("GML3.2", optionLabel.getDefaultModelObjectAsString());
         for (Behavior b : optionLabel.getBehaviors()) {
-            if (b instanceof AttributeModifier) {
-                AttributeModifier am = (AttributeModifier) b;
+            if (b instanceof AttributeModifier am) {
                 String url = am.toString();
                 assertFalse(url.contains("gml+xml"));
                 assertTrue(url.contains("gml%2Bxml"));

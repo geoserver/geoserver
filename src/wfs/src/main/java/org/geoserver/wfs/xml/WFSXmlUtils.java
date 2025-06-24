@@ -117,11 +117,11 @@ public class WFSXmlUtils {
 
     public static SrsSyntax getSrsSyntax(Configuration obj) {
         for (Configuration dep : obj.getDependencies()) {
-            if (dep instanceof org.geotools.gml2.GMLConfiguration) {
-                return ((org.geotools.gml2.GMLConfiguration) dep).getSrsSyntax();
+            if (dep instanceof org.geotools.gml2.GMLConfiguration configuration) {
+                return configuration.getSrsSyntax();
             }
-            if (dep instanceof org.geotools.gml3.GMLConfiguration) {
-                return ((org.geotools.gml3.GMLConfiguration) dep).getSrsSyntax();
+            if (dep instanceof org.geotools.gml3.GMLConfiguration configuration) {
+                return configuration.getSrsSyntax();
             }
         }
         return null;
@@ -129,11 +129,11 @@ public class WFSXmlUtils {
 
     public static void setSrsSyntax(Configuration obj, SrsSyntax srsSyntax) {
         for (Configuration dep : obj.getDependencies()) {
-            if (dep instanceof org.geotools.gml2.GMLConfiguration) {
-                ((org.geotools.gml2.GMLConfiguration) dep).setSrsSyntax(srsSyntax);
+            if (dep instanceof org.geotools.gml2.GMLConfiguration configuration) {
+                configuration.setSrsSyntax(srsSyntax);
             }
-            if (dep instanceof org.geotools.gml3.GMLConfiguration) {
-                ((org.geotools.gml3.GMLConfiguration) dep).setSrsSyntax(srsSyntax);
+            if (dep instanceof org.geotools.gml3.GMLConfiguration configuration) {
+                configuration.setSrsSyntax(srsSyntax);
             }
         }
     }

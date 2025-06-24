@@ -19,8 +19,7 @@ public class WFSConfiguration extends org.geotools.wfs.v2_0.WFSConfiguration {
         // all with a geomtetry factory supporting curves
         CurvedGeometryFactory gf = new CurvedGeometryFactory(Double.MAX_VALUE);
         for (Object configuration : allDependencies()) {
-            if (configuration instanceof GMLConfiguration) {
-                GMLConfiguration gml = (GMLConfiguration) configuration;
+            if (configuration instanceof GMLConfiguration gml) {
                 gml.setGeometryFactory(gf);
             }
         }

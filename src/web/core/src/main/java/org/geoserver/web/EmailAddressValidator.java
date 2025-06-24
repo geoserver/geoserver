@@ -4,10 +4,13 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import org.apache.wicket.validation.validator.PatternValidator;
 
 public class EmailAddressValidator extends PatternValidator {
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private static final EmailAddressValidator INSTANCE = new EmailAddressValidator();
 
     public static EmailAddressValidator getInstance() {

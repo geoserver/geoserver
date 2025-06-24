@@ -207,8 +207,8 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 LOGGER.log(Level.FINEST, message, thrown);
             } else if (message.contains("Continuing in pure Java mode")) {
                 LOGGER.log(Level.FINE, message, thrown);
-            } else if (thrown instanceof RuntimeException && !(where instanceof OperationRegistry)) {
-                throw (RuntimeException) thrown;
+            } else if (thrown instanceof RuntimeException exception && !(where instanceof OperationRegistry)) {
+                throw exception;
             } else {
                 LOGGER.log(Level.INFO, message, thrown);
             }
@@ -501,9 +501,9 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
     private void disposeAuthorityFactories(Set<? extends AuthorityFactory> factories) throws FactoryException {
         for (AuthorityFactory af : factories) {
-            if (af instanceof AbstractAuthorityFactory) {
+            if (af instanceof AbstractAuthorityFactory factory) {
                 LOGGER.fine("Disposing referencing factory " + af);
-                ((AbstractAuthorityFactory) af).dispose();
+                factory.dispose();
             }
         }
     }

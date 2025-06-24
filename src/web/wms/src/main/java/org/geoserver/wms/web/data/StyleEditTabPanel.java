@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.web.data;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
@@ -17,6 +18,7 @@ import org.apache.wicket.model.IModel;
  */
 public class StyleEditTabPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 8044055895040826418L;
 
     protected AbstractStylePage stylePage;

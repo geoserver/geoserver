@@ -7,6 +7,7 @@ package org.geoserver.importer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ public class DataStoreFormat extends VectorFormat {
 
     private static final Logger LOGGER = Logging.getLogger(DataStoreFormat.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Class<? extends DataStoreFactorySpi> dataStoreFactoryClass;
@@ -213,11 +215,11 @@ public class DataStoreFormat extends VectorFormat {
         // try file based
         if (dataStoreFactory instanceof FileDataStoreFactorySpi) {
             File f = null;
-            if (data instanceof SpatialFile) {
-                f = ((SpatialFile) data).getFile();
+            if (data instanceof SpatialFile file) {
+                f = file.getFile();
             }
-            if (data instanceof Directory) {
-                f = ((Directory) data).getFile();
+            if (data instanceof Directory directory) {
+                f = directory.getFile();
             }
 
             if (f != null) {
@@ -234,11 +236,11 @@ public class DataStoreFormat extends VectorFormat {
         // try db based
         if (dataStoreFactory instanceof JDBCDataStoreFactory) {
             Database db = null;
-            if (data instanceof Database) {
-                db = (Database) data;
+            if (data instanceof Database database) {
+                db = database;
             }
-            if (data instanceof Table) {
-                db = ((Table) data).getDatabase();
+            if (data instanceof Table table) {
+                db = table.getDatabase();
             }
 
             if (db != null) {
@@ -248,11 +250,11 @@ public class DataStoreFormat extends VectorFormat {
 
         // try non-jdbc db
         Database db = null;
-        if (data instanceof Database) {
-            db = (Database) data;
+        if (data instanceof Database database) {
+            db = database;
         }
-        if (data instanceof Table) {
-            db = ((Table) data).getDatabase();
+        if (data instanceof Table table) {
+            db = table.getDatabase();
         }
         if (db != null) {
             return db.getParameters();

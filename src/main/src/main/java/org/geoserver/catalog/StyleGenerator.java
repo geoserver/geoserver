@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import org.geoserver.catalog.StyleGenerator.ColorRamp.Entry;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.GeometryDescriptor;
@@ -247,7 +248,7 @@ public class StyleGenerator {
 
         /** Sets the current ramp position to a random index */
         public void initRandom() {
-            position = (int) (entries.size() * Math.random());
+            position = (int) (entries.size() * ThreadLocalRandom.current().nextDouble());
         }
     }
 }

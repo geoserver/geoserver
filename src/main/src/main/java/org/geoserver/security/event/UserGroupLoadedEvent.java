@@ -6,6 +6,7 @@
 
 package org.geoserver.security.event;
 
+import java.io.Serial;
 import java.util.EventObject;
 import org.geoserver.security.GeoServerUserGroupService;
 
@@ -20,6 +21,7 @@ import org.geoserver.security.GeoServerUserGroupService;
 public class UserGroupLoadedEvent extends EventObject {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public UserGroupLoadedEvent(GeoServerUserGroupService source) {

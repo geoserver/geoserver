@@ -69,7 +69,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
         }
 
         names.forEach(name -> {
-            String xpath = String.format("//filterChain[name='%s']/atom:link", name);
+            String xpath = "//filterChain[name='%s']/atom:link".formatted(name);
             try {
                 NodeList link = xp.getMatchingNodes(xpath, dom);
                 assertEquals(1, link.getLength());

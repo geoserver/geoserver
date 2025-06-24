@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -61,6 +62,7 @@ import org.geotools.util.logging.Logging;
 // TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class ExternalGraphicPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 5098470683723890874L;
 
     static final Logger LOGGER = Logging.getLogger(ExternalGraphicPanel.class);
@@ -166,6 +168,7 @@ public class ExternalGraphicPanel extends Panel {
         showhideForm.setMultiPart(true);
 
         show = new AjaxButton("show") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -178,6 +181,7 @@ public class ExternalGraphicPanel extends Panel {
         showhideForm.add(show);
 
         hide = new AjaxButton("hide") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

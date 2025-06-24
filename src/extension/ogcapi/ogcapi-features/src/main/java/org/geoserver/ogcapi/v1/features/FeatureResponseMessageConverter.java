@@ -54,6 +54,6 @@ public class FeatureResponseMessageConverter extends MessageConverterResponseAda
 
     @Override
     protected Predicate<Response> getResponseFilterPredicate() {
-        return r -> r instanceof WFSGetFeatureOutputFormat && ((WFSGetFeatureOutputFormat) r).canHandle(V2);
+        return r -> r instanceof WFSGetFeatureOutputFormat wfsgfof && wfsgfof.canHandle(V2);
     }
 }

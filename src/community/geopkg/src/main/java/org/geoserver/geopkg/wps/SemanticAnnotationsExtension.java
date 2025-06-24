@@ -71,7 +71,7 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
     }
 
     public void addAnnotation(GeoPkgSemanticAnnotation sa) throws SQLException {
-        String sql = format("INSERT INTO %s(type, title, description, uri) VALUES(?, ?, ?, ?)", SA_TABLE);
+        String sql = "INSERT INTO %s(type, title, description, uri) VALUES(?, ?, ?, ?)".formatted(SA_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setString(1, sa.getType());
@@ -85,7 +85,7 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
     }
 
     public List<GeoPkgSemanticAnnotation> getAnnotationsByType(String type) throws SQLException {
-        String sql = format("SELECT id, type, title, description, uri from %s WHERE type = ?");
+        String sql = "SELECT id, type, title, description, uri from %s WHERE type = ?".formatted();
         List<GeoPkgSemanticAnnotation> result = new ArrayList<>();
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql); ) {
@@ -100,7 +100,7 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
     }
 
     public List<GeoPkgSemanticAnnotation> getAnnotationsByURI(String uri) throws SQLException {
-        String sql = format("SELECT id, type, title, description, uri from %s WHERE uri = ?", SA_TABLE);
+        String sql = "SELECT id, type, title, description, uri from %s WHERE uri = ?".formatted(SA_TABLE);
         List<GeoPkgSemanticAnnotation> result = new ArrayList<>();
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql); ) {
@@ -115,7 +115,7 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
     }
 
     public List<GeoPkgSemanticAnnotation> getSemanticAnnotations() throws SQLException {
-        String sql = format("SELECT id, type, title, description, uri from %s ");
+        String sql = "SELECT id, type, title, description, uri from %s ".formatted();
         List<GeoPkgSemanticAnnotation> result = new ArrayList<>();
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql); ) {
@@ -140,8 +140,8 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
     }
 
     public void addReference(GeoPkgAnnotationReference ref) throws SQLException {
-        String sql = format(
-                "INSERT INTO %s(table_name, key_column_name, key_value, sa_id) VALUES(?, ?, ?, ?)", SA_REFERENCE_TABLE);
+        String sql = "INSERT INTO %s(table_name, key_column_name, key_value, sa_id) VALUES(?, ?, ?, ?)"
+                .formatted(SA_REFERENCE_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setString(1, ref.getTableName());

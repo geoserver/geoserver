@@ -122,12 +122,12 @@ public class ProxyUtils {
     public static <T> T unwrap(T object, Class<? extends InvocationHandler> handlerClass) {
         if (object instanceof Proxy) {
             InvocationHandler h = handler(object, handlerClass);
-            if (h != null && h instanceof WrappingProxy) {
-                return (T) ((WrappingProxy) h).getProxyObject();
+            if (h != null && h instanceof WrappingProxy proxy) {
+                return (T) proxy.getProxyObject();
             }
         }
-        if (object instanceof ProxyList) {
-            return (T) ((ProxyList) object).proxyList;
+        if (object instanceof ProxyList list) {
+            return (T) list.proxyList;
         }
 
         return object;

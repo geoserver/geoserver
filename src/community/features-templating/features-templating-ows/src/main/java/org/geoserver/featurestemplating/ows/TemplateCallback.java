@@ -178,8 +178,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
 
     private Response findResponse(Object param1) {
         Response response = null;
-        if (param1 instanceof GetFeatureInfoRequest) {
-            GetFeatureInfoRequest request = (GetFeatureInfoRequest) param1;
+        if (param1 instanceof GetFeatureInfoRequest request) {
             if (request.getInfoFormat() != null) {
                 response = getTemplateFeatureInfoResponse(request);
             }

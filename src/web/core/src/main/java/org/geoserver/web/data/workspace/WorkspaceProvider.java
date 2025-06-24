@@ -8,6 +8,7 @@ package org.geoserver.web.data.workspace;
 import static org.geoserver.catalog.Predicates.sortBy;
 
 import com.google.common.collect.Streams;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -45,6 +46,7 @@ import org.geotools.api.filter.sort.SortBy;
  */
 public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
 
+    @Serial
     private static final long serialVersionUID = -2464073552094977958L;
 
     public static Property<WorkspaceInfo> NAME = new BeanProperty<>("name", "name");
@@ -58,6 +60,7 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
      */
     public static Property<WorkspaceInfo> DEFAULT = new AbstractProperty<>("default") {
 
+        @Serial
         private static final long serialVersionUID = 7732697329315316826L;
 
         @Override

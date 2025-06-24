@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -40,9 +39,9 @@ public final class LayersNamesAliasingTest extends AbstractAppSchemaTestSupport 
 
     @BeforeClass
     public static void prepare() throws IOException {
-        testFolderPath = Files.createTempDirectory(Paths.get("target/test-classes"), "layernames");
+        testFolderPath = Files.createTempDirectory(Path.of("target/test-classes"), "layernames");
         File srcDir = new File("target/test-classes/test-data/stations/layerNamesTest");
-        File destDir = Paths.get(testFolderPath.toString(), "layerNamesTest").toFile();
+        File destDir = Path.of(testFolderPath.toString(), "layerNamesTest").toFile();
         destDir.deleteOnExit();
         FileUtils.copyDirectory(srcDir, destDir);
     }

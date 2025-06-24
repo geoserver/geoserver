@@ -267,8 +267,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
 
         @Override
         protected void handleAdditionalMetadata(Object context) {
-            if (context instanceof CoverageInfo) {
-                CoverageInfo ci = (CoverageInfo) context;
+            if (context instanceof CoverageInfo ci) {
                 List<KeywordInfo> keywords = ci.getKeywords();
                 if (keywords != null && !keywords.isEmpty()) {
                     start("ows:Keywords");

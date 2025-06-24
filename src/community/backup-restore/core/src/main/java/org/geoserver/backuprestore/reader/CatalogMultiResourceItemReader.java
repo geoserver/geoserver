@@ -147,8 +147,8 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
 
     private T readFromDelegate() throws Exception {
         T item = delegate.read();
-        if (item instanceof ResourceAware) {
-            ((ResourceAware) item).setResource(getCurrentResource());
+        if (item instanceof ResourceAware aware) {
+            aware.setResource(getCurrentResource());
         }
         return item;
     }

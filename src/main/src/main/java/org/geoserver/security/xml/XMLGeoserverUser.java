@@ -6,6 +6,7 @@
 
 package org.geoserver.security.xml;
 
+import java.io.Serial;
 import org.geoserver.security.impl.GeoServerUser;
 
 /**
@@ -15,6 +16,7 @@ import org.geoserver.security.impl.GeoServerUser;
  */
 public class XMLGeoserverUser extends GeoServerUser {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public XMLGeoserverUser(String username) {

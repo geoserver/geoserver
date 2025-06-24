@@ -145,12 +145,12 @@ public class ImageUtils {
             final Map<RenderingHints.Key, Object> extraHints) {
         final Graphics2D graphic;
 
-        if (preparedImage instanceof BufferedImage) {
-            graphic = ((BufferedImage) preparedImage).createGraphics();
-        } else if (preparedImage instanceof TiledImage) {
-            graphic = ((TiledImage) preparedImage).createGraphics();
-        } else if (preparedImage instanceof VolatileImage) {
-            graphic = ((VolatileImage) preparedImage).createGraphics();
+        if (preparedImage instanceof BufferedImage image2) {
+            graphic = image2.createGraphics();
+        } else if (preparedImage instanceof TiledImage image1) {
+            graphic = image1.createGraphics();
+        } else if (preparedImage instanceof VolatileImage image) {
+            graphic = image.createGraphics();
         } else {
             throw new ServiceException("Unrecognized back-end image type");
         }
@@ -222,11 +222,10 @@ public class ImageUtils {
         // we have to check if it is bitmask or not.
         //
         // /////////////////////////////////////////////////////////////////
-        if ((cm instanceof IndexColorModel) && dataTypeByte) {
+        if ((cm instanceof IndexColorModel icm) && dataTypeByte) {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("Image has IndexColorModel and type byte!");
             }
-            final IndexColorModel icm = (IndexColorModel) cm;
 
             if (icm.getTransparency() != Transparency.TRANSLUCENT) {
                 // //

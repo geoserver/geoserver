@@ -118,8 +118,8 @@ public class StyleLayer {
         if (type == null) {
             try {
                 ResourceInfo resource = layer.getResource();
-                if (resource instanceof FeatureTypeInfo) {
-                    FeatureType featureType = ((FeatureTypeInfo) resource).getFeatureType();
+                if (resource instanceof FeatureTypeInfo info) {
+                    FeatureType featureType = info.getFeatureType();
                     this.type = getLayerType(featureType);
                     this.attributes = getAttributes(source, featureType);
                 } else if (resource instanceof CoverageInfo) {
@@ -178,16 +178,16 @@ public class StyleLayer {
     }
 
     public void acceptvisitor(StyledLayer source, StyleVisitor visitor) {
-        if (source instanceof NamedLayer) {
-            ((NamedLayer) source).accept(visitor);
+        if (source instanceof NamedLayer layer) {
+            layer.accept(visitor);
         } else {
             ((UserLayer) source).accept(visitor);
         }
     }
 
     private List<StyleAttribute> getAttributes(StyledLayer source, FeatureType featureType) {
-        StyleAttributeExtractor extractor = featureType instanceof SimpleFeatureType
-                ? new StyleAttributeExtractor((SimpleFeatureType) featureType)
+        StyleAttributeExtractor extractor = featureType instanceof SimpleFeatureType sft
+                ? new StyleAttributeExtractor(sft)
                 : new StyleAttributeExtractor();
         acceptvisitor(source, extractor);
         Map<PropertyName, Class<?>> propertyTypes = extractor.getPropertyTypes();

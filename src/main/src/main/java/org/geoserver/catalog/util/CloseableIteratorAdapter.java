@@ -29,8 +29,8 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
 
     public CloseableIteratorAdapter(Iterator<T> wrapped) {
         this.wrapped = wrapped;
-        if (wrapped instanceof Closeable) {
-            this.whatToClose = (Closeable) wrapped;
+        if (wrapped instanceof Closeable closeable) {
+            this.whatToClose = closeable;
         } else {
             this.whatToClose = null;
         }
@@ -99,7 +99,7 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
     public static <T> CloseableIterator<T> filter(final Iterator<T> iterator, final Predicate<T> predicate) {
 
         UnmodifiableIterator<T> filteredNotCloseable = Iterators.filter(iterator, predicate);
-        Closeable closeable = iterator instanceof Closeable ? (Closeable) iterator : null;
+        Closeable closeable = iterator instanceof Closeable c ? c : null;
         return new CloseableIteratorAdapter<>(filteredNotCloseable, closeable);
     }
 
@@ -114,14 +114,14 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
     public static <T> CloseableIterator<T> limit(final Iterator<T> iterator, int maxElements) {
 
         Iterator<T> limitedNotCloseable = Iterators.limit(iterator, maxElements);
-        Closeable closeable = iterator instanceof Closeable ? (Closeable) iterator : null;
+        Closeable closeable = iterator instanceof Closeable c ? c : null;
         return new CloseableIteratorAdapter<>(limitedNotCloseable, closeable);
     }
 
     public static void close(Iterator<?> iterator) {
-        if (iterator instanceof Closeable) {
+        if (iterator instanceof Closeable closeable) {
             try {
-                Closeables.close((Closeable) iterator, false);
+                Closeables.close(closeable, false);
             } catch (IOException e) {
                 LOGGER.log(Level.FINE, "Ignoring exception on CloseableIteratorAdapter.close()", e);
             }

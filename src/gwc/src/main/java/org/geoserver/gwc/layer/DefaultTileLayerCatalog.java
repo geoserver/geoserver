@@ -69,9 +69,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
                 private AtomicInteger threadIdSeq = new AtomicInteger();
 
                 public @Override ForkJoinWorkerThread newThread(ForkJoinPool pool) {
-                    String name = String.format(
-                            "ForkJoinPool.%s-%d",
-                            DefaultTileLayerCatalog.class.getSimpleName(), threadIdSeq.incrementAndGet());
+                    String name = "ForkJoinPool.%s-%d"
+                            .formatted(DefaultTileLayerCatalog.class.getSimpleName(), threadIdSeq.incrementAndGet());
                     ForkJoinWorkerThread thread = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
                     thread.setName(name);
                     return thread;
@@ -226,7 +225,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         } finally {
             pool.shutdownNow();
         }
-        LOGGER.config(String.format("Loaded %,d tile layers in %s", layersById.size(), sw.stop()));
+        LOGGER.config("Loaded %,d tile layers in %s".formatted(layersById.size(), sw.stop()));
         this.initialized = true;
     }
 

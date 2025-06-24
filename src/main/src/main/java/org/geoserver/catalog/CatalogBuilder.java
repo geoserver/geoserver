@@ -533,12 +533,11 @@ public class CatalogBuilder {
      */
     ReferencedEnvelope getNativeBounds(ResourceInfo rinfo, Object data) throws IOException {
         ReferencedEnvelope bounds = null;
-        if (rinfo instanceof FeatureTypeInfo) {
-            FeatureTypeInfo ftinfo = (FeatureTypeInfo) rinfo;
+        if (rinfo instanceof FeatureTypeInfo ftinfo) {
 
             // bounds
-            if (data instanceof FeatureSource) {
-                bounds = ((FeatureSource) data).getBounds();
+            if (data instanceof FeatureSource source) {
+                bounds = source.getBounds();
             } else {
                 bounds = ftinfo.getFeatureSource(null, null).getBounds();
             }
@@ -561,13 +560,10 @@ public class CatalogBuilder {
                 }
             }
 
-        } else if (rinfo instanceof CoverageInfo) {
-            // the coverage bounds computation path is a bit more linear, the
-            // readers always return the bounds and in the proper CRS (afaik)
-            CoverageInfo cinfo = (CoverageInfo) rinfo;
+        } else if (rinfo instanceof CoverageInfo cinfo) {
             GridCoverage2DReader reader = null;
-            if (data instanceof GridCoverage2DReader) {
-                reader = (GridCoverage2DReader) data;
+            if (data instanceof GridCoverage2DReader dReader) {
+                reader = dReader;
             } else {
                 reader = (GridCoverage2DReader) cinfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
             }
@@ -605,8 +601,7 @@ public class CatalogBuilder {
      */
     public CoordinateReferenceSystem getNativeCRS(ResourceInfo rinfo) throws Exception {
         CoordinateReferenceSystem nativeCRS = null;
-        if (rinfo instanceof FeatureTypeInfo) {
-            FeatureTypeInfo ftinfo = (FeatureTypeInfo) rinfo;
+        if (rinfo instanceof FeatureTypeInfo ftinfo) {
             nativeCRS = ftinfo.getStore()
                     .getDataStore(null)
                     .getFeatureSource(rinfo.getQualifiedNativeName())
@@ -1088,9 +1083,9 @@ public class CatalogBuilder {
         } else {
             rebuilt = buildCoverage(nativeName);
         }
-        if (ci instanceof CoverageInfoImpl) {
+        if (ci instanceof CoverageInfoImpl impl) {
             // null safe path, if ci was loaded via XStream
-            ((CoverageInfoImpl) ci).setDimensions(rebuilt.getDimensions());
+            impl.setDimensions(rebuilt.getDimensions());
         } else {
             ci.getDimensions().clear();
             ci.getDimensions().addAll(rebuilt.getDimensions());
@@ -1635,8 +1630,8 @@ public class CatalogBuilder {
         }
 
         for (PublishedInfo p : groupInfo.getLayers()) {
-            if (p instanceof LayerInfo) {
-                attach((LayerInfo) p);
+            if (p instanceof LayerInfo info) {
+                attach(info);
             } else {
                 attach((LayerGroupInfo) p);
             }

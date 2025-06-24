@@ -38,8 +38,8 @@ public class EMFLogger extends RequestObjectLogger {
 
             // skip empty properties
             if (value == null
-                    || (value instanceof Collection && ((Collection) value).isEmpty())
-                    || (value instanceof Map && ((Map) value).isEmpty())) {
+                    || (value instanceof Collection collection && collection.isEmpty())
+                    || (value instanceof Map map && map.isEmpty())) {
                 continue;
             }
 
@@ -51,8 +51,8 @@ public class EMFLogger extends RequestObjectLogger {
                 log.append(property.getName());
                 log.append(":");
                 log(value, level + 1, log);
-            } else if (value instanceof Collection) {
-                log(property.getName(), (Collection) value, level + 1, log);
+            } else if (value instanceof Collection collection) {
+                log(property.getName(), collection, level + 1, log);
             } else {
                 log.append(property.getName());
                 log.append(" = " + value);
@@ -68,8 +68,8 @@ public class EMFLogger extends RequestObjectLogger {
                 log.append(pc);
                 log.append(":");
                 log(o, level, log);
-            } else if (o instanceof Collection) {
-                log(pc, (Collection) o, level + 1, log);
+            } else if (o instanceof Collection collection1) {
+                log(pc, collection1, level + 1, log);
             } else {
                 log.append(pc).append(" = " + o);
             }

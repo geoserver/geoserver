@@ -36,16 +36,13 @@ public class LayerLegend {
         this.layerName = layer.getName();
 
         Renderer renderer = StyleEncoder.effectiveRenderer(layer);
-        if (renderer instanceof SimpleRenderer) {
-            SimpleRenderer simpleRenderer = (SimpleRenderer) renderer;
+        if (renderer instanceof SimpleRenderer simpleRenderer) {
             legend.add(new LegendEntry(simpleRenderer.getLabel(), simpleRenderer.getSymbol()));
-        } else if (renderer instanceof ClassBreaksRenderer) {
-            ClassBreaksRenderer classBreaksRenderer = (ClassBreaksRenderer) renderer;
+        } else if (renderer instanceof ClassBreaksRenderer classBreaksRenderer) {
             for (ClassBreakInfo classBreakInfo : classBreaksRenderer.getClassBreakInfos()) {
                 legend.add(new LegendEntry(classBreakInfo.getLabel(), classBreakInfo.getSymbol()));
             }
-        } else if (renderer instanceof UniqueValueRenderer) {
-            UniqueValueRenderer uniqueValueRenderer = (UniqueValueRenderer) renderer;
+        } else if (renderer instanceof UniqueValueRenderer uniqueValueRenderer) {
             for (UniqueValueInfo uniqueValueInfo : uniqueValueRenderer.getUniqueValueInfos()) {
                 legend.add(new LegendEntry(uniqueValueInfo.getLabel(), uniqueValueInfo.getSymbol()));
             }

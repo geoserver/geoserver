@@ -11,6 +11,7 @@ import static org.geoserver.web.demo.PreviewLayerProvider.NAME;
 import static org.geoserver.web.demo.PreviewLayerProvider.TITLE;
 import static org.geoserver.web.demo.PreviewLayerProvider.TYPE;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,6 +53,7 @@ import org.geoserver.wms.GetMapOutputFormat;
 /** Shows a paged list of the available layers and points to previews in various formats */
 public class MapPreviewPage extends GeoServerBasePage {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private static final PackageResourceReference JS_FILE =
@@ -72,6 +74,7 @@ public class MapPreviewPage extends GeoServerBasePage {
         // build the table
         table = new GeoServerTablePanel<>("table", provider) {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

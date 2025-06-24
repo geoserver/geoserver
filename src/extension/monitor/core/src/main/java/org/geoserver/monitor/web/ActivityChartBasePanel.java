@@ -6,6 +6,7 @@
 package org.geoserver.monitor.web;
 
 import java.awt.Color;
+import java.io.Serial;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import org.jfree.data.xy.XYDataset;
 
 public abstract class ActivityChartBasePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -2436197080363116473L;
 
     Date from;
@@ -62,6 +64,7 @@ public abstract class ActivityChartBasePanel extends Panel {
         form.add(new DateField("to", new PropertyModel<>(this, "to"), true));
 
         form.add(new AjaxButton("refresh") {
+            @Serial
             private static final long serialVersionUID = -6954067333262732996L;
 
             @Override

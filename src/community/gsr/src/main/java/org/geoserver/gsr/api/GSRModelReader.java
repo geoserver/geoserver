@@ -63,9 +63,8 @@ public class GSRModelReader extends BaseMessageConverter<GSRModel> {
         IOUtils.copy(inputMessage.getBody(), bout);
         JSON json = JSONSerializer.toJSON(new String(bout.toByteArray()));
         if (FeatureArray.class.isAssignableFrom(clazz)) {
-            if (json instanceof JSONArray) {
+            if (json instanceof JSONArray jsonArray) {
                 List<Feature> features = new ArrayList<>();
-                JSONArray jsonArray = (JSONArray) json;
                 for (Object o : jsonArray) {
                     try {
                         features.add(FeatureEncoder.fromJson((JSONObject) o));

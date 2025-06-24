@@ -4,12 +4,14 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import org.geoserver.catalog.Info;
 
 public class InfoIdentity implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -1756381133395681156L;
 
     private Class<? extends Info> clazz;

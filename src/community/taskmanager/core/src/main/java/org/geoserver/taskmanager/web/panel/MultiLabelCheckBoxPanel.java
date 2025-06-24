@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -13,6 +14,7 @@ import org.apache.wicket.model.IModel;
 
 public class MultiLabelCheckBoxPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 3765410954951956161L;
 
     public MultiLabelCheckBoxPanel(

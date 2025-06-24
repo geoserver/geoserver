@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -29,6 +30,7 @@ import org.locationtech.jts.geom.Envelope;
  */
 public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
 
+    @Serial
     private static final long serialVersionUID = -2975427786330616705L;
 
     protected Label minXLabel, minYLabel, maxXLabel, maxYLabel, minZLabel, maxZLabel;
@@ -172,9 +174,9 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
             this.maxY = e.getMaxY();
             this.crs = e.getCoordinateReferenceSystem();
             if (is3D()) {
-                if (e instanceof ReferencedEnvelope3D) {
-                    this.minZ = ((ReferencedEnvelope3D) e).getMinZ();
-                    this.maxZ = ((ReferencedEnvelope3D) e).getMaxZ();
+                if (e instanceof ReferencedEnvelope3D envelope3D) {
+                    this.minZ = envelope3D.getMinZ();
+                    this.maxZ = envelope3D.getMaxZ();
                 } else {
                     this.minZ = Double.NaN;
                     this.maxZ = Double.NaN;

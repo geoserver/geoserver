@@ -108,8 +108,7 @@ public class PaletteManager {
                         final ImageReader reader = (ImageReader) it.next();
                         reader.setInput(iis);
                         final ColorModel cm = reader.getImageTypes(0).next().getColorModel();
-                        if (cm instanceof IndexColorModel) {
-                            final IndexColorModel icm = (IndexColorModel) cm;
+                        if (cm instanceof IndexColorModel icm) {
                             paletteCache.put(name, new PaletteCacheEntry(resource, icm));
                             return icm;
                         }

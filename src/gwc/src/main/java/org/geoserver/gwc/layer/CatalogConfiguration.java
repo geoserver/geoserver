@@ -163,8 +163,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
             // org.geoserver.gwc.layer.CatalogConfigurationLayerConformanceTest.testModifyCallRequiredToChangeInfoFromGetInfo()
             return layerNames.stream()
                     .map(lazyLayerFetch)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
+                    .flatMap(Optional::stream)
                     .collect(Collectors.toList());
         } finally {
             lock.releaseReadLock();
@@ -241,10 +240,9 @@ public class CatalogConfiguration implements TileLayerConfiguration {
                 // yup this is a virtual service request, so we need to filter layers per workspace
                 WorkspaceInfo layerWorkspace;
                 PublishedInfo publishedInfo = layer.getPublishedInfo();
-                if (publishedInfo instanceof LayerInfo) {
+                if (publishedInfo instanceof LayerInfo info) {
                     // this is a normal layer
-                    layerWorkspace =
-                            ((LayerInfo) publishedInfo).getResource().getStore().getWorkspace();
+                    layerWorkspace = info.getResource().getStore().getWorkspace();
                 } else {
                     // this is a layer group
                     layerWorkspace = ((LayerGroupInfo) publishedInfo).getWorkspace();
@@ -427,7 +425,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         GeoServerTileLayerInfo info = tileLayer.getInfo();
 
         PublishedInfo publishedInfo = tileLayer.getPublishedInfo();
-        if (publishedInfo instanceof LayerInfo && !isLayerExposable((LayerInfo) publishedInfo)) {
+        if (publishedInfo instanceof LayerInfo layerInfo && !isLayerExposable(layerInfo)) {
             LOGGER.warning("Requested layer " + publishedInfo.getName() + " has no geometry. Won't create TileLayer");
             return;
         }

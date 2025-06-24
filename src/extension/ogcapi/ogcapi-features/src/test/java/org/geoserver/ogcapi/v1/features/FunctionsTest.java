@@ -65,15 +65,17 @@ public class FunctionsTest extends FeaturesTestSupport {
         String normalizedResponse = response.getContentAsString().replaceAll("\r\n", "\n");
         assertThat(
                 normalizedResponse,
-                Matchers.containsString("<h3>Area</h3>\n"
-                        + "         <ul>\n"
-                        + "         <li>Returns: number </li>\n"
-                        + "         <li>Arguments:\n"
-                        + "         <table class=\"function-table\">\n"
-                        + "         <tr><th>Name</th><th>Title</th><th>Type</th></tr>\n"
-                        + "            <tr><td>geometry</td><td>geometry</td><td>geometry </td></tr>\n"
-                        + "         </table>\n"
-                        + "         </li>\n"
-                        + "         </ul>"));
+                Matchers.containsString(
+                        """
+                        <h3>Area</h3>
+                                 <ul>
+                                 <li>Returns: number </li>
+                                 <li>Arguments:
+                                 <table class="function-table">
+                                 <tr><th>Name</th><th>Title</th><th>Type</th></tr>
+                                    <tr><td>geometry</td><td>geometry</td><td>geometry </td></tr>
+                                 </table>
+                                 </li>
+                                 </ul>"""));
     }
 }

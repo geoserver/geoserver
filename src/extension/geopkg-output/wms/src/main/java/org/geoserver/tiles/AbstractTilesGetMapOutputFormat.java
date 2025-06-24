@@ -547,6 +547,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return PNG_MIME_TYPE;
     }
 
+    @SuppressWarnings("PMD.CloseResource") // FileBackedRawMap rawMap
     protected byte[] toBytes(WebMap map) throws IOException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
@@ -554,8 +555,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
             RenderedImageMapResponse response =
                     JPEG_MIME_TYPE.equals(map.getMimeType()) ? new JPEGMapResponse(wms) : new PNGMapResponse(wms);
             response.write(map, bout, null);
-        } else if (map instanceof RawMap rawMap1) {
-            rawMap1.writeTo(bout);
+        } else if (map instanceof RawMap rawMap) {
+            rawMap.writeTo(bout);
         } else if (map instanceof FileBackedRawMap rawMap) {
             rawMap.writeTo(bout);
         }

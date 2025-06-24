@@ -253,6 +253,7 @@ class RasterDirectDownloader {
         return null;
     }
 
+    @SuppressWarnings("PMD.CloseResource") // FileImageInputStreamExtImpl impl
     private File getSourceFile(RenderedImage image) {
         RenderedOp read = getImageRead(image);
         if (read == null) {

@@ -54,12 +54,12 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
         if (a == null) return b;
         if (b == null) return a;
 
-        if (a instanceof VectorAccessLimits limits3 && b instanceof VectorAccessLimits limits3) {
-            return intersection(limits3, limits3);
-        } else if (a instanceof CoverageAccessLimits limits2 && b instanceof CoverageAccessLimits limits2) {
-            return intersection(limits2, limits2);
-        } else if (a instanceof WMSAccessLimits limits && b instanceof WMSAccessLimits limits1) {
-            return intersection(limits, limits1);
+        if (a instanceof VectorAccessLimits limitsa && b instanceof VectorAccessLimits limitsb) {
+            return intersection(limitsa, limitsb);
+        } else if (a instanceof CoverageAccessLimits limitsa && b instanceof CoverageAccessLimits limitsb) {
+            return intersection(limitsa, limitsb);
+        } else if (a instanceof WMSAccessLimits limitsa && b instanceof WMSAccessLimits limitsb) {
+            return intersection(limitsa, limitsb);
         }
 
         throw new IllegalArgumentException(

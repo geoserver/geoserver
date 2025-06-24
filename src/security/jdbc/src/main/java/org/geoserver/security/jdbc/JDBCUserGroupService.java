@@ -33,7 +33,7 @@ import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.impl.RoleCalculator;
 import org.geoserver.security.impl.Util;
-import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
+import org.geoserver.security.jdbc.config.JDBCUserGroupServiceConfig;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.PasswordEncodingType;
 import org.springframework.dao.DataAccessException;
@@ -103,7 +103,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
         passwordValidatorName = ((SecurityUserGroupServiceConfig) config).getPasswordPolicyName();
         initializeDSFromConfig(config);
 
-        if (config instanceof JDBCSecurityServiceConfig jdbcConfig) {
+        if (config instanceof JDBCUserGroupServiceConfig jdbcConfig) {
 
             String fileNameDML = jdbcConfig.getPropertyFileNameDML();
             Resource file = checkORCreateJDBCPropertyFile(fileNameDML, getConfigRoot(), DEFAULT_DML_FILE);

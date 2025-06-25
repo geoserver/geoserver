@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * This class holds the template metadata, such as the name, the identifier, the template file extension, workspace and
+ * This class holds the schema metadata, such as the name, the identifier, the schema file extension, workspace and
  * featureType.
  */
 public class SchemaInfo implements Serializable, Comparable<SchemaInfo> {
@@ -97,8 +97,8 @@ public class SchemaInfo implements Serializable, Comparable<SchemaInfo> {
     }
 
     /**
-     * Return the full name of the Template file. By full name is meant the templateName preceded by the workspace name
-     * and featureTypeInfo name if defined for this instance.
+     * Return the full name of the schema file. By full name is meant the schemaName preceded by the workspace name and
+     * featureTypeInfo name if defined for this instance.
      *
      * @return
      */

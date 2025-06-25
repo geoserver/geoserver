@@ -1,3 +1,7 @@
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.featurestemplating.response;
 
 import com.google.common.base.Charsets;
@@ -53,7 +57,7 @@ public abstract class SchemaComplexTestSupport extends AbstractAppSchemaTestSupp
         info.setWorkspace(workspace);
         info.setFeatureType(ft.getNativeName());
         SchemaInfoDAO.get().saveOrUpdate(info);
-        SchemaFileManager.get().saveTemplateFile(info, rawSchema);
+        SchemaFileManager.get().saveSchemaFile(info, rawSchema);
         // setup the rule
         SchemaRule rule = new SchemaRule();
         rule.setSchemaName(info.getFullName());

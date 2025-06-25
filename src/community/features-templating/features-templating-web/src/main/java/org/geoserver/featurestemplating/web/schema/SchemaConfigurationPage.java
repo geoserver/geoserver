@@ -33,7 +33,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 
-// TODO WICKET8 - Verify this page works OK
 public class SchemaConfigurationPage extends GeoServerSecuredPage {
 
     protected AjaxTabbedPanel<ITab> schemaPanel;
@@ -56,13 +55,6 @@ public class SchemaConfigurationPage extends GeoServerSecuredPage {
     private void initUI(IModel<SchemaInfo> model) {
         form = new Form<>("schemaForm", model);
         List<ITab> tabs = new ArrayList<>();
-        //        PanelCachingTab previewTab = new PanelCachingTab(new AbstractTab(new Model<>("Preview")) {
-        //            @Override
-        //            public Panel getPanel(String id) {
-        //                previewPanel = new TemplatePreviewPanel(id, SchemaConfigurationPage.this);
-        //                return previewPanel;
-        //            }
-        //        });
         PanelCachingTab dataTab = new PanelCachingTab(new AbstractTab(new Model<>("Data")) {
             @Override
             public Panel getPanel(String id) {

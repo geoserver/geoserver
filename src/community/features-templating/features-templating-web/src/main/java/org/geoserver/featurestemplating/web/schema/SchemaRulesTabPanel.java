@@ -35,7 +35,7 @@ public class SchemaRulesTabPanel extends PublishedEditTabPanel<LayerInfo> {
         }
         SchemaInfoDAO infoDao = SchemaInfoDAO.get();
         SchemaTypeTemplateDAOListener listener = new SchemaTypeTemplateDAOListener((FeatureTypeInfo) ri);
-        infoDao.addTemplateListener(listener);
+        infoDao.addSchemaListener(listener);
         PropertyModel<ResourceInfo> resource = new PropertyModel<>(model, "resource");
         PropertyModel<MetadataMap> metadata = new PropertyModel<>(resource, "metadata");
         SchemaRulesTablePanel tablePanel = new SchemaRulesTablePanel("schemaRules", metadata);

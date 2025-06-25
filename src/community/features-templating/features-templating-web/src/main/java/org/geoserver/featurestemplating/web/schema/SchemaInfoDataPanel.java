@@ -41,7 +41,6 @@ import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
-// TODO WICKET8 - Verify this page works OK
 public class SchemaInfoDataPanel extends Panel {
 
     static final Logger LOGGER = Logging.getLogger(SchemaInfoDataPanel.class);

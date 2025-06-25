@@ -35,7 +35,6 @@ import org.geoserver.util.XCQL;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.filter.text.cql2.CQLException;
 
-// TODO WICKET8 - Verify this page works OK
 public class SchemaRuleConfigurationPanel extends Panel {
 
     CompoundPropertyModel<SchemaRule> schemaRuleModel;

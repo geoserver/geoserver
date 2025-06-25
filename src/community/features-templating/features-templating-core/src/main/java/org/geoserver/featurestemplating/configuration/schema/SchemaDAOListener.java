@@ -4,18 +4,18 @@
  */
 package org.geoserver.featurestemplating.configuration.schema;
 
-/** Base interface for listeners that can handle event issues by {@link TemplateInfoDAO} */
+/** Base interface for listeners that can handle event issues by {@link SchemaInfoDAO} */
 public interface SchemaDAOListener {
 
     /**
-     * Handle a TemplateInfo delete event.
+     * Handle a SchemaInfo delete event.
      *
      * @param deleteEvent the delete event.
      */
     void handleDeleteEvent(SchemaInfoEvent deleteEvent);
 
     /**
-     * Handle a TemplateInfo update event.
+     * Handle a SchemaInfo update event.
      *
      * @param updateEvent
      */

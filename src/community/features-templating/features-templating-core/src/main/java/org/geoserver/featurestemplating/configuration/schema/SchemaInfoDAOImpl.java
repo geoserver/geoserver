@@ -33,7 +33,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 
-/** A template info DAO that use a property file for persistence. */
+/** A schema info DAO that uses a property file for persistence. */
 public class SchemaInfoDAOImpl implements SchemaInfoDAO {
 
     private SortedSet<SchemaInfo> schemaDataSet;
@@ -67,43 +67,43 @@ public class SchemaInfoDAOImpl implements SchemaInfoDAO {
     }
 
     @Override
-    public SchemaInfo saveOrUpdate(SchemaInfo templateData) {
+    public SchemaInfo saveOrUpdate(SchemaInfo schemaData) {
         reloadIfNeeded();
         boolean isUpdate =
-                schemaDataSet.stream().anyMatch(ti -> ti.getIdentifier().equals(templateData.getIdentifier()));
+                schemaDataSet.stream().anyMatch(ti -> ti.getIdentifier().equals(schemaData.getIdentifier()));
         if (isUpdate) {
-            fireTemplateUpdateEvent(templateData);
-            schemaDataSet.removeIf(ti -> ti.getIdentifier().equals(templateData.getIdentifier()));
+            fireSchemaUpdateEvent(schemaData);
+            schemaDataSet.removeIf(ti -> ti.getIdentifier().equals(schemaData.getIdentifier()));
         }
 
-        schemaDataSet.add(templateData);
+        schemaDataSet.add(schemaData);
         storeProperties();
-        return templateData;
+        return schemaData;
     }
 
     @Override
-    public void delete(SchemaInfo templateData) {
+    public void delete(SchemaInfo schemaData) {
         reloadIfNeeded();
-        schemaDataSet.remove(templateData);
-        fireSchemaInfoRemoveEvent(templateData);
+        schemaDataSet.remove(schemaData);
+        fireSchemaInfoRemoveEvent(schemaData);
         storeProperties();
     }
 
     @Override
-    public void delete(List<SchemaInfo> SchemaInfos) {
+    public void delete(List<SchemaInfo> schemaInfos) {
         reloadIfNeeded();
-        schemaDataSet.removeAll(SchemaInfos);
+        schemaDataSet.removeAll(schemaInfos);
         storeProperties();
-        for (SchemaInfo ti : SchemaInfos) fireSchemaInfoRemoveEvent(ti);
+        for (SchemaInfo ti : schemaInfos) fireSchemaInfoRemoveEvent(ti);
     }
 
     @Override
     public void deleteAll() {
         reloadIfNeeded();
-        Set<SchemaInfo> SchemaInfos = schemaDataSet;
+        Set<SchemaInfo> schemaInfos = schemaDataSet;
         schemaDataSet = Collections.synchronizedSortedSet(new TreeSet<>());
         storeProperties();
-        for (SchemaInfo ti : SchemaInfos) fireSchemaInfoRemoveEvent(ti);
+        for (SchemaInfo ti : schemaInfos) fireSchemaInfoRemoveEvent(ti);
     }
 
     @Override
@@ -139,9 +139,9 @@ public class SchemaInfoDAOImpl implements SchemaInfoDAO {
                 .collect(Collectors.toList());
     }
 
-    private void fireTemplateUpdateEvent(SchemaInfo SchemaInfo) {
+    private void fireSchemaUpdateEvent(SchemaInfo schemaInfo) {
         for (SchemaDAOListener listener : listeners) {
-            listener.handleUpdateEvent(new SchemaInfoEvent(SchemaInfo));
+            listener.handleUpdateEvent(new SchemaInfoEvent(schemaInfo));
         }
     }
 
@@ -152,7 +152,7 @@ public class SchemaInfoDAOImpl implements SchemaInfoDAO {
     }
 
     @Override
-    public void addTemplateListener(SchemaDAOListener listener) {
+    public void addSchemaListener(SchemaDAOListener listener) {
         this.listeners.add(listener);
     }
 

@@ -4,7 +4,7 @@
  */
 package org.geoserver.featurestemplating.configuration.schema;
 
-/** A TemplateInfo event. Simply hold the TemplateInfo object affected by the event. */
+/** A SchemaInfo event. Simply holds the SchemaInfo object affected by the event. */
 public class SchemaInfoEvent {
 
     private SchemaInfo ti;

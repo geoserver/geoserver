@@ -24,7 +24,7 @@ public class SchemaService {
      * @param rawTemplate the raw Template to save or update.
      */
     public void saveOrUpdate(SchemaInfo schemaInfo, String rawTemplate) {
-        schemaFileManager.saveTemplateFile(schemaInfo, rawTemplate);
+        schemaFileManager.saveSchemaFile(schemaInfo, rawTemplate);
         SchemaInfo current = schemaInfoDAO.findById(schemaInfo.getIdentifier());
         if (current != null && !current.getFullName().equals(schemaInfo.getFullName())) {
             if (schemaFileManager.delete(current)) {

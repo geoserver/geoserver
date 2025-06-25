@@ -85,7 +85,7 @@ public class SchemaInfoPage extends GeoServerSecuredPage {
         add(tablePanel);
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
-        SchemaInfoDAO.get().addTemplateListener(new FileSchemaDAOListener());
+        SchemaInfoDAO.get().addSchemaListener(new FileSchemaDAOListener());
     }
 
     private void addSchemaDefinitionSection() {

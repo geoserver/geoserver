@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.ows.Request;
 import org.geoserver.util.XCQL;
 import org.geotools.api.filter.Filter;
@@ -70,14 +71,24 @@ public class TemplateRule implements Serializable {
      */
     public boolean applyRule(Request request) {
         boolean result = true;
-        if (outputFormat != null) result = matchOutputFormat(getOutputFormat(request));
-
+        if (outputFormat != null) {
+            result = matchOutputFormatCommaSeparated(getOutputFormat(request));
+        }
         if (result && cqlFilter != null) {
             result = evaluateCQLFilter(cqlFilter, request);
         }
         if (result && profileFilter != null) result = evaluateCQLFilter(profileFilter, request);
 
         return result;
+    }
+
+    private boolean matchOutputFormatCommaSeparated(String outputFormatExpression) {
+        if (StringUtils.isBlank(outputFormatExpression)) return false;
+        String[] outputFormats = outputFormatExpression.split(",");
+        for (String outputFormat : outputFormats) {
+            if (matchOutputFormat(outputFormat.trim())) return true;
+        }
+        return false;
     }
 
     private boolean evaluateCQLFilter(String filter, Request request) {
@@ -177,6 +188,7 @@ public class TemplateRule implements Serializable {
             outputFormat = request.getKvp() != null ? (String) request.getKvp().get("f") : null;
         if (outputFormat == null)
             outputFormat = request.getKvp() != null ? (String) request.getKvp().get("INFO_FORMAT") : null;
+        if (outputFormat == null) outputFormat = request.getHttpRequest().getHeader("accept");
         return outputFormat;
     }
 

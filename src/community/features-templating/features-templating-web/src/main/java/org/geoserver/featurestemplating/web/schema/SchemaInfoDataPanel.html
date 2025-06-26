@@ -1,0 +1,52 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+    <title>
+        <wicket:message key="title">Schema data panel</wicket:message>
+    </title>
+</head>
+<body>
+<wicket:panel>
+    <div class="clearfix pt-4">
+        <fieldset class="float-start features-templating-info-fieldset">
+            <legend>
+                <span><wicket:message key="schemaInfoData">Schema Info</wicket:message></span>
+            </legend>
+            <ul>
+                <li>
+                    <label for="schemaName"><wicket:message key="schemaName"></wicket:message></label>
+                    <input id="schemaName" wicket:id="schemaName" type="text" class="text" />
+                </li>
+                <li>
+                    <label for="extension"><wicket:message key="extension"></wicket:message></label>
+                    <select wicket:id="extension" id="extension" />
+                </li>
+                <li>
+                    <label for="workspace"><wicket:message key="workspace"></wicket:message></label>
+                    <select wicket:id="workspace" id="workspace" />
+                </li>
+
+                <li>
+                    <label for="featureTypeInfo"><wicket:message key="featureTypeInfo"></wicket:message></label>
+                    <select wicket:id="featureTypeInfo" id="featureTypeInfo" />
+                </li>
+
+                <div class="pt-4">
+                    <fieldset class="mb-0">
+                        <legend>
+                            <span><wicket:message key="schemaContentSpan">Schema definition</wicket:message></span>
+                        </legend>
+                        <ul>
+                            <li>
+                                <label for="filename"><wicket:message key="schemaFile">Schema file</wicket:message></label>
+                                <input type="file" id="filename" wicket:id="filename"/>
+                                <a href="#" wicket:id="upload"><wicket:message key="upload">Upload</wicket:message></a>
+                            </li>
+                        </ul>
+                    </fieldset>
+                </div>
+            </ul>
+        </fieldset>
+    </div>
+</wicket:panel>
+</body>
+</html>

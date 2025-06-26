@@ -36,6 +36,7 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.Filter;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.DefaultServiceInfo;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.dggs.DGGSInstance;
@@ -44,7 +45,7 @@ import org.geotools.dggs.gstore.DGGSResolutionCalculator;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Polygon;
 
@@ -63,6 +64,22 @@ import org.locationtech.jts.geom.Polygon;
 public class ClickHouseDGGSDataStore implements DGGSStore {
 
     static final Logger LOGGER = Logging.getLogger(ClickHouseDGGSDataStore.class);
+
+    /**
+     * Was using {@link org.geotools.referencing.crs.DefaultGeographicCRS#WGS84} before, but then GeoServer would
+     * configure the layer as EPSG:4326, the two CRSs are not exactly the same, and a
+     * {@link org.geotools.data.crs.ForceCoordinateSystemFeatureResults} would be used in the middle, which would
+     * prevent visitor optimizations from kicking in.
+     */
+    static final CoordinateReferenceSystem DEFAULT_CRS;
+
+    static {
+        try {
+            DEFAULT_CRS = CRS.decode("EPSG:4326", true);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to decode default CRS", e);
+        }
+    }
 
     /** The geometry property, in the returned features */
     public static final String GEOMETRY = "geometry";
@@ -154,7 +171,7 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
             tb.minOccurs(0);
             tb.add(ad.getLocalName(), ad.getType().getBinding());
         }
-        tb.add("geometry", Polygon.class, DefaultGeographicCRS.WGS84);
+        tb.add("geometry", Polygon.class, DEFAULT_CRS);
         return tb.buildFeatureType();
     }
 

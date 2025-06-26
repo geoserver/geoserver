@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -36,13 +35,12 @@ import org.geotools.data.complex.feature.type.Types;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Manage the cache and the retrieving for all templates files */
-public class TemplateLoader {
+public class TemplateLoader extends AbstractLoader {
 
     private final LoadingCache<CacheKey, Template> templateCache;
-    private GeoServerDataDirectory dataDirectory;
 
     public TemplateLoader(GeoServerDataDirectory dd) {
-        this.dataDirectory = dd;
+        super(dd);
         templateCache = CacheBuilder.newBuilder()
                 .maximumSize(100)
                 .initialCapacity(1)
@@ -132,43 +130,6 @@ public class TemplateLoader {
         return namespaceSupport;
     }
 
-    GeoServerDataDirectory getDataDirectory() {
-        return dataDirectory;
-    }
-
-    private class CacheKey {
-        private FeatureTypeInfo resource;
-        private String templateIdentifier;
-
-        public CacheKey(FeatureTypeInfo resource, String templateIdentifier) {
-            this.resource = resource;
-            this.templateIdentifier = templateIdentifier;
-        }
-
-        public FeatureTypeInfo getResource() {
-            return resource;
-        }
-
-        public String getTemplateIdentifier() {
-            return templateIdentifier;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof CacheKey)) return false;
-            CacheKey other = (CacheKey) o;
-            if (!other.getTemplateIdentifier().equals(templateIdentifier)) return false;
-            else if (!(other.getResource().getName().equals(resource.getName()))) return false;
-            else if (!(other.getResource().getNamespace().equals(resource.getNamespace()))) return false;
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(resource, templateIdentifier);
-        }
-    }
-
     private void replaceSimplifiedPropertiesIfNeeded(FeatureTypeInfo featureTypeInfo, RootBuilder rootBuilder) {
         try {
             if (featureTypeInfo.getFeatureType() instanceof ComplexFeatureTypeImpl && rootBuilder != null) {
@@ -234,7 +195,7 @@ public class TemplateLoader {
     public void removeAllWithIdentifier(String templateIdentifier) {
         Set<CacheKey> keys = templateCache.asMap().keySet();
         for (CacheKey key : keys) {
-            if (key.getTemplateIdentifier().equals(templateIdentifier)) {
+            if (key.getIdentifier().equals(templateIdentifier)) {
                 templateCache.invalidate(key);
             }
         }
@@ -257,10 +218,10 @@ public class TemplateLoader {
                         + "Exception is: "
                         + e.getMessage());
             }
-            TemplateInfo templateInfo = TemplateInfoDAO.get().findById(key.getTemplateIdentifier());
+            TemplateInfo templateInfo = TemplateInfoDAO.get().findById(key.getIdentifier());
             Resource resource;
             if (templateInfo != null) resource = getTemplateFileManager().getTemplateResource(templateInfo);
-            else resource = getDataDirectory().get(key.getResource(), key.getTemplateIdentifier());
+            else resource = getDataDirectory().get(key.getResource(), key.getIdentifier());
             Template template = new Template(resource, new TemplateReaderConfiguration(namespaces));
             RootBuilder builder = template.getRootBuilder();
             if (builder != null) {

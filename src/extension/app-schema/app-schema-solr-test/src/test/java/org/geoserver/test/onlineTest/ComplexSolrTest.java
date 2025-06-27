@@ -50,10 +50,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 /**
- * This class contains the integration tests (online tests) for the integration between App-Schema
- * and Apache Solr. To activate this tests a fixture file needs to be created in the user home, this
- * follows the usual GeoServer conventions for fixture files. Read the README.rst file for more
- * instructions.
+ * This class contains the integration tests (online tests) for the integration between App-Schema and Apache Solr. To
+ * activate this tests a fixture file needs to be created in the user home, this follows the usual GeoServer conventions
+ * for fixture files. Read the README.rst file for more instructions.
  */
 public final class ComplexSolrTest extends GeoServerSystemTestSupport {
 
@@ -115,8 +114,7 @@ public final class ComplexSolrTest extends GeoServerSystemTestSupport {
         CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.setStore(dataStore);
         builder.setWorkspace(workspace);
-        FeatureTypeInfo featureType =
-                builder.buildFeatureType(new NameImpl(nameSpace.getURI(), "Station"));
+        FeatureTypeInfo featureType = builder.buildFeatureType(new NameImpl(nameSpace.getURI(), "Station"));
         catalog.add(featureType);
         LayerInfo layer = builder.buildLayer(featureType);
         layer.setDefaultStyle(catalog.getStyleByName("point"));
@@ -126,15 +124,13 @@ public final class ComplexSolrTest extends GeoServerSystemTestSupport {
     @Before
     public void beforeTest() {
         // instantiate WFS 1.1 xpath engine
-        WFS11_XPATH_ENGINE =
-                buildXpathEngine(
-                        "wfs", "http://www.opengis.net/wfs",
-                        "gml", "http://www.opengis.net/gml");
+        WFS11_XPATH_ENGINE = buildXpathEngine(
+                "wfs", "http://www.opengis.net/wfs",
+                "gml", "http://www.opengis.net/gml");
         // instantiate WFS 2.0 xpath engine
-        WFS20_XPATH_ENGINE =
-                buildXpathEngine(
-                        "wfs", "http://www.opengis.net/wfs/2.0",
-                        "gml", "http://www.opengis.net/gml/3.2");
+        WFS20_XPATH_ENGINE = buildXpathEngine(
+                "wfs", "http://www.opengis.net/wfs/2.0",
+                "gml", "http://www.opengis.net/gml/3.2");
     }
 
     @AfterClass
@@ -150,9 +146,7 @@ public final class ComplexSolrTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetStationFeatures() throws Exception {
         // perform a WFS GetFeature request returning all the available complex features
-        Document document =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&srsName=EPSG:4326&typename=st:Station");
+        Document document = getAsDOM("wfs?request=GetFeature&version=1.1.0&srsName=EPSG:4326&typename=st:Station");
         // check that we got the expected stations
         checkStationsNumber(2, WFS11_XPATH_ENGINE, document);
         checkStationData(7, "Bologna", "POINT (11.34 44.5)", WFS11_XPATH_ENGINE, document);
@@ -164,9 +158,7 @@ public final class ComplexSolrTest extends GeoServerSystemTestSupport {
         // perform a WFS GetFeature POST request matching only a single station
         String postContent = readResourceContent("/querys/postQuery1.xml");
         Document document =
-                postAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&srsName=EPSG:4326&typename=st:Station",
-                        postContent);
+                postAsDOM("wfs?request=GetFeature&version=1.1.0&srsName=EPSG:4326&typename=st:Station", postContent);
         // check that we got the expected stations
         checkStationsNumber(1, WFS11_XPATH_ENGINE, document);
         checkStationData(7, "Bologna", "POINT (11.34 44.5)", WFS11_XPATH_ENGINE, document);
@@ -176,50 +168,41 @@ public final class ComplexSolrTest extends GeoServerSystemTestSupport {
     @Test
     public void testStationsWmsGetMap() throws Exception {
         // execute the WMS GetMap request that should render all stations
-        MockHttpServletResponse result =
-                getAsServletResponse(
-                        "wms?SERVICE=WMS&VERSION=1.1.1"
-                                + "&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES&LAYERS=st:Station"
-                                + "&SRS=EPSG:4326&WIDTH=768&HEIGHT=768"
-                                + "&BBOX=5,40,15,50");
+        MockHttpServletResponse result = getAsServletResponse("wms?SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES&LAYERS=st:Station"
+                + "&SRS=EPSG:4326&WIDTH=768&HEIGHT=768"
+                + "&BBOX=5,40,15,50");
         assertThat(result.getStatus(), is(200));
         assertThat(result.getContentType(), is("image/png"));
         // check that we got the expected image back
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(getBinary(result)));
-        ImageAssert.assertEquals(
-                URLs.urlToFile(getClass().getResource("/results/wms_result.png")), image, 10);
+        ImageAssert.assertEquals(URLs.urlToFile(getClass().getResource("/results/wms_result.png")), image, 10);
     }
 
     @Test
     public void testStationsWmsGetFeatureInfo() throws Exception {
         // execute a WMS GetFeatureInfo request that should hit the Alessandria station
-        Document document =
-                getAsDOM(
-                        "wms?SERVICE=WMS&VERSION=1.1.1"
-                                + "&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true&QUERY_LAYERS=st:Station"
-                                + "&STYLES&LAYERS=st:Station&INFO_FORMAT=text/xml; subtype=gml/3.1.1"
-                                + "&FEATURE_COUNT=50&X=278&Y=390&SRS=EPSG:4326&WIDTH=768&HEIGHT=768"
-                                + "&BBOX=5,40,15,50");
+        Document document = getAsDOM("wms?SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true&QUERY_LAYERS=st:Station"
+                + "&STYLES&LAYERS=st:Station&INFO_FORMAT=text/xml; subtype=gml/3.1.1"
+                + "&FEATURE_COUNT=50&X=278&Y=390&SRS=EPSG:4326&WIDTH=768&HEIGHT=768"
+                + "&BBOX=5,40,15,50");
         checkStationData(13, "Alessandria", "POINT (8.63 44.92)", WFS11_XPATH_ENGINE, document);
         checkNoStationId(7, WFS11_XPATH_ENGINE, document);
         // execute a WMS GetFeatureInfo request that should hit the Bologna station
-        document =
-                getAsDOM(
-                        "wms?SERVICE=WMS&VERSION=1.1.1"
-                                + "&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true&QUERY_LAYERS=st:Station"
-                                + "&STYLES&LAYERS=st:Station&INFO_FORMAT=text/xml; subtype=gml/3.1.1"
-                                + "&FEATURE_COUNT=50&X=486&Y=422&SRS=EPSG:4326&WIDTH=768&HEIGHT=768"
-                                + "&BBOX=5,40,15,50");
+        document = getAsDOM("wms?SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true&QUERY_LAYERS=st:Station"
+                + "&STYLES&LAYERS=st:Station&INFO_FORMAT=text/xml; subtype=gml/3.1.1"
+                + "&FEATURE_COUNT=50&X=486&Y=422&SRS=EPSG:4326&WIDTH=768&HEIGHT=768"
+                + "&BBOX=5,40,15,50");
         checkStationData(7, "Bologna", "POINT (11.34 44.5)", WFS11_XPATH_ENGINE, document);
         checkNoStationId(13, WFS11_XPATH_ENGINE, document);
     }
 
     /**
-     * Helper method that just checks that a station that matches the provided attributes exists in
-     * the XML response.
+     * Helper method that just checks that a station that matches the provided attributes exists in the XML response.
      */
-    private void checkStationData(
-            Integer id, String name, String position, XpathEngine engine, Document document) {
+    private void checkStationData(Integer id, String name, String position, XpathEngine engine, Document document) {
         checkCount(
                 engine,
                 document,
@@ -230,32 +213,21 @@ public final class ComplexSolrTest extends GeoServerSystemTestSupport {
                         id, name, position));
     }
 
-    /**
-     * Helper method that just checks that there is no station that matches the provided ID in the
-     * XML response.
-     */
+    /** Helper method that just checks that there is no station that matches the provided ID in the XML response. */
     private void checkNoStationId(Integer id, XpathEngine engine, Document document) {
         checkCount(
                 engine,
                 document,
                 0,
-                String.format(
-                        "/wfs:FeatureCollection/gml:featureMembers/st:Station[@gml:id='%s']", id));
+                String.format("/wfs:FeatureCollection/gml:featureMembers/st:Station[@gml:id='%s']", id));
     }
 
-    /**
-     * Helper method that just checks that the XML response contains the expected number of
-     * stations.
-     */
+    /** Helper method that just checks that the XML response contains the expected number of stations. */
     private void checkStationsNumber(int expected, XpathEngine engine, Document document) {
-        checkCount(
-                engine, document, expected, "/wfs:FeatureCollection/gml:featureMembers/st:Station");
+        checkCount(engine, document, expected, "/wfs:FeatureCollection/gml:featureMembers/st:Station");
     }
 
-    /**
-     * Try to load the fixture file associated with this tests, if the load file the tests are
-     * skipped.
-     */
+    /** Try to load the fixture file associated with this tests, if the load file the tests are skipped. */
     private static Properties loadFixture() {
         // get the fixture file path
         File fixFile = getFixtureFile();
@@ -284,15 +256,13 @@ public final class ComplexSolrTest extends GeoServerSystemTestSupport {
             return properties;
         } catch (Exception exception) {
             throw new RuntimeException(
-                    String.format(
-                            "Error reading fixture file '%s'.", fixtureFile.getAbsolutePath()),
-                    exception);
+                    String.format("Error reading fixture file '%s'.", fixtureFile.getAbsolutePath()), exception);
         }
     }
 
     /**
-     * Helper method that builds a XPATH engine using the base namespaces (ow, ogc, etc ...), all
-     * the namespaces available in the GeoServer catalog and the provided extra namespaces.
+     * Helper method that builds a XPATH engine using the base namespaces (ow, ogc, etc ...), all the namespaces
+     * available in the GeoServer catalog and the provided extra namespaces.
      */
     private XpathEngine buildXpathEngine(String... extraNamespaces) {
         // build xpath engine
@@ -322,14 +292,14 @@ public final class ComplexSolrTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Helper method that checks if the provided XPath expression evaluated against the provided XML
-     * document yields the expected number of matches.
+     * Helper method that checks if the provided XPath expression evaluated against the provided XML document yields the
+     * expected number of matches.
      */
-    private void checkCount(
-            XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
+    private void checkCount(XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
         try {
             // evaluate the xpath and compare the number of nodes found
-            assertEquals(expectedCount, xpathEngine.getMatchingNodes(xpath, document).getLength());
+            assertEquals(
+                    expectedCount, xpathEngine.getMatchingNodes(xpath, document).getLength());
         } catch (Exception exception) {
             throw new RuntimeException("Error evaluating xpath.", exception);
         }
@@ -342,8 +312,7 @@ public final class ComplexSolrTest extends GeoServerSystemTestSupport {
             IOUtils.copy(input, output);
             return new String(output.toByteArray());
         } catch (Exception exception) {
-            throw new RuntimeException(
-                    String.format("Error reading resource '%s' content.", resource), exception);
+            throw new RuntimeException(String.format("Error reading resource '%s' content.", resource), exception);
         }
     }
 }

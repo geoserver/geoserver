@@ -32,11 +32,7 @@ public class ResumableUploadPathMapper extends RESTUploadPathMapperImpl {
 
     @Override
     public void mapItemPath(
-            String workspace,
-            String store,
-            Map<String, String> storeParams,
-            StringBuilder itemPath,
-            String sourcePath)
+            String workspace, String store, Map<String, String> storeParams, StringBuilder itemPath, String sourcePath)
             throws IOException {
         super.mapItemPath(workspace, store, storeParams, itemPath, sourcePath);
         if (!canExecute(sourcePath.toString())) {
@@ -66,8 +62,7 @@ public class ResumableUploadPathMapper extends RESTUploadPathMapperImpl {
         Boolean canExecute = false;
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         Resource tmpUploadFolder = loader.get(sourcePath);
-        if (FilenameUtils.normalize(itemPath)
-                .startsWith(FilenameUtils.normalize(tmpUploadFolder.toString()))) {
+        if (FilenameUtils.normalize(itemPath).startsWith(FilenameUtils.normalize(tmpUploadFolder.toString()))) {
             canExecute = true;
         }
         return canExecute;

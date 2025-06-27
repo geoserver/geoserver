@@ -930,8 +930,8 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         DimensionInfo timeDimension = (DimensionInfo) md.get("time");
         assertNotNull(timeDimension);
 
-        assertEquals(timeDimension.getAttribute(), "Year_Date");
-        assertEquals(timeDimension.getPresentation(), DimensionPresentation.DISCRETE_INTERVAL);
+        assertEquals("Year_Date", timeDimension.getAttribute());
+        assertEquals(DimensionPresentation.DISCRETE_INTERVAL, timeDimension.getPresentation());
     }
 
     @Test
@@ -987,7 +987,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.PENDING, context.getState());
         importer.run(context);
         assertEquals(ImportContext.State.COMPLETE, context.getState());
-        assertSame(context.getState(), ImportContext.State.COMPLETE);
+        assertSame(ImportContext.State.COMPLETE, context.getState());
 
         assertFalse(new File(context.getUploadDirectory().getFile(), ".locking").exists());
         assertTrue(new File(context.getUploadDirectory().getFile(), ".clean-me").exists());
@@ -1041,7 +1041,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.PENDING, context.getState());
         importer.run(context);
         assertEquals(ImportContext.State.COMPLETE, context.getState());
-        assertSame(context.getState(), ImportContext.State.COMPLETE);
+        assertSame(ImportContext.State.COMPLETE, context.getState());
 
         assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
     }
@@ -1136,7 +1136,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.PENDING, context.getState());
         importer.run(context);
         assertEquals(ImportContext.State.COMPLETE, context.getState());
-        assertSame(context.getState(), ImportContext.State.COMPLETE);
+        assertSame(ImportContext.State.COMPLETE, context.getState());
 
         assertTrue(new File(context.getUploadDirectory().getFile(), "bad_char.shp").exists());
         assertTrue(new File(context.getUploadDirectory().getFile(), "bad_char.dbf").exists());

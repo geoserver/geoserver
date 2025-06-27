@@ -10,7 +10,7 @@ Linux binary
 Installation
 ------------
 
-#. 确保在系统上安装了Java Runtime Environment（JRE）。GeoServer需要 **Java 8** 或者 **Java 11** 环境, 可从 `OpenJDK <http://openjdk.java.net>`__, `AdoptOpenJDK <https://adoptopenjdk.net>`__ 获得, 或由您的OS发行版提供.
+#. 确保在系统上安装了Java Runtime Environment（JRE）。GeoServer需要 **Java 17** 或者 **Java 21** 环境, 可从 `OpenJDK <http://openjdk.java.net>`__, `Adoptium <https://adoptium.net>`__ 获得, 或由您的OS发行版提供.
 
    .. note:: 有关Java和GeoServer兼容性的更多信息，请参阅 `production_java`.
 

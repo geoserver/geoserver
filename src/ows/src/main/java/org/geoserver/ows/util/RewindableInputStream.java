@@ -356,7 +356,7 @@ public class RewindableInputStream extends InputStream {
 
         // Quickly "skipping" bytes in the buffer by modifying its pointer.
         if (n <= bytesLeft) {
-            fOffset += n;
+            fOffset = (int) (fOffset + n);
 
             return n;
         }

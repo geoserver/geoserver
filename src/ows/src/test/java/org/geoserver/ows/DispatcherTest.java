@@ -12,8 +12,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -275,16 +275,9 @@ public class DispatcherTest {
                 req.setPostRequestElementName("Hello");
                 req.setService("hello");
 
-                try {
-                    Object request = dispatcher.parseRequestXML(null, input, req);
-                    fail("ServiceException expected due to invalid DTD reference:" + request);
-                } catch (SAXException e) {
-                    assertSame(e.getClass(), SAXException.class);
-                    String messsage = e.getMessage();
-                    assertFalse(messsage.contains("invalid.xsd"));
-                } catch (Throwable t) {
-                    fail("ServiceException expected, to test use use of XmlRequestReader.cleanException(t)");
-                }
+                SAXException e = assertThrows(SAXException.class, () -> dispatcher.parseRequestXML(null, input, req));
+                String messsage = e.getMessage();
+                assertFalse(messsage.contains("invalid.xsd"));
             }
         } finally {
             file.delete();
@@ -403,6 +396,11 @@ public class DispatcherTest {
                         }
 
                         @Override
+                        public int read(byte[] b, int off, int len) throws IOException {
+                            return stream.read(b, off, len);
+                        }
+
+                        @Override
                         public int available() {
                             return body.length();
                         }
@@ -475,6 +473,11 @@ public class DispatcherTest {
                         @Override
                         public int read() throws IOException {
                             return stream.read();
+                        }
+
+                        @Override
+                        public int read(byte[] b, int off, int len) throws IOException {
+                            return stream.read(b, off, len);
                         }
 
                         @Override

@@ -29,7 +29,7 @@ public class GeoTIFFSpyReader extends GeoTiffReader {
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] params) throws IOException {
+    public GridCoverage2D read(GeneralParameterValue... params) throws IOException {
         LAST_PARAMS = params;
         return super.read(params);
     }

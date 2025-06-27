@@ -69,7 +69,7 @@ public class GeofencePersisterSerializationTest {
         assertEquals("LIMIT", rule.getAccess());
         assertEquals("DE_USNG_UTM18", rule.getLayer());
         assertEquals("geonode", rule.getWorkspace());
-        assertEquals(1, rule.getPriority().intValue());
+        assertEquals(Long.valueOf(1), rule.getPriority());
 
         assertNotNull(rule.getLimits());
 

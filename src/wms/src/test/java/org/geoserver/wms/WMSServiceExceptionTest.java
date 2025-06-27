@@ -121,7 +121,7 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
     private static void testJson(String content) {
 
         JSONObject jsonException = JSONObject.fromObject(content);
-        assertEquals(jsonException.getString("version"), "1.3.0");
+        assertEquals("1.3.0", jsonException.getString("version"));
         JSONArray exceptions = jsonException.getJSONArray("exceptions");
         JSONObject exception = exceptions.getJSONObject(0);
         assertNotNull(exception);
@@ -129,7 +129,7 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
         assertNotNull(exception.getString("locator"));
         String exceptionText = exception.getString("text");
         assertNotNull(exceptionText);
-        assertEquals(exceptionText, "Could not find layer foobar");
+        assertEquals("Could not find layer foobar", exceptionText);
     }
 
     /** Test protection against cross-site scripting attack in exception response. */

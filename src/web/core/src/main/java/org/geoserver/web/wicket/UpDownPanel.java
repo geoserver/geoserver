@@ -20,7 +20,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
  * @author Andrea Aime - GeoSolutions
  * @param <T>
  */
-public class UpDownPanel<T extends Object> extends Panel {
+public class UpDownPanel<T> extends Panel {
 
     private static final long serialVersionUID = -5964561496724645286L;
     T entry;

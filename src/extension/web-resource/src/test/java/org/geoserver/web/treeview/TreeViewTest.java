@@ -27,7 +27,7 @@ import org.junit.Test;
 /** @author Niels Charlier */
 public class TreeViewTest extends GeoServerWicketTestSupport {
 
-    private class MockNode implements TreeNode<Integer> {
+    private static class MockNode implements TreeNode<Integer> {
         private static final long serialVersionUID = 1012858609071186910L;
 
         protected int data;
@@ -91,8 +91,8 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
         treeView.setSelectedNode(four);
         assertArrayEquals(new Object[] {four}, treeView.getSelectedNodes().toArray());
         // automatic expand
-        assertEquals(true, two.getExpanded().getObject());
-        assertEquals(true, one.getExpanded().getObject());
+        assertTrue(two.getExpanded().getObject());
+        assertTrue(one.getExpanded().getObject());
         // view
         tester.startComponentInPage(treeView);
         assertEquals("4", treeView.getSelectedViews()[0].getId());
@@ -142,7 +142,7 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
 
         // automatic unselect when unexpanding
         tester.executeAjaxEvent("treeView:rootView:1:cbExpand", "click");
-        assertEquals(false, one.getExpanded().getObject());
+        assertFalse(one.getExpanded().getObject());
         assertTrue(treeView.getSelectedNodes().isEmpty());
         assertEquals(0, treeView.getSelectedViews().length);
 

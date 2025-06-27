@@ -76,7 +76,7 @@ public class GeoTiffWriterHelper {
                     GeneralBounds originalEnvelope = reader.getOriginalEnvelope();
                     Bounds envelope = coverage.getEnvelope();
                     if (originalEnvelope.equals(envelope, 1e-9, false)) {
-                        GridCoverage2D test = reader.read(null);
+                        GridCoverage2D test = reader.read();
                         ImageUtilities.disposeImage(test.getRenderedImage());
                         return file;
                     }

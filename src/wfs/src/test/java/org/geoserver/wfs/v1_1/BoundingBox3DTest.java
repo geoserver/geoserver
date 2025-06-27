@@ -47,7 +47,8 @@ public class BoundingBox3DTest extends WFSTestSupport {
         NodeList features = doc.getElementsByTagName("sf:With3D");
         assertEquals(1, features.getLength());
 
-        assertEquals(features.item(0).getAttributes().getNamedItem("gml:id").getNodeValue(), "fid1");
+        assertEquals(
+                "fid1", features.item(0).getAttributes().getNamedItem("gml:id").getNodeValue());
     }
 
     @Test
@@ -58,7 +59,8 @@ public class BoundingBox3DTest extends WFSTestSupport {
         NodeList features = doc.getElementsByTagName("sf:With3D");
         assertEquals(1, features.getLength());
 
-        assertEquals(features.item(0).getAttributes().getNamedItem("gml:id").getNodeValue(), "fid2");
+        assertEquals(
+                "fid2", features.item(0).getAttributes().getNamedItem("gml:id").getNodeValue());
     }
 
     @Test

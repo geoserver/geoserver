@@ -101,7 +101,7 @@ public class MonitorFilterTest {
         assertEquals("78.56.34.12", data.getRemoteAddr());
         assertNull(data.getHttpReferer());
 
-        assertEquals(new String(data.getBody()), "baz");
+        assertEquals("baz", new String(data.getBody()));
         assertEquals(3, data.getBodyContentLength());
         assertEquals(5, data.getResponseLength());
     }

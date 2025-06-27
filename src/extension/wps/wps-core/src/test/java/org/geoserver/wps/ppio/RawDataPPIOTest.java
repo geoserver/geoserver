@@ -46,7 +46,7 @@ public class RawDataPPIOTest {
         return rawData;
     }
 
-    private class TestInputStream extends ByteArrayInputStream {
+    private static class TestInputStream extends ByteArrayInputStream {
         private boolean isClosed = false;
 
         public TestInputStream() {

@@ -65,7 +65,7 @@ public class DisabledServiceCheck implements DispatcherCallback {
             m = OwsUtils.getter(s.getClass(), "serviceInfo", ServiceInfo.class);
         }
         if (m != null) {
-            return (ServiceInfo) m.invoke(s, null);
+            return (ServiceInfo) m.invoke(s);
         }
         return null;
     }

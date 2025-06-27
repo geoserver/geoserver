@@ -157,7 +157,7 @@ public class MetadataLinkEditor extends Panel {
         noMetadata.setVisible(!anyLink);
     }
 
-    public class UrlValidator implements IValidator<String> {
+    public static class UrlValidator implements IValidator<String> {
         private static final long serialVersionUID = 8435726308689930141L;
 
         @Override

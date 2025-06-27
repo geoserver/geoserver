@@ -36,6 +36,7 @@ public class MapMLTCRSSettingsPanel extends Panel {
             metadataMap.put(TiledCRSConstants.TCRS_METADATA_KEY, new ArrayList<>());
         }
 
+        @SuppressWarnings({"rawtypes", "deprecation"})
         MetadataMapModel metadataModel =
                 new MetadataMapModel<>(metadataMap, TiledCRSConstants.TCRS_METADATA_KEY, List.class);
 

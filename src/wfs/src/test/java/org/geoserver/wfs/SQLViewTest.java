@@ -183,8 +183,8 @@ public class SQLViewTest extends WFSTestSupport {
 
         NodeList features = doc.getElementsByTagName("gs:pgeo_view");
         assertEquals(1, features.getLength());
-        assertEquals(features.item(0).getFirstChild().getNodeName(), "gml:name");
-        assertEquals(features.item(0).getFirstChild().getTextContent(), "name-f003");
+        assertEquals("gml:name", features.item(0).getFirstChild().getNodeName());
+        assertEquals("name-f003", features.item(0).getFirstChild().getTextContent());
     }
 
     @Test
@@ -218,7 +218,7 @@ public class SQLViewTest extends WFSTestSupport {
 
         NodeList features = doc.getElementsByTagName("gs:pgeo_view");
         assertEquals(1, features.getLength());
-        assertEquals(features.item(0).getFirstChild().getNodeName(), "gml:name");
-        assertEquals(features.item(0).getFirstChild().getTextContent(), "name-f003");
+        assertEquals("gml:name", features.item(0).getFirstChild().getNodeName());
+        assertEquals("name-f003", features.item(0).getFirstChild().getTextContent());
     }
 }

@@ -211,5 +211,5 @@ public class AdminRulesRestController extends RestBaseController {
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Invalid adminrules ids")
-    private class InvalidRulesIds extends RuntimeException {}
+    private static class InvalidRulesIds extends RuntimeException {}
 }

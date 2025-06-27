@@ -230,8 +230,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                                     + ".0.0&amp;request=GetFeature&amp;"
                                     + "typeName=cite%3ALakes%20%2B%20a%20plus"));
                     assertEquals(
-                            kmlLink.getDefaultModelObjectAsString(),
-                            "http://localhost/context/cite/wms/kml?layers=cite%3ALakes%20%2B%20a%20plus");
+                            "http://localhost/context/cite/wms/kml?layers=cite%3ALakes%20%2B%20a%20plus",
+                            kmlLink.getDefaultModelObjectAsString());
 
                     // check formats
                     RepeatingView wmsFormats = (RepeatingView) c.get("itemProperties:4:component:menu:wms:wmsFormats");

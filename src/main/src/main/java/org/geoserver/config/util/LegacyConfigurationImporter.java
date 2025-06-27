@@ -168,7 +168,7 @@ public class LegacyConfigurationImporter {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends Object> T get(Map map, String key, Class<T> clazz, T def) {
+    protected <T> T get(Map map, String key, Class<T> clazz, T def) {
         Object o = map.get(key);
         if (o == null) {
             if (def != null) {
@@ -193,7 +193,7 @@ public class LegacyConfigurationImporter {
         return (T) o;
     }
 
-    protected <T extends Object> T get(Map map, String key, Class<T> clazz) {
+    protected <T> T get(Map map, String key, Class<T> clazz) {
         return get(map, key, clazz, null);
     }
 }

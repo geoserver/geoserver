@@ -49,11 +49,11 @@ public class LayerAttributesTest extends SLDServiceBaseTest {
             JSONObject json = (JSONObject) getAsJSON(restPath);
             JSONObject layerAttributes = (JSONObject) json.get("Attributes");
             String layer = (String) layerAttributes.get("@layer");
-            assertEquals(layer, "cite:Buildings");
+            assertEquals("cite:Buildings", layer);
             JSONArray attributes = (JSONArray) layerAttributes.get("Attribute");
-            assertEquals(attributes.toArray().length, 3);
-            assertEquals(((JSONObject) attributes.get(0)).get("name"), "FID");
-            assertEquals(((JSONObject) attributes.get(0)).get("type"), "String");
+            assertEquals(3, attributes.toArray().length);
+            assertEquals("FID", ((JSONObject) attributes.get(0)).get("name"));
+            assertEquals("String", ((JSONObject) attributes.get(0)).get("type"));
         }
     }
 

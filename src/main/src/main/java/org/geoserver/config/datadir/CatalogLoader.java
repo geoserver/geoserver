@@ -327,7 +327,7 @@ class CatalogLoader {
     private void addAll(ForkJoinPool executor, Runnable runnable) throws InterruptedException, ExecutionException {
         // By submitting a task to the ForkJoinPool, all Stream.parallel() calls will
         // run in the work-stealing threads of the pool, no need to implement fancy classes like ForkJoinTask
-        Future<?> future = executor.submit(runnable::run);
+        Future<?> future = executor.submit(runnable);
         future.get();
     }
 

@@ -482,7 +482,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         request.setContent(new byte[] {});
         MockHttpServletResponse response = dispatch(request);
         RenderTimeStatistics statistics = (RenderTimeStatistics) request.getAttribute(RenderTimeStatistics.ID);
-        assertEquals(statistics.getLayerNames().size(), 2);
+        assertEquals(2, statistics.getLayerNames().size());
         assertNotNull(statistics.getRenderingTime(0));
         assertNotNull(statistics.getRenderingTime(1));
         checkImage(response);
@@ -496,7 +496,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         request.setMethod("GET");
         MockHttpServletResponse response = dispatch(request);
         RenderTimeStatistics statistics = (RenderTimeStatistics) request.getAttribute(RenderTimeStatistics.ID);
-        assertEquals(statistics.getLayerNames().size(), 1);
+        assertEquals(1, statistics.getLayerNames().size());
         assertNotNull(statistics.getRenderingTime(0));
         checkImage(response);
     }

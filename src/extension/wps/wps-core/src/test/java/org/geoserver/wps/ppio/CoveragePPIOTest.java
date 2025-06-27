@@ -60,7 +60,7 @@ public class CoveragePPIOTest {
     }
 
     private GridCoverage2D getCoverage() throws IOException {
-        coverage = reader.read(null);
+        coverage = reader.read();
         return new GridCoverageFactory()
                 .create(
                         coverage.getName(),

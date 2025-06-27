@@ -132,7 +132,7 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
         JSONObject param = json.getJSONObject("Rule");
         assertEquals(0, param.get("id"));
-        assertEquals(true, param.get("activated"));
+        assertTrue((Boolean) param.get("activated"));
         assertEquals(3, param.get("position"));
         assertEquals("cql_filter", param.get("parameter"));
         assertEquals(1, param.get("remove"));
@@ -145,7 +145,7 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
         JSONObject param = json.getJSONObject("Rule");
         assertEquals(1, param.get("id"));
-        assertEquals(true, param.get("activated"));
+        assertTrue((Boolean) param.get("activated"));
         assertEquals("^.*?(/([^/]+?))/[^/]+$", param.get("match"));
         assertEquals("cql_filter", param.get("parameter"));
         assertEquals(2, param.get("remove"));
@@ -158,7 +158,7 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
         JSONObject param = json.getJSONObject("Rule");
         assertEquals(2, param.get("id"));
-        assertEquals(true, param.get("activated"));
+        assertTrue((Boolean) param.get("activated"));
         assertEquals(4, param.get("position"));
         assertEquals("cql_filter", param.get("parameter"));
         assertEquals("seq='$2'", param.get("transform"));
@@ -216,7 +216,7 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
         // checking it matches the current serialization
         JSONObject param = json.getJSONObject("Rule");
         assertEquals(0, param.get("id"));
-        assertEquals(true, param.get("activated"));
+        assertTrue((Boolean) param.get("activated"));
         assertEquals(5, param.get("position"));
         assertEquals("foobar", param.get("parameter"));
         assertEquals(2, param.get("remove"));

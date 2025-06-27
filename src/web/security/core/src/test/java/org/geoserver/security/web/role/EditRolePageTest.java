@@ -75,7 +75,7 @@ public class EditRolePageTest extends AbstractSecurityWicketTestSupport {
 
         form.submit("save");
         tester.assertRenderedPage(SecurityNamedServiceEditPage.class);
-        tester.assertErrorMessages(new String[0]);
+        tester.assertErrorMessages();
 
         GeoServerRole role = gaService.getRoleByName("ROLE_WFS");
         assertNotNull(role);

@@ -609,7 +609,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         this.optionalParams.clip = clip;
     }
 
-    private class MandatoryParameters implements Cloneable {
+    private static class MandatoryParameters implements Cloneable {
         /** ordered list of requested layers */
         List<MapLayerInfo> layers = Collections.emptyList();
 
@@ -633,7 +633,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         }
     }
 
-    private class OptionalParameters implements Cloneable {
+    private static class OptionalParameters implements Cloneable {
 
         /** the map's background color requested, or the default (white) if not specified */
         Color bgColor = DEFAULT_BG;

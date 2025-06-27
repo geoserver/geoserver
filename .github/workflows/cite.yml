@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
@@ -55,9 +55,6 @@ jobs:
       fail-fast: false  # Prevents other matrix jobs from being canceled if one fails
       matrix:
         suite: [ogcapi-features10, ogcapi-tiles10, wms11, wms13, wmts10, wfs10, wfs11, wfs20, wcs11, geotiff11, gpkg12]
-        include: # Variation for wcs20, which requires Java 17 due to Teamengine 6
-          - suite: wcs20
-            java-version: 17
     steps:
       - name: Checkout repository (shallow clone)
         uses: actions/checkout@v4
@@ -68,7 +65,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.java-version || '11' }}
+          java-version: '17'
 
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5

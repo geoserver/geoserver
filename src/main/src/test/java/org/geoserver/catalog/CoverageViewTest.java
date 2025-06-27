@@ -288,7 +288,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         final ResourcePool resPool = cat.getResourcePool();
         final ReferencedEnvelope bbox = coverageInfo.getLatLonBoundingBox();
         final GridCoverage coverage = resPool.getGridCoverage(coverageInfo, "waterView", bbox, null);
-        assertEquals(coverage.getNumSampleDimensions(), 1);
+        assertEquals(1, coverage.getNumSampleDimensions());
 
         disposeCoverage(coverage);
         final GridCoverageReader reader = resPool.getGridCoverageReader(coverageInfo, null);
@@ -346,7 +346,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         sameViewDifferentName.setName("winds");
         sameViewDifferentName.setCoverageBands(bands);
         assertNotEquals(coverageView, sameViewDifferentName);
-        assertEquals(coverageView.getCompositionType(), defaultComposition);
+        assertEquals(defaultComposition, coverageView.getCompositionType());
 
         assertEquals(coverageView.getBand(1), outputBandV);
         assertEquals(outputBandU, coverageView.getBands("u-component").get(0));
@@ -374,12 +374,12 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             CoverageInfo coverageInfo = cat.getCoverageByName(viewName);
             final ResourcePool rp = cat.getResourcePool();
             GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, viewName, null);
-            solidCoverage = (GridCoverage2D) reader.read(viewName, null);
+            solidCoverage = (GridCoverage2D) reader.read(viewName);
             assertBandNames(solidCoverage, viewName);
             GridCoverageReader rb04 = rp.getGridCoverageReader(cat.getCoverageByName("B04"), "B04", null);
             GridCoverageReader rb08 = rp.getGridCoverageReader(cat.getCoverageByName("B08"), "B08", null);
-            b04Coverage = rb04.read("B04", null);
-            b08Coverage = rb08.read("B08", null);
+            b04Coverage = rb04.read("B04");
+            b08Coverage = rb08.read("B08");
 
             RenderedImage ri = solidCoverage.getRenderedImage();
             Raster raster = ri.getData();
@@ -411,10 +411,10 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         CoverageInfo coverageInfo = cat.getCoverageByName(BGR_VIEW);
         final ResourcePool rp = cat.getResourcePool();
         GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, BGR_VIEW, null);
-        GridCoverage solidCoverage = reader.read(BGR_VIEW, null);
+        GridCoverage solidCoverage = reader.read(BGR_VIEW);
         coverageInfo = cat.getCoverageByName("rgb");
         GridCoverageReader rgbReader = rp.getGridCoverageReader(coverageInfo, "rgb", null);
-        GridCoverage rgbCoverage = rgbReader.read("rgb", null);
+        GridCoverage rgbCoverage = rgbReader.read("rgb");
         try {
             RenderedImage ri = solidCoverage.getRenderedImage();
             Raster raster = solidCoverage.getRenderedImage().getData();
@@ -668,7 +668,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
             // checking the coverage it's not particularly useful as it does not get cut,
             // the bounds are just metadata
-            coverage = reader.read(null);
+            coverage = reader.read();
             assertCoverageResolution(coverage, 1007, 1007);
             Bounds coverageEnvelope = coverage.getEnvelope();
             assertEquals(399960, coverageEnvelope.getMinimum(0), 1);
@@ -711,7 +711,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
             // no point checking the coverage, this is again just metadata, just smoke testing
             // the read will work
-            coverage = reader.read(null);
+            coverage = reader.read();
         } finally {
             getCatalog().remove(info);
             if (coverage != null) {
@@ -750,7 +750,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             gg.setValue(new GridGeometry2D(
                     new GridEnvelope2D(0, 0, 10, 10), new ReferencedEnvelope(0, 1000, 0, 1000, UTM32N)));
             GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
-            coverage = reader.read(new GeneralParameterValue[] {gg});
+            coverage = reader.read(gg);
             assertNull(coverage);
         } finally {
             getCatalog().remove(info);
@@ -826,7 +826,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
             ParameterValue<int[]> bandsValue = AbstractGridFormat.BANDS.createValue();
             bandsValue.setValue(bands);
-            coverage = reader.read(new GeneralParameterValue[] {bandsValue});
+            coverage = reader.read(bandsValue);
             assertNotNull(coverage);
             assertCoverageResolution(coverage, expectedResolutionX, expectedResolutionY);
         } finally {
@@ -915,7 +915,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
         CoverageInfo info = getCatalog().getCoverageByName(BANDS_FLAGS_VIEW);
         GridCoverageReader reader = info.getGridCoverageReader(null, null);
-        GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
+        GridCoverage2D coverage = (GridCoverage2D) reader.read();
         assertEquals(11, coverage.getRenderedImage().getSampleModel().getNumBands());
         coverage.dispose(true);
     }

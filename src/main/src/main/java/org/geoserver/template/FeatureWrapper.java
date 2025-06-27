@@ -506,7 +506,7 @@ public class FeatureWrapper extends BeansWrapper {
          *
          * @see FeatureWrapper#valueToString(Object)
          */
-        private class DeferredValueEntry extends MapEntry<Object, Object> {
+        private static class DeferredValueEntry extends MapEntry<Object, Object> {
             private static final long serialVersionUID = -3919798947862996744L;
 
             public DeferredValueEntry(String key, Object attribute) {

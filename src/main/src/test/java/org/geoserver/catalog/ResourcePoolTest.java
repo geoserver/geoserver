@@ -524,7 +524,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         GridCoverage2D gc = null;
         try {
             // check that we maintain the native info if we don't have any
-            gc = (GridCoverage2D) reader.read(null);
+            gc = (GridCoverage2D) reader.read();
             assertEquals(-9999d, CoverageUtilities.getNoDataProperty(gc).getAsSingleValue(), 0d);
         } finally {
             if (gc != null) {

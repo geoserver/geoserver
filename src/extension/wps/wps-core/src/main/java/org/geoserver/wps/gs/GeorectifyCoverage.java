@@ -254,7 +254,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
             //
             // //
             reader = new GeoTiffReader(warpedFile);
-            GridCoverage2D cov = addLocationProperty(reader.read(null), warpedFile);
+            GridCoverage2D cov = addLocationProperty(reader.read(), warpedFile);
 
             Map<String, Object> result = new HashMap<>();
             result.put("result", cov);

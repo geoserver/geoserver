@@ -119,7 +119,7 @@ public class DataLinkEditor extends Panel {
         noData.setVisible(!anyLink);
     }
 
-    public class UrlValidator implements IValidator<String> {
+    public static class UrlValidator implements IValidator<String> {
 
         @Override
         public void validate(IValidatable<String> validatable) {

@@ -150,7 +150,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
     }
 
     @Override
-    public <T extends Object> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
+    public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         // subclasses should override
         return null;
     }

@@ -274,6 +274,7 @@ public class LayerGroupHelper {
         return layers;
     }
 
+    @SuppressWarnings("FallThrough") // switch intentionally falls through default
     private void allLayersForRendering(
             LayerGroupInfo group, LayerGroupStyle groupStyle, List<LayerInfo> layers, boolean root) {
         switch (group.getMode()) {
@@ -331,6 +332,7 @@ public class LayerGroupHelper {
         return styles;
     }
 
+    @SuppressWarnings("FallThrough") // switch intentionally falls through default
     private void allStylesForRendering(
             LayerGroupInfo group, LayerGroupStyle groupStyle, List<StyleInfo> styles, boolean root) {
         switch (group.getMode()) {

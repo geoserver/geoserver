@@ -318,7 +318,7 @@ Download and try out some of the artifacts from the above location and do a
 quick smoke test that there are no issues. Engage other developers to help
 test on the developer group.
 
-It is important to test the artifacts using the minimum supported version of Java (currently Java 11 in March 2025).
+It is important to test the artifacts using the minimum supported version of Java (currently Java 17 in June 2025).
 
 Publish the Release
 -------------------

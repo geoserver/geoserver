@@ -128,7 +128,7 @@ public class NewUserPageTest extends AbstractUserPageTest {
 
         form.submit("save");
 
-        tester.assertErrorMessages(new String[0]);
+        tester.assertErrorMessages();
         tester.assertRenderedPage(SecurityNamedServiceEditPage.class);
 
         GeoServerUser user = ugService.getUserByUsername("testuser");
@@ -175,7 +175,7 @@ public class NewUserPageTest extends AbstractUserPageTest {
 
         form.submit("save");
 
-        tester.assertErrorMessages(new String[0]);
+        tester.assertErrorMessages();
         tester.assertRenderedPage(SecurityNamedServiceEditPage.class);
 
         GeoServerUser user = ugService.getUserByUsername("testuser");

@@ -343,6 +343,8 @@ abstract class CoverageDimensionsReader {
                             getDimensionAttributesNames(dimensionName).first,
                             NUMERICAL_CONVERTER.apply(rawValue).getClass());
                     return Tuple.tuple(featureTypeBuilder.buildFeatureType(), NUMERICAL_CONVERTER);
+                case CUSTOM:
+                    break;
             }
             featureTypeBuilder.add(getDimensionAttributesNames(dimensionName).first, String.class);
             return Tuple.tuple(featureTypeBuilder.buildFeatureType(), STRING_CONVERTER);

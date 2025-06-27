@@ -187,7 +187,7 @@ public class IOUtils {
      * file that cannot be deleted a warning log will be issued.
      *
      * @param directory Directory to delete
-     * @returns true if the directory could be deleted, false otherwise
+     * @return true if the directory could be deleted, false otherwise
      */
     public static boolean delete(File directory) throws IOException {
         return emptyDirectory(directory, false);

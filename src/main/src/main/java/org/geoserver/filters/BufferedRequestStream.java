@@ -81,6 +81,14 @@ public class BufferedRequestStream extends ServletInputStream {
     }
 
     @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        if (myInputStream == null) {
+            throw new IOException("Stream closed");
+        }
+        return myInputStream.read(b, off, len);
+    }
+
+    @Override
     public long skip(long n) throws IOException {
         if (myInputStream == null) {
             throw new IOException("Stream closed");

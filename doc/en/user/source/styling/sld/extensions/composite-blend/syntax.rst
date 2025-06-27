@@ -25,9 +25,9 @@ In case a custom opacity is desired, it can be added after the operation name se
 
    Blending against symbolizers causes exceptions inside the JDK when using OpenJDK. The `issue is known <https://bugs.openjdk.java.net/browse/JDK-8048782>`_ and has been reportedly fixed, but only in OpenJDK 9.
 
-   One way to get around this issue with OpenJDK 7/8 is to install the `Marlin renderer <https://github.com/bourgesl/marlin-renderer>`_. This replaces the OpenJDK core renderer and does not suffer from the same issue.
+   One way to get around this issue with OpenJDK 8/11 is to install the `Marlin renderer <https://github.com/bourgesl/marlin-renderer>`_. This replaces the OpenJDK core renderer and does not suffer from the same issue.
 
-   Oracle JDK 7 or 8 does not show this issue. 
+   Oracle JDK 8 or 11 does not show this issue. 
 
 Composite bases
 ---------------

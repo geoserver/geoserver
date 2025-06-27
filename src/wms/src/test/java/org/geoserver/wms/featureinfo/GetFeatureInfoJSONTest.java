@@ -171,10 +171,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         result = result.substring(JSONType.CALLBACK_FUNCTION.length() + 1, result.length());
 
         JSONObject rootObject = JSONObject.fromObject(result);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"), "the_geom");
+        assertEquals("the_geom", aFeature.getString("geometry_name"));
     }
 
     /** Tests jsonp with custom callback function */
@@ -216,10 +216,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         result = result.substring("custom".length() + 1, result.length());
 
         JSONObject rootObject = JSONObject.fromObject(result);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"), "the_geom");
+        assertEquals("the_geom", aFeature.getString("geometry_name"));
     }
 
     /** Tests JSON outside of expected polygon */
@@ -250,10 +250,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertNotNull(result);
 
         JSONObject rootObject = JSONObject.fromObject(result);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"), "the_geom");
+        assertEquals("the_geom", aFeature.getString("geometry_name"));
     }
 
     @Test
@@ -285,7 +285,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
 
         JSONObject rootObject = JSONObject.fromObject(result);
         // print(rootObject);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
         assertTrue(aFeature.getJSONObject("geometry").isNullObject());
@@ -383,7 +383,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             assertNotNull(result);
 
             JSONObject rootObject = JSONObject.fromObject(result);
-            assertEquals(rootObject.get("type"), "FeatureCollection");
+            assertEquals("FeatureCollection", rootObject.get("type"));
             JSONArray featureCol = rootObject.getJSONArray("features");
             JSONObject aFeature = featureCol.getJSONObject(0);
             JSONObject properties = aFeature.getJSONObject("properties");
@@ -428,7 +428,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             assertNotNull(result);
 
             JSONObject rootObject = JSONObject.fromObject(result);
-            assertEquals(rootObject.get("type"), "FeatureCollection");
+            assertEquals("FeatureCollection", rootObject.get("type"));
             JSONArray featureCol = rootObject.getJSONArray("features");
             JSONObject aFeature = featureCol.getJSONObject(0);
             JSONObject properties = aFeature.getJSONObject("properties");
@@ -481,21 +481,21 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         String result = new String(outStream.toByteArray());
         JSONObject response = JSONObject.fromObject(result);
         // got header ftl
-        assertEquals(response.get("header"), "this is the header");
+        assertEquals("this is the header", response.get("header"));
         JSONArray featuresInfo = response.getJSONArray("features");
         JSONObject featureInfo = (JSONObject) featuresInfo.get(0);
         // got content ftl
-        assertEquals(featureInfo.get("content"), "this is the content");
-        assertEquals(featureInfo.get("type"), "Feature");
-        assertEquals(featureInfo.get("id"), "Points.0");
+        assertEquals("this is the content", featureInfo.get("content"));
+        assertEquals("Feature", featureInfo.get("type"));
+        assertEquals("Points.0", featureInfo.get("id"));
         assertNotNull(featureInfo.get("geometry"));
         JSONObject props = featureInfo.getJSONObject("properties");
-        assertEquals(props.get("id"), "t0000");
-        assertEquals(props.get("altitude"), "500");
+        assertEquals("t0000", props.get("id"));
+        assertEquals("500", props.get("altitude"));
         assertNotNull(props.get("dateTimeProperty"));
         assertNotNull(props.get("dateProperty"));
         // got footer ftl
-        assertEquals(response.get("footer"), "this is the footer");
+        assertEquals("this is the footer", response.get("footer"));
         fileHeader.delete();
         fileContent.delete();
         fileFooter.delete();
@@ -559,35 +559,35 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         String result = new String(outStream.toByteArray());
         JSONObject response = JSONObject.fromObject(result);
         // got header ftl
-        assertEquals(response.get("header"), "this is the header");
+        assertEquals("this is the header", response.get("header"));
         JSONArray featuresInfo = response.getJSONArray("features");
         // check the first layer
         JSONObject fiLake = (JSONObject) featuresInfo.get(0);
-        assertEquals(fiLake.get("content"), "this is the content");
-        assertEquals(fiLake.get("type"), "Feature");
-        assertEquals(fiLake.get("id"), "Lakes.1107531835962");
+        assertEquals("this is the content", fiLake.get("content"));
+        assertEquals("Feature", fiLake.get("type"));
+        assertEquals("Lakes.1107531835962", fiLake.get("id"));
         JSONObject geomLake = fiLake.getJSONObject("geometry");
         // check the geometry attribute
-        assertEquals(geomLake.get("type"), "MultiPolygon");
+        assertEquals("MultiPolygon", geomLake.get("type"));
         assertNotNull(geomLake.getJSONArray("coordinates"));
         JSONObject lakeProps = fiLake.getJSONObject("properties");
-        assertEquals(lakeProps.get("NAME"), "Blue Lake");
-        assertEquals(lakeProps.get("FID"), "101");
+        assertEquals("Blue Lake", lakeProps.get("NAME"));
+        assertEquals("101", lakeProps.get("FID"));
 
         // check the second layer
         JSONObject fiForest = (JSONObject) featuresInfo.get(1);
         // got content ftl
-        assertEquals(fiForest.get("content"), "this is the content");
-        assertEquals(fiForest.get("type"), "Feature");
-        assertEquals(fiForest.get("id"), "Forests.1107531798144");
+        assertEquals("this is the content", fiForest.get("content"));
+        assertEquals("Feature", fiForest.get("type"));
+        assertEquals("Forests.1107531798144", fiForest.get("id"));
         JSONObject geomForest = fiForest.getJSONObject("geometry");
-        assertEquals(geomForest.get("type"), "MultiPolygon");
+        assertEquals("MultiPolygon", geomForest.get("type"));
         assertNotNull(geomForest.getJSONArray("coordinates"));
         JSONObject forestProps = fiForest.getJSONObject("properties");
-        assertEquals(forestProps.get("NAME"), "Green Forest");
-        assertEquals(forestProps.get("FID"), "109");
+        assertEquals("Green Forest", forestProps.get("NAME"));
+        assertEquals("109", forestProps.get("FID"));
         // got footer ftl
-        assertEquals(response.get("footer"), "this is the footer");
+        assertEquals("this is the footer", response.get("footer"));
         fileHeader.delete();
         fileContentForest.delete();
         fileContentLake.delete();
@@ -639,38 +639,38 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         String result = new String(outStream.toByteArray());
         JSONObject response = JSONObject.fromObject(result);
         // got header ftl
-        assertEquals(response.get("header"), "this is the header");
+        assertEquals("this is the header", response.get("header"));
         JSONArray featuresInfo = response.getJSONArray("features");
 
         // check the first feature normally encoded
         JSONObject fiLake = (JSONObject) featuresInfo.get(0);
         // didn't get the content template
         assertNull(fiLake.get("content"));
-        assertEquals(fiLake.get("type"), "Feature");
-        assertEquals(fiLake.get("id"), "Lakes.1107531835962");
+        assertEquals("Feature", fiLake.get("type"));
+        assertEquals("Lakes.1107531835962", fiLake.get("id"));
         // check the geometry
         JSONObject geomLake = fiLake.getJSONObject("geometry");
-        assertEquals(geomLake.get("type"), "MultiPolygon");
+        assertEquals("MultiPolygon", geomLake.get("type"));
         assertNotNull(geomLake.getJSONArray("coordinates"));
         JSONObject lakeProps = fiLake.getJSONObject("properties");
-        assertEquals(lakeProps.get("NAME"), "Blue Lake");
-        assertEquals(lakeProps.get("FID"), "101");
+        assertEquals("Blue Lake", lakeProps.get("NAME"));
+        assertEquals("101", lakeProps.get("FID"));
 
         // second feature used template
         JSONObject fiForest = (JSONObject) featuresInfo.get(1);
         // got content ftl
-        assertEquals(fiForest.get("content"), "this is the content");
-        assertEquals(fiForest.get("type"), "Feature");
-        assertEquals(fiForest.get("id"), "Forests.1107531798144");
+        assertEquals("this is the content", fiForest.get("content"));
+        assertEquals("Feature", fiForest.get("type"));
+        assertEquals("Forests.1107531798144", fiForest.get("id"));
         // check the geometry
         JSONObject geomForest = fiForest.getJSONObject("geometry");
-        assertEquals(geomForest.get("type"), "MultiPolygon");
+        assertEquals("MultiPolygon", geomForest.get("type"));
         assertNotNull(geomForest.getJSONArray("coordinates"));
         JSONObject forestProps = fiForest.getJSONObject("properties");
-        assertEquals(forestProps.get("NAME"), "Green Forest");
-        assertEquals(forestProps.get("FID"), "109");
+        assertEquals("Green Forest", forestProps.get("NAME"));
+        assertEquals("109", forestProps.get("FID"));
         // got footer ftl
-        assertEquals(response.get("footer"), "this is the footer");
+        assertEquals("this is the footer", response.get("footer"));
         fileHeader.delete();
         fileContent.delete();
         fileFooter.delete();

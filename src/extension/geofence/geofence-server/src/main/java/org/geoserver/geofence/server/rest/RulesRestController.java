@@ -421,7 +421,7 @@ public class RulesRestController extends RestBaseController implements Sequentia
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Invalid rules ids")
-    private class InvalidRulesIds extends RuntimeException {
+    private static class InvalidRulesIds extends RuntimeException {
         private static final long serialVersionUID = -5682676569555830473L;
     }
 }

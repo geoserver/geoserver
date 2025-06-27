@@ -8,12 +8,11 @@
  */
 
 options {
-  JDK_VERSION = "1.5";
+  JDK_VERSION = "17";
   STATIC = false;
   VISITOR=true;
   LOOKAHEAD=3;
   FORCE_LA_CHECK=true;
-  VISITOR=true;
   NODE_EXTENDS="AbstractContentNode";
   MULTI=true;
 }
@@ -40,7 +39,7 @@ PARSER_END(RangeSubsetParser)
 /*
 The grammar speficied in the WCS 1.1.1 spec is:
 
-RangeSubset = FieldSubset *( “;” FieldSubset )
+RangeSubset = FieldSubset *( Â“;Â” FieldSubset )
 FieldSubset = FieldId [ ":" Interpolation ] [ "[" AxisSubsets "]" ]
 AxisSubsets = AxisSubset *( "," AxisSubset )
 AxisSubset = AxisId "[" Keys "]"

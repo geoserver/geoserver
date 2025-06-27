@@ -41,7 +41,7 @@ public class JobQueue {
     ThreadPoolExecutor pool =
             new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>()) {
                 @Override
-                protected <T extends Object> RunnableFuture<T> newTaskFor(Callable<T> callable) {
+                protected <T> RunnableFuture<T> newTaskFor(Callable<T> callable) {
                     if (callable instanceof Job) {
                         return new Task<>((Job<T>) callable);
                     }

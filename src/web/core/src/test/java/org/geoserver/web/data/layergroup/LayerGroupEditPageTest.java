@@ -116,7 +116,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // should not work, no name provided, so we remain
         // in the same page
         tester.assertRenderedPage(LayerGroupEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Name' is required.", "Field 'Bounds' is required."});
+        tester.assertErrorMessages("Field 'Name' is required.", "Field 'Bounds' is required.");
     }
 
     @Test
@@ -186,7 +186,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
         // should work, we switch to the edit page
         tester.assertRenderedPage(LayerGroupEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Bounds' is required."});
+        tester.assertErrorMessages("Field 'Bounds' is required.");
     }
 
     @Test

@@ -190,11 +190,11 @@ public class CoverageViewReader implements GridCoverage2DReader {
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue... parameters) throws IllegalArgumentException, IOException {
 
         // did we get a request within the bounds of the coverage?
         Optional<GeneralParameterValue> ggParameter = Optional.empty();
-        if (parameters != null) {
+        if (parameters != null && parameters.length > 0) { // beware a no-args call means an empty array
             ggParameter = Arrays.stream(parameters)
                     .filter(parameter -> matches(parameter, AbstractGridFormat.READ_GRIDGEOMETRY2D))
                     .findFirst();
@@ -998,7 +998,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
     }
 
     @Override
-    public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters) throws IOException {
+    public GridCoverage2D read(String coverageName, GeneralParameterValue... parameters) throws IOException {
         checkCoverageName(coverageName);
         return read(parameters);
     }

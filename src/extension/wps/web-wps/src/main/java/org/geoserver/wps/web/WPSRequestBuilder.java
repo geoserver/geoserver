@@ -174,7 +174,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         response.render(CssHeaderItem.forCSS("#xml {display: none;}", "wpsRequestBuilderCSS"));
     }
 
-    public class WPSRequestModel implements Serializable {
+    public static class WPSRequestModel implements Serializable {
         public String xml;
 
         public String getXml() {

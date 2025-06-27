@@ -149,6 +149,14 @@ public class LoggingFilterTest {
                             }
 
                             @Override
+                            public int read(byte b[], int off, int len) throws IOException {
+                                if (closed) {
+                                    throw new IOException("Stream is closed");
+                                }
+                                return super.read(b, off, len);
+                            }
+
+                            @Override
                             public void close() throws IOException {
                                 super.close();
                                 closed = true;

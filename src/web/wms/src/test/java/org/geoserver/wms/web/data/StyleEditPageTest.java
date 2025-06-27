@@ -451,7 +451,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         form.submit();
 
         tester.assertRenderedPage(StyleEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Name' is required."});
+        tester.assertErrorMessages("Field 'Name' is required.");
     }
 
     @Test
@@ -548,7 +548,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
         tester.executeAjaxEvent("validate", "click");
-        tester.assertErrorMessages(new String[] {"No layer or layer group named 'Stream' found in the catalog"});
+        tester.assertErrorMessages("No layer or layer group named 'Stream' found in the catalog");
     }
 
     /** Test that while editing a style, the user can create and then discard a legend without ever saving it. */

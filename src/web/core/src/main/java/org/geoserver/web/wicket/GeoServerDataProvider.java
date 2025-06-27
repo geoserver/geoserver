@@ -12,7 +12,6 @@ import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -64,7 +63,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * A cache used to avoid recreating models over and over, this make it possible to make {@link GeoServerTablePanel}
      * editable
      */
-    Map<T, IModel<T>> modelCache = new IdentityHashMap<>();
+    IdentityHashMap<T, IModel<T>> modelCache = new IdentityHashMap<>();
 
     /** Sets the data provider as editable, in that case the models should be preserved */
     boolean editable = false;

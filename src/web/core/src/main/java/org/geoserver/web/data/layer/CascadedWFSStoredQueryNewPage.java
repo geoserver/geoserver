@@ -160,7 +160,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         }
     }
 
-    private class StoredQueryListRenderer extends ChoiceRenderer<StoredQuery> {
+    private static class StoredQueryListRenderer extends ChoiceRenderer<StoredQuery> {
         /** serialVersionUID */
         private static final long serialVersionUID = 7539702994237874704L;
 

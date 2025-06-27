@@ -231,7 +231,7 @@ public class RequestUtils {
             }
             coverage = reader.read(readParams);
         } else {
-            coverage = reader.read(new GeneralParameterValue[] {readGGParam, readInterpolation});
+            coverage = reader.read(readGGParam, readInterpolation);
         }
 
         return coverage;

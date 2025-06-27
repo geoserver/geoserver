@@ -94,7 +94,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = 3800195664060319256L;
 
-    private class LayerDetailsFormData implements Serializable {
+    private static class LayerDetailsFormData implements Serializable {
 
         private static final long serialVersionUID = 3800199348340468123L;
 
@@ -117,7 +117,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         List<LayerAttribute> attributes = new ArrayList<>();
     }
 
-    private class RuleFormData implements Serializable {
+    private static class RuleFormData implements Serializable {
 
         private static final long serialVersionUID = 3800199348340468123L;
 
@@ -956,7 +956,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     }
 
     /** Makes sure that while rendered in mixed case, is stored in uppercase */
-    protected class CaseConversionRenderer extends ChoiceRenderer<String> {
+    protected static class CaseConversionRenderer extends ChoiceRenderer<String> {
         private static final long serialVersionUID = 4238195087731806209L;
 
         @Override
@@ -970,7 +970,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         }
     }
 
-    protected class DropDownChoiceWrapperPanel<T> extends Panel {
+    protected static class DropDownChoiceWrapperPanel<T> extends Panel {
 
         private static final long serialVersionUID = 5677425055959281304L;
 

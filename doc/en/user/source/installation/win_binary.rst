@@ -10,7 +10,7 @@ The other way of installing GeoServer on Windows is to use the platform-independ
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 11** or **Java 17** environment, as provided by `Adoptium <https://adoptium.net>`__ Windows installers.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment, as provided by `Adoptium <https://adoptium.net>`__ Windows installers.
 
    .. note:: For more information about Java and GeoServer, please see the section on :ref:`production_java`.
 

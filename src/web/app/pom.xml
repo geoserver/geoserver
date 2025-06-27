@@ -279,23 +279,20 @@
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>${jetty.version}</version>
         <configuration>
           <webApp>
             <contextPath>/geoserver</contextPath>
           </webApp>
-          <connectors>
-            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-              <port>${jetty.port}</port>
-              <maxIdleTime>10000</maxIdleTime>
-            </connector>
-          </connectors>
+          <httpConnector>
+            <port>${jetty.port}</port>
+            <idleTimeout>10000</idleTimeout>
+          </httpConnector>
           <supportedPackagings>
             <supportedPackaging>jar</supportedPackaging>
           </supportedPackagings>
           <stopPort>${jetty.stopPort}</stopPort>
           <stopKey>GEOSERVER_JETTY_STOPKEY</stopKey>
-          <daemon>false</daemon>
+          <!-- daemon parameter removed in Jetty 10 -->
           <!-- uncomment following to set a GEOSERVER_DATA_DIR -->
           <!--
             <systemProperties> <systemProperty> <name>GEOSERVER_DATA_DIR</name>
@@ -341,7 +338,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.0.0</version>
         <executions>
           <execution>
             <id>attach-war</id>

@@ -27,7 +27,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
     private static final String NESTED_GROUP_SEARCH_FILTER = "nestedGroupSearchFilter";
     private static final String NESTED_SEARCH_FIELDS_CONTAINER = "nestedSearchFieldsContainer";
 
-    class LDAPAuthenticationPanel extends FormComponentPanel<String> {
+    static class LDAPAuthenticationPanel extends FormComponentPanel<String> {
 
         /** serialVersionUID */
         private static final long serialVersionUID = 8919421089437979222L;

@@ -745,7 +745,7 @@ public class XStreamPersister {
     }
 
     /** Custom reflection provider which unwraps proxies, and skips empty collections and maps. */
-    class CustomReflectionProvider extends SunUnsafeReflectionProvider {
+    static class CustomReflectionProvider extends SunUnsafeReflectionProvider {
 
         public CustomReflectionProvider(FieldDictionary fd) {
             super(fd);
@@ -756,7 +756,7 @@ public class XStreamPersister {
             super.visitSerializableFields(object, new VisitorWrapper(visitor));
         }
 
-        class VisitorWrapper implements ReflectionProvider.Visitor {
+        static class VisitorWrapper implements ReflectionProvider.Visitor {
 
             Visitor wrapped;
 
@@ -966,7 +966,7 @@ public class XStreamPersister {
         }
     }
 
-    class SettingsTolerantMapConverter extends MapConverter {
+    static class SettingsTolerantMapConverter extends MapConverter {
 
         public SettingsTolerantMapConverter(Mapper mapper) {
             super(mapper);
@@ -1301,7 +1301,7 @@ public class XStreamPersister {
     }
 
     /** Converter which unwraps proxies in a collection. */
-    class ProxyCollectionConverter extends CollectionConverter {
+    static class ProxyCollectionConverter extends CollectionConverter {
 
         public ProxyCollectionConverter(Mapper mapper) {
             super(mapper);
@@ -2150,7 +2150,7 @@ public class XStreamPersister {
         }
     }
 
-    class VirtualTableConverter implements Converter {
+    static class VirtualTableConverter implements Converter {
 
         @Override
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {

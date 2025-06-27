@@ -96,14 +96,14 @@ public class DimensionInfoSerializationTest extends WMSTestSupport {
         DimensionInfo di2 = unmarshallFromXML(diDOM);
         assertSame(
                 "Unmarshalled strategy does not match the original one",
-                di2.getDefaultValue().getStrategyType(),
-                used);
+                used,
+                di2.getDefaultValue().getStrategyType());
 
         if (referenceValue != null) {
             assertEquals(
                     "Unmarshalled referenceValue does not match the original one",
-                    di2.getDefaultValue().getReferenceValue(),
-                    referenceValue);
+                    referenceValue,
+                    di2.getDefaultValue().getReferenceValue());
         }
     }
 

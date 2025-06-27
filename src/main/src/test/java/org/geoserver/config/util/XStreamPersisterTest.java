@@ -1355,8 +1355,8 @@ public class XStreamPersisterTest {
                 getClass().getResourceAsStream("/org/geoserver/config/virtualtable_order_error.xml"),
                 FeatureTypeInfo.class);
         VirtualTable vtc = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
-        assertEquals(vtc.getSql(), "select * from table\n");
-        assertEquals(vtc.getName(), "sqlview");
+        assertEquals("select * from table\n", vtc.getSql());
+        assertEquals("sqlview", vtc.getName());
     }
 
     @Test
@@ -1492,7 +1492,7 @@ public class XStreamPersisterTest {
         assertNotNull(cv.getGrid().getGridRange());
         assertNotNull(cv.getCRS());
         assertNotNull(cv.getGrid().getGridToCRS());
-        assertEquals(cv.getGrid().getGridRange().getLow(0), 0);
+        assertEquals(0, cv.getGrid().getGridRange().getLow(0));
     }
 
     @Test

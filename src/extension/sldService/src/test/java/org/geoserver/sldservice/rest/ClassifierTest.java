@@ -247,7 +247,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         checkRule(rules[0], "#8E0000", org.geotools.api.filter.And.class);
         checkRule(rules[1], "#FF0000", org.geotools.api.filter.And.class);
 
-        assertEquals(resultXml.indexOf("StyledLayerDescriptor"), -1);
+        assertEquals(-1, resultXml.indexOf("StyledLayerDescriptor"));
     }
 
     @Test
@@ -2139,7 +2139,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsQuantile = getRasterSymbolizer(domQuantile);
         ColorMap cmQuantile = rsQuantile.getColorMap();
         ColorMapEntry[] entriesQuantile = cmQuantile.getColorMapEntries();
-        assertEquals(entriesQuantile.length, 6);
+        assertEquals(6, entriesQuantile.length);
         double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesQuantile) {
             if (e.getLabel() != null) {
@@ -2169,7 +2169,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsEqual = getRasterSymbolizer(domEqual);
         ColorMap cmEqual = rsEqual.getColorMap();
         ColorMapEntry[] entriesEqual = cmEqual.getColorMapEntries();
-        assertEquals(entriesEqual.length, 6);
+        assertEquals(6, entriesEqual.length);
         double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesEqual) {
             if (e.getLabel() != null) {
@@ -2198,7 +2198,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsJenks = getRasterSymbolizer(domjenks);
         ColorMap cmJenks = rsJenks.getColorMap();
         ColorMapEntry[] entriesJenks = cmJenks.getColorMapEntries();
-        assertEquals(entriesJenks.length, 6);
+        assertEquals(6, entriesJenks.length);
         double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesJenks) {
             if (e.getLabel() != null) {
@@ -2227,7 +2227,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsUnique = getRasterSymbolizer(domUnique);
         ColorMap cmUnique = rsUnique.getColorMap();
         ColorMapEntry[] entriesUnique = cmUnique.getColorMapEntries();
-        assertEquals(entriesUnique.length, 167);
+        assertEquals(167, entriesUnique.length);
         double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesUnique) {
             if (e.getLabel() != null) {
@@ -2286,7 +2286,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsQuantile = getRasterSymbolizer(domQuantile);
         ColorMap cmQuantile = rsQuantile.getColorMap();
         ColorMapEntry[] entriesQuantile = cmQuantile.getColorMapEntries();
-        assertEquals(entriesQuantile.length, 6);
+        assertEquals(6, entriesQuantile.length);
         double percentagesSum = 0.0;
         for (ColorMapEntry e : entriesQuantile) {
             if (e.getLabel() != null) {
@@ -2475,7 +2475,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rsJenks = getRasterSymbolizer(domjenks);
         ColorMap cmJenks = rsJenks.getColorMap();
         ColorMapEntry[] entriesJenks = cmJenks.getColorMapEntries();
-        assertEquals(entriesJenks.length, 6);
+        assertEquals(6, entriesJenks.length);
         double percentagesSum = 0.0;
         for (int i = 0; i < entriesJenks.length; i++) {
             ColorMapEntry e = entriesJenks[i];
@@ -2550,7 +2550,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         RasterSymbolizer rs = getRasterSymbolizer(dom);
         ColorMap cm = rs.getColorMap();
         // for unique interval we get a Type values ColorMap
-        assertEquals(cm.getType(), ColorMap.TYPE_VALUES);
+        assertEquals(ColorMap.TYPE_VALUES, cm.getType());
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(2, entries.length);
         // the first entry will match the actual raster's value

@@ -85,9 +85,15 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
                 }
                 if (pg.getFactoryClass().getName().equals("org.geoserver.wps.jts.SpringBeanProcessFactory")) {
                     assertTrue(pg.isEnabled());
-                    assertEquals(pg.getFilteredProcesses().get(0).getName().toString(), "gs:GeorectifyCoverage");
-                    assertEquals(pg.getFilteredProcesses().get(1).getName().toString(), "gs:GetFullCoverage");
-                    assertEquals(pg.getFilteredProcesses().get(2).getName().toString(), "gs:Import");
+                    assertEquals(
+                            "gs:GeorectifyCoverage",
+                            pg.getFilteredProcesses().get(0).getName().toString());
+                    assertEquals(
+                            "gs:GetFullCoverage",
+                            pg.getFilteredProcesses().get(1).getName().toString());
+                    assertEquals(
+                            "gs:Import",
+                            pg.getFilteredProcesses().get(2).getName().toString());
                     found2 = true;
                 }
             }

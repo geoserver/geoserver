@@ -376,7 +376,8 @@ public class GWCTest {
         assertTrue(extensions.contains(genv));
 
         JDBCConfiguration jdbcConfiguration = new JDBCConfiguration();
-        if (GeoWebCacheEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+        boolean allowEnvParam = new GeoWebCacheEnvironment().isAllowEnvParametrization();
+        if (allowEnvParam) {
             jdbcConfiguration.setDialect("${TEST_ENV_PROPERTY}");
         } else {
             jdbcConfiguration.setDialect("HSQL");

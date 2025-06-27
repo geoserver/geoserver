@@ -38,11 +38,8 @@ public class AggregateProcessPPIO extends XStreamPPIO {
         xstream.omitField(AggregateProcess.Results.class, "functions");
         xstream.omitField(AggregateProcess.Results.class, "groupByAttributes");
         xstream.omitField(AggregateProcess.Results.class, "results");
+        xstream.omitField(AggregateProcess.Results.class, "schema");
         xstream.alias(AggregationResults.getLocalPart(), AggregateProcess.Results.class);
-        xstream.omitField(AggregateProcess.Results.class, "aggregateAttribute");
-        xstream.omitField(AggregateProcess.Results.class, "functions");
-        xstream.omitField(AggregateProcess.Results.class, "groupByAttributes");
-        xstream.omitField(AggregateProcess.Results.class, "results");
         return xstream;
     }
 }

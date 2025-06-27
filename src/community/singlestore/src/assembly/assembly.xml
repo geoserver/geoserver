@@ -1,0 +1,24 @@
+<assembly>
+  <id>singlestore-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>${artifactId}-${project.version}.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>singlestore-jdbc*</include>
+        <include>gt-jdbc-singlestore*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

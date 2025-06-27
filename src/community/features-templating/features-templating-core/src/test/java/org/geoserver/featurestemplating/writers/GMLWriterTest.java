@@ -48,6 +48,8 @@ public class GMLWriterTest {
         outputWriter.writeGeometry(geom);
         outputWriter.close();
         String expected = "<gml:Surface>"
+                + "<gml:patches>"
+                + "<gml:PolygonPatch>"
                 + "<gml:exterior>"
                 + "<gml:LinearRing>"
                 + "<gml:posList>"
@@ -55,6 +57,8 @@ public class GMLWriterTest {
                 + "</gml:posList>"
                 + "</gml:LinearRing>"
                 + "</gml:exterior>"
+                + "</gml:PolygonPatch>"
+                + "</gml:patches>"
                 + "</gml:Surface>";
         String encodedGeom = new String(baos.toByteArray());
         assertEquals(expected, encodedGeom);
@@ -69,6 +73,8 @@ public class GMLWriterTest {
         outputWriter.writeGeometry(geom);
         outputWriter.close();
         String expected = "<gml:Surface>"
+                + "<gml:patches>"
+                + "<gml:PolygonPatch>"
                 + "<gml:exterior>"
                 + "<gml:LinearRing>"
                 + "<gml:posList>"
@@ -76,6 +82,8 @@ public class GMLWriterTest {
                 + "</gml:posList>"
                 + "</gml:LinearRing>"
                 + "</gml:exterior>"
+                + "</gml:PolygonPatch>"
+                + "</gml:patches>"
                 + "</gml:Surface>";
         String encodedGeom = new String(baos.toByteArray());
         assertEquals(expected, encodedGeom);

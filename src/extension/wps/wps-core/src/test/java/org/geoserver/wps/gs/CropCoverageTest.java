@@ -77,7 +77,7 @@ public class CropCoverageTest extends WPSTestSupport {
         try (InputStream is = getBinaryInputStream(response)) {
 
             ArcGridFormat format = new ArcGridFormat();
-            GridCoverage2D gc = format.getReader(is).read(null);
+            GridCoverage2D gc = format.getReader(is).read();
 
             assertTrue(new Envelope(-145.4, 145.6, -41.8, -42.1).contains(new ReferencedEnvelope(gc.getEnvelope())));
 

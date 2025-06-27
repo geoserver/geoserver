@@ -622,7 +622,8 @@ public class MonitorCallbackTest {
         glg.setLayer(null);
         callback.operationDispatched(new Request(), op("GetLegendGraphic", "WMS", "1.1.1", glg));
         List<String> resources = data.getResources();
-        assertEquals(data.getOperation(), "GetLegendGraphic");
+        assertEquals("GetLegendGraphic", data.getOperation());
+
         assertNull(resources);
     }
 

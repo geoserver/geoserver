@@ -2177,6 +2177,10 @@ public class MapMLDocumentBuilder {
         if (ALL_COMMAS.matcher(cqlFilter).matches()) {
             cqlFilter = "";
         }
+        // REVISIT: [ArgumentSelectionDefectChecker] The following arguments may have been swapped: 'width' for formal
+        // parameter 'height', 'height' for formal parameter 'width'. Either add clarifying `/* paramName= */` comments,
+        // or swap the arguments if that is what was intended
+        @SuppressWarnings("ArgumentSelectionDefectChecker")
         MapMLHTMLOutput htmlOutput = new MapMLHTMLOutput.HTMLOutputBuilder()
                 .setSourceUrL(buildGetMap(
                         layer,

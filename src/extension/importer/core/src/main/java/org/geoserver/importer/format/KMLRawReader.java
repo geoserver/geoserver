@@ -19,7 +19,7 @@ import org.geotools.kml.v22.KML;
 import org.geotools.kml.v22.KMLConfiguration;
 import org.geotools.xsd.PullParser;
 
-public class KMLRawReader implements Iterable<Object>, Iterator<Object> {
+public class KMLRawReader implements Iterator<Object> {
 
     private final PullParser parser;
 
@@ -124,11 +124,6 @@ public class KMLRawReader implements Iterable<Object>, Iterator<Object> {
             throw new NoSuchElementException();
         }
         return feature;
-    }
-
-    @Override
-    public Iterator<Object> iterator() {
-        return this;
     }
 
     @Override

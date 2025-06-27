@@ -153,7 +153,7 @@ public class GeoServerDialog extends Panel {
         }
     }
 
-    protected class InfoPage extends Panel {
+    protected static class InfoPage extends Panel {
         @SafeVarargs
         public InfoPage(String id, IModel<String> title, IModel<String>... messages) {
             super(id);

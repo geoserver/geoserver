@@ -302,7 +302,9 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("csvDateFormat", "yyyy-MM-dd'T'HH:mm:ss'Z'");
         ft.submit("submit");
         assertNotNull(getGeoServer().getService(WFSInfo.class).getCsvDateFormat());
-        assertEquals(getGeoServer().getService(WFSInfo.class).getCsvDateFormat(), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+        assertEquals(
+                "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                getGeoServer().getService(WFSInfo.class).getCsvDateFormat());
     }
 
     @Test

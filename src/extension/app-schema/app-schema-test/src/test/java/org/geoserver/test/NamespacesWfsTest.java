@@ -275,7 +275,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
         assertTrue(output.indexOf("ms_gml32:Measurement_gml32") > -1);
         assertTrue(output.indexOf("st_gml32:Station_gml32") > -1);
         // check test1 namespace not injected:
-        assertEquals(output.indexOf("xmlns:test1=\"http://www.test1.org/test1\""), -1);
+        assertEquals(-1, output.indexOf("xmlns:test1=\"http://www.test1.org/test1\""));
     }
 
     /**
@@ -302,7 +302,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
         assertTrue(output.indexOf("ms_gml31:Measurement_gml31") > -1);
         assertTrue(output.indexOf("st_gml31:Station_gml31") > -1);
         // check test1 namespace not injected:
-        assertEquals(output.indexOf("xmlns:test1=\"http://www.test1.org/test1\""), -1);
+        assertEquals(-1, output.indexOf("xmlns:test1=\"http://www.test1.org/test1\""));
     }
 
     @Test

@@ -64,7 +64,7 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample using the original extension
@@ -86,7 +86,7 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
             File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
             FileUtils.writeByteArrayToFile(file, tiffContents);
             readerTarget = new GeoTiffReader(file);
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
@@ -164,7 +164,7 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // === error slice point outside coverage
@@ -236,7 +236,7 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample using the original extension
@@ -256,7 +256,7 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
             File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
             FileUtils.writeByteArrayToFile(file, tiffContents);
             readerTarget = new GeoTiffReader(file);
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks
             assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());

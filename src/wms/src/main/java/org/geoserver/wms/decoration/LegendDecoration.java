@@ -293,7 +293,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         }
     }
 
-    private class LayerLegend {
+    private static class LayerLegend {
         public BufferedImage title;
         public BufferedImage legend;
         public GetLegendGraphicRequest request;

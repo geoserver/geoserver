@@ -300,7 +300,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
             Dispatcher.REQUEST.set(null);
         }
         assertNotNull("ServiceException not catched", serviceException);
-        assertEquals(serviceException.getLocator(), "viewParamsFormat");
-        assertEquals(serviceException.getCode(), ServiceException.INVALID_PARAMETER_VALUE);
+        assertEquals("viewParamsFormat", serviceException.getLocator());
+        assertEquals(ServiceException.INVALID_PARAMETER_VALUE, serviceException.getCode());
     }
 }

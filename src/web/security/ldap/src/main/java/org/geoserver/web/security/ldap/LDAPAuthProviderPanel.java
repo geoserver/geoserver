@@ -84,7 +84,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         return useLDAP ? new LDAPAuthorizationPanel(id) : new UserGroupAuthorizationPanel(id);
     }
 
-    abstract class AuthorizationPanel extends FormComponentPanel<HashMap<String, Object>> {
+    abstract static class AuthorizationPanel extends FormComponentPanel<HashMap<String, Object>> {
 
         private static final long serialVersionUID = -2021795762927385164L;
 
@@ -95,7 +95,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         public abstract void resetModel();
     }
 
-    class UserGroupAuthorizationPanel extends AuthorizationPanel {
+    static class UserGroupAuthorizationPanel extends AuthorizationPanel {
 
         private static final long serialVersionUID = 2464048864034610244L;
 

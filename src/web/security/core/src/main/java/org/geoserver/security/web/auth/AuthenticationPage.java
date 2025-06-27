@@ -214,7 +214,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
         form.replace(new SecurityFilterChainsPanel("authChains", config));
     }
 
-    class AuthenticationChainPanel extends FormComponentPanel<SecurityManagerConfig> {
+    static class AuthenticationChainPanel extends FormComponentPanel<SecurityManagerConfig> {
 
         public AuthenticationChainPanel(String id) {
             super(id, new Model<>());

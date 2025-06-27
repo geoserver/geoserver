@@ -104,7 +104,7 @@ public class StyleCoverageTest extends WPSTestSupport {
 
             GeoTiffFormat format = new GeoTiffFormat();
             try (InputStream fis = new FileInputStream("target/testfile.tiff")) {
-                GridCoverage2D gc = format.getReader(fis).read(null);
+                GridCoverage2D gc = format.getReader(fis).read();
 
                 GridCoverage original = getCatalog()
                         .getCoverageByName(getLayerId(MockData.TASMANIA_DEM))

@@ -351,7 +351,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
 
         // make sure we can read the coverage back
         GeoTiffReader reader = new GeoTiffReader(tiffFile);
-        GridCoverage2D result = reader.read(null);
+        GridCoverage2D result = reader.read();
         coverages.add(result);
 
         // see that we got the entire coverage, but nothing more
@@ -765,7 +765,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
             CoordinateReferenceSystem crs = CRS.decode("IAU:49900");
             assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
 
-            coverage = reader.read(null);
+            coverage = reader.read();
             assertNotNull(coverage);
         } finally {
             if (reader != null) {

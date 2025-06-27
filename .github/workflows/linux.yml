@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [ 11, 17, 21 ]
+        jdk: [ 17, 21 ]
         dist: [ 'temurin' ]
         os: [ 'ubuntu-22.04' ]
     runs-on: ${{ matrix.os }}

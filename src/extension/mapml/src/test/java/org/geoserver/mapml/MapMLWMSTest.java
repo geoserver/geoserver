@@ -255,8 +255,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 m.getBody().getExtents().get(0).getInputOrDatalistOrLink(), Link.class);
         assertEquals(
                 "Use tiles is set to false so the link should be a image link",
-                extentLinksForSingle.get(0).getRel(),
-                RelType.IMAGE);
+                RelType.IMAGE,
+                extentLinksForSingle.get(0).getRel());
 
         assertTrue(
                 "Use tiles is set to false so the link should contain getMap",
@@ -2223,7 +2223,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         return vars;
     }
 
-    public class BboxMatcher extends BaseMatcher<Object> {
+    public static class BboxMatcher extends BaseMatcher<Object> {
 
         Envelope expected;
         double tolerance;

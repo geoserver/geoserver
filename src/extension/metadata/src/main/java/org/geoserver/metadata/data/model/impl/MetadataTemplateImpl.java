@@ -86,7 +86,7 @@ public class MetadataTemplateImpl implements Serializable, MetadataTemplate {
 
     @Override
     public int hashCode() {
-        return id == null ? super.hashCode() : id.hashCode();
+        return id == null ? System.identityHashCode(this) : id.hashCode();
     }
 
     @Override

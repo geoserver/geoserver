@@ -216,11 +216,7 @@ public class StyleInfoImpl implements StyleInfo {
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName())
-                .append('[')
-                .append(prefixedName())
-                .append(']')
-                .toString();
+        return getClass().getSimpleName() + '[' + prefixedName() + ']';
     }
 
     @Override

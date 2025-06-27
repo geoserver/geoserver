@@ -212,6 +212,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
      *    0 1 2
      * </pre>
      */
+    @SuppressWarnings("FallThrough") // case 0: intentially falls through case 1:?
     static RenderedImage[] split(MetaTileKey key, RenderedImage metaTile) {
         final int metaFactor = key.getMetaFactor();
         final RenderedImage[] tiles = new RenderedImage[key.getMetaFactor() * key.getMetaFactor()];

@@ -264,5 +264,5 @@ public class FeatureTypeCustomizationTest extends GeoServerSystemTestSupport {
     }
 
     /** A class that {@link org.geotools.util.Converters} can't know how to handle */
-    private final class MyOddBinding {}
+    private static final class MyOddBinding {}
 }

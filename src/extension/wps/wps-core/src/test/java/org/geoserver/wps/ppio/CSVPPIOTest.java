@@ -97,9 +97,9 @@ public class CSVPPIOTest extends WPSTestSupport {
         while ((line = r.readLine()) != null) {
             String[] attribs = line.split(",");
             if (lines == 0) {
-                assertEquals(attribs[0], "State");
+                assertEquals("State", attribs[0]);
                 assertEquals(attribs[1], "inc1980");
-                assertEquals(attribs[4], "inc2000");
+                assertEquals("inc2000", attribs[4]);
                 assertEquals(attribs[8], "inc2012");
             }
             if (attribs[0].equalsIgnoreCase("Tennessee")) {

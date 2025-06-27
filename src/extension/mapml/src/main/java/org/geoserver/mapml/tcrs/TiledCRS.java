@@ -463,7 +463,7 @@ public class TiledCRS {
     }
 
     /** Compares two tile coordinates and ranks them by distance from the constructed center point. */
-    protected class TileComparator implements Comparator<TileCoordinates> {
+    protected static class TileComparator implements Comparator<TileCoordinates> {
         private final Point centre;
 
         /** @param centre */

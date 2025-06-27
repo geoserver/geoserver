@@ -154,7 +154,7 @@ public class MultiDimDataStore extends ContentDataStore {
             {
                 queryCapabilities = new QueryCapabilities() {
                     @Override
-                    public boolean supportsSorting(SortBy[] sortAttributes) {
+                    public boolean supportsSorting(SortBy... sortAttributes) {
                         if (sortAttributes != null && sortAttributes.length == 1) {
                             if (sortAttributes[0]
                                     .getPropertyName()

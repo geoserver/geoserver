@@ -201,7 +201,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         }
 
         public AutoDisposableGridCoverage2D read() throws IOException {
-            GridCoverage2D gc = super.read(null);
+            GridCoverage2D gc = super.read();
             assertNotNull(gc);
             return new AutoDisposableGridCoverage2D("", gc);
         }

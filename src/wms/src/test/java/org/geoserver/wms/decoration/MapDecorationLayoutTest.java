@@ -35,7 +35,7 @@ public class MapDecorationLayoutTest {
             + "</layout>\n";
     // public static TestSuite suite() { return new TestSuite(MapDecorationLayout.class); }
 
-    private class MockMapDecoration implements MapDecoration {
+    private static class MockMapDecoration implements MapDecoration {
         Dimension request;
         Rectangle expect;
 

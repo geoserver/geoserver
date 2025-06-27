@@ -222,7 +222,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
     }
 
     /** Attribute model for how a single stored query parameter is supposed to be handled. */
-    public class StoredQueryParameterAttribute implements Serializable {
+    public static class StoredQueryParameterAttribute implements Serializable {
         /** serialVersionUID */
         private static final long serialVersionUID = -9213562985695412130L;
 

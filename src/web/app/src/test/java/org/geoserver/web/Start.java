@@ -35,6 +35,7 @@ import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.util.resource.PathResource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
@@ -60,7 +61,7 @@ public class Start {
             http.setPort(Integer.getInteger("jetty.port", 8080));
             http.setAcceptQueueSize(100);
             http.setIdleTimeout(1000 * 60 * 60);
-            http.setSoLingerTime(-1);
+            // setSoLingerTime was removed in Jetty 10
 
             // Use this to set a limit on the number of threads used to respond requests
             // BoundedThreadPool tp = new BoundedThreadPool();
@@ -101,7 +102,7 @@ public class Start {
             String jettyConfigFile = System.getProperty("jetty.config.file");
             if (jettyConfigFile != null) {
                 log.info("Loading Jetty config from file: " + jettyConfigFile);
-                (new XmlConfiguration(new FileInputStream(jettyConfigFile))).configure(jettyServer);
+                (new XmlConfiguration(PathResource.newResource(jettyConfigFile))).configure(jettyServer);
             }
 
             long start = System.currentTimeMillis();
@@ -176,7 +177,7 @@ public class Start {
         ServerConnector https = null;
         if (sslHost != null && !sslHost.isEmpty()) {
             Security.addProvider(new BouncyCastleProvider());
-            SslContextFactory ssl = createSSLContextFactory(sslHost);
+            SslContextFactory.Server ssl = createSSLContextFactory(sslHost);
 
             HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
             httpsConfig.addCustomizer(new SecureRequestCustomizer());
@@ -190,7 +191,7 @@ public class Start {
         return https;
     }
 
-    private static SslContextFactory createSSLContextFactory(String hostname) {
+    private static SslContextFactory.Server createSSLContextFactory(String hostname) {
         String password = System.getProperty("jetty.keystore.password", "changeit");
 
         String keyStoreLocation = System.getProperty("jetty.keystore");
@@ -210,7 +211,7 @@ public class Start {
             log.log(Level.WARNING, "NO SSL available", e);
             return null;
         }
-        SslContextFactory ssl = new SslContextFactory();
+        SslContextFactory.Server ssl = new SslContextFactory.Server();
         ssl.setKeyStorePath(keyStoreFile.getAbsolutePath());
         ssl.setKeyStorePassword(password);
 

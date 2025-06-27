@@ -92,6 +92,7 @@ public class LoggingUtils {
     }
 
     /** Built-in logging configurations. */
+    @SuppressWarnings("MutablePublicArray") // TODO convert to immutable list
     public static final String[] STANDARD_LOGGING_CONFIGURATIONS = {
         "DEFAULT_LOGGING",
         "GEOSERVER_DEVELOPER_LOGGING",

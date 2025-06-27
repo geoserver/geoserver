@@ -163,7 +163,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         response.render(CssHeaderItem.forCSS("#xml {display: none;}", "wcsRequestBuilderCSS"));
     }
 
-    public class WCSRequestModel implements Serializable {
+    public static class WCSRequestModel implements Serializable {
         public String xml;
 
         public String getXml() {

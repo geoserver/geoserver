@@ -115,7 +115,7 @@ public class ScaleToTargetTest {
             // I deliberately omit setting the target size: only interpolation will be performed
             // set interpolation method to something other than NEAREST
             noScaling.setInterpolation(Interpolation.getInstance(Interpolation.INTERP_BILINEAR));
-            gc = noScaling.scale(reader.read(null));
+            gc = noScaling.scale(reader.read());
             assertNotNull(gc);
             // TODO: this only proves the code ran without throwing exceptions: how do I actually
             // test that the interpolation was done?
@@ -200,7 +200,7 @@ public class ScaleToTargetTest {
             // write scaled coverage to temp file
             outputTempFile = File.createTempFile("scale2target_", "_out");
             writer = new GeoTiffWriter(outputTempFile);
-            writer.write(gc, null);
+            writer.write(gc);
 
             // verify coverage has been scaled
             outputReader = new GeoTiffReader(outputTempFile);
@@ -284,7 +284,7 @@ public class ScaleToTargetTest {
             // write scaled coverage to temp file
             outputTempFile = File.createTempFile("scale2target_", "_out");
             writer = new GeoTiffWriter(outputTempFile);
-            writer.write(gc, null);
+            writer.write(gc);
 
             // verify coverage has been scaled
             outputReader = new GeoTiffReader(outputTempFile);

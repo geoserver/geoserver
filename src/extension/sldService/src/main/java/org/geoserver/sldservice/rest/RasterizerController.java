@@ -190,7 +190,7 @@ public class RasterizerController extends BaseSLDServiceController {
     }
 
     @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED, reason = "RasterSymbolizer SLD expected!")
-    private class InvalidSymbolizer extends RuntimeException {
+    private static class InvalidSymbolizer extends RuntimeException {
         private static final long serialVersionUID = 5453377766415209696L;
     }
 

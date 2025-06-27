@@ -88,7 +88,7 @@ public class StoreCoverageTest extends WPSTestSupport {
 
         // read and check
         GeoTiffFormat format = new GeoTiffFormat();
-        GridCoverage2D gc = format.getReader(tiffFile).read(null);
+        GridCoverage2D gc = format.getReader(tiffFile).read();
         scheduleForDisposal(gc);
         GridCoverage original = getCatalog()
                 .getCoverageByName(getLayerId(MockData.TASMANIA_DEM))
@@ -167,7 +167,7 @@ public class StoreCoverageTest extends WPSTestSupport {
 
         // read and check
         GeoTiffFormat format = new GeoTiffFormat();
-        GridCoverage2D gc = format.getReader(tiffFile).read(null);
+        GridCoverage2D gc = format.getReader(tiffFile).read();
         scheduleForDisposal(gc);
         GridCoverage original =
                 getCatalog().getCoverageByName(getLayerId(CUST_WATTEMP)).getGridCoverage(null, null);

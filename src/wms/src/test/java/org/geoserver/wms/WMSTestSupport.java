@@ -525,7 +525,8 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     /** Validates a document against the */
     protected void checkWms13ValidationErrors(Document dom) throws Exception {
-        Parser p = new Parser((Configuration) Class.forName("org.geotools.wms.v1_3.WMSConfiguration")
+        Parser p = new Parser(Class.forName("org.geotools.wms.v1_3.WMSConfiguration")
+                .asSubclass(Configuration.class)
                 .getDeclaredConstructor()
                 .newInstance());
         p.setValidating(true);

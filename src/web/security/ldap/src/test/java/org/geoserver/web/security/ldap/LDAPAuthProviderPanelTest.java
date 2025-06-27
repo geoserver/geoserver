@@ -146,7 +146,7 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
         tester.assertNoErrorMessage();
         String success = new StringResourceModel(LDAPAuthProviderPanel.class.getSimpleName() + ".connectionSuccessful")
                 .getObject();
-        tester.assertInfoMessages(new String[] {success});
+        tester.assertInfoMessages(success);
     }
 
     private void testFailedConnection() throws Exception {

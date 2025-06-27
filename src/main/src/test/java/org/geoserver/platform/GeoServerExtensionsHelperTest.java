@@ -52,7 +52,7 @@ public class GeoServerExtensionsHelperTest {
         assertNull(GeoServerExtensions.bean(GeoServerExtensionsHelperTest.class));
     }
 
-    class TestClass {}
+    static class TestClass {}
 
     @Test
     public void helperMultipleSingleton() {

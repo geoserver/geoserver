@@ -57,7 +57,6 @@ import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.MockData;
@@ -69,6 +68,7 @@ import org.geoserver.logging.TestAppender;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapTest;
 import org.geoserver.wms.WMS;
@@ -86,6 +86,7 @@ import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.referencing.CRS;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -293,6 +294,11 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     protected String getDefaultLogConfiguration() {
         return "DEFAULT_LOGGING";
+    }
+
+    @After
+    public void clearProperty() {
+        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
     }
 
     @Test
@@ -1203,42 +1209,28 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + "&sld="
                 + sldUrl.toString();
 
-        WMS wms = new WMS(getGeoServer());
-        GeoServerInfo geoserverInfo = wms.getGeoServer().getGlobal();
-        try {
-            // enable entities in external SLD files
-            geoserverInfo.setXmlExternalEntitiesEnabled(true);
-            getGeoServer().save(geoserverInfo);
+        // enable entities in external SLD files
+        // if entities evaluation is enabled
+        // the parser will try to read a file on the local file system
+        // if the file is found, its content will be used to replace the entity
+        // if the file is not found the parser will throw a FileNotFoundException
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
+        String response = getAsString(url);
+        assertTrue(response.indexOf("Error while getting SLD.") > -1);
 
-            // if entities evaluation is enabled
-            // the parser will try to read a file on the local file system
-            // if the file is found, its content will be used to replace the entity
-            // if the file is not found the parser will throw a FileNotFoundException
-            String response = getAsString(url);
-            assertTrue(response.indexOf("Error while getting SLD.") > -1);
+        // disable entities
+        // if entities evaluation is disabled
+        // the parser will throw a MalformedURLException when it finds an entity
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+        response = getAsString(url);
+        assertTrue(response.indexOf("Entity resolution disallowed") > -1);
 
-            // disable entities
-            geoserverInfo.setXmlExternalEntitiesEnabled(false);
-            getGeoServer().save(geoserverInfo);
-
-            // if entities evaluation is disabled
-            // the parser will throw a MalformedURLException when it finds an entity
-            response = getAsString(url);
-            assertTrue(response.indexOf("Entity resolution disallowed") > -1);
-
-            // try default value: disabled entities
-            geoserverInfo.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(geoserverInfo);
-
-            // if entities evaluation is disabled
-            // the parser will throw a MalformedURLException when it finds an entity
-            response = getAsString(url);
-            assertTrue(response.indexOf("Entity resolution disallowed") > -1);
-        } finally {
-            // default
-            geoserverInfo.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(geoserverInfo);
-        }
+        // try default value: disabled entities
+        // if entities evaluation is disabled
+        // the parser will throw a MalformedURLException when it finds an entity
+        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        response = getAsString(url);
+        assertTrue(response.indexOf("Entity resolution disallowed") > -1);
     }
 
     @Test

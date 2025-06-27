@@ -36,6 +36,11 @@
 
     <profile>
       <id>jwt-headers</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>jwt-headers-util</module>
         <module>gs-jwt-headers</module>
@@ -44,6 +49,11 @@
 
     <profile>
       <id>communityRelease</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>jwt-headers-util</module>
         <module>gs-jwt-headers</module>

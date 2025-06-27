@@ -27,6 +27,9 @@
       <id>activemq</id>
       <activation>
         <activeByDefault>true</activeByDefault>
+        <property>
+          <name>all</name>
+        </property>
       </activation>
       <modules>
         <module>activemqBroker</module>
@@ -37,6 +40,9 @@
 
       <activation>
         <activeByDefault>true</activeByDefault>
+        <property>
+          <name>all</name>
+        </property>
       </activation>
 
       <modules>

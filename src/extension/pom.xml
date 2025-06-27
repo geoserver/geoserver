@@ -68,6 +68,11 @@
 
     <profile>
       <id>app-schema</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>app-schema</module>
       </modules>
@@ -75,6 +80,11 @@
 
     <profile>
       <id>h2</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>h2</module>
       </modules>
@@ -82,6 +92,11 @@
 
     <profile>
       <id>sqlserver</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>sqlserver</module>
       </modules>
@@ -89,6 +104,11 @@
 
     <profile>
       <id>oracle</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>oracle</module>
       </modules>
@@ -96,6 +116,11 @@
 
     <profile>
       <id>mysql</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>mysql</module>
       </modules>
@@ -103,6 +128,11 @@
 
     <profile>
       <id>db2</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>db2</module>
       </modules>
@@ -110,6 +140,11 @@
 
     <profile>
       <id>jp2k</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>jp2k</module>
       </modules>
@@ -117,6 +152,11 @@
 
     <profile>
       <id>gdal</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>gdal</module>
       </modules>
@@ -124,6 +164,11 @@
 
     <profile>
       <id>feature-pregeneralized</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>feature-pregeneralized</module>
       </modules>
@@ -131,6 +176,11 @@
 
     <profile>
       <id>ogr</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>ogr</module>
       </modules>
@@ -138,6 +188,11 @@
 
     <profile>
       <id>excel</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>excel</module>
       </modules>
@@ -145,6 +200,11 @@
 
     <profile>
       <id>charts</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>charts</module>
       </modules>
@@ -152,6 +212,11 @@
 
     <profile>
       <id>control-flow</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>control-flow</module>
       </modules>
@@ -159,6 +224,11 @@
 
     <profile>
       <id>wps</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>wps</module>
       </modules>
@@ -166,6 +236,11 @@
 
     <profile>
       <id>querylayer</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>querylayer</module>
       </modules>
@@ -185,6 +260,11 @@
 
     <profile>
       <id>security</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>security</module>
       </modules>
@@ -192,6 +272,11 @@
 
     <profile>
       <id>inspire</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>inspire</module>
       </modules>
@@ -199,6 +284,11 @@
 
     <profile>
       <id>css</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>css</module>
       </modules>
@@ -206,6 +296,11 @@
 
     <profile>
       <id>mbstyle</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>mbstyle</module>
       </modules>
@@ -213,6 +308,11 @@
 
     <profile>
       <id>csw</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>csw</module>
       </modules>
@@ -220,6 +320,11 @@
 
     <profile>
       <id>dxf</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>dxf</module>
       </modules>
@@ -227,6 +332,11 @@
 
     <profile>
       <id>printing</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>printing</module>
       </modules>
@@ -234,6 +344,11 @@
 
     <profile>
       <id>wcs2_0-eo</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>wcs2_0-eo</module>
       </modules>
@@ -241,6 +356,11 @@
 
     <profile>
       <id>libjpeg-turbo</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>libjpeg-turbo</module>
       </modules>
@@ -248,6 +368,11 @@
 
     <profile>
       <id>importer</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>importer</module>
       </modules>
@@ -290,24 +415,44 @@
     </profile>
     <profile>
       <id>vectortiles</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>vectortiles</module>
       </modules>
     </profile>
     <profile>
       <id>ysld</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>ysld</module>
       </modules>
     </profile>
     <profile>
       <id>mongodb</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>mongodb</module>
       </modules>
     </profile>
     <profile>
       <id>sldService</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>sldService</module>
       </modules>
@@ -336,72 +481,132 @@
     </profile>
     <profile>
       <id>authkey</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>authkey</module>
       </modules>
     </profile>
     <profile>
       <id>web-resource</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>web-resource</module>
       </modules>
     </profile>
     <profile>
       <id>params-extractor</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>params-extractor</module>
       </modules>
     </profile>
     <profile>
       <id>wmts-multi-dimensional</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>wmts-multi-dimensional</module>
       </modules>
     </profile>
     <profile>
       <id>gwc-s3</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>gwc-s3</module>
       </modules>
     </profile>
     <profile>
       <id>wps-download</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>wps-download</module>
       </modules>
     </profile>
     <profile>
       <id>wps-jdbc</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>wps-jdbc</module>
       </modules>
     </profile>
     <profile>
       <id>mapml</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>mapml</module>
       </modules>
     </profile>
     <profile>
       <id>geopkg-output</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>geopkg-output</module>
       </modules>
     </profile>
     <profile>
       <id>metadata</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>metadata</module>
       </modules>
     </profile>
     <profile>
       <id>rat</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>rat</module>
       </modules>
     </profile>
     <profile>
       <id>ogcapi</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>ogcapi</module>
       </modules>
@@ -419,6 +624,11 @@
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>app-schema</module>
         <module>h2</module>
@@ -472,6 +682,11 @@
     <!-- release profile, includes all modules -->
     <profile>
       <id>release</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>app-schema</module>
         <module>h2</module>

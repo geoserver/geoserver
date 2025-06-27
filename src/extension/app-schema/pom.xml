@@ -57,12 +57,22 @@
   <profiles>
     <profile>
       <id>app-schema</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>app-schema-core</module>
       </modules>
     </profile>
     <profile>
       <id>app-schema-online-test</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>app-schema-oracle-test</module>
         <module>app-schema-postgis-test</module>

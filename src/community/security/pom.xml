@@ -27,6 +27,11 @@
 
     <profile>
       <id>oauth2-google</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>oauth2</module>
         <module>oauth2-google</module>
@@ -35,6 +40,11 @@
 
     <profile>
       <id>oauth2-github</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>oauth2</module>
         <module>oauth2-github</module>
@@ -43,6 +53,11 @@
 
     <profile>
       <id>oauth2-geonode</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>oauth2</module>
         <module>oauth2-geonode</module>
@@ -51,6 +66,11 @@
 
     <profile>
       <id>keycloak</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>keycloak</module>
       </modules>
@@ -58,6 +78,11 @@
 
     <profile>
       <id>oauth2-openid-connect</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>oauth2</module>
         <module>oauth2-openid-connect</module>
@@ -66,6 +91,11 @@
 
     <profile>
       <id>oauth2-all</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>oauth2</module>
         <module>oauth2-google</module>
@@ -78,6 +108,11 @@
 
     <profile>
       <id>communityRelease</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>oauth2</module>
         <module>oauth2-google</module>

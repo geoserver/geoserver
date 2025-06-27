@@ -49,6 +49,11 @@
 
     <profile>
       <id>allExtensions</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>geofence-server</module>
         <module>geofence-wps</module>
@@ -57,6 +62,11 @@
 
     <profile>
       <id>release</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>geofence-server</module>
         <module>geofence-wps</module>

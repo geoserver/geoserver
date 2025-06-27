@@ -22,6 +22,11 @@
   <profiles>
     <profile>
       <id>cas</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>web-cas</module>
       </modules>
@@ -29,6 +34,11 @@
 
     <profile>
       <id>allExtensions</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>web-cas</module>
       </modules>
@@ -36,6 +46,11 @@
 
     <profile>
       <id>release</id>
+      <activation>
+        <property>
+          <name>all</name>
+        </property>
+      </activation>
       <modules>
         <module>web-cas</module>
       </modules>

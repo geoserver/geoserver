@@ -10,7 +10,7 @@ Mac OS X binary
 安装
 ------------
 
-#. 确保在系统上安装了Java Runtime Environment（JRE）。  GeoServer 要求 **Java 8** 或者 **Java 11** 环境, 由macOS安装程序 `AdoptOpenJDK <https://adoptopenjdk.net>`__ 提供。
+#. 确保在系统上安装了Java Runtime Environment（JRE）。  GeoServer 要求 **Java 17** 或者 **Java 21** 环境, 由macOS安装程序 `Adoptium <https://adoptium.net>`__ 提供。
 
    .. note:: 有关Java和GeoServer兼容性的更多信息，请参阅 production_java.
 

@@ -80,7 +80,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
                     boolean hasRange = ra.hasRange(domain);
                     boolean hasResolution = ra.hasResolution(domain);
                     RasterDimensionModel mm =
-                            new RasterDimensionModel(metadata, domain, DimensionInfo.class, hasRange, hasResolution);
+                            new RasterDimensionModel<>(metadata, domain, DimensionInfo.class, hasRange, hasResolution);
                     if (mm.getObject() == null) {
                         mm.setObject(new DimensionInfoImpl());
                     }
@@ -149,7 +149,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         return info.isEnabled();
     }
 
-    class RasterDimensionModel<T> extends MetadataMapModel<T> {
+    static class RasterDimensionModel<T> extends MetadataMapModel<T> {
         private static final long serialVersionUID = 4734439907138483817L;
 
         boolean hasRange;

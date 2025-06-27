@@ -102,7 +102,7 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
     private static void testJson(String content, String expectedVersion) {
 
         JSONObject jsonException = JSONObject.fromObject(content);
-        assertEquals(jsonException.getString("version"), expectedVersion);
+        assertEquals(expectedVersion, jsonException.getString("version"));
         JSONArray exceptions = jsonException.getJSONArray("exceptions");
         JSONObject exception = exceptions.getJSONObject(0);
         assertNotNull(exception);
@@ -110,6 +110,6 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         assertNotNull(exception.getString("locator"));
         String exceptionText = exception.getString("text");
         assertNotNull(exceptionText);
-        assertEquals(exceptionText, "Could not find type: {http://geoserver.org}foobar");
+        assertEquals("Could not find type: {http://geoserver.org}foobar", exceptionText);
     }
 }

@@ -79,7 +79,7 @@ public class FeatureSizeFeatureCollection extends DecoratingSimpleFeatureCollect
         }
     }
 
-    class CachedWrappingFeatureIterator implements SimpleFeatureIterator {
+    static class CachedWrappingFeatureIterator implements SimpleFeatureIterator {
 
         private List<SimpleFeature> featureCache;
         private int featureIndex = 0;

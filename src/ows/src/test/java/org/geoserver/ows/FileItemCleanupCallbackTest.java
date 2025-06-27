@@ -7,7 +7,6 @@ package org.geoserver.ows;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 
-import com.google.common.base.Strings;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
@@ -31,7 +30,7 @@ public class FileItemCleanupCallbackTest {
     private static final String BOUNDARY = "----1234";
 
     // temp files are only created for fields that exceed a certain content length
-    private static final String FILE_CONTENTS = Strings.repeat("1", DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD + 1);
+    private static final String FILE_CONTENTS = "1".repeat(DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD + 1);
 
     private static String oldTmpDir;
 

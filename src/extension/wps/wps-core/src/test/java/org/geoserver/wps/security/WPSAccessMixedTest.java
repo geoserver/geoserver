@@ -42,7 +42,7 @@ public class WPSAccessMixedTest extends AbstractWPSAccessTest {
         setRequestAuth(null, null);
         MockHttpServletResponse response =
                 getAsServletResponse("wps?service=wps&request=describeprocess&identifier=JTS:buffer");
-        assertEquals(response.getStatus(), 401);
+        assertEquals(401, response.getStatus());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class WPSAccessMixedTest extends AbstractWPSAccessTest {
     public void testNotAuthenticatedExecutePermission() throws Exception {
         setRequestAuth(null, null);
         MockHttpServletResponse response = postAsServletResponse("wps", executeRequestXml);
-        assertEquals(response.getStatus(), 401);
+        assertEquals(401, response.getStatus());
     }
 
     @Test

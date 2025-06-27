@@ -206,7 +206,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
             String sResponse = resp.getContentAsString();
             assertNotNull(sResponse);
             // no insert block generated
-            assertEquals(sResponse.indexOf("INSERT"), -1);
+            assertEquals(-1, sResponse.indexOf("INSERT"));
             // geometry as blocks true
             resp = getAsServletResponse(
                     "wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf&format_options=asblocks:true");

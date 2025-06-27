@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -194,14 +194,9 @@ public class LoggerRuleTest {
         LoggerRule rule = new LoggerRule(log, Level.FINE);
         Statement s = rule.apply(base, desc);
 
-        try {
-            s.evaluate();
-            fail("Expected Assertion Exception");
-        } catch (AssertionError ex) {
-            assertThat(ex, hasProperty("message", containsString("Expected record")));
-        } finally {
-            verify(log, desc, base);
-        }
+        AssertionError ex = assertThrows(AssertionError.class, () -> s.evaluate());
+        assertThat(ex, hasProperty("message", containsString("Expected record")));
+        verify(log, desc, base);
     }
 
     @Test

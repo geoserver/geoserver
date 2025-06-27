@@ -114,7 +114,7 @@ public class RESTPanelTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         // Control if the defined root has been correctly set
         assertEquals(
-                gs.getGlobal().getSettings().getMetadata().get(RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class), false);
+                false, gs.getGlobal().getSettings().getMetadata().get(RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class));
 
         // Opening the selected page
         tester.startPage(new GlobalSettingsPage());
@@ -132,6 +132,6 @@ public class RESTPanelTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         // Control if the defined root has been correctly set
         assertEquals(
-                gs.getGlobal().getSettings().getMetadata().get(RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class), true);
+                true, gs.getGlobal().getSettings().getMetadata().get(RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class));
     }
 }

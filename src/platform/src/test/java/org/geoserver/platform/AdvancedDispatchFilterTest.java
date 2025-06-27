@@ -59,7 +59,7 @@ public class AdvancedDispatchFilterTest {
     }
 
     /** Necessary due to special filtering out delegates with name MockHttpServletRequest. */
-    class MyMockRequest extends MockHttpServletRequest {
+    static class MyMockRequest extends MockHttpServletRequest {
 
         public MyMockRequest(String method, String requestURI) {
             super(method, requestURI);

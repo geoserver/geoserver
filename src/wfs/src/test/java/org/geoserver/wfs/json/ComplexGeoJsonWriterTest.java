@@ -230,7 +230,7 @@ public class ComplexGeoJsonWriterTest extends GeoServerSystemTestSupport {
     }
 
     /** used to expose a public encodeFeature method for testing purposes * */
-    class TestComplexGeoJsonWriter extends ComplexGeoJsonWriter {
+    static class TestComplexGeoJsonWriter extends ComplexGeoJsonWriter {
 
         public TestComplexGeoJsonWriter(GeoJSONBuilder jsonWriter, ComplexGeoJsonWriterOptions settings) {
             super(jsonWriter, settings);

@@ -70,7 +70,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         form.submit("save");
 
         tester.assertRenderedPage(WorkspaceEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'uri' is required."});
+        tester.assertErrorMessages("Field 'uri' is required.");
     }
 
     @Test
@@ -232,7 +232,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         // edit the second workspace to make it non isolated, this should fail
         updateWorkspace("test_a2", "test_a2", "http://www.test_a.org", false);
         tester.assertRenderedPage(WorkspaceEditPage.class);
-        tester.assertErrorMessages(new String[] {"Namespace with URI 'http://www.test_a.org' already exists."});
+        tester.assertErrorMessages("Namespace with URI 'http://www.test_a.org' already exists.");
         // edit the first workspace and make it isolated
         updateWorkspace("test_a1", "test_a1", "http://www.test_a.org", true);
         tester.assertRenderedPage(WorkspacePage.class);
@@ -267,7 +267,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         // change second workspace name and try to make non isolated, this should fail
         updateWorkspace("test_b2", "test_b3", "http://www.test_b.org", false);
         tester.assertRenderedPage(WorkspaceEditPage.class);
-        tester.assertErrorMessages(new String[] {"Namespace with URI 'http://www.test_b.org' already exists."});
+        tester.assertErrorMessages("Namespace with URI 'http://www.test_b.org' already exists.");
         // check that the catalog contains the expected objects
         Catalog catalog = getCatalog();
         // validate the first workspace

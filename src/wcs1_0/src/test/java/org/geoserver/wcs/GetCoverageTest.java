@@ -579,7 +579,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
             // make sure we can read the coverage back
             GeoTiffReader reader = new GeoTiffReader(tiffFile);
-            GridCoverage2D result = reader.read(null);
+            GridCoverage2D result = reader.read();
 
             // check a pixel
             double[] pixel = new double[1];
@@ -868,7 +868,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
             // make sure we can read the coverage back
             GeoTiffReader reader = new GeoTiffReader(tiffFile);
-            GridCoverage2D result = reader.read(null);
+            GridCoverage2D result = reader.read();
             result.dispose(true);
 
             CoordinateReferenceSystem crs = CRS.decode("IAU:49900");

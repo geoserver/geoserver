@@ -117,7 +117,7 @@ public class TiledCRSTest {
             fail("Exception during project operation");
         }
         Point centre = pb.getCentre().divideBy(256);
-        Collections.sort(expectedOrder, osmtile.new TileComparator(centre));
+        Collections.sort(expectedOrder, new TiledCRS.TileComparator(centre));
 
         ListIterator<TileCoordinates> li = tiles.listIterator();
         while (li.hasNext()) {
@@ -207,7 +207,7 @@ public class TiledCRSTest {
             fail("Exception during project operation");
         }
         Point centre = pb.getCentre().divideBy(256);
-        Collections.sort(expectedOrder, cbmlcc.new TileComparator(centre));
+        Collections.sort(expectedOrder, new TiledCRS.TileComparator(centre));
 
         ListIterator<TileCoordinates> li = tiles.listIterator();
         while (li.hasNext()) {

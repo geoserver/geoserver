@@ -11,9 +11,9 @@ Java
 
 Developing with GeoServer requires a Java Development Kit (JDK), available from `OpenJDK <http://openjdk.java.net>`__, `Adoptium <https://adoptium.net/>`__ for Windows and macOS installers, or provided by your OS distribution.
 
-The GeoServer project works with Java Long Term Support releases: Java 11 and Java 17.
+The GeoServer project works with Java Long Term Support releases: Java 17 and Java 21.
 
-Due to subtle changes in Java class libraries, we require development on Java 11 at this time (although the result is tested on Java 17). When calling a method of java core library, a type case may (or not be) implied and represented in the bytecode.  When the core libraries change, the return type of a method can have a very subtle incompatibility.
+Due to subtle changes in Java class libraries, we require development on Java 17 at this time (although the result is tested on Java 21). When calling a method of java core library, a type case may (or not be) implied and represented in the bytecode.  When the core libraries change, the return type of a method can have a very subtle incompatibility.
 
 Maven
 -----

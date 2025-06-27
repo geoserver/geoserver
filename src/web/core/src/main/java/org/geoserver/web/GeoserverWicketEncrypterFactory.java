@@ -54,7 +54,7 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
         public void setKey(String key) {}
     };
 
-    class CryptImpl extends AbstractCrypt {
+    static class CryptImpl extends AbstractCrypt {
         protected StandardPBEByteEncryptor enc;
 
         CryptImpl(StandardPBEByteEncryptor enc) {

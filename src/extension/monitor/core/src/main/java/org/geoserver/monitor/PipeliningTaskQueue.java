@@ -116,7 +116,7 @@ public class PipeliningTaskQueue<K> implements Runnable {
         }
     }
 
-    public class Pipelineable<K> {
+    public static class Pipelineable<K> {
 
         K key;
         Runnable task;

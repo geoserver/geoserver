@@ -780,7 +780,10 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         expect(reader.getOriginalGridToWorld(EasyMock.anyObject(PixelInCell.class)))
                 .andReturn(new AffineTransform2D(gridToWorld))
                 .anyTimes();
-        expect(reader.read(EasyMock.anyObject(GeneralParameterValue[].class))).andReturn(null);
+        expect(reader.read(
+                        EasyMock.anyObject(GeneralParameterValue.class),
+                        EasyMock.anyObject(GeneralParameterValue.class)))
+                .andReturn(null);
         expect(reader.getGridCoverageNames()).andReturn(new String[] {"TheCoverage"});
         replay(reader);
         expect(format.getReader(EasyMock.eq(rasterSource), EasyMock.anyObject(Hints.class)))

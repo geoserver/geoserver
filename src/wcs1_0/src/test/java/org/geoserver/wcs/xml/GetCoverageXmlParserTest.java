@@ -240,9 +240,9 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
 
         GridType grid =
                 (GridType) gc.getDomainSubset().getSpatialSubset().getGrid().get(0);
-        assertEquals(grid.getSrsName(), "EPSG:4326");
-        assertEquals(grid.getAxisName().get(0), "Column");
-        assertEquals(grid.getAxisName().get(1), "Row");
+        assertEquals("EPSG:4326", grid.getSrsName());
+        assertEquals("Column", grid.getAxisName().get(0));
+        assertEquals("Row", grid.getAxisName().get(1));
 
         GridEnvelope gridLimits = grid.getLimits();
         assertEquals(0, gridLimits.getLow(0));

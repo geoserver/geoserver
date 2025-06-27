@@ -39,7 +39,7 @@ class FeaturesTransformer extends TransformerBase {
         return new TranslatorSupport(handler);
     }
 
-    class TranslatorSupport extends TransformerBase.TranslatorSupport {
+    static class TranslatorSupport extends TransformerBase.TranslatorSupport {
 
         public TranslatorSupport(ContentHandler handler) {
             super(handler, null, null);

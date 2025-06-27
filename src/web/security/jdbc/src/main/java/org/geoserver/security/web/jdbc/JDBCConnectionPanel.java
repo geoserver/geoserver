@@ -92,7 +92,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
         return useJNDI ? new JNDIConnectionPanel(id) : new BasicConnectionPanel(id);
     }
 
-    abstract class ConnectionPanel extends FormComponentPanel<Serializable> {
+    abstract static class ConnectionPanel extends FormComponentPanel<Serializable> {
 
         public ConnectionPanel(String id) {
             super(id, new Model<>());
@@ -103,7 +103,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
         public abstract void test() throws Exception;
     }
 
-    class BasicConnectionPanel extends ConnectionPanel {
+    static class BasicConnectionPanel extends ConnectionPanel {
 
         public BasicConnectionPanel(String id) {
             super(id);
@@ -146,7 +146,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
         }
     }
 
-    class JNDIConnectionPanel extends ConnectionPanel {
+    static class JNDIConnectionPanel extends ConnectionPanel {
 
         public JNDIConnectionPanel(String id) {
             super(id);

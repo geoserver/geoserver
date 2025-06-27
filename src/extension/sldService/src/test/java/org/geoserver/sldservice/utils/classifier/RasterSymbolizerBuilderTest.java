@@ -231,7 +231,7 @@ public class RasterSymbolizerBuilderTest {
         // using a proper DEM_FLOAT with nodata values here
         try (InputStream is = ClassifierTest.class.getResourceAsStream("srtm.tif")) {
             GeoTiffReader reader = new GeoTiffReader(is);
-            GridCoverage2D coverage = reader.read(null);
+            GridCoverage2D coverage = reader.read();
             RenderedImage image = coverage.getRenderedImage();
             try {
                 performAssert.accept(image);

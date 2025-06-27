@@ -1179,7 +1179,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         MockFilterChain chain = new MockFilterChain();
 
         getProxy().doFilter(request, response, chain);
-        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         String tmp = response.getHeader("Location");
         assertTrue(tmp.endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FORM));
         SecurityContext ctx = (SecurityContext)
@@ -1196,7 +1196,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter(config.getUsernameParameterName(), testUserName);
         request.addParameter(config.getPasswordParameterName(), testPassword);
         getProxy().doFilter(request, response, chain);
-        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         assertTrue(response.getHeader("Location")
                 .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_SUCCCESS));
         HttpSession session = request.getSession(true);
@@ -1226,7 +1226,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         // getProxy().doFilter(request, response, chain);
         logoutFilter.doFilter(request, response, chain);
-        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         tmp = response.getHeader("Location");
         assertNotNull(tmp);
         assertTrue(tmp.endsWith(GeoServerLogoutFilter.URL_AFTER_LOGOUT));
@@ -1251,7 +1251,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter(config.getUsernameParameterName(), GeoServerUser.ROOT_USERNAME);
         request.addParameter(config.getPasswordParameterName(), getMasterPassword());
         getProxy().doFilter(request, response, chain);
-        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         assertTrue(response.getHeader("Location")
                 .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_SUCCCESS));
         ctx = (SecurityContext)
@@ -1272,7 +1272,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);
-        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         tmp = response.getHeader("Location");
         assertTrue(tmp.endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FORM));
         // check for cancel cookie
@@ -1505,7 +1505,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         authchain = new MockFilterChain();
         getProxy().doFilter(request, response, authchain);
-        assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         String urlString = response.getHeader("Location");
         assertNotNull(urlString);
         assertTrue(urlString.startsWith("https"));

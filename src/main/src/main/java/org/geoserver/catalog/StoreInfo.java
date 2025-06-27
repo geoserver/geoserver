@@ -147,7 +147,7 @@ public interface StoreInfo extends CatalogInfo {
      * @param hints Hints to use when creating the adapter.
      * @return The adapter, an intsanceof adapterClass, or <code>null</code>.
      */
-    <T extends Object> T getAdapter(Class<T> adapterClass, Map<?, ?> hints);
+    <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints);
 
     /**
      * @return Returns a resource with the specified name that is provided by the store, or <code>

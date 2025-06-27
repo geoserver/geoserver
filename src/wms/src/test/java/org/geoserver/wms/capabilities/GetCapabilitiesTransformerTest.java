@@ -594,10 +594,10 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         Document dom2 = WMSTestSupport.transform(req, tr2);
         // the style should appear
         String lgStyleTitle = XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Title", dom2);
-        assertEquals(lgStyleTitle, "aLayerGroup style");
+        assertEquals("aLayerGroup style", lgStyleTitle);
 
         String lgStyleName = XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Name", dom2);
-        assertEquals(lgStyleName, "default-style-aLayerGroup");
+        assertEquals("default-style-aLayerGroup", lgStyleName);
     }
 
     @Test

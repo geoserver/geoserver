@@ -90,7 +90,7 @@ public class GeoFenceAuthFilter
     }
 
     /** Simple username+password container */
-    class BasicUser {
+    static class BasicUser {
         String name;
 
         String pw;

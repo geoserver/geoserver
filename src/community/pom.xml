@@ -448,6 +448,13 @@
       </modules>
     </profile>
     <profile>
+      <id>ogcapi-tiles</id>
+      <modules>
+        <module>ogcapi/ogcapi-tiles</module>
+        <module>ogcapi/web-tiles</module>
+      </modules>
+    </profile>
+    <profile>
       <id>importer-jdbc</id>
       <modules>
         <module>importer-jdbc</module>

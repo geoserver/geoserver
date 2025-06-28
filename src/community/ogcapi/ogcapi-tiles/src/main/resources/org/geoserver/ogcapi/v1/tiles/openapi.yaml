@@ -1,51 +1,18 @@
 openapi: 3.0.0
-# This is just a summary version from https://app.swaggerhub.com/apis/UAB-CREAF/ogc-api-map-tiles-opf-xmp-full/1.0.0#/
-# with the parts we intent to implement now. It will have to be revised later once things settle down
-servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/UAB-CREAF/ogc-api-map-tiles-opf-xmp-full/1.0.0
 info:
-  title: |-
-    OGC API Maps and Tiles OpenAPI document example
+  version: '1.0'
+  title: OGC API - Tiles
   description: |-
-    This is a draft of an example of a service following the OGC API maps and tiles produced in the Testbed-15 Open Portrayal Framework in collaboration with the WMS.SWG. The Map Tile API is a Web API for fetching and managing maps and tiles.
-
-    The extensions are the following.
-    * There are
-    * The collection metadata (path `/collections/{collectionId}`) has been extended by the set of applicable styles (member `styles`, same
-    value as in `/styles` in the Style API) and a default style
-    (member `defaultStyle`, the style id).
-    * The PATCH operation on the feature collection metadata
-    (path `/collections/{collectionId}`) has been added. Only `styles` and
-    `defaultStyle` may be updated.
-
-    For more background information see [the Vector Tiles Pilot Extension Engineering
-    Report](https://github.com/opengeospatial/OGC-API-Map-Tiles/tree/master/standard/openapi).
-
-  version: "1.0.0"
+    Example API Definition for OGC API - Tiles - Part 1: Core
   contact:
-    name: Joan Maso
-    email: joan.maso@uab.cat
+    name: Open Geospatial Consortium
+    email: info@ogc.org
   license:
-    name: OGC License
-    url: 'https://raw.githubusercontent.com/opengeospatial/OGC-API-Map-Tiles/master/LICENSE'
-tags:
-  - name: OGC API Common
-    description: |-
-      Common characteristics of this API
-  - name: TileMatrixSet
-    description: |-
-      TileMatrixSet used in this API
-  - name: Tiled data from one collection
-    description: |-
-      Data partitioned into a hierarchy of tiles of a collection
-  - name: Tiled map from one collection
-    description: |-
-      map (renderizations or vector tiles) partitioned into a hierarchy of tiles  of a collection
-  - name: MultiTiles
-    description: |-
-      access to information about retriving multiple tiles in a single request.
+    name: CC-BY 4.0 license
+    url: 'https://creativecommons.org/licenses/by/4.0'
+servers:
+  - description: Mock server, to be replaced
+    url: https://geoserver.org/geoserver
 paths:
   '/':
     get:
@@ -56,7 +23,8 @@ paths:
         The landing page provides links to the API definition, the conformance statements and to the feature collections in this dataset.
       operationId: getLandingPage
       parameters:
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/otherParameters'
       responses:
         '200':
           description: |-
@@ -64,21 +32,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/landingPage'
-              example:
-                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-this'
-                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-alternate'
-                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-service-json'
-                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-service-html'
-                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-conformance'
-                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-collections-json'
-                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-collections-html'
-                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/examples/link-landingPage-tms-json'
+                $ref: '#/components/schemas/landingPage'
             text/html:
               schema:
                 type: string
         '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+          $ref: '#/components/responses/ServerError'
   '/conformance':
     get:
       description: |-
@@ -86,7 +45,8 @@ paths:
         server conforms to.
       operationId: getConformanceClasses
       parameters:
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/otherParameters'
       tags:
         - OGC API Common
       responses:
@@ -96,172 +56,62 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/confClasses'
+                $ref: '#/components/schemas/confClasses'
               example:
                 conformsTo:
-                  - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/core'
-                  - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/oas30'
-                  - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/html'
-                  - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/geojson'
-                  - 'http://www.opengis.net/spec/ogcapi-maps-1/1.0/req/core'
-                  - 'http://www.opengis.net/spec/ogcapi-maps-1/1.0/req/info'
-                  - 'http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/core'
-                  - 'http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/multitile'
-                  - 'http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/info'
-        '400':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/InvalidParam'
+                  - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core
+                  - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/json
+                  - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/html
+                  - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/oas30
+                  - http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections
+                  - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core
         '406':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/UnsupportedFormat'
+          $ref: '#/components/responses/NotAcceptable'
         '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+          $ref: '#/components/responses/ServerError'
   '/collections':
     get:
       tags:
-        - OGC API Common
-      summary: the collections in the dataset
-      operationId: describeCollections
+        - Capabilities
+      summary: the tiled collections in the dataset
+      operationId: getCollections
       parameters:
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/otherParameters'
       responses:
         '200':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/Collections'
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/collectionInfo'
+          $ref: '#/components/responses/Collections'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
         '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+          $ref: '#/components/responses/ServerError'
   '/collections/{collectionId}':
     get:
       tags:
-        - OGC API Common
-      summary: describe a collection
+        - Capabilities
+      summary: |-
+        describe the tiled collection with id `collectionId`
       operationId: describeCollection
       parameters:
         - $ref: '#/components/parameters/collectionId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/otherParameters'
       responses:
         '200':
-          description: |-
-            Metadata about the collection including style information.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/collection'
-            text/html:
-              schema:
-                type: string
+          $ref: '#/components/responses/Collection'
         '404':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+          $ref: '#/components/responses/NotFound'
         '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
-    patch:
-      tags:
-        - OGC API Common
-      summary: |-
-        update parts of the style metadata
-      description: |-
-        IMPORTANT: This operation is defined by Clemens P. in the Testbed 15. It is included here for INFORMATION ONLY But is OUT OF SCOPE for Maps and Tiles.
-
-        Update selected elements of the metadata for
-        the collection with the id `collectionId`.
-
-        The only members that may be updated at this
-        time are `styles` and `defaultStyle`.
-
-        The PATCH semantics in this operation are defined by
-        RFC 7396 (JSON Merge Patch). From the specification:
-
-        _"A JSON merge patch document describes changes to be
-        made to a target JSON document using a syntax that
-        closely mimics the document being modified. Recipients
-        of a merge patch document determine the exact set of
-        changes being requested by comparing the content of
-        the provided patch against the current content of the
-        target document. If the provided merge patch contains
-        members that do not appear within the target, those
-        members are added. If the target does contain the
-        member, the value is replaced. Null values in the
-        merge patch are given special meaning to indicate
-        the removal of existing values in the target."_
-
-        Some examples:
-
-        To add or update the default style, just send
-
-        ```
-        {
-          "defaultStyle": "night"
-        }
-        ```
-
-        To remove the default style, send
-
-        ```
-        {
-          "defaultStyle": null
-        }
-        ```
-
-        For arrays the complete array needs to be sent. I.e., to
-        update the list of styles, send the complete new array value.
-
-        To remove all styles, send
-
-        ```
-        {
-          "styles": null
-        }
-        ```
-
-        This operation is only available to registered
-        users.
-      operationId: patchCollectionMetadata
-      security:
-        - BasicAuth: []
-      parameters:
-        - $ref: '#/components/parameters/collectionId'
-      requestBody:
-        description: |-
-          The updated style information for the collection.
-        content:
-          application/merge-patch+json:
-            schema:
-              $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-maps/1.0.0#/components/schemas/collection-patch'
-      responses:
-        '204':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/Updated'
-        '400':
-          description: |-
-            Malformed patch document.
-        '401':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/UnauthorizedAccess'
-        '404':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
-        '415':
-          description: |-
-            Unsupported patch document.
-          headers:
-            Accept-Patch:
-              description: |-
-                supported patch document media types
-              schema:
-                type: string
-        '422':
-          description: |-
-            Unprocessable request. The patch document appears
-            to be valid, but the server is incapable of processing
-            the request.
-        '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+          $ref: '#/components/responses/ServerError'
   '/tileMatrixSets':
     get:
       tags:
-        - TileMatrixSet
+        - Tiling schemes
       summary: fetch all available tile matrix sets (tiling schemes)
       operationId: getTileMatrixSets
       parameters:
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json'
+        - $ref: '#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/otherParameters'
       responses:
         '200':
           description: |-
@@ -269,109 +119,193 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/schemas/tileMatrixSets'
+                $ref: '#/components/schemas/tileMatrixSets'
         '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+          $ref: '#/components/responses/ServerError'
   '/tileMatrixSets/{tileMatrixSetId}':
     get:
       tags:
-        - TileMatrixSet
+        - Tiling schemes
       summary: fetch a tile matrix sets (tiling scheme) by id
       operationId: getTileMatrixSetDescription
       parameters:
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json'
+        - $ref: '#/components/parameters/tileMatrixSetId'
+        - $ref: '#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/otherParameters'
       responses:
         '200':
           description: tile matrix sets (a tiling scheme).
           content:
             application/json:
               schema:
-                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/schemas/tileMatrixSet'
-        '404':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
-        '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
-  '/collections/{collectionId}/queryables':
-    get:
-      tags:
-        - Capabilities
-      summary: |-
-        lists the queryable attributes for the feature collection with id `collectionId`
-      operationId: getQueryables
-      parameters:
-        - $ref: '#/components/parameters/collectionId'
-        - $ref: '#/components/parameters/otherParameters'
-      responses:
-        '200':
-          $ref: '#/components/responses/Queryables'
+                $ref: '#/components/schemas/tileMatrixSet'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
-  '/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}':
+  '/collections/{vectorCollectionId}/tiles':
     get:
       tags:
-        - Tiled data from one collection
+        - Vector tiles
+      summary: |-
+        get the list of tilesets for a collection
+      operationId: tiles.collection.getTileSetsList
+      parameters:
+        - $ref: '#/components/parameters/vectorCollectionId'
+        - $ref: '#/components/parameters/tileMatrixSetId'
+        - $ref: '#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/otherParameters'
+      responses:
+        '200':
+          description: |-
+            The list of tiling schemes used to partition the collection into tiles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tileSet'
+            application/x-zip-compressed:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{vectorCollectionId}/tiles/{tileMatrixSetId}':
+    get:
+      tags:
+        - Vector tiles
+      summary: |-
+        fetch tiles of a collection.
+      operationId: tiles.collection.getTileSet
+      parameters:
+        - $ref: '#/components/parameters/vectorCollectionId'
+        - $ref: '#/components/parameters/tileMatrixSetId'
+        - $ref: '#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/otherParameters'
+      responses:
+        '200':
+          description: |-
+            A tiling scheme used to partition the collection into tiles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tileSet'
+            application/x-zip-compressed:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{vectorCollectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}':
+    get:
+      tags:
+        - Vector tiles
       summary: fetch a tile from a collection
       description: |-
         Retrieves the tile in the requested tileMatrixSet, on the requested tileMatrix in the TileMatrixSet, with the requested tile indices (tileRow, tileCol). The tile has a single collection (formerly refered as layer) with all selected features in the bounding box of the tile. The feature properties to include in the tile representation can be limited using a query parameter.
-      operationId: getTileOfCollectionId
+      operationId: tiles.collection.vector.getTile
       parameters:
-        - $ref: '#/components/parameters/collectionId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrix'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileRow'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileCol'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/datetime'
-        - $ref: '#/components/parameters/f-vector'
-        - $ref: '#/components/parameters/filter'
-        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/vectorCollectionId'
+        - $ref: '#/components/parameters/tileMatrixSetId'
+        - $ref: '#/components/parameters/tileMatrix'
+        - $ref: '#/components/parameters/tileRow'
+        - $ref: '#/components/parameters/tileCol'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f-vector-tile'
       responses:
         '200':
           description: A tile of the collection.
           content:
-            image/jpeg:
-              schema:
-                type: string
-                format: binary
-            image/png:
-              schema:
-                type: string
-                format: binary
-            image/gif:
-              schema:
-                type: string
-                format: binary
             image/mvt:
               schema:
                 type: string
+                format: binary
             application/geo+json:
               schema:
-                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-features/1.0.0#/components/schemas/featureCollectionGeoJSON'
+                allOf:
+                  - format: geojson-feature-collection
+                  - $ref: '#/components/schemas/FeatureCollection'
         '404':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+          $ref: '#/components/responses/NotFound'
         '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/map/{styleId}/tiles':
+    get:
+      tags:
+        - Map tiles
+      summary: |-
+        get the list of map tilesets for a collection
+      operationId: tiles.collection.getMapTileSetsList
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/otherParameters'
+      responses:
+        '200':
+          description: |-
+            The list of tiling schemes used to partition the collection into tiles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tileSet'
+            application/x-zip-compressed:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}':
+    get:
+      tags:
+        - Map tiles
+      summary: |-
+        fetch tiles of a collection.
+      operationId: tiles.collection.map.getTileSet
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/tileMatrixSetId'
+        - $ref: '#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/otherParameters'
+      responses:
+        '200':
+          description: |-
+            A tiling scheme used to partition the collection into tiles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tileSet'
+            application/x-zip-compressed:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}':
     get:
       tags:
-        - Tiled map from one collection
+        - Map tiles
       summary: fetch a tile from a collection
       description: |-
         Retrieves the tile in the requested tileMatrixSet, on the requested tileMatrix in the TileMatrixSet, with the requested tile indices (tileRow, tileCol). The tile has a single collection (formerly refered as layer) with all selected features in the bounding box of the tile. The feature properties to include in the tile representation can be limited using a query parameter.
-      operationId: getMapTileOfCollectionId
+      operationId: tiles.collection.style.vector.getTile
       parameters:
         - $ref: '#/components/parameters/collectionId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-styles/1.0.0#/components/parameters/styleId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrix'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileRow'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileCol'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/datetime'
-        - $ref: '#/components/parameters/f-png-jpeg'
-        - $ref: '#/components/parameters/filter'
-        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/tileMatrixSetId'
+        - $ref: '#/components/parameters/tileMatrix'
+        - $ref: '#/components/parameters/tileRow'
+        - $ref: '#/components/parameters/tileCol'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f-map-tile'
       responses:
         '200':
           description: A tile of the collection.
@@ -393,119 +327,502 @@ paths:
                 type: string
             application/geo+json:
               schema:
-                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-features/1.0.0#/components/schemas/featureCollectionGeoJSON'
+                $ref: '#/components/schemas/FeatureCollection'
         '404':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+          $ref: '#/components/responses/NotFound'
         '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+          $ref: '#/components/responses/ServerError'
   '/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info':
     get:
       tags:
-        - Tiled map from one collection
+        - Map tiles
       summary: fetch information about a point on a tile from a collection
       description: |-
         Retrieves inforamtion on a point of a tile in the requested tileMatrixSet, on the requested tileMatrix in the TileMatrixSet, with the requested tile indices (tileRow, tileCol). The tile has a single collection (formerly refered as layer) with all selected features in the bounding box of the tile. The feature properties to include in the tile representation can be limited using a query parameter.
-      operationId: getFeatureInfoMapTileOfCollectionId
+      operationId: tiles.collection.style.map.getInfo
       parameters:
         - $ref: '#/components/parameters/collectionId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-styles/1.0.0#/components/parameters/styleId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrix'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileRow'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileCol'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-tiles/1.0.0#/components/parameters/coord_i'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-tiles/1.0.0#/components/parameters/coord_j'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-tiles/1.0.0#/components/parameters/infoTemplate'
-        - $ref: '#/components/parameters/f-tile'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/datetime'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/tileMatrixSetId'
+        - $ref: '#/components/parameters/tileMatrix'
+        - $ref: '#/components/parameters/tileRow'
+        - $ref: '#/components/parameters/tileCol'
+        - $ref: '#/components/parameters/coord_i'
+        - $ref: '#/components/parameters/coord_j'
+        - $ref: '#/components/parameters/f-tile-info'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/otherParameters'
       responses:
         '200':
           description: A getFeatureInfo of a tile of the collection.
           content:
             application/geo+json:
               schema:
-                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-features/1.0.0#/components/schemas/featureCollectionGeoJSON'
+                $ref: '#/components/schemas/FeatureCollection'
         '404':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+          $ref: '#/components/responses/NotFound'
         '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'         
-  '/collections/{collectionId}/tiles/{tileMatrixSetId}':
-    get:
-      tags:
-        - MultiTiles
-      summary: |-
-        fetch tiles of a collection.
-      operationId: getTilesCollectionId
-      parameters:
-        - $ref: '#/components/parameters/collectionId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/scaleDenominator'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/bbox'
-        - $ref: '#/components/parameters/f-tile'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/multiTileType'
-        - $ref: '#/components/parameters/f-json-zip'
-      responses:
-        '200':
-          description: |-
-            A tiling scheme used to partition the collection into tiles.
-          content:
-            application/json:
-              schema:
-                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/schemas/tileSet'
-            application/x-zip-compressed:
-              schema:
-                type: string
-                format: binary
-        '404':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
-        '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
-  '/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}':
-    get:
-      tags:
-        - MultiTiles
-      summary: |-
-        fetch tiles of a collection.
-      operationId: getMapTilesCollectionId
-      parameters:
-        - $ref: '#/components/parameters/collectionId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-styles/1.0.0#/components/parameters/styleId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/scaleDenominator'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/bbox'
-        - $ref: '#/components/parameters/f-tile'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/multiTileType'
-        - $ref: '#/components/parameters/f-json-zip'
-      responses:
-        '200':
-          description: |-
-            A tiling scheme used to partition the collection into tiles.
-          content:
-            application/json:
-              schema:
-                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/schemas/tileSet'
-            application/x-zip-compressed:
-              schema:
-                type: string
-                format: binary
-        '404':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
-        '500':
-          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
-
+          $ref: '#/components/responses/ServerError'
 components:
   securitySchemes:
     BasicAuth:
       type: http
       scheme: basic
   schemas:
+    confClasses:
+      type: object
+      required:
+        - conformsTo
+      properties:
+        conformsTo:
+          type: array
+          items:
+            type: string
+    link:
+      type: object
+      required:
+        - href
+      properties:
+        href:
+          type: string
+          example: http://data.example.com/buildings/123
+        rel:
+          type: string
+          example: alternate
+        type:
+          type: string
+          example: application/geo+json
+        hreflang:
+          type: string
+          example: en
+        title:
+          type: string
+          example: Trierer Strasse 70, 53115 Bonn
+        length:
+          type: integer
+    landingPage:
+      type: object
+      required:
+        - links
+      properties:
+        title:
+          type: string
+          example: Buildings in Bonn
+        description:
+          type: string
+          example: Access to data about buildings in the city of Bonn via a Web API that conforms to the OGC API Features specification.
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+    collectionInfo:
+      type: object
+      required:
+        - id
+        - links
+      properties:
+        id:
+          type: string
+          description: identifier of the collection used, for example, in URIs
+          example: dem
+        title:
+          type: string
+          description: human readable title of the collection
+          example: Digital Elevation Model
+        description:
+          type: string
+          description: a description of the data in the collection
+          example: A Digital Elevation Model.
+        links:
+          type: array
+          example:
+            - href: http://data.example.org/collections/dem?f=json
+              rel: self
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem?f=html
+              rel: alternate
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage
+              rel: coverage
+              type: image/tiff; application=geotiff
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/domainset
+              rel: domainset
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/rangetype
+              rel: rangetype
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/metadata
+              rel: metadata
+              type: application/json
+              title: Digital Elevation Model
+          items:
+            $ref: '#/components/schemas/link'
+        extent:
+          $ref: '#/components/schemas/extent-uad'
+        itemType:
+          description: indicator about the type of the items in the collection if the collection has an accessible /collections/{collectionId}/items endpoint
+          type: string
+          default: unknown
+        crs:
+          description: the list of coordinate reference systems supported by the API; the first item is the default coordinate reference system
+          type: array
+          items:
+            type: string
+          default:
+            - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+          example:
+            - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+            - http://www.opengis.net/def/crs/EPSG/0/4326
+        dataType:
+          allOf:
+            - description: Type of data represented in the collection
+            - $ref: '#/components/schemas/dataType'
+        geometryDimension:
+          description: 'The geometry dimension of the features shown in this layer (0: points, 1: curves, 2: surfaces, 3: solids), unspecified: mixed or unknown'
+          type: integer
+          minimum: 0
+          maximum: 3
+        minScaleDenominator:
+          description: Minimum scale denominator for usage of the collection
+          type: number
+        maxScaleDenominator:
+          description: Maximum scale denominator for usage of the collection
+          type: number
+        minCellSize:
+          description: Minimum cell size for usage of the collection
+          type: number
+        maxCellSize:
+          description: Maximum cell size for usage of the collection
+          type: number
+    dataType:
+      anyOf:
+        - type: string
+        - type: string
+          enum:
+            - map
+            - vector
+            - coverage
+    extent:
+      description: |-
+        The extent of the data in the collection. In the Core only spatial and temporal
+        extents are specified. Extensions may add additional members to represent other
+        extents, for example, thermal or pressure ranges.
+
+        The first item in the array describes the overall extent of
+        the data. All subsequent items describe more precise extents,
+        e.g., to identify clusters of data.
+        Clients only interested in the overall extent will only need to
+        access the first item in each array.
+      type: object
+      properties:
+        spatial:
+          description: The spatial extent of the data in the collection.
+          type: object
+          properties:
+            bbox:
+              description: |-
+                One or more bounding boxes that describe the spatial extent of the dataset.
+                In the Core only a single bounding box is supported.
+
+                Extensions may support additional areas.
+                The first bounding box describes the overall spatial
+                extent of the data. All subsequent bounding boxes describe
+                more precise bounding boxes, e.g., to identify clusters of data.
+                Clients only interested in the overall spatial extent will
+                only need to access the first item in each array.
+              type: array
+              minItems: 1
+              items:
+                description: |-
+                  Each bounding box is provided as four or six numbers, depending on
+                  whether the coordinate reference system includes a vertical axis
+                  (height or depth):
+
+                  * Lower left corner, coordinate axis 1
+                  * Lower left corner, coordinate axis 2
+                  * Minimum value, coordinate axis 3 (optional)
+                  * Upper right corner, coordinate axis 1
+                  * Upper right corner, coordinate axis 2
+                  * Maximum value, coordinate axis 3 (optional)
+
+                  If the value consists of four numbers, the coordinate reference system is
+                  WGS 84 longitude/latitude (http://www.opengis.net/def/crs/OGC/1.3/CRS84)
+                  unless a different coordinate reference system is specified in a parameter `bbox-crs`.
+
+                  If the value consists of six numbers, the coordinate reference system is WGS 84
+                  longitude/latitude/ellipsoidal height (http://www.opengis.net/def/crs/OGC/0/CRS84h)
+                  unless a different coordinate reference system is specified in a parameter `bbox-crs`.
+
+                  For WGS 84 longitude/latitude the values are in most cases the sequence of
+                  minimum longitude, minimum latitude, maximum longitude and maximum latitude.
+                  However, in cases where the box spans the antimeridian the first value
+                  (west-most box edge) is larger than the third value (east-most box edge).
+
+                  If the vertical axis is included, the third and the sixth number are
+                  the bottom and the top of the 3-dimensional bounding box.
+
+                  If a feature has multiple spatial geometry properties, it is the decision of the
+                  server whether only a single spatial geometry property is used to determine
+                  the extent or all relevant geometries.
+                type: array
+                oneOf:
+                  - minItems: 4
+                    maxItems: 4
+                  - minItems: 6
+                    maxItems: 6
+                items:
+                  type: number
+                example:
+                  - -180
+                  - -90
+                  - 180
+                  - 90
+            crs:
+              description: |-
+                Coordinate reference system of the coordinates in the spatial extent
+                (property `bbox`). The default reference system is WGS 84 longitude/latitude.
+                In the Core the only other supported coordinate reference system is
+                WGS 84 longitude/latitude/ellipsoidal height for coordinates with height.
+                Extensions may support additional coordinate reference systems and add
+                additional enum values.
+              type: string
+              enum:
+                - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+                - http://www.opengis.net/def/crs/OGC/0/CRS84h
+              default: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+            grid:
+              description: |-
+                Provides information about the limited availability of data within the collection organized
+                as a grid (regular or irregular) along each spatial dimension.
+              type: array
+              minItems: 2
+              maxItems: 3
+              items:
+                type: object
+                properties:
+                  coordinates:
+                    description: |-
+                      List of coordinates along the dimension for which data organized as an irregular grid in the collection is available
+                      (e.g., 2, 10, 80, 100).
+                    type: array
+                    minItems: 1
+                    items:
+                      oneOf:
+                        - type: string
+                          nullable: true
+                        - type: number
+                    example:
+                      - 2
+                      - 10
+                      - 80
+                      - 100
+                  cellsCount:
+                    description: |-
+                      Number of samples available along the dimension for data organized as a regular grid.
+                      For values representing the whole area of contiguous cells spanning _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_.
+                      For values representing infinitely small point cells spaced by _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_ + 1.
+                    type: integer
+                    example: 50
+                  resolution:
+                    description: Resolution of regularly gridded data along the dimension in the collection
+                    oneOf:
+                      - type: string
+                        nullable: true
+                      - type: number
+                    example: 0.0006866455078
+        temporal:
+          description: The temporal extent of the features in the collection.
+          type: object
+          properties:
+            interval:
+              description: |-
+                One or more time intervals that describe the temporal extent of the dataset.
+                In the Core only a single time interval is supported.
+
+                Extensions may support multiple intervals.
+                The first time interval describes the overall
+                temporal extent of the data. All subsequent time intervals describe
+                more precise time intervals, e.g., to identify clusters of data.
+                Clients only interested in the overall extent will only need
+                to access the first item in each array.
+              type: array
+              minItems: 1
+              items:
+                description: |-
+                  Begin and end times of the time interval. The timestamps are in the
+                  temporal coordinate reference system specified in `trs`. By default
+                  this is the Gregorian calendar.
+
+                  The value `null` for start or end time is supported and indicates a half-bounded time interval.
+                type: array
+                minItems: 2
+                maxItems: 2
+                items:
+                  type: string
+                  format: date-time
+                  nullable: true
+                example:
+                  - '2011-11-11T12:22:11Z'
+                  - null
+            trs:
+              description: |-
+                Coordinate reference system of the coordinates in the temporal extent
+                (property `interval`). The default reference system is the Gregorian calendar.
+                In the Core this is the only supported temporal coordinate reference system.
+                Extensions may support additional temporal coordinate reference systems and add
+                additional enum values.
+              type: string
+              enum:
+                - http://www.opengis.net/def/uom/ISO-8601/0/Gregorian
+              default: http://www.opengis.net/def/uom/ISO-8601/0/Gregorian
+            grid:
+              type: object
+              description: Provides information about the limited availability of data within the collection organized as a grid (regular or irregular) along the temporal dimension.
+              properties:
+                coordinates:
+                  description: |-
+                    List of coordinates along the temporal dimension for which data organized as an irregular grid in the collection is available
+                    (e.g., "2017-11-14T09:00Z","2017-11-14T12:00Z","2017-11-14T15:00Z","2017-11-14T18:00Z","2017-11-14T21:00Z").
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    nullable: true
+                  example:
+                    - - 2020-11-12T12:15Z
+                      - 2020-11-12T12:30Z
+                      - 2020-11-12T12:45Z
+                cellsCount:
+                  description: |-
+                    Number of samples available along the temporal dimension for data organized as a regular grid.
+                    For values representing the whole area of contiguous cells spanning _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_.
+                    For values representing infinitely small point cells spaced by _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_ + 1.
+                  type: integer
+                  example: 50
+                resolution:
+                  description: Resolution of regularly gridded data along the temporal dimension in the collection
+                  oneOf:
+                    - type: string
+                      nullable: true
+                    - type: number
+                  example: PT1H
+    extent-uad:
+      title: Extent with Uniform Additional Dimensions Schema
+      description: |-
+        The extent module only addresses spatial and temporal extents. This module extends extent by specifying how
+        intervals and crs properties can be used to specify additional geometries.
+      allOf:
+        - $ref: '#/components/schemas/extent'
+        - type: object
+          additionalProperties:
+            description: The domain intervals for any additional dimensions of the extent (envelope) beyond those described in temporal and spatial.
+            type: object
+            oneOf:
+              - required:
+                  - interval
+                  - crs
+              - required:
+                  - interval
+                  - trs
+              - required:
+                  - interval
+                  - vrs
+            properties:
+              interval:
+                description: |-
+                  One or more intervals that describe the extent for this dimension of the dataset.
+                  The value `null` is supported and indicates an unbounded or half-bounded interval.
+                  The first interval describes the overall extent of the data for this dimension.
+                  All subsequent intervals describe more precise intervals, e.g., to identify clusters of data.
+                  Clients only interested in the overall extent will only need
+                  to access the first item (a pair of lower and upper bound values).
+                type: array
+                minItems: 1
+                items:
+                  description: |-
+                    Lower and upper bound values of the interval. The values
+                    are in the coordinate reference system specified in `crs`, `trs` or `vrs`.
+                  type: array
+                  minItems: 2
+                  maxItems: 2
+                  items:
+                    oneOf:
+                      - type: string
+                        nullable: true
+                      - type: number
+                  example:
+                    - '2011-11-11T12:22:11Z'
+                    - 32.5
+                    - null
+              crs:
+                type: string
+                description: generic coordinate reference system suitable for any type of dimensions
+              trs:
+                type: string
+                description: temporal coordinate reference system (e.g. as defined by Features for 'temporal')
+              vrs:
+                type: string
+                description: vertical coordinate reference system (e.g. as defined in EDR for 'vertical')
+              grid:
+                type: object
+                description: Provides information about the limited availability of data within the collection organized as a grid (regular or irregular) along the dimension.
+                properties:
+                  coordinates:
+                    description: |-
+                      List of coordinates along the temporal dimension for which data organized as an irregular grid in the collection is available
+                      (e.g., 2, 10, 80, 100).
+                    type: array
+                    minItems: 1
+                    items:
+                      oneOf:
+                        - type: string
+                          nullable: true
+                        - type: number
+                    example:
+                      - 2
+                      - 10
+                      - 80
+                      - 100
+                  cellsCount:
+                    description: |-
+                      Number of samples available along the dimension for data organized as a regular grid.
+                      For values representing the whole area of contiguous cells spanning _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_.
+                      For values representing infinitely small point cells spaced by _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_ + 1.
+                    type: integer
+                    example: 50
+                  resolution:
+                    description: Resolution of regularly gridded data along the dimension in the collection
+                    oneOf:
+                      - type: string
+                        nullable: true
+                      - type: number
+                    example:
+                      - PT1H
+                      - 0.0006866455078
+    collections:
+      type: object
+      required:
+        - links
+        - collections
+      properties:
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+        collections:
+          type: array
+          items:
+            $ref: "#/components/schemas/collection"
     collection:
       allOf:
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/collection'
+        - $ref: '#/components/schemas/collection'
         - $ref: '#/components/schemas/collection-link'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-maps/1.0.0#/components/schemas/collection'
-        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/schemas/collection'
+        - $ref: '#/components/schemas/collection'
     collection-link:
       #This element is a duplicate of the one in OGC API common but it is enriched with more examples for maps and other resource types.
       type: object
@@ -515,17 +832,17 @@ components:
         links:
           type: array
           items:
-            $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/link'
-          example:
-            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-collection-this'
-            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-collection-describedBy'
-            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-features/1.0.0#/components/examples/link-collection-items'
-            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-coverages/1.0.0#/components/examples/link-collection-rangeType'
-            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-coverages/1.0.0#/components/examples/link-collection-domainSet'
-            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-maps/1.0.0#/components/examples/link-collection-map'
-            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-maps/1.0.0#/components/examples/link-collection-info'
-            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/examples/link-collection-tiles'
-            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/examples/link-collection-info'
+            $ref: '#/components/schemas/link'
+    crs:
+      description: the list of coordinate reference systems supported by the API; the first item is the default coordinate reference system
+      type: array
+      items:
+        type: string
+      default:
+        - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+      example:
+        - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+        - http://www.opengis.net/def/crs/EPSG/0/4326
     queryables:
       type: object
       required:
@@ -558,6 +875,765 @@ components:
             - dateTime
             - boolean
             - geometry
+    styles:
+      type: string
+    exception:
+      type: object
+      description: |-
+        Information about the exception: an error code plus an optional description.
+      required:
+        - code
+      properties:
+        code:
+          type: string
+        description:
+          type: string
+    tileMatrixLimits:
+      title: TileMatrixLimits
+      description: The limits for an individual tile matrix of a TileSet's TileMatrixSet, as defined in the OGC 2D TileMatrixSet and TileSet Metadata Standard
+      type: object
+      required:
+        - tileMatrix
+        - minTileRow
+        - maxTileRow
+        - minTileCol
+        - maxTileCol
+      properties:
+        tileMatrix:
+          type: string
+        minTileRow:
+          type: integer
+          minimum: 0
+        maxTileRow:
+          type: integer
+          minimum: 0
+        minTileCol:
+          type: integer
+          minimum: 0
+        maxTileCol:
+          type: integer
+          minimum: 0
+    2DPoint:
+      description: A 2D Point in the CRS indicated elsewhere
+      type: array
+      minItems: 2
+      maxItems: 2
+      items:
+        type: number
+    2DBoundingBox:
+      description: Minimum bounding rectangle surrounding a 2D resource in the CRS indicated elsewhere
+      type: object
+      required:
+        - lowerLeft
+        - upperRight
+      properties:
+        lowerLeft:
+          $ref: '#/components/schemas/2DPoint'
+        upperRight:
+          $ref: '#/components/schemas/2DPoint'
+        crs:
+          $ref: '#/components/schemas/crs'
+        orderedAxes:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items:
+            type: string
+    boundingBox:
+      allOf:
+        - description: Minimum bounding rectangle surrounding the tile matrix set, in the supported CRS
+        - $ref: '#/components/schemas/2DBoundingBox'
+    tileMatrixSets:
+      type: string
+      enum:
+        - WebMercatorQuad
+        - WorldCRS84Quad
+        - WorldMercatorWGS84Quad
+    timeStamp:
+      description: This property indicates the time and date when the response was generated using RFC 3339 notation.
+      type: string
+      format: date-time
+      example: '2017-08-17T08:05:32Z'
+    tileSet:
+      title: Tile Set Metadata
+      description: A resource describing a tileset based on the OGC TileSet Metadata Standard. At least one of the 'TileMatrixSet',  or a link with 'rel' http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme
+      type: object
+      required:
+        - dataType
+        - crs
+        - links
+      properties:
+        title:
+          description: A title for this tileset
+          type: string
+        description:
+          description: Brief narrative description of this tile set
+          type: string
+        dataType:
+          allOf:
+            - description: Type of data represented in the tileset
+            - $ref: '#/components/schemas/dataType'
+        crs:
+          allOf:
+            - description: Coordinate Reference System (CRS)
+            - $ref: '#/components/schemas/crs'
+        tileMatrixSetURI:
+          description: Reference to a Tile Matrix Set on an offical source for Tile Matrix Sets such as the OGC NA definition server (http://www.opengis.net/def/tms/). Required if the tile matrix set is registered on an open official source.
+          type: string
+          format: uri
+        links:
+          description: 'Links to related resources. Possible link ''rel'' values are: ''http://www.opengis.net/def/rel/ogc/1.0/dataset'' for a URL pointing to the dataset, ''item'' for a URL template to get a tile; ''alternate'' for a URL pointing to another representation of the TileSetMetadata (e.g a TileJSON file); ''http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme'' for a definition of the TileMatrixSet; ''http://www.opengis.net/def/rel/ogc/1.0/geodata'' for pointing to a single collection (if the tileset represents a single collection)'
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+        tileMatrixSetLimits:
+          description: Limits for the TileRow and TileCol values for each TileMatrix in the tileMatrixSet. If missing, there are no limits other that the ones imposed by the TileMatrixSet. If present the TileMatrices listed are limited and the rest not available at all
+          type: array
+          items:
+            $ref: '#/components/schemas/tileMatrixLimits'
+        epoch:
+          description: Epoch of the Coordinate Reference System (CRS)
+          type: number
+        layers:
+          minItems: 1
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - dataType
+            properties:
+              title:
+                description: Title of this tile matrix set, normally used for display to a human
+                type: string
+              description:
+                description: Brief narrative description of this tile matrix set, normally available for display to a human
+                type: string
+              keywords:
+                description: Unordered list of one or more commonly used or formalized word(s) or phrase(s) used to describe this layer
+                type: string
+              id:
+                description: Unique identifier of the Layer. Implementation of 'identifier'
+                type: string
+              dataType:
+                allOf:
+                  - description: Type of data represented in the layer
+                  - $ref: '#/components/schemas/dataType'
+              geometryDimension:
+                description: 'The geometry dimension of the features shown in this layer (0: points, 1: curves, 2: surfaces, 3: solids), unspecified: mixed or unknown'
+                type: integer
+                minimum: 0
+                maximum: 3
+              featureType:
+                description: Feature type identifier. Only applicable to layers of datatype 'geometries'
+                type: string
+              attribution:
+                description: Short reference to recognize the author or provider
+                type: string
+              license:
+                description: License applicable to the tiles
+                type: string
+              pointOfContact:
+                description: Useful information to contact the authors or custodians for the layer (e.g. e-mail address, a physical address,  phone numbers, etc)
+                type: string
+              publisher:
+                description: Organization or individual responsible for making the layer available
+                type: string
+              theme:
+                description: Category where the layer can be grouped
+                type: string
+              crs:
+                allOf:
+                  - description: Coordinate Reference System (CRS)
+                  - $ref: '#/components/schemas/crs'
+              epoch:
+                description: Epoch of the Coordinate Reference System (CRS)
+                type: number
+              minScaleDenominator:
+                description: Minimum scale denominator for usage of the layer
+                type: number
+              maxScaleDenominator:
+                description: Maximum scale denominator for usage of the layer
+                type: number
+              minCellSize:
+                description: Minimum cell size for usage of the layer
+                type: number
+              maxCellSize:
+                description: Maximum cell size for usage of the layer
+                type: number
+              maxTileMatrix:
+                description: TileMatrix identifier associated with the minScaleDenominator
+                type: string
+              minTileMatrix:
+                description: TileMatrix identifier associated with the maxScaleDenominator
+                type: string
+              boundingBox:
+                allOf:
+                  - description: Minimum bounding rectangle surrounding the layer
+                  - $ref: '#/components/schemas/2DBoundingBox'
+              created:
+                allOf:
+                  - description: When the layer was first produced
+                  - $ref: '#/components/schemas/timeStamp'
+              updated:
+                allOf:
+                  - description: Last layer change/revision
+                  - $ref: '#/components/schemas/timeStamp'
+              style:
+                allOf:
+                  - description: Style used to generate the layer in the tileset
+                  - $ref: '#/components/schemas/tileSet/properties/style/allOf/1'
+              geoDataClasses:
+                description: URI identifying a class of data contained in this layer (useful to determine compatibility with styles or processes)
+                type: array
+                items:
+                  type: string
+              propertiesSchema:
+                allOf:
+                  - description: Properties represented by the features in this layer. Can be the attributes of a feature dataset (datatype=geometries) or the rangeType of a coverage (datatype=coverage)
+                  - description: Attributes of the features or rangetypes of a coverage. Defined by a subset of the JSON Schema for the properties of a feature
+                    type: object
+                    required:
+                      - type
+                      - properties
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - object
+                      required:
+                        description: Implements 'multiplicity' by citing property 'name' defined as 'additionalProperties'
+                        type: array
+                        minItems: 1
+                        items:
+                          type: string
+                      properties:
+                        type: object
+                        default: {}
+                        additionalProperties:
+                          description: No property names are defined but any property name they should be described by JSON Schema. So 'additionalProperties' implements 'name'.
+                          type: object
+                          properties:
+                            title:
+                              type: string
+                            description:
+                              description: Implements 'description'
+                              type: string
+                            type:
+                              type: string
+                              enum:
+                                - array
+                                - boolean
+                                - integer
+                                - 'null'
+                                - number
+                                - object
+                                - string
+                            enum:
+                              description: Implements 'acceptedValues'
+                              type: array
+                              minItems: 1
+                              items: {}
+                              uniqueItems: true
+                            format:
+                              description: Complements implementation of 'type'
+                              type: string
+                            contentMediaType:
+                              description: Implements 'mediaType'
+                              type: string
+                            maximum:
+                              description: Implements 'range'
+                              type: number
+                            exclusiveMaximum:
+                              description: Implements 'range'
+                              type: number
+                            minimum:
+                              description: Implements 'range'
+                              type: number
+                            exclusiveMinimum:
+                              description: Implements 'range'
+                              type: number
+                            pattern:
+                              type: string
+                              format: regex
+                            maxItems:
+                              description: Implements 'upperMultiplicity'
+                              type: integer
+                              minimum: 0
+                            minItems:
+                              description: Implements 'lowerMultiplicity'
+                              type: integer
+                              default: 0
+                              minimum: 0
+                            observedProperty:
+                              type: string
+                            observedPropertyURI:
+                              type: string
+                              format: uri
+                            uom:
+                              type: string
+                            uomURI:
+                              type: string
+                              format: uri
+              links:
+                description: 'Links related to this layer. Possible link ''rel'' values are: ''geodata'' for a URL pointing to the collection of geospatial data.'
+                type: array
+                minItems: 1
+                items:
+                  $ref: '#/components/schemas/link'
+        boundingBox:
+          allOf:
+            - description: Minimum bounding rectangle surrounding the tile matrix set, in the supported CRS
+            - $ref: '#/components/schemas/2DBoundingBox'
+        centerPoint:
+          allOf:
+            - description: Location of a tile that nicely represents the tileset. Implementations may use this center value to set the default location or to present a representative tile in a user interface
+            - type: object
+              required:
+                - coordinates
+              properties:
+                coordinates:
+                  type: array
+                  minItems: 2
+                  maxItems: 2
+                  items:
+                    type: number
+                crs:
+                  allOf:
+                    - description: Coordinate Reference System (CRS) of the coordinates
+                    - $ref: '#/components/schemas/crs'
+                tileMatrix:
+                  description: TileMatrix identifier associated with the scaleDenominator
+                  type: string
+                scaleDenominator:
+                  description: Scale denominator of the tile matrix selected
+                  type: number
+                cellSize:
+                  description: Cell size of the tile matrix selected
+                  type: number
+        style:
+          allOf:
+            - description: Style involving all layers used to generate the tileset
+            - type: object
+              required:
+                - id
+              properties:
+                id:
+                  description: An identifier for this style. Implementation of 'identifier'
+                  type: string
+                title:
+                  description: A title for this style
+                  type: string
+                description:
+                  description: Brief narrative description of this style
+                  type: string
+                keywords:
+                  description: keywords about this style
+                  type: array
+                  items:
+                    type: string
+                links:
+                  description: 'Links to style related resources. Possible link ''rel'' values are: ''style'' for a URL pointing to the style description, ''styleSpec'' for a URL pointing to the specification or standard used to define the style.'
+                  type: array
+                  minItems: 1
+                  items:
+                    $ref: '#/components/schemas/link'
+        attribution:
+          description: Short reference to recognize the author or provider
+          type: string
+        license:
+          description: License applicable to the tiles
+          type: string
+        accessConstraints:
+          description: Restrictions on the availability of the Tile Set that the user needs to be aware of before using or redistributing the Tile Set
+          type: string
+          default: unclassified
+          enum:
+            - unclassified
+            - restricted
+            - confidential
+            - secret
+            - topSecret
+        keywords:
+          description: keywords about this tileset
+          type: array
+          items:
+            type: string
+        version:
+          description: Version of the Tile Set. Changes if the data behind the tiles has been changed
+          type: string
+        created:
+          allOf:
+            - description: When the Tile Set was first produced
+            - $ref: '#/components/schemas/timeStamp'
+        updated:
+          allOf:
+            - description: Last Tile Set change/revision
+            - $ref: '#/components/schemas/timeStamp'
+        pointOfContact:
+          description: Useful information to contact the authors or custodians for the Tile Set
+          type: string
+        mediaTypes:
+          description: Media types available for the tiles
+          type: array
+          items:
+            type: string
+    tileMatrixSet:
+      title: Tile Matrix Set Definition
+      description: A definition of a tile matrix set following the Tile Matrix Set standard. For tileset metadata, such a description (in `tileMatrixSet` property) is only required for offline use, as an alternative to a link with a `http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme` relation type.
+      type: object
+      required:
+        - crs
+        - tileMatrices
+      properties:
+        title:
+          description: Title of this tile matrix set, normally used for display to a human
+          type: string
+        description:
+          description: Brief narrative description of this tile matrix set, normally available for display to a human
+          type: string
+        keywords:
+          description: Unordered list of one or more commonly used or formalized word(s) or phrase(s) used to describe this tile matrix set
+          type: array
+          items:
+            type: string
+        id:
+          description: Tile matrix set identifier. Implementation of 'identifier'
+          type: string
+        uri:
+          description: Reference to an official source for this tileMatrixSet
+          type: string
+          format: uri
+        orderedAxes:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        crs:
+          allOf:
+            - description: Coordinate Reference System (CRS)
+            - $ref: '#/components/schemas/crs'
+        wellKnownScaleSet:
+          description: Reference to a well-known scale set
+          type: string
+          format: uri
+        boundingBox:
+          allOf:
+            - description: Minimum bounding rectangle surrounding the tile matrix set, in the supported CRS
+            - $ref: '#/components/schemas/2DBoundingBox'
+        tileMatrices:
+          type: array
+          description: Describes scale levels and its tile matrices
+          items:
+            description: A tile matrix, usually corresponding to a particular zoom level of a TileMatrixSet.
+            type: object
+            required:
+              - id
+              - scaleDenominator
+              - cellSize
+              - pointOfOrigin
+              - tileWidth
+              - tileHeight
+              - matrixWidth
+              - matrixHeight
+            properties:
+              title:
+                description: Title of this tile matrix, normally used for display to a human
+                type: string
+              description:
+                description: Brief narrative description of this tile matrix set, normally available for display to a human
+                type: string
+              keywords:
+                description: Unordered list of one or more commonly used or formalized word(s) or phrase(s) used to describe this dataset
+                type: array
+                items:
+                  type: string
+              id:
+                description: Identifier selecting one of the scales defined in the TileMatrixSet and representing the scaleDenominator the tile. Implementation of 'identifier'
+                type: string
+              scaleDenominator:
+                description: Scale denominator of this tile matrix
+                type: number
+              cellSize:
+                description: Cell size of this tile matrix
+                type: number
+              cornerOfOrigin:
+                description: The corner of the tile matrix (_topLeft_ or _bottomLeft_) used as the origin for numbering tile rows and columns. This corner is also a corner of the (0, 0) tile.
+                type: string
+                enum:
+                  - topLeft
+                  - bottomLeft
+                default: topLeft
+              pointOfOrigin:
+                allOf:
+                  - description: Precise position in CRS coordinates of the corner of origin (e.g. the top-left corner) for this tile matrix. This position is also a corner of the (0, 0) tile. In previous version, this was 'topLeftCorner' and 'cornerOfOrigin' did not exist.
+                  - $ref: '#/components/schemas/2DPoint'
+              tileWidth:
+                type: number
+                description: Width of each tile of this tile matrix in pixels
+                format: integer
+                minimum: 1
+                multipleOf: 1
+              tileHeight:
+                type: number
+                description: Height of each tile of this tile matrix in pixels
+                format: integer
+                minimum: 1
+                multipleOf: 1
+              matrixHeight:
+                type: number
+                description: Width of the matrix (number of tiles in width)
+                format: integer
+                minimum: 1
+                multipleOf: 1
+              matrixWidth:
+                type: number
+                description: Height of the matrix (number of tiles in height)
+                format: integer
+                minimum: 1
+                multipleOf: 1
+              variableMatrixWidths:
+                description: Describes the rows that has variable matrix width
+                type: array
+                items:
+                  description: Variable Matrix Width data structure
+                  type: object
+                  required:
+                    - coalesce
+                    - minTileRow
+                    - maxTileRow
+                  properties:
+                    coalesce:
+                      description: Number of tiles in width that coalesce in a single tile for these rows
+                      type: number
+                      format: integer
+                      minimum: 2
+                      multipleOf: 1
+                    minTileRow:
+                      description: First tile row where the coalescence factor applies for this tilematrix
+                      type: number
+                      format: integer
+                      minimum: 0
+                      multipleOf: 1
+                    maxTileRow:
+                      description: Last tile row where the coalescence factor applies for this tilematrix
+                      type: number
+                      format: integer
+                      minimum: 0
+                      multipleOf: 1
+    tileMatrixSet-item:
+      title: Tile Matrix Set Item
+      description: A minimal tile matrix set element for use within a list of tile matrix sets linking to a full definition.
+      type: object
+      required:
+        - links
+      properties:
+        id:
+          description: Optional local tile matrix set identifier, e.g. for use as unspecified `{tileMatrixSetId}` parameter. Implementation of 'identifier'
+          type: string
+        title:
+          description: Title of this tile matrix set, normally used for display to a human
+          type: string
+        uri:
+          description: Reference to an official source for this tileMatrixSet
+          type: string
+          format: uri
+        crs:
+          allOf:
+            - description: Coordinate Reference System (CRS)
+            - $ref: '#/components/schemas/crs'
+        links:
+          description: Links to related resources. A 'self' link to the tile matrix set definition is required.
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+    FeatureCollection:
+      title: GeoJSON FeatureCollection
+      type: object
+      required:
+        - type
+        - features
+      properties:
+        type:
+          type: string
+          enum:
+            - FeatureCollection
+        features:
+          type: array
+          items:
+            title: GeoJSON Feature
+            type: object
+            required:
+              - type
+              - properties
+              - geometry
+            properties:
+              type:
+                type: string
+                enum:
+                  - Feature
+              id:
+                oneOf:
+                  - type: number
+                  - type: string
+              properties:
+                type: object
+                nullable: true
+              geometry:
+                oneOf:
+                  - title: GeoJSON Point
+                    type: object
+                    nullable: true
+                    required:
+                      - type
+                      - coordinates
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - Point
+                      coordinates:
+                        type: array
+                        minItems: 2
+                        items:
+                          type: number
+                      bbox:
+                        type: array
+                        minItems: 4
+                        items:
+                          type: number
+                  - title: GeoJSON LineString
+                    type: object
+                    required:
+                      - type
+                      - coordinates
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - LineString
+                      coordinates:
+                        type: array
+                        minItems: 2
+                        items:
+                          type: array
+                          minItems: 2
+                          items:
+                            type: number
+                      bbox:
+                        type: array
+                        minItems: 4
+                        items:
+                          type: number
+                  - title: GeoJSON Polygon
+                    type: object
+                    required:
+                      - type
+                      - coordinates
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - Polygon
+                      coordinates:
+                        type: array
+                        items:
+                          type: array
+                          minItems: 4
+                          items:
+                            type: array
+                            minItems: 2
+                            items:
+                              type: number
+                      bbox:
+                        type: array
+                        minItems: 4
+                        items:
+                          type: number
+                  - title: GeoJSON MultiPoint
+                    type: object
+                    required:
+                      - type
+                      - coordinates
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - MultiPoint
+                      coordinates:
+                        type: array
+                        items:
+                          type: array
+                          minItems: 2
+                          items:
+                            type: number
+                      bbox:
+                        type: array
+                        minItems: 4
+                        items:
+                          type: number
+                  - title: GeoJSON MultiLineString
+                    type: object
+                    required:
+                      - type
+                      - coordinates
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - MultiLineString
+                      coordinates:
+                        type: array
+                        items:
+                          type: array
+                          minItems: 2
+                          items:
+                            type: array
+                            minItems: 2
+                            items:
+                              type: number
+                      bbox:
+                        type: array
+                        minItems: 4
+                        items:
+                          type: number
+                  - title: GeoJSON MultiPolygon
+                    type: object
+                    required:
+                      - type
+                      - coordinates
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - MultiPolygon
+                      coordinates:
+                        type: array
+                        items:
+                          type: array
+                          items:
+                            type: array
+                            minItems: 4
+                            items:
+                              type: array
+                              minItems: 2
+                              items:
+                                type: number
+                      bbox:
+                        type: array
+                        minItems: 4
+                        items:
+                          type: number
+              bbox:
+                type: array
+                minItems: 4
+                items:
+                  type: number
+        bbox:
+          type: array
+          minItems: 4
+          items:
+            type: number
   parameters:
     collectionId:
       name: collectionId
@@ -566,62 +1642,75 @@ components:
       description: Identifier (name) of a specific collection
       schema:
         type: string
-    f-json-zip:
+    vectorCollectionId:
+      name: vectorCollectionId
+      in: path
+      required: true
+      description: Identifier (name) of a collection serving vector tiles
+      schema:
+        type: string
+    mapCollectionId:
+      name: mapCollectionId
+      in: path
+      required: true
+      description: Identifier (name) of a collection serving raster tiles
+      schema:
+        type: string
+    f-json-html:
+      name: f
+      in: query
+      description: The format of the response. If no value is provided, the accept header is used to determine the format. Accepted values are 'json' or 'html'.
+      required: false
+      schema:
+        type: string
+        enum:
+          - json
+          - html
+      style: form
+      explode: false
+    f-tile-info:
       name: f
       in: query
       description: |-
         The format of the response. If no value is provided, the standard http
         rules apply, i.e., the accept header is used to determine the format.
-
-        The only pre-defined value is "json". The response to other values is
-        determined by the server.
       required: false
       style: form
       explode: false
       schema:
         type: string
         enum:
-          - json
-          - zip
-      example: json
-    f-png-jpeg:
+          - application/geo+json
+          - text/html
+          - text/plain
+      example: text/html
+    f-map-tile:
       name: f
       in: query
       description: |-
         The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header is used to determine the format.
-
-        Pre-defined values are jpeg, png or gif for image based tiles. The response to other values is determined by the server.
       required: false
       style: form
       explode: false
       schema:
         type: string
         enum:
-          - png
-          - jpeg
-          - gif
-          - mvt
-          - json
-      example: png
-    f-vector:
-        name: f
-        in: query
-        description: |-
-          The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header is used to determine the format.
-
-          Pre-defined values are "mvt" for a Mapbox Vector Tile, "json" for a GeoJSON tiled feature collection. The response to other values is determined by the server.
-        required: false
-        style: form
-        explode: false
-        schema:
-          type: string
-          enum:
-            - png
-            - jpeg
-            - gif
-            - mvt
-            - json
-        example: png
+          - image/png
+          - image/jpeg
+          - image/gif
+    f-vector-tile:
+      name: f
+      in: query
+      description: |-
+        The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header is used to determine the format.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - application/vnd.mapbox-vector-tile
+          - application/geo+json
     f-map:
       name: f-map
       in: query
@@ -674,39 +1763,103 @@ components:
         enum:
           - image/geotiff
       example: image/geotiff
-    f-png-jpeg:
-      name: f
+    tileMatrix:
+      name: tileMatrix
+      in: path
+      description: |-
+        Identifier selecting one of the scales defined in the TileMatrixSet and representing the scaleDenominator the tile. For example,
+        Ireland is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and tileCol=15.
+      required: true
+      schema:
+        type: string
+      example: '5'
+    tileRow:
+      name: tileRow
+      in: path
+      description: Row index of the tile on the selected TileMatrix. It cannot exceed the MatrixWidth-1 for the selected TileMatrix. For example, Ireland is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and tileCol=15.
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+      example: 10
+    tileCol:
+      name: tileCol
+      in: path
+      description: Column index of the tile on the selected TileMatrix. It cannot exceed the MatrixHeight-1 for the selected TileMatrix. For example, Ireland is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and tileCol=15.
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+      example: 15
+    coord_i:
+      name: i
+      in: query
+      description: Horizontal (x) coordinate within a map or tile.
+      required: true
+      schema:
+        type: number
+    coord_j:
+      name: j
+      in: query
+      description: Vertical (y) coordinate within a map or tile.
+      required: true
+      schema:
+        type: number
+    tileMatrixSetId:
+      name: tileMatrixSetId
+      in: path
+      description: Identifier for a supported TileMatrixSet
+      required: true
+      allowEmptyValue: false
+      schema:
+        $ref: '#/components/schemas/tileMatrixSets'
+    datetime:
+      name: datetime
       in: query
       description: |-
-        The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header is used to determine the format.
+        Either a date-time or an interval, half-bounded or bounded. Date and time expressions
+        adhere to RFC 3339. Half-bounded intervals are expressed using double-dots.
 
-        Pre-defined values jpeg, png or gif for image based tiles
-        The response to other values is determined by the server.
+        Examples:
+
+        * A date-time: "2018-02-12T23:20:50Z"
+        * A bounded interval: "2018-02-12T00:00:00Z/2018-03-18T12:31:12Z"
+        * Half-bounded intervals: "2018-02-12T00:00:00Z/.." or "../2018-03-18T12:31:12Z"
+
+        Only features that have a temporal property that intersects the value of
+        `datetime` are selected.
+
+        If a feature has multiple temporal properties, it is the decision of the
+        server whether only a single temporal property is used to determine
+        the extent or all relevant temporal properties.
       required: false
+      schema:
+        type: string
       style: form
       explode: false
-      schema:
-        type: string
-        enum:
-          - image/png
-          - image/jpeg
-          - image/gif
-      example: image/png
-    filter:
-      name: filter
+    subset:
+      name: subset
       in: query
-      description: Defines a filter that will be applied on items, only items matching the filter will be returned
+      description: |
+        Retrieve only part of the data by slicing or trimming along one or more axis
+        For trimming: {axisAbbrev}({low}:{high}) (preserves dimensionality)
+           An asterisk (`*`) can be used instead of {low} or {high} to indicate the minimum/maximum value.
+        For slicing:  {axisAbbrev}({value})      (reduces dimensionality)
+      style: form
+      explode: false
+      required: false
       schema:
-        type: string
-    filter-lang:
-      name: filter-lang
-      in: query
-      description: Filter encoding used in the filter parameter
+        type: array
+        items:
+          type: string
+    styleId:
+      name: styleId
+      in: path
+      description: An identifier representing a specific style.
+      required: true
+      allowEmptyValue: false
       schema:
-        type: string
-        enum:
-          - cql-text
-        default: cql-text
+        $ref: '#/components/schemas/styles'
     otherParameters:
       style: form
       in: query
@@ -716,6 +1869,45 @@ components:
         type: object
         additionalProperties: true
   responses:
+    LandingPage:
+      description: |-
+        The landing page provides links to the API definition
+        (link relations `service-desc` and `service-doc`),
+        the Conformance declaration (path `/conformance`,
+        link relation `conformance`), and the Feature
+        Collections (path `/collections`, link relation
+        `data`).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/landingPage'
+          example:
+            title: Buildings in Bonn
+            description: Access to data about buildings in the city of Bonn via a Web API that conforms to the OGC API Tiles specification.
+            links:
+              - href: 'http://data.example.org'
+                rel: self
+                type: application/json
+                title: this document
+              - href: 'http://data.example.org/openapi'
+                rel: service-desc
+                type: application/vnd.oai.openapi+json;version=3.0
+                title: the API definition
+              - href: 'http://data.example.org/openapi.html'
+                rel: service-doc
+                type: text/html
+                title: the API documentation
+              - href: 'http://data.example.org/conformance'
+                rel: conformance
+                type: application/json
+                title: OGC API conformance classes implemented by this server
+              - href: 'http://data.example.org/collections'
+                rel: data
+                type: application/json
+                title: Information about the feature collections
+        text/html:
+          schema:
+            type: string
     Queryables:
       description: |-
         Information about the feature collection queryable properties
@@ -723,3 +1915,159 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/queryables'
+    NotAcceptable:
+      description: Content negotiation failed. For example, the `Accept` header submitted in the request did not support any of the media types supported by the server for the requested resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/exception'
+        text/html:
+          schema:
+            type: string
+    NotFound:
+      description: The requested resource does not exist on the server. For example, a path parameter had an incorrect value.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/exception'
+        text/html:
+          schema:
+            type: string
+    ServerError:
+      description: |-
+        A server error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/exception'
+        text/html:
+          schema:
+            type: string
+    Collections:
+      description: |-
+        The feature collections shared by this API.
+
+        The dataset is organized as one or more feature collections. This resource
+        provides information about and access to the collections.
+
+        The response contains the list of collections. For each collection, a link
+        to the items in the collection (path `/collections/{collectionId}/items`,
+        link relation `items`) as well as key information about the collection.
+        This information includes:
+
+        * A local identifier for the collection that is unique for the dataset;
+        * A list of coordinate reference systems (CRS) in which geometries may be returned by the server. The first CRS is the default coordinate reference system (the default is always WGS 84 with axis order longitude/latitude);
+        * An optional title and description for the collection;
+        * An optional extent that can be used to provide an indication of the spatial and temporal extent of the collection - typically derived from the data;
+        * An optional indicator about the type of the items in the collection (the default value, if the indicator is not provided, is 'feature').
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/collections'
+          example:
+            links:
+              - href: 'http://data.example.org/collections.json'
+                rel: self
+                type: application/json
+                title: this document
+              - href: 'http://data.example.org/collections.html'
+                rel: alternate
+                type: text/html
+                title: this document as HTML
+              - href: 'http://schemas.example.org/1.0/buildings.xsd'
+                rel: describedBy
+                type: application/xml
+                title: GML application schema for Acme Corporation building data
+              - href: 'http://download.example.org/buildings.gpkg'
+                rel: enclosure
+                type: application/geopackage+sqlite3
+                title: Bulk download (GeoPackage)
+                length: 472546
+            collections:
+              - id: buildings
+                title: Buildings
+                description: Buildings in the city of Bonn.
+                extent:
+                  spatial:
+                    bbox:
+                      - - 7.01
+                        - 50.63
+                        - 7.22
+                        - 50.78
+                  temporal:
+                    interval:
+                      - - '2010-02-15T12:34:56Z'
+                        - null
+                links:
+                  - href: 'http://data.example.org/collections/buildings/items'
+                    rel: items
+                    type: application/geo+json
+                    title: Buildings
+                  - href: 'http://data.example.org/collections/buildings/items.html'
+                    rel: items
+                    type: text/html
+                    title: Buildings
+                  - href: 'https://creativecommons.org/publicdomain/zero/1.0'
+                    rel: license
+                    type: text/html
+                    title: CC0-1.0
+                  - href: 'https://creativecommons.org/publicdomain/zero/1.0/rdf'
+                    rel: license
+                    type: application/rdf+xml
+                    title: CC0-1.0
+        text/html:
+          schema:
+            type: string
+    Collection:
+      description: |-
+        Information about a particular collection of (mostly geospatial) data available from this API. The collection is accessible via one or more OGC API set of specifications, for which a link to relevant accessible resources, e.g. /collections/{collectionId}/(items, coverage, map, tiles...) is contained in the response, with the corresponding relation type, as well as key information about the collection. This information includes:
+        * a local identifier for the collection that is unique for the dataset;
+        * a list of coordinate reference systems (CRS) in which data may be returned by the server. The first CRS is the default coordinate reference system (the default is always WGS 84 with axis order longitude/latitude);
+        * an optional title and description for the collection;
+        * an optional extent that can be used to provide an indication of the spatial and temporal extent of the collection - typically derived from the data;
+        * for collections accessible via the Features or Records API, an optional indicator about the type of the items in the collection (the default value, if the indicator is not provided, is 'feature').
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/collectionInfo'
+          example:
+            id: buildings
+            title: Buildings
+            description: Buildings in the city of Bonn.
+            extent:
+              spatial:
+                bbox:
+                  - - 7.01
+                    - 50.63
+                    - 7.22
+                    - 50.78
+              temporal:
+                interval:
+                  - - '2010-02-15T12:34:56Z'
+                    - null
+            links:
+              - href: http://data.example.org/collections/buildings/items
+                rel: items
+                type: application/geo+json
+                title: Buildings
+              - href: http://data.example.org/collections/buildings/items.html
+                rel: items
+                type: text/html
+                title: Buildings
+              - href: https://creativecommons.org/publicdomain/zero/1.0/
+                rel: license
+                type: text/html
+                title: CC0-1.0
+              - href: https://creativecommons.org/publicdomain/zero/1.0/rdf
+                rel: license
+                type: application/rdf+xml
+                title: CC0-1.0
+        text/html:
+          schema:
+            type: string
+    TileMatrixSet:
+      description: tile matrix set
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/tileMatrixSet'

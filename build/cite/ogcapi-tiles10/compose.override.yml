@@ -1,0 +1,18 @@
+
+#name: ogcapi-features-conformance
+
+services:
+  geoserver:
+    image: ogccite/geoserver:ogcapi-tiles10
+    build:
+      args:
+        GEOSERVER_DATA_DIR_SRC: "./wms13/citewms-1.3"
+
+  teamengine:
+    image: ogccite/ets-ogcapi-tiles10:latest # need a fix in 1.1+, not available in production
+    healthcheck:
+      test: "curl -f http://localhost:8080/teamengine/ || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 5s

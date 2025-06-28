@@ -81,8 +81,12 @@ public class TilesService {
     public static final String CC_TILE_CORE = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core";
 
     public static final String CC_TILESET = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset";
-    public static final String CC_MULTITILES = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/multitiles";
     public static final String CC_INFO = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/info";
+    public static final String CC_TILESETS = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tilesets";
+    public static final String CC_GEODATA_TILESET_LIST =
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tilesets-list";
+    public static final String CC_GEODATA_TILESETS =
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geodata-tilesets";
 
     public static final String CC_TILES_TILE_MATRIX_SET = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tmxs";
     public static final String CC_TILE_MATRIX_SET = "http://www.opengis.net/spec/tilematrixset/1.0/conf/tilematrixset";
@@ -145,7 +149,9 @@ public class TilesService {
                 ConformanceClass.COLLECTIONS,
                 CC_TILE_CORE,
                 CC_TILESET,
-                CC_MULTITILES,
+                CC_TILESETS,
+                CC_GEODATA_TILESET_LIST,
+                CC_GEODATA_TILESETS,
                 CC_INFO,
                 CC_TILES_TILE_MATRIX_SET,
                 CC_TILE_MATRIX_SET,
@@ -437,9 +443,11 @@ public class TilesService {
         tmpHeaders.forEach((k, v) -> headers.add(k, v));
         // content type and disposition
         headers.add(HttpHeaders.CONTENT_TYPE, tile.getMimeType().getMimeType());
+        String disposition = requestedFormat.isInlinePreferred() ? "inline" : "attachment";
         headers.add(
                 HttpHeaders.CONTENT_DISPOSITION,
-                getTileFileName(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer, tile));
+                disposition + "; filename=\""
+                        + getTileFileName(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer, tile) + "\"");
 
         return new ResponseEntity<>(tileBytes, headers, HttpStatus.OK);
     }
@@ -555,13 +563,15 @@ public class TilesService {
     }
 
     public String getTileFileName(
-            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId,
-            @PathVariable(name = "tileMatrix") String tileMatrix,
-            @PathVariable(name = "tileRow") long tileRow,
-            @PathVariable(name = "tileCol") long tileCol,
+            String tileMatrixSetId,
+            String tileMatrix,
+            long tileRow,
+            long tileCol,
             TileLayer tileLayer,
             ConveyorTile tile) {
-        String layerName = getTileLayerId(tileLayer);
+        String layerName = tileLayer instanceof GeoServerTileLayer
+                ? ((GeoServerTileLayer) tileLayer).getSimpleName()
+                : tileLayer.getName();
         return layerName
                 + "_"
                 + getExternalZIndex(tileMatrixSetId, tileMatrix, tileLayer)
@@ -569,6 +579,7 @@ public class TilesService {
                 + tileRow
                 + "_"
                 + tileCol
+                + "."
                 + tile.getMimeType().getFileExtension();
     }
 

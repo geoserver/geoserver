@@ -134,20 +134,38 @@ public class ApiTest extends TilesTestSupport {
         // ... collections
         PathItem collections = paths.get("/collections");
         assertNotNull(collections);
-        assertThat(collections.getGet().getOperationId(), equalTo("describeCollections"));
+        assertThat(collections.getGet().getOperationId(), equalTo("getCollections"));
 
         // ... style
         PathItem collection = paths.get("/collections/{collectionId}");
         assertNotNull(collection);
         assertThat(collection.getGet().getOperationId(), equalTo("describeCollection"));
 
-        // check the styleId parameter contains actual style names from this server
+        // check the collectionId parameter contains actual collection names from this server
         Parameter collectionId = api.getComponents().getParameters().get("collectionId");
         List<String> expectedCollectionIds = Streams.stream(
                         applicationContext.getBean(GWC.class).getTileLayers())
                 .map(tl -> tl.getName())
                 .collect(Collectors.toList());
         assertThat(collectionId.getSchema().getEnum(), equalTo(expectedCollectionIds));
+
+        // check the mapCollectionId parameter contains (some) collection names that have raster formats
+        Parameter mapCollectionId = api.getComponents().getParameters().get("mapCollectionId");
+        List<String> expectedMapCollectionIds = getCollectionsForMimeType("image/");
+        assertThat(mapCollectionId.getSchema().getEnum(), equalTo(expectedMapCollectionIds));
+
+        // check the vectorCollectionId parameter contains (some) collection names that have vector formats
+        Parameter vectorCollectionId = api.getComponents().getParameters().get("vectorCollectionId");
+        List<String> expectedVectorCollectionIds = getCollectionsForMimeType("application/vnd.mapbox-vector");
+        assertThat(vectorCollectionId.getSchema().getEnum(), equalTo(expectedVectorCollectionIds));
+    }
+
+    private static List<String> getCollectionsForMimeType(String prefix) {
+        return Streams.stream(applicationContext.getBean(GWC.class).getTileLayers())
+                .filter(tl ->
+                        tl.getMimeTypes().stream().anyMatch(m -> m.getMimeType().startsWith(prefix)))
+                .map(tl -> tl.getName())
+                .collect(Collectors.toList());
     }
 
     @Test

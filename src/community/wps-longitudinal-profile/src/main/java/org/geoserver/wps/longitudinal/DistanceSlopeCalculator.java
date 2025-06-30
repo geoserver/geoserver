@@ -16,6 +16,8 @@ class DistanceSlopeCalculator {
     private GeodeticCalculator gc;
     private Point current;
     private Point previous;
+    private double previousAltitude;
+    private double currentAltitude;
     private final CoordinateReferenceSystem projection;
     private double distance;
     private double slope;
@@ -26,8 +28,12 @@ class DistanceSlopeCalculator {
     }
 
     public void next(Point next, double altitude) throws TransformException {
-        if (current != null) previous = current;
+        if (current != null) {
+            previous = current;
+            previousAltitude = currentAltitude;
+        }
         current = next;
+        currentAltitude = altitude;
 
         if (previous != null) {
             if (gc != null) {
@@ -39,7 +45,7 @@ class DistanceSlopeCalculator {
             }
 
             // calculate slope percentage
-            slope = altitude * 100 / distance;
+            slope = (currentAltitude - previousAltitude) * 100 / distance;
         }
     }
 

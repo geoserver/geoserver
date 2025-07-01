@@ -75,7 +75,7 @@ public class SchemaConfigurationPage extends GeoServerSecuredPage {
             @Override
             public boolean isRequired() {
                 boolean result = false;
-                IFormSubmitter submitter = form.getRootForm().findSubmitter();
+                IFormSubmitter submitter = form.getRootForm().findSubmittingButton();
                 if (submitter != null) result = !submitter.equals(dataPanel.getUploadLink());
                 return result;
             }
@@ -135,10 +135,10 @@ public class SchemaConfigurationPage extends GeoServerSecuredPage {
     private AjaxSubmitLink getSubmit() {
         AjaxSubmitLink submitLink = new AjaxSubmitLink("save", form) {
             @Override
-            protected void onSubmit(AjaxRequestTarget target) {
-                super.onSubmit(target);
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                super.onSubmit(target, form);
                 clearFeedbackMessages();
-                SchemaInfo templateInfo = form.getModelObject();
+                SchemaInfo templateInfo = (SchemaInfo) form.getModelObject();
                 target.add(topFeedbackPanel);
                 target.add(bottomFeedbackPanel);
                 String rawTemplate = SchemaConfigurationPage.this.rawSchema;
@@ -146,14 +146,14 @@ public class SchemaConfigurationPage extends GeoServerSecuredPage {
             }
 
             @Override
-            protected void onAfterSubmit(AjaxRequestTarget target) {
-                super.onAfterSubmit(target);
+            protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
+                super.onAfterSubmit(target, form);
                 doReturn(SchemaInfoPage.class);
             }
 
             @Override
-            protected void onError(AjaxRequestTarget target) {
-                super.onError(target);
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                super.onError(target, form);
                 addFeedbackPanels(target);
             }
 
@@ -210,7 +210,7 @@ public class SchemaConfigurationPage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 4599409150448651749L;
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target) {
+                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         SchemaInfo schemaInfo = SchemaConfigurationPage.this.form.getModelObject();
                         //                        if (!validateAndReport(schemaInfo)) return;
                         String rawSchema = getStringSchemaFromInput();
@@ -220,7 +220,7 @@ public class SchemaConfigurationPage extends GeoServerSecuredPage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target) {
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
                         addFeedbackPanels(target);
                     }
                 };

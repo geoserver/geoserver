@@ -94,8 +94,8 @@ public class SchemaRuleConfigurationPanel extends Panel {
 
         AjaxSubmitLink submitLink = new AjaxSubmitLink("save") {
             @Override
-            protected void onSubmit(AjaxRequestTarget target) {
-                super.onSubmit(target);
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                super.onSubmit(target, form);
                 cleanFeedbackPanel();
                 SchemaRule rule = theForm.getModelObject();
                 //                if (!validateAndReport(rule)) return;
@@ -106,13 +106,13 @@ public class SchemaRuleConfigurationPanel extends Panel {
             }
 
             @Override
-            protected void onAfterSubmit(AjaxRequestTarget target) {
+            protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
                 if (theForm.hasError()) target.add(ruleFeedbackPanel);
             }
 
             @Override
-            protected void onError(AjaxRequestTarget target) {
-                super.onError(target);
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                super.onError(target, form);
                 if (theForm.hasError()) target.add(ruleFeedbackPanel);
             }
         };
@@ -123,7 +123,7 @@ public class SchemaRuleConfigurationPanel extends Panel {
         theForm.add(new AjaxSubmitLink("cancel") {
 
             @Override
-            public void onSubmit(AjaxRequestTarget target) {
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 clearForm(target);
             }
         });

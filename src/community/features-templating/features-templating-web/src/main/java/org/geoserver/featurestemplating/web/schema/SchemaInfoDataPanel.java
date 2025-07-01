@@ -143,7 +143,7 @@ public class SchemaInfoDataPanel extends Panel {
             private static final long serialVersionUID = 658341311654601761L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target) {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 FileUpload upload = fileUploadField.getFileUpload();
                 if (upload == null) {
                     warn("No file selected.");

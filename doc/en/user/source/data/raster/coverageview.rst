@@ -120,6 +120,16 @@ In that case, the band details of the coverage view will look like this:
    :align: center
 
 
+There is an option that allows GeoServer to handle missing input coverages more gracefully when composing multi-band views.
+
+.. figure:: images/fillcoverageview.png
+   :align: center
+
+* By default, this option is disabled. In that case, if any of the input coverages are missing (null) for a given request, the entire CoverageView will return empty because some required inputs are missing.
+* When enabled, GeoServer will generate a synthetic coverage band filled with the appropriate NoData value for each missing input, allowing the view to remain complete and defined.
+* The NoData value is derived from the coverage itself—either defined directly in the data or, in the case of an ImageMosaic, eventually specified in the associated .properties file.
+*  This behavior applies only when at least one input coverage is available. If all inputs are missing, the request is assumed to either lie outside the view’s data extent or lack all required inputs, and no synthetic coverage will be generated.
+
 Heterogeneous coverage views
 ----------------------------
 

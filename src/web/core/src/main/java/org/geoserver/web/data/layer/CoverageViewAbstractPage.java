@@ -73,6 +73,8 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
 
     List<CoverageBand> outputBands;
 
+    boolean fillMissingBands;
+
     EnvelopeCompositionType envelopeCompositionType;
 
     SelectedResolution selectedResolution;
@@ -141,6 +143,8 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                     .orElse(EnvelopeCompositionType.INTERSECTION);
             selectedResolution =
                     Optional.ofNullable(coverageView.getSelectedResolution()).orElse(SelectedResolution.BEST);
+            // Default to false if null on legacy coverageViews
+            fillMissingBands = Boolean.TRUE.equals(coverageView.getFillMissingBands());
         } else {
             outputBands = new ArrayList<>();
             newCoverage = true;
@@ -148,6 +152,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             envelopeCompositionType = EnvelopeCompositionType.INTERSECTION;
             selectedResolution = SelectedResolution.BEST;
             compositionType = CoverageView.CompositionType.BAND_SELECT;
+            fillMissingBands = false;
         }
         selectedCoverages = new ArrayList<>(availableCoverages);
         // build the form and the text area
@@ -170,7 +175,8 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                 availableCoverages,
                 definition,
                 outputName,
-                storeId);
+                storeId,
+                new PropertyModel<>(this, "fillMissingBands"));
         form.add(coverageEditor);
 
         // save and cancel at the bottom of the page
@@ -201,6 +207,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
         view.setCompositionType(compositionType);
         view.setDefinition(coverageEditor.jiffleFormulaModel.getObject());
         view.setOutputName(coverageEditor.jiffleOutputNameModel.getObject());
+        view.setFillMissingBands(coverageEditor.fillMissingBands.getObject());
         if (resolutionReferenceCoverage != null) {
             final int referenceCoverageIndex = getReferenceCoverageIndex();
             view.setSelectedResolutionIndex(referenceCoverageIndex);

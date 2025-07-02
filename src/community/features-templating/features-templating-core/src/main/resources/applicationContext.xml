@@ -4,6 +4,7 @@
 
 <beans>
 
+    <!-- Feature templates -->
     <bean id="templateConfiguration" class="org.geoserver.featurestemplating.configuration.TemplateLoader">
         <constructor-arg ref="dataDirectory"/>
     </bean>
@@ -21,5 +22,23 @@
     <bean id="templateCacheReloader" class="org.geoserver.featurestemplating.configuration.TemplateReloader">
         <constructor-arg ref="templateConfiguration"/>
     </bean>
-    
+
+    <!-- Schema override -->
+    <bean id="schemaConfiguration" class="org.geoserver.featurestemplating.configuration.schema.SchemaLoader">
+        <constructor-arg ref="dataDirectory"/>
+    </bean>
+
+    <bean id="schemaLayerConfXMLPersister"
+          class="org.geoserver.featurestemplating.configuration.schema.SchemaLayerConfigXStreamPersisterInitializer" />
+
+    <bean id="schemaDao" class="org.geoserver.featurestemplating.configuration.schema.SchemaInfoDAOImpl"/>
+
+    <bean id="schemaFileManager" class="org.geoserver.featurestemplating.configuration.schema.SchemaFileManager">
+        <constructor-arg ref="catalog"/>
+        <constructor-arg ref="dataDirectory"/>
+    </bean>
+
+    <bean id="schemaCacheReloader" class="org.geoserver.featurestemplating.configuration.schema.SchemaReloader">
+        <constructor-arg ref="schemaConfiguration"/>
+    </bean>
 </beans>

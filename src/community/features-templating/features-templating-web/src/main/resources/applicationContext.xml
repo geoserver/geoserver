@@ -23,4 +23,23 @@
         <property name="icon" value="img/templateIcon.png" />
     </bean>
 
+    <bean id="schemaTabPanelInfo" class="org.geoserver.featurestemplating.web.schema.SchemaTypeTabPanelInfo">
+        <property name="id" value="schemaTabPanelInfo" />
+        <property name="titleKey" value="SchemaTabPanelInfo.title" />
+        <property name="descriptionKey" value="SchemaTabPanelInfo.shortDescription" />
+        <property name="componentClass"
+                  value="org.geoserver.featurestemplating.web.schema.SchemaRulesTabPanel" />
+        <property name="order" value="999" />
+    </bean>
+
+    <bean id="schemaConfPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="schemaConfPage"/>
+        <property name="titleKey" value="SchemaInfoPage.title"/>
+        <property name="descriptionKey" value="SchemaInfoPage.description"/>
+        <property name="componentClass" value="org.geoserver.featurestemplating.web.schema.SchemaInfoPage"/>
+        <property name="category" ref="dataCategory" />
+        <property name="order" value="101" />
+        <property name="icon" value="img/templateIcon.png" />
+    </bean>
+
 </beans>

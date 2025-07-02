@@ -11,16 +11,16 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 
 /** A Dropdown with output formats supported by features templating. */
-class OutputFormatsDropDown extends DropDownChoice<SupportedFormat> {
+public class OutputFormatsDropDown extends DropDownChoice<SupportedFormat> {
 
-    OutputFormatsDropDown(String id, IModel<SupportedFormat> model) {
+    public OutputFormatsDropDown(String id, IModel<SupportedFormat> model) {
         super(id);
         this.setChoices(Arrays.asList(SupportedFormat.values()));
         this.setModel(model);
         this.setChoiceRenderer(getFormatChoiceRenderer());
     }
 
-    OutputFormatsDropDown(String id, IModel<SupportedFormat> model, String templateExtension) {
+    public OutputFormatsDropDown(String id, IModel<SupportedFormat> model, String templateExtension) {
         super(id);
         this.setChoices(SupportedFormat.getByExtension(templateExtension));
         this.setModel(model);

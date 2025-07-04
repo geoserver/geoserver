@@ -6,6 +6,7 @@
 package org.geoserver.data.util;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,15 +18,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.parameter.GeneralParameterDescriptor;
 import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.parameter.ParameterDescriptor;
 import org.geotools.api.parameter.ParameterValue;
 import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.grid.GeneralGridGeometry;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridEnvelope2D;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
@@ -426,5 +436,85 @@ public class CoverageUtils {
         }
 
         return readParameters;
+    }
+
+    /**
+     * This utility method can be used to read a small sample {@link GridCoverage2D} for inspection.
+     *
+     * @param reader the {@link GridCoverage2DReader} that we'll read the coverage from
+     * @param readParams the read params supported by the reader format
+     * @param parameters a KVP of parameters to be passed to the reader
+     * @param customParameters optional custom parameters to be passed to the reader
+     * @param directRead whether to forse a direct read (instead of using JAI)
+     * @return the small 5x5 grid coverage
+     * @throws IOException
+     * @throws TransformException
+     */
+    public static GridCoverage2D readSampleGridCoverage(
+            GridCoverage2DReader reader,
+            ParameterValueGroup readParams,
+            Map<String, Serializable> parameters,
+            Map<String, Serializable> customParameters,
+            boolean directRead)
+            throws IOException, TransformException {
+        //
+        // Now reading a fake small GridCoverage just to retrieve meta
+        // information about bands:
+        //
+        // - calculating a new envelope which is just 5x5 pixels
+        // - if it's a mosaic, limit the number of tiles we're going to read to one
+        //   (with time and elevation there might be hundreds of superimposed tiles)
+        // - reading the GridCoverage subset
+        //
+
+        final GridEnvelope2D testRange = getGridEnvelope2D(reader);
+
+        // build the corresponding envelope
+        final MathTransform gridToWorldCorner = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
+
+        final GeneralBounds testEnvelope = CRS.transform(gridToWorldCorner, new GeneralBounds(testRange.getBounds()));
+        testEnvelope.setCoordinateReferenceSystem(reader.getCoordinateReferenceSystem());
+
+        if (customParameters != null) {
+            parameters.putAll(customParameters);
+        }
+
+        // make sure mosaics with many superimposed tiles won't blow up with
+        // a "too many open files" exception
+        String maxAllowedTiles = ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString();
+        if (parameters.keySet().contains(maxAllowedTiles)) {
+            parameters.put(maxAllowedTiles, 1);
+        }
+
+        if (directRead) {
+            // Since the read sample image won't be greater than 5x5 pixels and we are limiting the
+            // number of granules to 1, we may do direct read instead of using JAI
+            String useJaiImageRead =
+                    ImageMosaicFormat.USE_JAI_IMAGEREAD.getName().toString();
+            if (parameters.keySet().contains(useJaiImageRead)) {
+                parameters.put(useJaiImageRead, false);
+            }
+        }
+
+        parameters.put(
+                AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
+                new GridGeometry2D(testRange, testEnvelope));
+
+        // try to read this coverage
+        return reader.read(getParameters(readParams, parameters, true));
+    }
+
+    private static GridEnvelope2D getGridEnvelope2D(GridCoverage2DReader reader) {
+        GridEnvelope originalRange = reader.getOriginalGridRange();
+        final int minX = originalRange.getLow(0);
+        final int minY = originalRange.getLow(1);
+        final int width = originalRange.getSpan(0);
+        final int height = originalRange.getSpan(1);
+        final int maxX = minX + (width <= 5 ? width : 5);
+        final int maxY = minY + (height <= 5 ? height : 5);
+
+        // we have to be sure that we are working against a valid grid range.
+        final GridEnvelope2D testRange = new GridEnvelope2D(minX, minY, maxX, maxY);
+        return testRange;
     }
 }

@@ -25,24 +25,19 @@ import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.coverage.grid.GridCoverageReader;
-import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.api.geometry.BoundingBox;
 import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.parameter.ParameterValueGroup;
-import org.geotools.api.referencing.datum.PixelInCell;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.Parameter;
-import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
@@ -262,54 +257,16 @@ public class RequestUtils {
     }
     /**
      * This utility method can be used to read a small sample {@link GridCoverage2D} for inspection from the specified
-     * {@link CoverageInfo}.
+     * {@link GridCoverage2DReader}.
      *
      * @param reader the {@link GridCoverage2DReader} that we'll read the coverage from
      */
     public static GridCoverage2D readSampleGridCoverage(GridCoverage2DReader reader) throws Exception {
-        //
-        // Now reading a fake small GridCoverage just to retrieve meta
-        // information about bands:
-        //
-        // - calculating a new envelope which is just 5x5 pixels
-        // - if it's a mosaic, limit the number of tiles we're going to read to one
-        //   (with time and elevation there might be hundreds of superimposed tiles)
-        // - reading the GridCoverage subset
-        //
-
-        final GeneralBounds originalEnvelope = reader.getOriginalEnvelope();
-        final GridEnvelope originalRange = reader.getOriginalGridRange();
         final Format coverageFormat = reader.getFormat();
 
         final ParameterValueGroup readParams = coverageFormat.getReadParameters();
         final Map<String, Serializable> parameters = CoverageUtils.getParametersKVP(readParams);
-        final int minX = originalRange.getLow(0);
-        final int minY = originalRange.getLow(1);
-        final int width = originalRange.getSpan(0);
-        final int height = originalRange.getSpan(1);
-        final int maxX = minX + (width <= 5 ? width : 5);
-        final int maxY = minY + (height <= 5 ? height : 5);
-
-        // we have to be sure that we are working against a valid grid range.
-        final GridEnvelope2D testRange = new GridEnvelope2D(minX, minY, maxX, maxY);
-
-        // build the corresponding envelope
-        final MathTransform gridToWorldCorner = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
-        final GeneralBounds testEnvelope = CRS.transform(gridToWorldCorner, new GeneralBounds(testRange.getBounds()));
-        testEnvelope.setCoordinateReferenceSystem(originalEnvelope.getCoordinateReferenceSystem());
-
-        // make sure mosaics with many superimposed tiles won't blow up with
-        // a "too many open files" exception
-        String maxAllowedTiles = ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString();
-        if (parameters.keySet().contains(maxAllowedTiles)) {
-            parameters.put(maxAllowedTiles, 1);
-        }
-        parameters.put(
-                AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
-                new GridGeometry2D(testRange, testEnvelope));
-
-        // try to read this coverage
-        return reader.read(CoverageUtils.getParameters(readParams, parameters, true));
+        return CoverageUtils.readSampleGridCoverage(reader, readParams, parameters, null, false);
     }
 
     /**

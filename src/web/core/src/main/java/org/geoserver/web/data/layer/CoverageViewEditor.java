@@ -25,6 +25,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
@@ -76,6 +77,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
     TextField<String> jiffleOutputNameField;
     IModel<String> jiffleFormulaModel = Model.of("");
     IModel<String> jiffleOutputNameModel = Model.of("");
+    IModel<Boolean> fillMissingBands;
 
     /** Creates a new editor. */
     public CoverageViewEditor(
@@ -89,7 +91,8 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
             List<String> availableCoverages,
             String definition,
             String outputName,
-            String storeId) {
+            String storeId,
+            IModel<Boolean> fillMissingBands) {
         super(id, inputCoverages);
         this.storeId = storeId;
         this.coverages = inputCoverages;
@@ -99,6 +102,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         this.compositionType = compositionType;
         this.resolutionReferenceCoverage = resolutionReferenceCoverage;
         this.availableCoverages = availableCoverages;
+        this.fillMissingBands = fillMissingBands;
 
         coveragesChoice = new ListMultipleChoice<>(
                 "coveragesChoice", new Model<>(), new ArrayList<>(coverages.getObject()), new ChoiceRenderer<>() {
@@ -193,6 +197,8 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
             jiffleFormulaModel.setObject(definition);
             jiffleOutputNameModel.setObject(outputName);
         }
+        CheckBox checkBox = new CheckBox("fillMissingBands", fillMissingBands);
+        add(checkBox);
 
         // heterogeneous coverage controls
         WebMarkupContainer heterogeneousControlsContainer = new WebMarkupContainer("heterogeneousControlsContainer");

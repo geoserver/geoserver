@@ -8,6 +8,7 @@ package org.geoserver.catalog;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.Utilities;
 
@@ -306,7 +307,8 @@ public class CoverageView implements Serializable {
                 SelectedResolution.BEST,
                 CompositionType.BAND_SELECT,
                 null,
-                null);
+                null,
+                false);
     }
 
     public CoverageView(
@@ -314,7 +316,15 @@ public class CoverageView implements Serializable {
             List<CoverageBand> coverageBands,
             EnvelopeCompositionType envelopeCompositionType,
             SelectedResolution selectedResolution) {
-        this(name, coverageBands, envelopeCompositionType, selectedResolution, CompositionType.BAND_SELECT, null, null);
+        this(
+                name,
+                coverageBands,
+                envelopeCompositionType,
+                selectedResolution,
+                CompositionType.BAND_SELECT,
+                null,
+                null,
+                false);
     }
 
     public CoverageView(
@@ -324,7 +334,8 @@ public class CoverageView implements Serializable {
             SelectedResolution selectedResolution,
             CompositionType compositionType,
             String definition,
-            String outputName) {
+            String outputName,
+            boolean fillMissingBands) {
         this.name = name;
         this.coverageBands = coverageBands;
         this.envelopeCompositionType = envelopeCompositionType;
@@ -332,6 +343,7 @@ public class CoverageView implements Serializable {
         this.compositionType = compositionType;
         this.definition = definition;
         this.outputName = outputName;
+        this.fillMissingBands = fillMissingBands;
     }
 
     /** The list of {@link CoverageBand}s composing this {@link CoverageView} */
@@ -357,6 +369,9 @@ public class CoverageView implements Serializable {
 
     /** Coverage View definition, only to be used with Jiffle */
     private String definition;
+
+    /** When set to true, if a coverage/band is null it will be filled by Nodata */
+    private Boolean fillMissingBands;
 
     public String getOutputName() {
         return outputName;
@@ -422,6 +437,14 @@ public class CoverageView implements Serializable {
 
     public void setCoverageBands(List<CoverageBand> coverageBands) {
         this.coverageBands = coverageBands;
+    }
+
+    public void setFillMissingBands(Boolean fillMissingBands) {
+        this.fillMissingBands = fillMissingBands;
+    }
+
+    public Boolean getFillMissingBands() {
+        return fillMissingBands;
     }
 
     /** Create a {@link CoverageInfo} */
@@ -501,6 +524,7 @@ public class CoverageView implements Serializable {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((selectedResolution == null) ? 0 : selectedResolution.hashCode());
         result = prime * result + selectedResolutionIndex;
+        result = prime * result + ((fillMissingBands == null) ? 0 : fillMissingBands.hashCode());
         return result;
     }
 
@@ -519,6 +543,7 @@ public class CoverageView implements Serializable {
         } else if (!name.equals(other.name)) return false;
         if (selectedResolution != other.selectedResolution) return false;
         if (selectedResolutionIndex != other.selectedResolutionIndex) return false;
+        if (!Objects.equals(fillMissingBands, other.fillMissingBands)) return false;
         return true;
     }
 }

@@ -53,4 +53,14 @@ public class GML3GetComplexFeatureTest extends TemplateComplexTestSupport {
                 + MF_GML3_PARAM);
         assertXpathCount(2, "//gsml:MappedFeature", doc);
     }
+
+    @Test
+    public void getMappedFeatureHits() throws IOException {
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
+                + "&outputFormat=gml3&resultType=hits"
+                + MF_GML3_PARAM);
+        assertXpathCount(0, "//gsml:MappedFeature", doc);
+        assertXpathCount(0, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
+        assertXpathEvaluatesTo("5", "//wfs:FeatureCollection/@numberOfFeatures", doc);
+    }
 }

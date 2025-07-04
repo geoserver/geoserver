@@ -48,9 +48,12 @@
           <artifactId>xml-apis</artifactId>
           <groupId>xml-apis</groupId>
         </exclusion>
+        <exclusion>
+          <artifactId>xalan</artifactId>
+          <groupId>xalan</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>

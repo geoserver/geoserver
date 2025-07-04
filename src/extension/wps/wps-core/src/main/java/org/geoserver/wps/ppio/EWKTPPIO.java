@@ -38,7 +38,7 @@ public class EWKTPPIO extends CDataPPIO {
 
     @Override
     public Object decode(String input) throws Exception {
-        String[] wktContents = input.split(";");
+        String[] wktContents = input.trim().split(";");
         Geometry geom = reader.read(wktContents[wktContents.length - 1]);
         // parse SRID if passed
         // looking for a pattern srid=4326:LineString(...)

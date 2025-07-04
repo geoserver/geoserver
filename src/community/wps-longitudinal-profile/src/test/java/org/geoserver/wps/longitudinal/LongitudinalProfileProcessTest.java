@@ -40,7 +40,10 @@ import org.w3c.dom.Document;
 public class LongitudinalProfileProcessTest extends WPSTestSupport {
     // layers
     public static final String COVERAGE_LAYER_NAME = "dataProfile";
+    public static final String COVERAGE_LAYER_NAME_4326 = "dataProfile4326";
     private static final QName PROFILE = new QName(MockData.DEFAULT_URI, COVERAGE_LAYER_NAME, MockData.DEFAULT_PREFIX);
+    private static final QName PROFILE_4326 =
+            new QName(MockData.DEFAULT_URI, COVERAGE_LAYER_NAME_4326, MockData.DEFAULT_PREFIX);
     private static final QName ADJ_LAYER = new QName(MockData.DEFAULT_URI, "AdjustmentLayer", MockData.DEFAULT_PREFIX);
 
     // test constants
@@ -58,6 +61,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
     private static final String LINESTRING_2154_EWKT = "SRID=2154;" + LINESTRING_2154_WKT;
     private static final String LINESTRING_4326_EWKT =
             "SRID=4326;LINESTRING(4.816667349546753 44.86746046117114, 4.820617515841021 44.86445081066109, 4.829431492334357 44.86579440463876, 4.82464829777395 44.869717699053616)";
+    private static final double DELTA = 1e-3;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -76,6 +80,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
                 "AdjustmentLayer.properties",
                 MockData.class,
                 getCatalog());
+        testData.addRasterLayer(PROFILE_4326, "dem.zip", null, Collections.emptyMap(), getCatalog());
     }
 
     private String loadTemplate(String templateName, Map<String, String> values) throws IOException {
@@ -165,21 +170,21 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         JSONObject profile3 = (JSONObject) profile.get(3);
         assertEquals(694.61163, profile3.get("totalDistanceToThisPoint"));
         assertEquals(164.11, profile3.get("altitude"));
-        assertEquals(69.1453, profile3.get("slope"));
+        assertEquals(-5.666957, profile3.get("slope"));
         assertEquals(844028.75, profile3.get("x"));
         assertEquals(6420077.0, profile3.get("y"));
 
         JSONObject profile5 = (JSONObject) profile.get(5);
         assertEquals(1169.2932, profile5.get("totalDistanceToThisPoint"));
         assertEquals(178.82, profile5.get("altitude"));
-        assertEquals(75.34314, profile5.get("slope"));
+        assertEquals(14.603475, profile5.get("slope"));
         assertEquals(844490.5, profile5.get("x"));
         assertEquals(6420187.0, profile5.get("y"));
 
         JSONObject profile7 = (JSONObject) profile.get(7);
         assertEquals(1746.0248, profile7.get("totalDistanceToThisPoint"));
         assertEquals(150.66, profile7.get("altitude"));
-        assertEquals(52.246147, profile7.get("slope"));
+        assertEquals(-0.26008636, profile7.get("slope"));
         assertEquals(844102.7, profile7.get("x"));
         assertEquals(6420614.0, profile7.get("y"));
     }
@@ -216,21 +221,21 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         JSONObject profile3 = (JSONObject) profile.get(3);
         assertEquals(980.1413, profile3.get("totalDistanceToThisPoint"));
         assertEquals(164.11, profile3.get("altitude"));
-        assertEquals(49.056587, profile3.get("slope"));
+        assertEquals(-4.0205417, profile3.get("slope"));
         assertEquals(536955.75, profile3.get("x"));
         assertEquals(5600277.5, profile3.get("y"));
 
         JSONObject profile5 = (JSONObject) profile.get(5);
         assertEquals(1649.2133, profile5.get("totalDistanceToThisPoint"));
         assertEquals(178.82, profile5.get("altitude"));
-        assertEquals(53.45293, profile5.get("slope"));
+        assertEquals(10.360578, profile5.get("slope"));
         assertEquals(537609.9, profile5.get("x"));
         assertEquals(5600418.0, profile5.get("y"));
 
         JSONObject profile7 = (JSONObject) profile.get(7);
         assertEquals(2463.6123, profile7.get("totalDistanceToThisPoint"));
         assertEquals(150.66, profile7.get("altitude"));
-        assertEquals(36.998417, profile7.get("slope"));
+        assertEquals(-0.18418169, profile7.get("slope"));
         assertEquals(537077.4, profile7.get("x"));
         assertEquals(5601034.5, profile7.get("y"));
     }
@@ -303,23 +308,113 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         JSONObject profile3 = (JSONObject) profile.get(3);
         assertEquals(457.51718, profile3.get("totalDistanceToThisPoint"));
         assertEquals(155.56, profile3.get("altitude"));
-        assertEquals(102.00278, profile3.get("slope"));
+        assertEquals(-0.07868561, profile3.get("slope"));
         assertEquals(4.8206177, profile3.get("x"));
         assertEquals(44.864452, profile3.get("y"));
 
         JSONObject profile6 = (JSONObject) profile.get(6);
         assertEquals(991.8213, profile6.get("totalDistanceToThisPoint"));
         assertEquals(144.7, profile6.get("altitude"));
-        assertEquals(81.24586, profile6.get("slope"));
+        assertEquals(11.830339, profile6.get("slope"));
         assertEquals(4.827228, profile6.get("x"));
         assertEquals(44.86546, profile6.get("y"));
 
         JSONObject profile9 = (JSONObject) profile.get(9);
         assertEquals(1554.6177, profile9.get("totalDistanceToThisPoint"));
         assertEquals(127.35, profile9.get("altitude"));
-        assertEquals(66.208275, profile9.get("slope"));
+        assertEquals(-12.243462, profile9.get("slope"));
         assertEquals(4.826243, profile9.get("x"));
         assertEquals(44.86841, profile9.get("y"));
+    }
+
+    @Test
+    public void testProfileLayerNoDistance() throws Exception {
+        String requestXml = loadTemplate(
+                TEMPLATE_BASIC,
+                Map.of(
+                        "LAYER_NAME", COVERAGE_LAYER_NAME,
+                        "GEOMETRY", LINESTRING_2154_EWKT));
+        JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
+        JSONObject infos = response.getJSONObject("infos");
+
+        // Dataset is ~ 4m in resolution. Diagonal resolution is ~5.65
+        assertEquals(258.0, infos.get("altitudePositive"));
+        assertEquals(-107.34, infos.get("altitudeNegative"));
+        assertEquals(1746.0248, infos.get("totalDistance"));
+        assertEquals(843478.25, infos.get("firstPointX"));
+        assertEquals(6420349.0, infos.get("firstPointY"));
+        assertEquals(844102.7, infos.get("lastPointX"));
+        assertEquals(6420614.0, infos.get("lastPointY"));
+
+        assertEquals(310, infos.get("processedPoints"));
+        assertNotNull(infos.get("executedTime"));
+        JSONArray profile = response.getJSONArray("profile");
+        assertEquals(310, profile.size());
+
+        JSONObject profile3 = (JSONObject) profile.get(3);
+        assertEquals(16.935959, profile3.get("totalDistanceToThisPoint"));
+        assertEquals(175.16, profile3.get("altitude"));
+        assertEquals(-1.2399652, profile3.get("slope"));
+        assertEquals(843490.1, profile3.get("x"));
+        assertEquals(6420336.5, profile3.get("y"));
+
+        JSONObject profile5 = (JSONObject) profile.get(5);
+        assertEquals(28.226597, profile5.get("totalDistanceToThisPoint"));
+        assertEquals(176.8, profile5.get("altitude"));
+        assertEquals(36.667545, profile5.get("slope"));
+        assertEquals(843498.0, profile5.get("x"));
+        assertEquals(6420328.5, profile5.get("y"));
+
+        JSONObject profile7 = (JSONObject) profile.get(7);
+        assertEquals(39.51724, profile7.get("totalDistanceToThisPoint"));
+        assertEquals(175.67, profile7.get("altitude"));
+        assertEquals(-25.684994, profile7.get("slope"));
+        assertEquals(843505.9, profile7.get("x"));
+        assertEquals(6420320.5, profile7.get("y"));
+    }
+
+    @Test
+    public void testProfileLayer4326NoDistance() throws Exception {
+        String requestXml = loadTemplate(
+                TEMPLATE_BASIC,
+                Map.of(
+                        "LAYER_NAME", COVERAGE_LAYER_NAME_4326,
+                        "GEOMETRY", LINESTRING_4326_EWKT));
+        JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
+        JSONObject infos = response.getJSONObject("infos");
+
+        assertEquals(256.9, infos.get("altitudePositive"));
+        assertEquals(-106.03, infos.get("altitudeNegative"));
+        assertEquals(1746.9653, infos.get("totalDistance"));
+        assertEquals(4.8166676, infos.get("firstPointX"));
+        assertEquals(44.867462, infos.get("firstPointY"));
+        assertEquals(4.8246484, infos.get("lastPointX"));
+        assertEquals(44.869717, infos.get("lastPointY"));
+
+        assertEquals(305, infos.get("processedPoints"));
+        assertNotNull(infos.get("executedTime"));
+        JSONArray profile = response.getJSONArray("profile");
+        assertEquals(305, profile.size());
+        JSONObject profile3 = (JSONObject) profile.get(3);
+        assertEquals(18.300476, profile3.get("totalDistanceToThisPoint"));
+        assertEquals(174.79, profile3.get("altitude"));
+        assertEquals(-8.032576, profile3.get("slope"));
+        assertEquals(4.8168254, profile3.get("x"));
+        assertEquals(44.867340, profile3.get("y"));
+
+        JSONObject profile5 = (JSONObject) profile.get(5);
+        assertEquals(30.500803, profile5.get("totalDistanceToThisPoint"));
+        assertEquals(176.42, profile5.get("altitude"));
+        assertEquals(29.015612, profile5.get("slope"));
+        assertEquals(4.816931, profile5.get("x"));
+        assertEquals(44.86726, profile5.get("y"));
+
+        JSONObject profile7 = (JSONObject) profile.get(7);
+        assertEquals(42.701138, profile7.get("totalDistanceToThisPoint"));
+        assertEquals(177.02, profile7.get("altitude"));
+        assertEquals(22.130537, profile7.get("slope"));
+        assertEquals(4.8170360, profile7.get("x"));
+        assertEquals(44.86718, profile7.get("y"));
     }
 
     @Test
@@ -354,7 +449,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         Future<LongitudinalProfileProcess.LongitudinalProfileProcessResult> future =
                 CompletableFuture.supplyAsync(() -> {
                     try {
-                        return process.execute(COVERAGE_LAYER_NAME, null, null, geometry, 300, null, 0, null, monitor);
+                        return process.execute(COVERAGE_LAYER_NAME, null, null, geometry, 300d, null, 0, null, monitor);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

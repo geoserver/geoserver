@@ -30,7 +30,9 @@ public class DropStoredQuery {
     }
 
     public ExecutionStatusType run(DropStoredQueryType request) throws WFSException {
-
+        if (wfs.isDisableStoredQueriesManagement()) {
+            throw new WFSException("Stored queries management is disabled");
+        }
         if (request.getId() == null) {
             throw new WFSException(request, "No stored query id specified");
         }

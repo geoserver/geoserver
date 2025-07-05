@@ -35,6 +35,10 @@ public class CreateStoredQuery {
     }
 
     public CreateStoredQueryResponseType run(CreateStoredQueryType request) throws WFSException {
+        if (wfs.isDisableStoredQueriesManagement()) {
+            throw new WFSException("Stored queries management is disabled");
+        }
+
         for (StoredQueryDescriptionType sqd : request.getStoredQueryDefinition()) {
             if (storedQueryProvider.getStoredQuery(sqd.getId()) != null) {
                 WFSException e = new WFSException(

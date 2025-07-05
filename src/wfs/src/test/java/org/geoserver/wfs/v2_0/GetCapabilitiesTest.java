@@ -291,6 +291,26 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
     }
 
     @Test
+    public void testOperationsMetadataWithDisabledStoredQueryManagement() throws Exception {
+        GeoServer geoServer = getGeoServer();
+        WFSInfo wfsInfo = geoServer.getService(WFSInfo.class);
+        try {
+            wfsInfo.setDisableStoredQueriesManagement(true);
+            geoServer.save(wfsInfo);
+            Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities");
+            assertEquals("WFS_Capabilities", doc.getDocumentElement().getLocalName());
+
+            XMLAssert.assertXpathExists("//ows:Operation[@name='ListStoredQueries']", doc);
+            XMLAssert.assertXpathExists("//ows:Operation[@name='DescribeStoredQueries']", doc);
+            XMLAssert.assertXpathNotExists("//ows:Operation[@name='CreateStoredQuery']", doc);
+            XMLAssert.assertXpathNotExists("//ows:Operation[@name='DropStoredQuery']", doc);
+        } finally {
+            wfsInfo.setDisableStoredQueriesManagement(false);
+            geoServer.save(wfsInfo);
+        }
+    }
+
+    @Test
     public void testValidCapabilitiesDocument() throws Exception {
         print(getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities"));
         try (InputStream in = get("wfs?service=WFS&version=2.0.0&request=getCapabilities")) {

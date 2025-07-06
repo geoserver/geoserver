@@ -4,12 +4,15 @@
  */
 package org.geoserver.ogcapi.v1.processes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.models.media.ComposedSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.ogcapi.QueryablesBuilder;
 import org.geoserver.wps.ppio.BoundingBoxPPIO;
 import org.geoserver.wps.ppio.CDataPPIO;
@@ -134,5 +137,19 @@ public class AbstractProcessIO {
 
     public void setSchema(Schema<?> schema) {
         this.schema = schema;
+    }
+
+    @JsonIgnore
+    public List<String> getEncodings() {
+        if (schema instanceof ComposedSchema && ((ComposedSchema) schema).getOneOf() != null) {
+            return ((ComposedSchema) schema)
+                    .getOneOf().stream()
+                            .filter(s -> s instanceof MimeTypeSchema)
+                            .map(s -> ((MimeTypeSchema) s).getContentMediaType())
+                            .filter(f -> f != null && !f.isEmpty())
+                            .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 }

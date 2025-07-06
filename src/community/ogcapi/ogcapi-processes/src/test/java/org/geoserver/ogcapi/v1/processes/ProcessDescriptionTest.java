@@ -7,12 +7,14 @@ package org.geoserver.ogcapi.v1.processes;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import net.minidev.json.JSONArray;
 import org.geoserver.ogcapi.OGCApiTestSupport;
 import org.jsoup.nodes.Document;
@@ -30,7 +32,8 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         assertEquals("JTS:buffer", doc.read("id"));
         assertEquals("Buffer", doc.read("title"));
         assertEquals(
-                "Returns a polygonal geometry representing the input geometry enlarged by a given distance around its exterior.",
+                "Returns a polygonal geometry representing the input geometry enlarged by a given distance around its"
+                        + " exterior.",
                 doc.read("description"));
         assertEquals(List.of("sync-execute", "async-execute"), doc.read("jobControlOptions"));
 
@@ -53,7 +56,8 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         // quadrantSegments, optional
         DocumentContext quadrants = readContext(doc, "inputs.quadrantSegments");
         assertEquals(
-                "Number determining the style and smoothness of buffer corners. Positive numbers create round corners with that number of segments per quarter-circle, 0 creates flat corners.",
+                "Number determining the style and smoothness of buffer corners. Positive numbers create round corners"
+                        + " with that number of segments per quarter-circle, 0 creates flat corners.",
                 quadrants.read("description"));
         assertEquals(0, quadrants.read("minOccurs", Integer.class).intValue());
         assertEquals(1, quadrants.read("maxOccurs", Integer.class).intValue());
@@ -62,7 +66,8 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         // capStyle, optional, enumerated
         DocumentContext capStyle = readContext(doc, "inputs.capStyle");
         assertEquals(
-                "Style for the buffer end caps. Values are: Round - rounded ends (default), Flat - flat ends; Square - square ends.",
+                "Style for the buffer end caps. Values are: Round - rounded ends (default), Flat - flat ends; Square "
+                        + "- square ends.",
                 capStyle.read("description"));
         assertEquals(0, capStyle.read("minOccurs", Integer.class).intValue());
         assertEquals(1, capStyle.read("maxOccurs", Integer.class).intValue());
@@ -110,7 +115,8 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         // 2. Process title and description
         assertEquals("Buffer", doc.getElementById("JTS__buffer_title").text());
         assertEquals(
-                "Returns a polygonal geometry representing the input geometry enlarged by a given distance around its exterior.",
+                "Returns a polygonal geometry representing the input geometry enlarged by a given distance around its"
+                        + " exterior.",
                 doc.getElementById("JTS__buffer_description").text());
 
         // 3. Inputs table
@@ -122,25 +128,36 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         assertEquals(4, inputRows.size());
 
         // Check individual input rows (order should be preserved by the factory, uses LinkedHashMap internally)
-        checkInputRow(inputRows.get(0), "geom", "geom", "Geometry", "Input geometry");
+        Set<String> geometryFormats = Set.of(
+                "application/json",
+                "application/wkt",
+                "application/ewkt",
+                "application/gml-2.1.2",
+                "application/gml-3.1.1");
+        checkInputRow(inputRows.get(0), "geom", "Geometry", "1/1", "Input geometry", geometryFormats);
         checkInputRow(
                 inputRows.get(1),
                 "distance",
-                "distance",
                 "number",
-                "Distance to buffer the input geometry, in the units of the geometry");
+                "1/1",
+                "Distance to buffer the input geometry, in the units of the geometry",
+                Set.of());
         checkInputRow(
                 inputRows.get(2),
                 "quadrantSegments",
-                "quadrantSegments",
                 "integer",
-                "Number determining the style and smoothness of buffer corners. Positive numbers create round corners with that number of segments per quarter-circle, 0 creates flat corners.");
+                "0/1",
+                "Number determining the style and smoothness of buffer corners. Positive numbers create round corners"
+                        + " with that number of segments per quarter-circle, 0 creates flat corners.",
+                Set.of());
         checkInputRow(
                 inputRows.get(3),
                 "capStyle",
-                "capStyle",
                 "string",
-                "Style for the buffer end caps. Values are: Round - rounded ends (default), Flat - flat ends; Square - square ends.");
+                "0/1",
+                "Style for the buffer end caps. Values are: Round - rounded ends (default), Flat - flat ends; Square "
+                        + "- square ends.",
+                Set.of());
 
         // 4. Outputs table
         Element outputsTable = doc.select("div.card:has(h2:contains(Process outputs)) table.function-table")
@@ -150,16 +167,44 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         Elements outputRows = outputsTable.select("tr[id]");
         assertEquals(1, outputRows.size());
 
-        checkInputRow(outputRows.get(0), "result", "result", "Geometry", "Buffered geometry");
+        checkOutputRow(outputRows.get(0), "result", "Geometry", "Buffered geometry", geometryFormats);
     }
 
     private void checkInputRow(
-            Element row, String expectedId, String expectedTitle, String expectedType, String expectedDesc) {
+            Element row,
+            String expectedId,
+            String expectedType,
+            String expectedOccurrences,
+            String expectedDesc,
+            Set<String> expectedFormats) {
+        Elements cols = row.select("td");
+        assertEquals(5, cols.size());
+        assertEquals(expectedId, cols.get(0).text());
+        assertEquals(expectedType, cols.get(1).text());
+        assertEquals(expectedOccurrences, cols.get(2).text());
+        assertEquals(expectedDesc, cols.get(3).text());
+        Set<String> actualFormats =
+                cols.get(4).select("span").stream().map(e -> e.text()).collect(Collectors.toSet());
+        if (expectedFormats.isEmpty()) {
+            assertTrue("No formats expected, but found: " + actualFormats, actualFormats.isEmpty());
+        } else {
+            assertEquals("Expected formats do not match", expectedFormats, actualFormats);
+        }
+    }
+
+    private void checkOutputRow(
+            Element row, String expectedId, String expectedType, String expectedDesc, Set<String> expectedFormats) {
         Elements cols = row.select("td");
         assertEquals(4, cols.size());
         assertEquals(expectedId, cols.get(0).text());
-        assertEquals(expectedTitle, cols.get(1).text());
-        assertEquals(expectedType, cols.get(2).text());
-        assertEquals(expectedDesc, cols.get(3).text());
+        assertEquals(expectedType, cols.get(1).text());
+        assertEquals(expectedDesc, cols.get(2).text());
+        Set<String> actualFormats =
+                cols.get(3).select("span").stream().map(e -> e.text()).collect(Collectors.toSet());
+        if (expectedFormats.isEmpty()) {
+            assertTrue("No formats expected, but found: " + actualFormats, actualFormats.isEmpty());
+        } else {
+            assertEquals("Expected formats do not match", expectedFormats, actualFormats);
+        }
     }
 }

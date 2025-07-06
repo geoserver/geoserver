@@ -74,6 +74,14 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         assertEquals("Buffered geometry", result.read("description"));
         JSONArray resultSchema = readContext(geom, "schema.oneOf").json();
         checkGeometrySchema(resultSchema);
+
+        // check the links
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/processes/v1/processes/JTS:buffer?f=application%2Fjson",
+                readSingle(doc, "links[?(@.rel == 'self')].href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/processes/v1/processes/JTS:buffer?f=text%2Fhtml",
+                readSingle(doc, "links[?(@.rel == 'alternate' && @.type == 'text/html')].href"));
     }
 
     @SuppressWarnings({"unchecked", "PMD.ForLoopCanBeForeach"})

@@ -45,6 +45,8 @@ public class ProcessDocument extends ProcessSummaryDocument {
             ProcessOutput output = new ProcessOutput(p, context);
             outputs.put(p.getName(), output);
         }
+
+        addSelfLinks("ogc/processes/v1/processes/" + process.getName());
     }
 
     public Map<String, ProcessInput> getInputs() {

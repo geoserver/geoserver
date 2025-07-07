@@ -206,6 +206,7 @@ public final class DomainModelBuilder {
                 return DomainAttributeType.INTEGER;
             case "text":
             case "varchar":
+            case "uuid":
                 return DomainAttributeType.TEXT;
             case "time":
             case "date":

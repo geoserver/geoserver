@@ -678,6 +678,15 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
+    public void testSearchNextLinkPresent() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        String request = "{\"limit\":1}";
+        DocumentContext json = postAsJSONPath("ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(1, json.read("links[?(@.rel == 'next')]", List.class).size());
+    }
+
+    @Test
     public void testSingleFeatureAsGeoJson() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         DocumentContext json =

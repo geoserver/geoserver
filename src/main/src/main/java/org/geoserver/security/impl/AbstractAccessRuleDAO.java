@@ -34,7 +34,7 @@ import org.geotools.util.logging.Logging;
  * Abstract class for security dao's whose configuration is stored in a property file.
  *
  * <p>Subclasses must implement {@link #loadRules(Properties)} and {@link #toProperties()} to provide the mapping back
- * and forth to the underlying properly file.
+ * and forth to the underlying property file.
  *
  * @author Justin Deoliveira, OpenGeo
  * @param <R> The access rule class.

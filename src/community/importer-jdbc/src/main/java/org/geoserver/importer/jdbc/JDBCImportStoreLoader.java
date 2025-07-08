@@ -14,12 +14,12 @@ import java.util.logging.Logger;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.api.data.DataStoreFinder;
 import org.geotools.data.DataUtilities;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
-import org.geoserver.util.SortedPropertiesWriter;
 
 public class JDBCImportStoreLoader implements DisposableBean {
     @SuppressWarnings("unused")

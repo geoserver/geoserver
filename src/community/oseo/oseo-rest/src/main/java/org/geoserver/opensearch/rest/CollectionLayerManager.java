@@ -51,6 +51,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.rest.RestException;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.Feature;
@@ -80,7 +81,6 @@ import org.geotools.util.Version;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
-import org.geoserver.util.SortedPropertiesWriter;
 
 /**
  * Helper class with the responsibility of setting up and tearing down mosaics, coverage views, layers and styles for
@@ -267,7 +267,10 @@ class CollectionLayerManager {
             }
             Resource propertyResource = mosaicDirectory.get(band + ".properties");
             try (OutputStream os = propertyResource.out()) {
-                SortedPropertiesWriter.storeSorted(mosaicConfig, os, "DataStore configuration for collection '" + collection + "' and band '" + band + "'");
+                SortedPropertiesWriter.storeSorted(
+                        mosaicConfig,
+                        os,
+                        "DataStore configuration for collection '" + collection + "' and band '" + band + "'");
             }
 
             // create the sample image

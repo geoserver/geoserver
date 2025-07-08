@@ -261,7 +261,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         // This is a good spot to read coverages. Reading a coverage is done only once, it is
         // cached to be used for its other bands that possibly take part in the CoverageView
         // definition
-        boolean fillMissingBands = coverageView.getFillMissingBands();
+        boolean fillMissingBands = Boolean.TRUE.equals(coverageView.getFillMissingBands());
         ViewInputs inputAlphaNonNull = getInputAlphaNonNullCoverages(
                 parameters, selectedBandIndices, bands, checker, true, compositionType, fillMissingBands);
         if (inputAlphaNonNull == null) return null;

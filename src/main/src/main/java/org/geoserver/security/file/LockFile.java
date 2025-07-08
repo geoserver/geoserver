@@ -61,7 +61,7 @@ public class LockFile {
                 LOGGER.warning("Tried to unlock foreign lock: " + lockFile.path());
             }
         } else {
-            LOGGER.warning("Tried to unlock not existing lock: " + lockFile.path());
+            LOGGER.warning("Tried to unlock non existing lock: " + lockFile.path());
         }
     }
 

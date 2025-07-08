@@ -133,6 +133,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
 
     /** Writes the rules back to file system */
     public synchronized void storeRules() throws IOException {
+        // turn back the users into a users map
         Properties p = toProperties();
 
         // write out to the data dir

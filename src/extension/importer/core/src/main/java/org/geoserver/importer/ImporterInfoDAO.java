@@ -13,9 +13,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
-import org.geoserver.util.SortedPropertiesWriter;
 
 /**
  * Saves/retrieves the importer configuration from System, Environment, Servlet context variables, or a property file

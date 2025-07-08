@@ -5,14 +5,16 @@
  */
 package org.geoserver.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.Test;
+import org.geoserver.util.SortedPropertiesWriter;
 
 public class SortedPropertiesWriterTest {
 

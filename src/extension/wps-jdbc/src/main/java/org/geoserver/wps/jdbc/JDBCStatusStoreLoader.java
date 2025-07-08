@@ -16,12 +16,12 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.DataStoreFinder;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
-import org.geoserver.util.SortedPropertiesWriter;
 
 public class JDBCStatusStoreLoader implements DisposableBean {
     private static final Logger LOGGER = Logging.getLogger(JDBCStatusStoreLoader.class);

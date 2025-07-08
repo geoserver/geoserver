@@ -32,9 +32,9 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
-import org.geoserver.util.SortedPropertiesWriter;
 
 /**
  * Basic property file based {@link DownloadServiceConfigurationGenerator} implementation with ability to reload config

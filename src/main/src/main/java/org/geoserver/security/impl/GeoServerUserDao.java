@@ -25,6 +25,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.security.core.GrantedAuthority;
@@ -100,7 +101,7 @@ public class GeoServerUserDao implements UserDetailsService {
             }
 
             try (OutputStream os = propFile.out()) {
-                p.store(os, "Format: name=password,ROLE1,...,ROLEN");
+                SortedPropertiesWriter.storeSorted(p, os, "Format: name=password,ROLE1,...,ROLEN");
             }
 
             // setup a sample service.properties
@@ -174,7 +175,7 @@ public class GeoServerUserDao implements UserDetailsService {
         // write out to the data dir
         Resource propFile = userDefinitionsFile.getResource();
         try (OutputStream os = propFile.out()) {
-            p.store(os, null);
+            SortedPropertiesWriter.storeSorted(p, os, null);
         } catch (Exception e) {
             if (e instanceof IOException) throw (IOException) e;
             else throw (IOException) new IOException("Could not write updated users list to file system").initCause(e);

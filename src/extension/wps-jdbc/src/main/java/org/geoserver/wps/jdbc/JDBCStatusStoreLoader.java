@@ -21,6 +21,7 @@ import org.geotools.api.data.DataStoreFinder;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
+import org.geoserver.util.SortedPropertiesWriter;
 
 public class JDBCStatusStoreLoader implements DisposableBean {
     private static final Logger LOGGER = Logging.getLogger(JDBCStatusStoreLoader.class);
@@ -79,7 +80,7 @@ public class JDBCStatusStoreLoader implements DisposableBean {
         }
 
         try (OutputStream os = resource.out()) {
-            props.store(os, "saved by GeoServer @" + new Date());
+            SortedPropertiesWriter.storeSorted(props, os, "saved by GeoServer @" + new Date());
         }
     }
 

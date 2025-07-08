@@ -80,6 +80,7 @@ import org.geotools.util.Version;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
+import org.geoserver.util.SortedPropertiesWriter;
 
 /**
  * Helper class with the responsibility of setting up and tearing down mosaics, coverage views, layers and styles for
@@ -266,8 +267,7 @@ class CollectionLayerManager {
             }
             Resource propertyResource = mosaicDirectory.get(band + ".properties");
             try (OutputStream os = propertyResource.out()) {
-                mosaicConfig.store(
-                        os, "DataStore configuration for collection '" + collection + "' and band '" + band + "'");
+                SortedPropertiesWriter.storeSorted(mosaicConfig, os, "DataStore configuration for collection '" + collection + "' and band '" + band + "'");
             }
 
             // create the sample image
@@ -522,7 +522,7 @@ class CollectionLayerManager {
         setCogConfig(indexer, layerConfiguration, true);
         Resource resource = mosaic.get("indexer.properties");
         try (OutputStream os = resource.out()) {
-            indexer.store(os, "Indexer for collection: " + collection);
+            SortedPropertiesWriter.storeSorted(indexer, os, "Indexer for collection: " + collection);
         }
     }
 
@@ -626,7 +626,7 @@ class CollectionLayerManager {
         datastore.put("StoreName", prefixedName(this.accessProvider.getDataStoreInfo()));
         Resource datastoreResource = mosaic.get("datastore.properties");
         try (OutputStream os = datastoreResource.out()) {
-            datastore.store(os, "DataStore configuration for collection: " + collection);
+            SortedPropertiesWriter.storeSorted(datastore, os, "DataStore configuration for collection: " + collection);
         }
     }
 

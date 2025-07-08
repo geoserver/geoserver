@@ -19,6 +19,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -211,7 +212,8 @@ public class EditableUserDAO implements UserDetailsService {
         }
 
         try (OutputStream os = new BufferedOutputStream(getUserFile().out())) {
-            prop.store(os, "Geoserver user data. Format is username=password,role1,role2,...[enabled|disabled]");
+            SortedPropertiesWriter.storeSorted(
+                    prop, os, "Geoserver user data. Format is username=password,role1,role2,...[enabled|disabled]");
         }
     }
 

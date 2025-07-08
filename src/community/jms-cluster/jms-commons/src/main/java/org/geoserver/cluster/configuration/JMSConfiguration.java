@@ -18,6 +18,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.WebUtils;
+import org.geoserver.util.SortedPropertiesWriter;
 
 /**
  * Abstract class to store and load configuration from global var or temp webapp directory
@@ -175,7 +176,7 @@ public final class JMSConfiguration {
     public void storeConfig() throws IOException {
         Resource config = configPathDir.get(CONFIG_FILE_NAME);
         try (OutputStream fos = config.out()) {
-            this.configuration.store(fos, "");
+            SortedPropertiesWriter.storeSorted(this.configuration, fos, "");
         }
     }
 

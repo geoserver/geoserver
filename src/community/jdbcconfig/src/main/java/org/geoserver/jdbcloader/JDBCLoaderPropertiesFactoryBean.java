@@ -26,6 +26,7 @@ import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.web.context.ServletContextAware;
+import org.springframework.util.SortedPropertiesWriter;
 
 public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryBean
         implements GeoServerPluginConfigurator, ServletContextAware {
@@ -211,7 +212,7 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
         try {
             OutputStream out = propFile.out();
             try {
-                config.store(out, comment);
+                SortedPropertiesWriter.storeSorted(config, out, comment);
             } finally {
                 out.close();
             }

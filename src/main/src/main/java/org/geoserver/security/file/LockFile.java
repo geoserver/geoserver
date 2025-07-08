@@ -34,7 +34,7 @@ public class LockFile {
     public LockFile(Resource file) throws IOException {
         lockFileTarget = file;
         if (!Resources.exists(file)) {
-            throw new IOException("Cannot lock a not existing file: " + file.path());
+            throw new IOException("Cannot lock a non existing file: " + file.path());
         }
         lockFile = file.parent().get(lockFileTarget.name() + ".lock");
         // remove on shutdown
@@ -61,7 +61,7 @@ public class LockFile {
                 LOGGER.warning("Tried to unlock foreign lock: " + lockFile.path());
             }
         } else {
-            LOGGER.warning("Tried to unlock not exisiting lock: " + lockFile.path());
+            LOGGER.warning("Tried to unlock not existing lock: " + lockFile.path());
         }
     }
 
@@ -71,7 +71,7 @@ public class LockFile {
         if (hasWriteLock()) return; // already locked
 
         if (Resources.exists(lockFile)) {
-            LOGGER.warning("Cannot obtain  lock: " + lockFile.path());
+            LOGGER.warning("Cannot obtain lock: " + lockFile.path());
             Properties props = new Properties();
 
             try (InputStream in = lockFile.in()) {

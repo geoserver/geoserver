@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.api.data.FeatureWriter;
 import org.geotools.api.data.Transaction;
 import org.geotools.api.feature.simple.SimpleFeature;
@@ -122,7 +123,7 @@ public class MosaicIndex {
         indexer.put(Utils.Prop.INDEX_NAME, mosaic.getName());
         indexer.put(Utils.Prop.USE_EXISTING_SCHEMA, "true");
         try (FileOutputStream ifos = new FileOutputStream(indexerFile)) {
-            indexer.store(ifos, null);
+            SortedPropertiesWriter.storeSorted(indexer, ifos, null);
         }
 
         // create a new shapefile feature store
@@ -170,7 +171,7 @@ public class MosaicIndex {
             }
             props.setProperty("TimeAttribute", "time");
             try (FileOutputStream fos = new FileOutputStream(propertyFile)) {
-                props.store(fos, null);
+                SortedPropertiesWriter.storeSorted(props, fos, null);
             }
         }
     }

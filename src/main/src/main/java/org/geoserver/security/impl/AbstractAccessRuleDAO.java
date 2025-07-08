@@ -27,6 +27,7 @@ import org.geoserver.platform.resource.Resource.Lock;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -132,13 +133,12 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
 
     /** Writes the rules back to file system */
     public synchronized void storeRules() throws IOException {
-        // turn back the users into a users map
         Properties p = toProperties();
 
         // write out to the data dir
         Resource propFile = securityDir.get(propertyFileName);
         try (OutputStream os = propFile.out()) {
-            p.store(os, null);
+            SortedPropertiesWriter.storeSorted(p, os, null);
             lastModified = System.currentTimeMillis();
             // avoid unnecessary reloads, the file just got fully written
             if (watcher != null) watcher.setKnownLastModified(lastModified);

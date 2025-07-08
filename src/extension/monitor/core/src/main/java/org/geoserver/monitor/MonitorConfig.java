@@ -26,6 +26,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
@@ -276,7 +277,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
         } else if (props != null) {
             File monitoringConfigurationFile = Resources.file(resourceLoader.get(MonitorConfig.PROPERTYFILENAME), true);
             try (OutputStream out = Files.out(monitoringConfigurationFile)) {
-                props.store(out, "");
+                SortedPropertiesWriter.storeSorted(props, out, "");
                 out.flush();
             }
         }

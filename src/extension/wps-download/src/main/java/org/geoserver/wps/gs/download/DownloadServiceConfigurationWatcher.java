@@ -34,6 +34,7 @@ import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
+import org.geoserver.util.SortedPropertiesWriter;
 
 /**
  * Basic property file based {@link DownloadServiceConfigurationGenerator} implementation with ability to reload config
@@ -284,7 +285,7 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements Do
         Properties props = configurationToProperties(configuration);
         Resource resource = watcher.getResource();
         try (OutputStream os = resource.out()) {
-            props.store(os, null);
+            SortedPropertiesWriter.storeSorted(props, os, null);
         }
         reloadConfiguration();
     }

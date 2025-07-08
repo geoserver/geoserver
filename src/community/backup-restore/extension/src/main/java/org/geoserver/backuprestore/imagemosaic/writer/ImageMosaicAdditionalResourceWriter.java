@@ -22,6 +22,7 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.Filter;
+import org.geoserver.util.SortedPropertiesWriter;
 
 /** @author Alessio Fabiani, GeoSolutions */
 public class ImageMosaicAdditionalResourceWriter extends ImageMosaicAdditionalResource
@@ -98,6 +99,6 @@ public class ImageMosaicAdditionalResourceWriter extends ImageMosaicAdditionalRe
 
         indexerProperties.setProperty("Name", mosaicName);
 
-        indexerProperties.store(new FileOutputStream(indexerFile), null);
+        SortedPropertiesWriter.storeSorted(indexerProperties, new FileOutputStream(indexerFile), null);
     }
 }

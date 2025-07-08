@@ -19,6 +19,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 
@@ -131,7 +132,7 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
             }
         }
         try (FileOutputStream outputFile = new FileOutputStream(propFile, false)) {
-            authKeyProps.store(outputFile, "Format is authkey=username");
+            SortedPropertiesWriter.storeSorted(authKeyProps, outputFile, "Format is authkey=username");
         }
 
         if (backupFile.exists()) backupFile.delete();

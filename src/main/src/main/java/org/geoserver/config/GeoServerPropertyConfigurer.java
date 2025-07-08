@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
@@ -103,7 +104,7 @@ public class GeoServerPropertyConfigurer extends PropertySourcesPlaceholderConfi
             // location was not found, create
             if (configFile != null && copyOutTemplate) {
                 try (OutputStream fout = configFile.out()) {
-                    props.store(fout, comments);
+                    SortedPropertiesWriter.storeSorted(props, fout, comments);
                     fout.flush();
                 }
             }

@@ -23,6 +23,7 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.SortedPropertiesWriter;
 
 /** @author Alessio Fabiani, GeoSolutions */
 public class ImageMosaicAdditionalResourceReader extends ImageMosaicAdditionalResource
@@ -98,7 +99,7 @@ public class ImageMosaicAdditionalResourceReader extends ImageMosaicAdditionalRe
 
             indexerProperties.setProperty("CanBeEmpty", "true");
 
-            indexerProperties.store(new FileOutputStream(indexerFile), null);
+            SortedPropertiesWriter.storeSorted(indexerProperties, new FileOutputStream(indexerFile), null);
         }
     }
 
@@ -127,7 +128,7 @@ public class ImageMosaicAdditionalResourceReader extends ImageMosaicAdditionalRe
 
         final File targetFile = new File(mosaicIndexBase.parent().dir(), targetPropertyFileName);
 
-        resolvedProperties.store(new FileOutputStream(targetFile), null);
+        SortedPropertiesWriter.storeSorted(resolvedProperties, new FileOutputStream(targetFile), null);
     }
 
     /** */

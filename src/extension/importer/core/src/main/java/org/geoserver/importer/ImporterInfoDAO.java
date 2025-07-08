@@ -15,6 +15,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
+import org.geoserver.util.SortedPropertiesWriter;
 
 /**
  * Saves/retrieves the importer configuration from System, Environment, Servlet context variables, or a property file
@@ -98,7 +99,7 @@ public class ImporterInfoDAO {
         props.setProperty(MAX_ASYNCH_KEY, String.valueOf(configuration.getMaxAsynchronousImports()));
         props.setProperty(CONTEXT_EXPIRATION_KEY, String.valueOf(configuration.getContextExpiration()));
         try (OutputStream os = resource.out()) {
-            props.store(os, null);
+            SortedPropertiesWriter.storeSorted(props, os, null);
         }
     }
 }

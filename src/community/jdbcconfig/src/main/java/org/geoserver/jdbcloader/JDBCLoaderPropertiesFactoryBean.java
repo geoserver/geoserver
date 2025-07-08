@@ -22,11 +22,11 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.web.context.ServletContextAware;
-import org.springframework.util.SortedPropertiesWriter;
 
 public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryBean
         implements GeoServerPluginConfigurator, ServletContextAware {

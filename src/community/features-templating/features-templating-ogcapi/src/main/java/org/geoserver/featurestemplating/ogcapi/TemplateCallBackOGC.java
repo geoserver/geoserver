@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
+import org.geootols.filter.text.cql_2.CQL2;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -59,6 +60,8 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
 
     private static final Logger LOGGER = Logging.getLogger(TemplateCallback.class);
 
+    static final String CQL_2_TEXT = "CQL2-TEXT";
+
     private Catalog catalog;
 
     private TemplateLoader configuration;
@@ -94,8 +97,11 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
                     RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
                     String filterLang = (String) request.getKvp().get("FILTER-LANG");
                     String filter = (String) request.getKvp().get("FILTER");
-                    if (filter != null && (filterLang == null || filterLang.equalsIgnoreCase("CQL-TEXT"))) {
-                        replaceTemplatePathWithFilter(filter, root, typeInfo, operation);
+                    if (filter != null
+                            && (filterLang == null
+                                    || filterLang.equalsIgnoreCase("CQL-TEXT")
+                                    || filterLang.equalsIgnoreCase("CQL2-TEXT"))) {
+                        replaceTemplatePathWithFilter(filter, filterLang, root, typeInfo, operation);
                     }
                     String envParam = request.getRawKvp().get("ENV") != null
                             ? request.getRawKvp().get("ENV").toString()
@@ -161,20 +167,24 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
     }
 
     private void replaceTemplatePathWithFilter(
-            String strFilter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation) throws Exception {
+            String strFilter, String filterLang, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
+            throws Exception {
         if (root != null) {
-            replaceFilter(strFilter, root, typeInfo, operation);
+            replaceFilter(strFilter, filterLang, root, typeInfo, operation);
         }
     }
 
-    private void replaceFilter(String strFilter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
+    private void replaceFilter(
+            String strFilter, String filterLang, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
             throws IOException, CQLException {
         // Get filter from string in order to make it accept the visitor
-        Filter filter = XCQL.toFilter(strFilter);
-        replaceFilter(filter, root, typeInfo, operation);
+        boolean isCQL2 = filterLang != null && CQL_2_TEXT.equalsIgnoreCase(filterLang.trim());
+        Filter filter = isCQL2 ? CQL2.toFilter(strFilter) : XCQL.toFilter(strFilter);
+        replaceFilter(filter, isCQL2, root, typeInfo, operation);
     }
 
-    private void replaceFilter(Filter filter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
+    private void replaceFilter(
+            Filter filter, boolean isCql2, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
             throws IOException, CQLException {
         TemplatePathVisitor visitor = new TemplatePathVisitor(typeInfo.getFeatureType());
         // Get filter from string in order to make it accept the visitor
@@ -192,7 +202,7 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
         }
         // Taking back a string from the Filter cause
         // OGC API get a string cql filter from query string
-        String newFilter = fixPropertyNames(ECQL.toCQL(f));
+        String newFilter = fixPropertyNames(isCql2 ? CQL2.toCQL2(f) : ECQL.toCQL(f));
         newFilter = TemplateCQLManager.quoteXpathAttribute(newFilter);
         // replace the filter in the operation
         Object[] operationParameters = operation.getParameters();

@@ -97,6 +97,15 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
         assertContentType("application/gml+xml;version=3.2;charset=UTF-8", response);
     }
 
+    @Test
+    public void getMappedFeatureCQL2IntersectionFilter() throws IOException {
+        Document doc = getAsDOM(
+                "ogc/features/v1/collections/gsml:MappedFeature/items?filter-lang=cql2-text&f=application%2Fgml%2Bxml%3Bversion%3D3.2"
+                        + "&filter=S_INTERSECTS(gsml%3Ageometry,%20POLYGON((-180%20-90,%20-180%2090,%20180%2090,%20180%20-90,%20-180%20-90)))"
+                        + MF_GML32_PARAM);
+        assertXpathCount(5, "//gsml:MappedFeature", doc);
+    }
+
     @Override
     protected AbstractAppSchemaMockData createTestData() {
         return new FeatureChainingMockData() {

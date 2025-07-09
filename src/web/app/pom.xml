@@ -1068,6 +1068,16 @@
           <groupId>org.postgis</groupId>
           <artifactId>postgis-jdbc</artifactId>
           <version>${postgis.jdbc.version}</version>
+          <exclusions>
+            <exclusion>
+              <artifactId>postgis-stubs</artifactId>
+              <groupId>org.postgis</groupId>
+            </exclusion>
+            <exclusion>
+              <artifactId>postgresql</artifactId>
+              <groupId>postgresql</groupId>
+            </exclusion>
+          </exclusions>
         </dependency>
       </dependencies>
     </profile>
@@ -1657,6 +1667,21 @@
       </dependencies>
     </profile>
     <profile>
+      <id>ogcapi-tiles</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-tiles</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-tiles</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>importer-jdbc</id>
       <dependencies>
         <dependency>
@@ -1943,6 +1968,26 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-geoparquet</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>wps-download-netcdf</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-wps-download-netcdf</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>singlestore</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-singlestore</artifactId>
           <version>${gs.version}</version>
         </dependency>
       </dependencies>

@@ -167,7 +167,6 @@ public class VFSWorker {
     }
 
     /** Extracts the archive file {@code archiveFile} to {@code targetFolder}; both shall previously exist. */
-    @SuppressWarnings("PMD.CloseResource")
     public void extractTo(File archiveFile, File targetFolder) throws IOException {
 
         FileSystemManager manager = VFS.getManager();

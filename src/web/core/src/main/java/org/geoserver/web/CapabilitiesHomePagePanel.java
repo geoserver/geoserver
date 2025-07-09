@@ -106,7 +106,6 @@ public class CapabilitiesHomePagePanel extends Panel {
 
             @Override
             protected void populateItem(ListItem<CapsInfo> captItem) {
-                @SuppressWarnings("deprecation")
                 CapsInfo capsInfo = captItem.getModelObject();
 
                 Version version = capsInfo.getVersion();

@@ -12,6 +12,7 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,14 +31,20 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wcs.CoverageCleanerCallback;
+import org.geoserver.wps.process.RawData;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.process.Processors;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
 import org.junit.After;
+import org.junit.Assert;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
@@ -70,6 +77,53 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         Processors.addProcessFactory(MonkeyProcess.getFactory());
         Processors.addProcessFactory(MultiRawProcess.getFactory());
         Processors.addProcessFactory(MultiOutputEchoProcess.getFactory());
+    }
+
+    public static class AutoCloseableResource implements AutoCloseable {
+        WPSResourceManager resourceManager;
+
+        RawData rawData;
+
+        Resource resource;
+
+        public File getFile() {
+            return file;
+        }
+
+        File file;
+
+        public AutoCloseableResource(WPSResourceManager resourceManager, RawData rawData) throws IOException {
+
+            // Final checks on the result
+            Assert.assertNotNull(rawData);
+
+            this.resourceManager = resourceManager;
+            this.rawData = rawData;
+            this.resource = resourceManager.getTemporaryResource(rawData.getFileExtension());
+            this.file = resource.file();
+            try (InputStream in = rawData.getInputStream()) {
+                IOUtils.copy(in, file);
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            // clean up process
+            IOUtils.delete(file, true);
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+    }
+
+    public static class AutoDisposableGridCoverage2D extends GridCoverage2D implements AutoCloseable {
+
+        public AutoDisposableGridCoverage2D(CharSequence name, GridCoverage2D coverage) {
+            super(name, coverage);
+        }
+
+        @Override
+        public void close() {
+            CoverageCleanerCallback.disposeCoverage(this);
+        }
     }
 
     protected void setUpInternal(SystemTestData testData) throws Exception {}

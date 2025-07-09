@@ -564,7 +564,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
     }
 
-    @SuppressWarnings("PMD.ForLoopCanBeForeach")
     private void processLayersStyles(
             GetMapRequest getMap,
             List<Object> requestedLayerInfos,

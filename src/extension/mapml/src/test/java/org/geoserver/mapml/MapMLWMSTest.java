@@ -11,7 +11,6 @@ import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.tcrs.TiledCRSConstants.BUILT_IN_TILED_CRS;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_PREVIEW_HEAD_FTL;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_XML_HEAD_FTL;
-import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -59,12 +57,11 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
-import org.geoserver.gwc.layer.GeoServerTileLayer;
-import org.geoserver.mapml.gwc.gridset.MapMLGridsets;
 import org.geoserver.mapml.tcrs.Bounds;
 import org.geoserver.mapml.xml.AxisType;
 import org.geoserver.mapml.xml.BodyContent;
@@ -89,8 +86,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.GrowableInternationalString;
-import org.geowebcache.grid.GridSubset;
-import org.geowebcache.mime.TextMime;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
@@ -104,6 +99,7 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.NodeList;
 
 public class MapMLWMSTest extends MapMLTestSupport {
 
@@ -171,6 +167,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         String points = MockData.POINTS.getLocalPart();
         String lines = MockData.LINES.getLocalPart();
         String polygons = MockData.POLYGONS.getLocalPart();
+        String world = MockData.WORLD.getLocalPart();
         CatalogBuilder cb = new CatalogBuilder(catalog);
         ResourceInfo ri =
                 catalog.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart()).getResource();
@@ -208,6 +205,15 @@ public class MapMLWMSTest extends MapMLTestSupport {
         ReferencedEnvelope webMercEnv = new ReferencedEnvelope(x1, x2, y1, y2, webMerc);
         lgi.setBounds(webMercEnv);
         catalog.save(lgi);
+
+        LayerGroupInfo lgWithRaster = catalog.getFactory().createLayerGroup();
+        lgWithRaster.setName("layerGroupWithRaster");
+        lgWithRaster.getLayers().add(catalog.getLayerByName(points));
+        lgWithRaster.getLayers().add(catalog.getLayerByName(lines));
+        lgWithRaster.getLayers().add(catalog.getLayerByName(polygons));
+        lgWithRaster.getLayers().add(catalog.getLayerByName(world));
+        builder.calculateLayerGroupBounds(lgWithRaster, DefaultGeographicCRS.WGS84);
+        catalog.add(lgWithRaster);
     }
 
     @Before
@@ -286,6 +292,20 @@ public class MapMLWMSTest extends MapMLTestSupport {
         expectedInternationalTitle = lgi.getInternationalTitle().toString(Locale.CANADA_FRENCH);
         assertTrue("Le titre français".equalsIgnoreCase(expectedInternationalTitle));
         assertTrue(title.equalsIgnoreCase(expectedInternationalTitle));
+    }
+
+    @Test
+    public void testMapMLLayerGroupWithRaster() throws Exception {
+        Catalog cat = getCatalog();
+
+        LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroupWithRaster");
+
+        MockRequestResponse requestResponse =
+                getMockRequestResponse((lgi).getName(), null, null, "EPSG:3857", null, true, false);
+
+        Mapml mapml = mapml(requestResponse.response);
+        String title = mapml.getHead().getTitle();
+        assertTrue(title.equalsIgnoreCase("Points,Lines,Polygons,World"));
     }
 
     @Test
@@ -442,13 +462,13 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 mapmlOneRaster.getBody().getExtents().get(0).getInputOrDatalistOrLink(), Link.class);
         List<Link> featureLinksForRaster = getLinkByRelType(extentLinksOneRaster, RelType.FEATURES);
         assertEquals(
-                "Features link should not be present when useFeatures on even one layer is raster",
-                0,
+                "Features link can be present when useFeatures even if one layer is raster",
+                1,
                 featureLinksForRaster.size());
         List<Link> imageLinksForRaster = getLinkByRelType(extentLinksOneRaster, RelType.IMAGE);
         assertEquals(
-                "Image link should be present when useFeatures on even one layer is raster",
-                1,
+                "Image link should not be present when useFeatures on even one layer is raster",
+                0,
                 imageLinksForRaster.size());
     }
 
@@ -545,18 +565,14 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 "query_layers should contain all layer names",
                 queryLinksForSingle.get(0).getTref().contains("query_layers=layerGroup,Polygons&"));
         List<Link> tileLinksForSingle = getLinkByRelType(extentLinksForSingle, RelType.TILE);
-        assertEquals("Tile links not supported for combined layers", 0, tileLinksForSingle.size());
-        List<Link> imageLinksForSingle = getLinkByRelType(extentLinksForSingle, RelType.IMAGE);
-        assertTrue(
-                "Image link tref should contain all layer names",
-                imageLinksForSingle.get(0).getTref().contains("layers=layerGroup,Polygons&"));
+        assertEquals("Tile links supported for combined layers", 1, tileLinksForSingle.size());
         List<Input> inputsSingleExtent = getTypeFromInputOrDataListOrLink(
                 mapmlSingleExtent.getBody().getExtents().get(0).getInputOrDatalistOrLink(), Input.class);
         List<String> inputNamesSingleExtent =
                 inputsSingleExtent.stream().map(input -> input.getName()).collect(java.util.stream.Collectors.toList());
         assertTrue(
                 "Input names should include all extent attributes",
-                inputNamesSingleExtent.containsAll(List.of("xmin", "ymin", "xmax", "ymax", "w", "h")));
+                inputNamesSingleExtent.containsAll(List.of("txmin", "tymin", "txmax", "tymax", "i", "j")));
 
         JAXBContext context = JAXBContext.newInstance(Mapml.class);
         StringWriter reader = new StringWriter();
@@ -1149,23 +1165,6 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertEquals("RoadSegments-r2-s1", f2.getStyle());
     }
 
-    private void enableTileCaching(QName layerName, Catalog catalog) {
-        GWC gwc = applicationContext.getBean(GWC.class);
-        GWCConfig defaults = GWCConfig.getOldDefaults();
-        // it seems just the fact of retrieving the bean causes the
-        // GridSets to be added to the gwc GridSetBroker, but if you don't do
-        // this, they are not added automatically
-        MapMLGridsets mgs = applicationContext.getBean(MapMLGridsets.class);
-        GridSubset wgs84gridset = createGridSubSet(mgs.getGridSet("WGS84").get());
-        GridSubset osmtilegridset = createGridSubSet(mgs.getGridSet("OSMTILE").get());
-        LayerInfo layerInfo = catalog.getLayerByName(layerName.getLocalPart());
-        GeoServerTileLayer layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
-        layerInfoTileLayer.addGridSubset(wgs84gridset);
-        layerInfoTileLayer.addGridSubset(osmtilegridset);
-        layerInfoTileLayer.getInfo().getMimeFormats().add(TextMime.txtMapml.getMimeType());
-        gwc.save(layerInfoTileLayer);
-    }
-
     @Test
     public void testGetFeatureInfoMapML() throws Exception {
 
@@ -1184,7 +1183,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 .toString()
                 .equalsIgnoreCase(featureCaptionTemplate));
         String forests = getLayerId(MockData.FORESTS);
-        HashMap<String, String> vars = getRequestVars(forests);
+        HashMap<String, String> vars = getRequestVars(forests, "-0.002,-0.002,0.002,0.002", null);
         MockRequestResponse requestResponse = getMockRequestResponse(forests, vars, null, null, null);
         org.w3c.dom.Document doc = dom(
                 new ByteArrayInputStream(
@@ -1199,7 +1198,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
     @Test
     public void testRasterGetFeatureInfoMapML() throws Exception {
         String world = getLayerId(MockData.WORLD);
-        HashMap<String, String> vars = getRequestVars(world);
+        HashMap<String, String> vars = getRequestVars(world, "-0.002,-0.002,0.002,0.002", null);
         MockRequestResponse requestResponse = getMockRequestResponse(world, vars, null, null, null);
         org.w3c.dom.Document doc = dom(
                 new ByteArrayInputStream(
@@ -1211,10 +1210,22 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertXpathEvaluatesTo("1", "count(//html:map-properties)", doc);
     }
 
-    private static HashMap<String, String> getRequestVars(String world) {
+    @Test
+    public void testLayerGroupGetFeatureInfoMapML() throws Exception {
+        HashMap<String, String> vars = getRequestVars("layerGroup", "400000,400000,599999,599999", "epsg:32615");
+        MockRequestResponse requestResponse = getMockRequestResponse("layerGroup", vars, null, null, null);
+        org.w3c.dom.Document doc = dom(
+                new ByteArrayInputStream(
+                        requestResponse.response.getContentAsString().getBytes()),
+                true);
+        // check that each of the layers in the group is represented as a feature
+        assertXpathEvaluatesTo("2", "count(//html:map-feature)", doc);
+    }
+
+    private static HashMap<String, String> getRequestVars(String world, String bbox, String srs) {
         HashMap<String, String> vars = new HashMap<>();
         vars.put("version", "1.1.1");
-        vars.put("bbox", "-0.002,-0.002,0.002,0.002");
+        vars.put("bbox", bbox);
         vars.put("styles", "");
         vars.put("format", "jpeg");
         vars.put("info_format", "text/mapml");
@@ -1225,6 +1236,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
         vars.put("height", "20");
         vars.put("x", "10");
         vars.put("y", "10");
+        vars.put("feature_count", "50");
+        vars.put("srs", srs != null ? srs : "EPSG:4326");
         return vars;
     }
 
@@ -1628,6 +1641,284 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertEquals("https://opensource.org/license/apache-2-0", licenseLink.getHref());
     }
 
+    @Test
+    public void testTransparentParameterInLinks() throws Exception {
+        Catalog catalog = getCatalog();
+        disableTileCaching(MockData.ROAD_SEGMENTS, catalog);
+
+        String multiExtTrue = MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT + ":" + "true";
+        // String multiExtFalse = MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT + ":" + "false";
+        String useTilesTrue = MapMLConstants.MAPML_USE_TILES_REP + ":" + "true";
+        // String useTilesFalse = MapMLConstants.MAPML_USE_TILES_REP + ":" + "false";
+        String useFeaturesTrue = MapMLConstants.MAPML_CREATE_FEATURE_LINKS + ":" + "true";
+        // String useFeaturesFalse = MapMLConstants.MAPML_CREATE_FEATURE_LINKS + ":" + "false";
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("version", "1.3.0");
+        params.put("layers", MockData.ROAD_SEGMENTS.getLocalPart());
+        params.put("styles", "");
+        params.put("format", MapMLConstants.MAPML_MIME_TYPE);
+        params.put("request", "GetMap");
+        params.put("width", "150");
+        params.put("height", "150");
+        params.put("srs", "EPSG:3857");
+        params.put("bbox", "0,0,1,1");
+        // default format_options should be multiExtFalse+";"+useTilesFalse+";"+useFeaturesFalse
+        // Test default transparency (true)
+        MockRequestResponse requestResponse = getMockRequestResponse(
+                MockData.ROAD_SEGMENTS.getPrefix() + ":" + MockData.ROAD_SEGMENTS.getLocalPart(),
+                params,
+                null,
+                null,
+                null);
+
+        org.w3c.dom.Document doc = dom(
+                new ByteArrayInputStream(
+                        requestResponse.response.getContentAsString().getBytes()),
+                true);
+
+        // default format_options should be multiExtFalse+";"+useTilesFalse+";"+useFeaturesFalse
+        // SO the rel will be 'image'
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", doc));
+        HashMap<String, String> vars = parseQuery(url);
+        assertEquals("The TRANSPARENT parameter should default to true", "true", vars.get("transparent"));
+
+        // Test with explicit transparency set to false
+        params.put("transparent", "false");
+
+        MockRequestResponse requestResponseFalse =
+                getMockRequestResponse(MockData.ROAD_SEGMENTS.getLocalPart(), params, null, null, null);
+
+        org.w3c.dom.Document docFalse = dom(
+                new ByteArrayInputStream(
+                        requestResponseFalse.response.getContentAsString().getBytes()),
+                true);
+
+        // default of unspecified format_options should be multiExtFalse+";"+useTilesFalse+";"+useFeaturesFalse
+        // SO the rel will be 'image'
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", docFalse);
+        URL urlFalse = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", docFalse));
+        HashMap<String, String> varsFalse = parseQuery(urlFalse);
+        assertEquals("The TRANSPARENT parameter should be passed as false", "false", varsFalse.get("transparent"));
+
+        assertXpathExists(
+                "//html:map-link[@rel='alternate'][@projection][contains(@href,'transparent=false')]", docFalse);
+
+        // Test transparency in rel=tile links
+        params.put("format_options", useTilesTrue + ";" + useFeaturesTrue);
+        MockRequestResponse tileResponse = getMockRequestResponse(
+                MockData.ROAD_SEGMENTS.getPrefix() + ":" + MockData.ROAD_SEGMENTS.getLocalPart(),
+                params,
+                null,
+                null,
+                null);
+
+        org.w3c.dom.Document tileDoc = dom(
+                new ByteArrayInputStream(
+                        tileResponse.response.getContentAsString().getBytes()),
+                true);
+
+        // default/unspecified format_options should only be useMultiExtFalse
+        // SO the rel will be 'tile'  (because we specified useTilesTrue, useFeaturesTrue)
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='tile'][@tref])", tileDoc);
+        assertXpathEvaluatesTo("1", "count(//html:map-extent)", tileDoc);
+        // when useFeaturesTrue, the map-link@type attribute should be 'text/mapml'
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='tile'][@type='text/mapml'])", tileDoc);
+        URL tileUrl = new URL(xpath.evaluate("//html:map-link[@rel='tile']/@tref", tileDoc));
+        HashMap<String, String> tileVars = parseQuery(tileUrl);
+
+        // Verify this is a WMS tile-shaped request, not a WMTS GetTile request
+        assertEquals("Should be a WMS request", "GetMap", tileVars.get("request"));
+        assertEquals(
+                "The TRANSPARENT parameter should be passed to WMS tile links", "false", tileVars.get("transparent"));
+
+        // Test multiple layers with multi-extent and transparent=true
+        params.clear();
+        params.put("version", "1.3.0");
+        params.put("layers", MockData.ROAD_SEGMENTS.getLocalPart() + "," + MockData.BUILDINGS.getLocalPart());
+        params.put("styles", "");
+        params.put("format", MapMLConstants.MAPML_MIME_TYPE);
+        params.put("request", "GetMap");
+        params.put("width", "150");
+        params.put("height", "150");
+        params.put("srs", "EPSG:3857");
+        params.put("bbox", "0,0,1,1");
+        params.put("transparent", "true");
+
+        params.put("format_options", multiExtTrue);
+
+        // Get response for multiple layers with multi-extent
+        MockRequestResponse multiExtentResponse = getMockRequestResponse(
+                MockData.ROAD_SEGMENTS.getPrefix() + ":" + MockData.ROAD_SEGMENTS.getLocalPart() + ","
+                        + MockData.BUILDINGS.getPrefix() + ":" + MockData.BUILDINGS.getLocalPart(),
+                params,
+                null,
+                null,
+                null);
+
+        org.w3c.dom.Document multiExtentDoc = dom(
+                new ByteArrayInputStream(
+                        multiExtentResponse.response.getContentAsString().getBytes()),
+                true);
+
+        // Count the number of image links - should be one per layer
+        // We specified two layers, so we should have at least 2 links
+        NodeList imageLinks = multiExtentDoc.getElementsByTagNameNS("*", "map-link");
+        int imageLinkCount = 0;
+        for (int i = 0; i < imageLinks.getLength(); i++) {
+            org.w3c.dom.Node node = imageLinks.item(i);
+            org.w3c.dom.NamedNodeMap attrs = node.getAttributes();
+            org.w3c.dom.Node relAttr = attrs.getNamedItem("rel");
+            if (relAttr != null && "image".equals(relAttr.getNodeValue())) {
+                imageLinkCount++;
+                org.w3c.dom.Node trefAttr = attrs.getNamedItem("tref");
+                URL trefUrl = new URL(trefAttr.getNodeValue());
+                HashMap<String, String> trefParams = parseQuery(trefUrl);
+                assertEquals(
+                        "Each extent should have TRANSPARENT=true when transparency is enabled",
+                        "true",
+                        trefParams.get("transparent"));
+            }
+        }
+        // Verify we have at least 2 image links (one for each layer)
+        assertTrue("Should have multiple image links with MULTIEXTENT:true", imageLinkCount >= 2);
+
+        // Test multiple layers with multi-extent and transparent=false
+        params.put("transparent", "false");
+
+        MockRequestResponse multiExtentResponseFalse = getMockRequestResponse(
+                MockData.ROAD_SEGMENTS.getPrefix() + ":" + MockData.ROAD_SEGMENTS.getLocalPart() + ","
+                        + MockData.BUILDINGS.getPrefix() + ":" + MockData.BUILDINGS.getLocalPart(),
+                params,
+                null,
+                null,
+                null);
+
+        org.w3c.dom.Document multiExtentDocFalse = dom(
+                new ByteArrayInputStream(
+                        multiExtentResponseFalse.response.getContentAsString().getBytes()),
+                true);
+
+        // Check that each extent has transparent=false
+        NodeList imageLinksF = multiExtentDocFalse.getElementsByTagNameNS("*", "map-link");
+        int imageLinkCountF = 0;
+        for (int i = 0; i < imageLinksF.getLength(); i++) {
+            org.w3c.dom.Node node = imageLinksF.item(i);
+            org.w3c.dom.NamedNodeMap attrs = node.getAttributes();
+            org.w3c.dom.Node relAttr = attrs.getNamedItem("rel");
+            if (relAttr != null && "image".equals(relAttr.getNodeValue())) {
+                imageLinkCountF++;
+                org.w3c.dom.Node trefAttr = attrs.getNamedItem("tref");
+                URL trefUrl = new URL(trefAttr.getNodeValue());
+                HashMap<String, String> trefParams = parseQuery(trefUrl);
+                assertEquals(
+                        "Each extent should have TRANSPARENT=false when transparency is disabled",
+                        "false",
+                        trefParams.get("transparent"));
+            }
+        }
+        // Verify we have at least 2 image links (one for each layer)
+        assertTrue("Should have multiple image links with MULTIEXTENT:true", imageLinkCountF >= 2);
+
+        // Test WMS request for raster+vector layers with mapmlfeatures:true to check TRANSPARENT in map-tile src
+        params.clear();
+        params.put("version", "1.3.0");
+        params.put("layers", MockData.WORLD.getLocalPart() + "," + MockData.ROAD_SEGMENTS.getLocalPart());
+        params.put("styles", "");
+        params.put("format", MapMLConstants.MAPML_MIME_TYPE);
+        params.put("request", "GetMap");
+        params.put("width", "256");
+        params.put("height", "256");
+        params.put("srs", "EPSG:3857");
+        params.put("bbox", "-20037508,-20037508,20037508,20037508");
+        params.put("transparent", "true");
+        params.put("format_options", "mapmlfeatures:true;mapmlskipheadstyles:true;mapmlskipattributes:true");
+
+        // Get response for raster layer with features and tiles enabled
+        MockRequestResponse rasterFeaturesResponse = getMockRequestResponse(
+                MockData.WORLD.getPrefix() + ":" + MockData.WORLD.getLocalPart() + ","
+                        + MockData.ROAD_SEGMENTS.getPrefix() + ":" + MockData.ROAD_SEGMENTS.getLocalPart(),
+                params,
+                null,
+                null,
+                null);
+
+        org.w3c.dom.Document rasterFeaturesDoc = dom(
+                new ByteArrayInputStream(
+                        rasterFeaturesResponse.response.getContentAsString().getBytes()),
+                true);
+
+        // Verify we have a map-tile with a src attribute
+        assertXpathEvaluatesTo("1", "count(//html:map-tile[@src])", rasterFeaturesDoc);
+
+        // Get the  URL and check transparent parameter
+        URL rasterTileUrl = new URL(xpath.evaluate("//html:map-tile/@src", rasterFeaturesDoc));
+        HashMap<String, String> rasterTileParams = parseQuery(rasterTileUrl);
+        assertEquals(
+                "The TRANSPARENT parameter should be passed as true to the tile src for a raster layer rendered as map-tiles",
+                "true",
+                rasterTileParams.get("TRANSPARENT"));
+
+        // Now test with transparent=false
+        params.put("transparent", "false");
+
+        MockRequestResponse rasterFeaturesFalseResponse = getMockRequestResponse(
+                MockData.WORLD.getPrefix() + ":" + MockData.WORLD.getLocalPart() + ","
+                        + MockData.ROAD_SEGMENTS.getPrefix() + ":" + MockData.ROAD_SEGMENTS.getLocalPart(),
+                params,
+                null,
+                null,
+                null);
+
+        org.w3c.dom.Document rasterFeaturesFalseDoc = dom(
+                new ByteArrayInputStream(rasterFeaturesFalseResponse
+                        .response
+                        .getContentAsString()
+                        .getBytes()),
+                true);
+
+        // Verify we have a map-tile src
+        assertXpathEvaluatesTo("1", "count(//html:map-tile[@src])", rasterFeaturesFalseDoc);
+
+        // Get the src URL and check transparent parameter
+        URL rasterTileUrlFalse = new URL(xpath.evaluate("//html:map-tile/@src", rasterFeaturesFalseDoc));
+        HashMap<String, String> rasterTileParamsFalse = parseQuery(rasterTileUrlFalse);
+        assertEquals(
+                "The TRANSPARENT parameter should be passed as false to the tile src for a raster layer rendered as map-tiles",
+                "false",
+                rasterTileParamsFalse.get("TRANSPARENT"));
+
+        // Now test with default transparency
+        params.remove("transparent");
+
+        MockRequestResponse rasterFeaturesDefaultResponse = getMockRequestResponse(
+                MockData.WORLD.getPrefix() + ":" + MockData.WORLD.getLocalPart() + ","
+                        + MockData.ROAD_SEGMENTS.getPrefix() + ":" + MockData.ROAD_SEGMENTS.getLocalPart(),
+                params,
+                null,
+                null,
+                null);
+
+        org.w3c.dom.Document rasterFeaturesDefaultDoc = dom(
+                new ByteArrayInputStream(rasterFeaturesDefaultResponse
+                        .response
+                        .getContentAsString()
+                        .getBytes()),
+                true);
+
+        // Verify we have a map-tile src
+        assertXpathEvaluatesTo("1", "count(//html:map-tile[@src])", rasterFeaturesFalseDoc);
+
+        // Get the src URL and check transparent parameter
+        URL rasterTileUrlDefault = new URL(xpath.evaluate("//html:map-tile/@src", rasterFeaturesDefaultDoc));
+        HashMap<String, String> rasterTileParamsDefault = parseQuery(rasterTileUrlDefault);
+        assertEquals(
+                "The TRANSPARENT parameter should be set to true by default in the tile src for a raster layer rendered as map-tiles",
+                "false",
+                rasterTileParamsDefault.get("TRANSPARENT"));
+    }
+
     private void testAlternateBounds(List<Link> alternateLinks, ProjType projType, Envelope bounds, double tolerance) {
         Link osmLink = alternateLinks.stream()
                 .filter(l -> l.getProjection().equalsIgnoreCase(projType.value()))
@@ -1650,7 +1941,6 @@ public class MapMLWMSTest extends MapMLTestSupport {
         return mapmlSingleExtent;
     }
 
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     private Document testLayersAndGroupsHTML(PublishedInfo l, Locale locale) throws Exception {
         String layerName;
         String layerLabel;
@@ -1960,5 +2250,108 @@ public class MapMLWMSTest extends MapMLTestSupport {
         public void describeTo(Description description) {
             description.appendText("Bounds matches " + expected + " with tolerance " + tolerance);
         }
+    }
+
+    @Test
+    public void testMapMLWMSVerboseSettingPrettyPrint() throws Exception {
+        // Test that WMS GetMap MapML output is pretty-printed when global verbose setting is true
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        info.getSettings().setVerbose(true);
+        gs.save(info);
+
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        MockRequestResponse requestResponse = getMockRequestResponse(layerId, null, null, "EPSG:4326", null);
+
+        String response = requestResponse.response.getContentAsString();
+
+        // Check for pretty-printing indicators
+        assertTrue("WMS MapML response should contain newlines for pretty-printing", response.contains("\n"));
+        assertTrue("WMS MapML response should contain indentation spaces", response.contains("  <"));
+
+        // Verify XML structure is preserved
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // reset to default
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+    }
+
+    @Test
+    public void testMapMLWMSVerboseSettingDenseOutput() throws Exception {
+        // Test that WMS GetMap MapML output is dense when global verbose setting is false
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        MockRequestResponse requestResponse = getMockRequestResponse(layerId, null, null, "EPSG:4326", null);
+
+        String response = requestResponse.response.getContentAsString();
+
+        // Check that output is more compact (minimal indentation)
+        assertFalse(
+                "Dense WMS MapML output should have minimal indentation spaces",
+                response.contains("  <") && response.contains("    <"));
+
+        // Verify XML structure is still valid
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // reset to default not necessary - default is false
+    }
+
+    @Test
+    public void testMapMLGetFeatureInfoVerboseSettingPrettyPrint() throws Exception {
+        // Test that WMS GetFeatureInfo MapML output is pretty-printed when global verbose setting is true
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        info.getSettings().setVerbose(true);
+        gs.save(info);
+
+        String response = getAsString("wms?LAYERS=" + getLayerId(MockData.FORESTS) + "&STYLES=&FORMAT=image%2Fpng"
+                + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG%3A4326&BBOX=-0.002,-0.002,0.002,0.002"
+                + "&WIDTH=20&HEIGHT=20&INFO_FORMAT=text/mapml&QUERY_LAYERS=" + getLayerId(MockData.FORESTS)
+                + "&X=10&Y=10");
+
+        // Check for pretty-printing indicators
+        assertTrue(
+                "GetFeatureInfo MapML response should contain newlines for pretty-printing", response.contains("\n"));
+        assertTrue("GetFeatureInfo MapML response should contain indentation spaces", response.contains("  "));
+
+        // Verify XML structure is preserved
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // reset to default
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+    }
+
+    @Test
+    public void testMapMLGetFeatureInfoVerboseSettingDenseOutput() throws Exception {
+        // Test that WMS GetFeatureInfo MapML output is dense when global verbose setting is false
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+
+        String response = getAsString("wms?LAYERS=" + getLayerId(MockData.FORESTS) + "&STYLES=&FORMAT=image%2Fpng"
+                + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG%3A4326&BBOX=-0.002,-0.002,0.002,0.002"
+                + "&WIDTH=20&HEIGHT=20&INFO_FORMAT=text/mapml&QUERY_LAYERS=" + getLayerId(MockData.FORESTS)
+                + "&X=10&Y=10");
+
+        // Check that output is more compact (minimal indentation)
+        assertFalse(
+                "Dense GetFeatureInfo MapML output should have minimal indentation spaces",
+                response.contains("  <") && response.contains("    <"));
+
+        // Verify XML structure is still valid
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // reset to default not necessary - default is false
     }
 }

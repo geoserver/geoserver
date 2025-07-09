@@ -76,7 +76,7 @@ public abstract class XStreamCatalogListConverter extends XStreamMessageConverte
 
         xstream.registerConverter(new CollectionConverter(xstream.getMapper()) {
             @Override
-            public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+            public boolean canConvert(Class type) {
                 return Collection.class.isAssignableFrom(type);
             }
 
@@ -313,7 +313,7 @@ public abstract class XStreamCatalogListConverter extends XStreamMessageConverte
             super.configureXStream(xstream, clazz, wrapper);
             xstream.registerConverter(new CollectionConverter(xstream.getMapper()) {
                 @Override
-                public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+                public boolean canConvert(Class type) {
                     return Collection.class.isAssignableFrom(type);
                 }
 

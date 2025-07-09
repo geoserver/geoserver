@@ -25,17 +25,45 @@
                 <li>
                     <fieldset>
                         <legend>
-                            <span><wicket:message key="mapmlTileSection">Representation Config</wicket:message></span>
+                            <span><wicket:message key="mapmlTileSection">Tile Config</wicket:message></span>
                         </legend>
                         <ul class="choiceList">
                             <li>
                                 <input id="useTiles" wicket:id="useTiles" type="checkbox"></input>
-                                <label for="useTiles"><wicket:message key="mapmlUseTiles">Use Tiles</wicket:message></label>
+                                <label for="useTiles">
+                                    <wicket:message key="mapmlUseTiles">Use Tiles</wicket:message>
+                                </label>
                             </li>
+                        </ul>
+                    </fieldset>
+                </li>
+                <li>
+                    <fieldset>
+                        <legend>
+                            <span><wicket:message key="mapmlVectorSection">Vector Config</wicket:message></span>
+                        </legend>
+                        <ul class="choiceList">
                             <li>
-                                <input id="multiextent" wicket:id="multiextent" type="checkbox"></input>
-                                <label for="multiextent"><wicket:message key="multiextent">Multi-Layer as Multi-Extent</wicket:message></label>
+                                <input id="useFeatures" wicket:id="useFeatures" type="checkbox"></input>
+                                <label for="useFeatures">
+                                    <wicket:message key="mapmlUseFeatures">Use Features</wicket:message>
+                                </label>
                             </li>
+                        </ul>
+                    </fieldset>
+                </li>
+                <li>
+                    <fieldset>
+                        <legend>
+                            <span><wicket:message key="mapmlMultiExtentSection">Sub-layer Config</wicket:message></span>
+                        </legend>
+                        <ul class="choiceList">
+                          <li>
+                            <input id="multiextent" wicket:id="useMultiExtents" type="checkbox"></input>
+                            <label for="multiextent">
+                              <wicket:message key="mapmlUseMultiExtents">Expose sub-layers in layer control</wicket:message>
+                            </label>
+                          </li>
                         </ul>
                     </fieldset>
                 </li>

@@ -294,7 +294,6 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     public void testWorldOutsideDateline() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__world");
@@ -328,7 +327,6 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     public void testScalingWithRequestCrossingDateline() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__world"
@@ -471,7 +469,6 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testDatelineCross() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(
                 "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__dateline_cross");
@@ -514,7 +511,6 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testReprojected() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=cdf__usa");

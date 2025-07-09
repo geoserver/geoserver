@@ -185,7 +185,6 @@ public class XStreamPersisterTest {
     }
 
     @Test
-    @SuppressWarnings("PMD.CloseResource")
     public void testGobalContactDefault() throws Exception {
         GeoServerInfo g1 = factory.createGlobal();
         ContactInfo contact = factory.createContact();
@@ -1401,7 +1400,6 @@ public class XStreamPersisterTest {
      * order than the marshaling one
      */
     @Test
-    @SuppressWarnings("PMD.CloseResource")
     public void testGridGeometry2DConverterUnmarshalling() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();

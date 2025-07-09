@@ -149,7 +149,6 @@ public class WMSRequestsTest extends WMSTestSupport {
         assertThat(urls.get(3), not(containsString("&sortby=")));
     }
 
-    @SuppressWarnings("unchecked")
     private GetMapRequest initGetMapRequest(QName... names) {
         GetMapRequest request = createGetMapRequest(names);
         request.setRawKvp(new KvpMap<>(request.getRawKvp()));

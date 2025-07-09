@@ -35,7 +35,6 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.gwc.GWC;
@@ -109,11 +108,6 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         MapModel<Boolean> useFeaturesModel = new MapModel<>(
                 new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.MAPML_USE_FEATURES);
         CheckBox useFeatures = new CheckBox(MapMLConstants.USE_FEATURES, useFeaturesModel);
-        if (model.getObject() != null && model.getObject() instanceof PublishedInfo) {
-            if (model.getObject().getType() == PublishedType.RASTER) {
-                useFeatures.setEnabled(false);
-            }
-        }
         useFeatures.add(new OnChangeAjaxBehavior() {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -123,6 +117,12 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
             }
         });
         add(useFeatures);
+
+        // add the checkbox to expose sub-layers / set usemultiextents:true or :false
+        MapModel<Boolean> useMultiExtentsModel = new MapModel<>(
+                new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.MAPML_USE_MULTIEXTENTS);
+        CheckBox useMultiExtents = new CheckBox(MapMLConstants.USE_MULTIEXTENTS, useMultiExtentsModel);
+        add(useMultiExtents);
 
         MapModel<String> dimensionModel = new MapModel<>(
                 new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.MAPML_DIMENSION);

@@ -64,6 +64,7 @@ officially part of the GeoServer releases. They are however built along with the
    remote-wps/index
    s3-geotiff/index
    schemaless-features/index
+   singlestore/index
    smart-data-loader/index
    spatialjson/index
    stac-datastore/index
@@ -74,4 +75,6 @@ officially part of the GeoServer releases. They are however built along with the
    web-service-auth/index
    webp/index
    wfs-freemarker/index
+   wps-download-netcdf/index
    wps-longitudinal-profile/index
+

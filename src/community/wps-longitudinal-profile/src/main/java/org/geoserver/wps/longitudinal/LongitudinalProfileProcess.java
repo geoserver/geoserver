@@ -7,6 +7,7 @@ package org.geoserver.wps.longitudinal;
 import static org.locationtech.jts.densify.Densifier.densify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -38,9 +39,11 @@ import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeographicCRS;
 import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.MathTransform2D;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.api.util.ProgressListener;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.util.NullProgressListener;
@@ -50,6 +53,7 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -65,6 +69,18 @@ import si.uom.SI;
                 + "Altitude will be adjusted if adjustment layer is provided as parameter. "
                 + "Also supports reprojection to different crs")
 public class LongitudinalProfileProcess implements GeoServerProcess, DisposableBean {
+
+    private static final CoordinateReferenceSystem EPSG_4326;
+    private static final double METERS_PER_DEGREE_LATITUDE = 110574.2727;
+    public static final double DEGREES_PER_PI_RADIAN = 180.0;
+
+    static {
+        try {
+            EPSG_4326 = CRS.decode("EPSG:4326", true);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to decode default CRS", e);
+        }
+    }
 
     static final Logger LOGGER = Logging.getLogger(LongitudinalProfileProcess.class);
 
@@ -149,8 +165,8 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
                     String adjustmentLayerName,
             @DescribeParameter(name = "geometry", description = "geometry for profile", min = 1)
                     final Geometry geometry,
-            @DescribeParameter(name = "distance", description = "distance between points in meters", min = 1)
-                    double distance,
+            @DescribeParameter(name = "distance", description = "distance between points in meters", min = 0)
+                    final Double distance,
             @DescribeParameter(name = "targetProjection", description = "projection for result", min = 0)
                     CoordinateReferenceSystem projection,
             @DescribeParameter(
@@ -206,25 +222,29 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         if (!(geometry instanceof LineString)) throw new IllegalArgumentException("Geometry must be a LineString");
 
         // Project to CRS of provided geometry, if projection parameter is not provided
+        CoordinateReferenceSystem geometryCRS = null;
+        if (geometry.getUserData() instanceof CoordinateReferenceSystem) {
+            geometryCRS = (CoordinateReferenceSystem) geometry.getUserData();
+        }
+
         if (projection != null) {
             LOGGER.fine(" targetProjection: " + projection.getName());
         } else {
-            if (geometry.getUserData() instanceof CoordinateReferenceSystem)
-                projection = (CoordinateReferenceSystem) geometry.getUserData();
-            else projection = gridCoverage2D.getCoordinateReferenceSystem2D();
+            projection = geometryCRS != null ? geometryCRS : gridCoverage2D.getCoordinateReferenceSystem2D();
         }
 
         // If geometry does not contain any info on CRS we will use CRS of the input coverage
         CoordinateReferenceSystem coverageCRS = gridCoverage2D.getCoordinateReferenceSystem2D();
         LineString reprojected = (LineString) geometry;
-        if (geometry.getUserData() instanceof CoordinateReferenceSystem) {
-            CoordinateReferenceSystem lineCRS = (CoordinateReferenceSystem) geometry.getUserData();
-            if (CRS.isTransformationRequired(lineCRS, coverageCRS)) {
-                reprojected = reprojectGeometry(lineCRS, coverageCRS, (LineString) geometry);
+        if (geometryCRS != null) {
+            if (CRS.isTransformationRequired(geometryCRS, coverageCRS)) {
+                reprojected = reprojectGeometry(geometryCRS, coverageCRS, reprojected);
             }
         }
-
-        Geometry denseLine = densifyLine(distance, reprojected, coverageCRS);
+        // compute the distance in the target CRS units
+        Double distanceInTargetCrs =
+                getDistanceInTargetCrs(distance, gridCoverage2D, coverageCRS, reprojected, projection);
+        Geometry denseLine = densifyLine(distanceInTargetCrs, reprojected, coverageCRS);
 
         // Create an array with all geometry vertices
         Coordinate[] coords = denseLine.getCoordinates();
@@ -296,14 +316,89 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         return new LongitudinalProfileProcessResult(profileInfos, operationInfo);
     }
 
+    private Double getDistanceInTargetCrs(
+            Double distance,
+            GridCoverage2D gridCoverage2D,
+            CoordinateReferenceSystem coverageCRS,
+            LineString reprojected,
+            CoordinateReferenceSystem projection)
+            throws FactoryException, TransformException {
+        if (distance != null) {
+            // distance parameter is expressed in meters
+            return metersToCrsUnits(coverageCRS, reprojected.getCentroid().getCoordinate(), distance);
+        }
+
+        LOGGER.fine("Distance parameter has not been provided. Computing it on top of the available data");
+        // Extract the resolution from the coverage
+        GridGeometry2D gridGeometry2d = gridCoverage2D.getGridGeometry();
+        MathTransform2D gridToCRS = gridGeometry2d.getGridToCRS2D();
+        double computedDistance;
+
+        // At this point, the provided reprojected linestring is expressed in CoverageCRS
+        if (projection instanceof GeographicCRS) {
+            // Projected line is Geographic -> target distance is in degrees
+            if (!(coverageCRS instanceof GeographicCRS)) {
+                // data is not Geographic -> Compute distance in degrees
+                computedDistance = computeDiagonalDistance(gridCoverage2D, EPSG_4326);
+            } else if (gridToCRS instanceof AffineTransform2D) {
+                AffineTransform2D affine = (AffineTransform2D) gridToCRS;
+                double dx = affine.getScaleX();
+                double dy = affine.getScaleY();
+                // data is already Geographic -> already in degrees
+                computedDistance = Math.sqrt(dx * dx + dy * dy);
+            } else {
+                throw new IllegalArgumentException(
+                        "Projection resulting into an Unsupported GridToCRS Transformation:" + gridToCRS);
+            }
+        } else {
+            // compute the diagonal length of a central pixel in the target projection
+            computedDistance = computeDiagonalDistance(gridCoverage2D, projection);
+        }
+        LOGGER.fine("Computed distance: " + computedDistance);
+        return computedDistance;
+    }
+
+    private double computeDiagonalDistance(GridCoverage2D coverage, CoordinateReferenceSystem targetCRS)
+            throws FactoryException, TransformException {
+
+        GridGeometry2D gridGeometry2d = coverage.getGridGeometry();
+        MathTransform2D gridToCRS = gridGeometry2d.getGridToCRS2D();
+        CoordinateReferenceSystem sourceCRS = coverage.getCoordinateReferenceSystem2D();
+        int width = coverage.getRenderedImage().getWidth();
+        int height = coverage.getRenderedImage().getHeight();
+        double centerX = width / 2.0;
+        double centerY = height / 2.0;
+
+        Point2D gridOrigin = new Point2D.Double(centerX, centerY);
+        Point2D gridDiagonal = new Point2D.Double(centerX + 1, centerY + 1);
+
+        Point2D worldOrigin = new Point2D.Double();
+        Point2D worldDiagonal = new Point2D.Double();
+
+        gridToCRS.transform(gridOrigin, worldOrigin);
+        gridToCRS.transform(gridDiagonal, worldDiagonal);
+
+        MathTransform2D toTarget = (MathTransform2D) CRS.findMathTransform(sourceCRS, targetCRS, true);
+
+        Point2D targetOrigin = new Point2D.Double();
+        Point2D targetDiagonal = new Point2D.Double();
+
+        toTarget.transform(worldOrigin, targetOrigin);
+        toTarget.transform(worldDiagonal, targetDiagonal);
+
+        // Compute diagonal distance
+        double dY = targetDiagonal.getY() - targetOrigin.getY();
+        double dX = targetDiagonal.getX() - targetOrigin.getX();
+        return Math.sqrt(dY * dY + dX * dX);
+    }
+
     /** Unecessary for runtime, but useful for testing */
     protected DistanceSlopeCalculator getDistanceSlopeCalculator(CoordinateReferenceSystem projection) {
         return new DistanceSlopeCalculator(projection);
     }
 
-    private Geometry densifyLine(double distance, LineString lineString, CoordinateReferenceSystem crs) {
-        double distanceInTargetCrsUnits =
-                metersToCrsUnits(crs, lineString.getCentroid().getCoordinate(), distance);
+    private Geometry densifyLine(
+            double distanceInTargetCrsUnits, LineString lineString, CoordinateReferenceSystem crs) {
         long expectedPoints = (long) Math.ceil(lineString.getLength() / distanceInTargetCrsUnits);
         if (expectedPoints > maxPoints)
             throw new WPSException(
@@ -359,9 +454,9 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
 
     private double metersToCrsUnits(CoordinateReferenceSystem crs, Coordinate centroidCoord, double distanceInMeters) {
         if (crs instanceof GeographicCRS) {
-            double sizeDegree = 110574.2727;
+            double sizeDegree = METERS_PER_DEGREE_LATITUDE;
             if (centroidCoord != null) {
-                double cosLat = Math.cos(Math.PI * centroidCoord.y / 180.0);
+                double cosLat = Math.cos(Math.PI * centroidCoord.y / DEGREES_PER_PI_RADIAN);
                 double latAdjustment = Math.sqrt(1 + cosLat * cosLat) / Math.sqrt(2.0);
                 sizeDegree *= latAdjustment;
             }

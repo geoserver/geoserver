@@ -120,7 +120,7 @@
     <image.tests>true</image.tests>
     <interactive.image>false</interactive.image>
     <windows.leniency>true</windows.leniency>
-    <gf.version>3.8.0</gf.version>
+    <gf.version>3.8.1</gf.version>
     <mf.version>2.3.3</mf.version>
     <jasypt.version>1.9.3</jasypt.version>
     <hibernate-version>5.6.15.Final</hibernate-version>

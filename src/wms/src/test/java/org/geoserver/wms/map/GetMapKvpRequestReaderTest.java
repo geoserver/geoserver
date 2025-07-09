@@ -60,7 +60,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
@@ -69,6 +68,7 @@ import org.geoserver.ows.kvp.URIKvpParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.CacheConfiguration;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -86,6 +86,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Test;
 
 @SuppressWarnings("unchecked")
@@ -159,43 +160,30 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         reader = new GetMapKvpRequestReader(wms);
     }
 
+    @After
+    public void clearProperty() {
+        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+    }
+
     @Test
     public void testSldEntityResolver() throws Exception {
         WMS wms = new WMS(getGeoServer());
-        GeoServerInfo geoserverInfo = wms.getGeoServer().getGlobal();
-        try {
-            // enable entities in external SLD files
-            geoserverInfo.setXmlExternalEntitiesEnabled(true);
-            getGeoServer().save(geoserverInfo);
+        // enable entities in external SLD files
+        // test no custom entity resolver will be used
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
+        GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
+        assertNull(reader.getEntityResolverProvider().getEntityResolver());
 
-            // test setting has been saved
-            assertNotNull(wms.getGeoServer().getGlobal().isXmlExternalEntitiesEnabled());
-            assertTrue(wms.getGeoServer().getGlobal().isXmlExternalEntitiesEnabled());
+        // disable entities
+        // since XML entities are disabled for external SLD files
+        // I need an entity resolver which enforce this
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+        reader = new GetMapKvpRequestReader(wms);
+        assertNotNull(reader.getEntityResolverProvider().getEntityResolver());
 
-            // test no custom entity resolver will be used
-            GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
-            assertNull(reader.getEntityResolverProvider().getEntityResolver());
-
-            // disable entities
-            geoserverInfo.setXmlExternalEntitiesEnabled(false);
-            getGeoServer().save(geoserverInfo);
-
-            // since XML entities are disabled for external SLD files
-            // I need an entity resolver which enforce this
-            reader = new GetMapKvpRequestReader(wms);
-            assertNotNull(reader.getEntityResolverProvider().getEntityResolver());
-
-            // try default value: entities should be disabled
-            geoserverInfo.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(geoserverInfo);
-
-            reader = new GetMapKvpRequestReader(wms);
-            assertNotNull(reader.getEntityResolverProvider().getEntityResolver());
-        } finally {
-            // reset to default
-            geoserverInfo.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(geoserverInfo);
-        }
+        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        reader = new GetMapKvpRequestReader(wms);
+        assertNotNull(reader.getEntityResolverProvider().getEntityResolver());
     }
 
     @Test

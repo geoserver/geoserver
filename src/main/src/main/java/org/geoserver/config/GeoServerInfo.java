@@ -109,13 +109,19 @@ public interface GeoServerInfo extends Info {
     /**
      * If true it enables unrestricted evaluation of XML entities contained in XML files received in a service (WMS,
      * WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     *
+     * @deprecated use the {@code ENTITY_RESOLUTION_UNRESTRICTED} system property
      */
+    @Deprecated(forRemoval = true, since = "2.26.4, 2.27.2, 2.28.0")
     void setXmlExternalEntitiesEnabled(Boolean xmlExternalEntitiesEnabled);
 
     /**
      * If true it enables unrestricted evaluation of XML entities contained in XML files received in a service (WMS,
      * WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     *
+     * @deprecated use the {@code ENTITY_RESOLUTION_UNRESTRICTED} system property
      */
+    @Deprecated(forRemoval = true, since = "2.26.4, 2.27.2, 2.28.0")
     Boolean isXmlExternalEntitiesEnabled();
 
     /**

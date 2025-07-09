@@ -1279,4 +1279,13 @@ public class FeatureTest extends FeaturesTestSupport {
         assertEquals("Point", feature.read("place.type"));
         assertArrayEquals(new double[] {22, 78}, feature.read("place.coordinates", double[].class), 1d);
     }
+
+    @Test
+    public void testCharset() throws Exception {
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+        MockHttpServletResponse response =
+            getAsServletResponse("ogc/features/v1/collections/" + roadSegments + "/items", StandardCharsets.UTF_8.name());
+        assertEquals(200, response.getStatus());
+        assertEquals("UTF-8", response.getCharacterEncoding());
+    }
 }

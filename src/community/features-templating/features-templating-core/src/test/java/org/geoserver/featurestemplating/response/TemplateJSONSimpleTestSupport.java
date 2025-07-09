@@ -61,7 +61,7 @@ public abstract class TemplateJSONSimpleTestSupport extends GeoServerSystemTestS
 
     protected JSON getJsonLd(String path) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
-        assertEquals(response.getContentType(), "application/ld+json");
+        assertEquals(removeCharset(response.getContentType()), "application/ld+json");
         return json(response);
     }
 
@@ -70,8 +70,15 @@ public abstract class TemplateJSONSimpleTestSupport extends GeoServerSystemTestS
         String contentType = response.getContentType();
         // in case of GEOSJSON response with ogcapi, the output format is not
         // set to MockHttpServlet request, so skipping
-        if (contentType != null) assertEquals(contentType, "application/json");
+        if (contentType != null) assertEquals(removeCharset(contentType), "application/json");
         return json(response);
+    }
+
+    private String removeCharset(String contentType) {
+        if (contentType != null && contentType.contains(";")) {
+            return contentType.substring(0, contentType.indexOf(";"));
+        }
+        return contentType;
     }
 
     protected void checkAdditionalInfo(JSONObject result) {

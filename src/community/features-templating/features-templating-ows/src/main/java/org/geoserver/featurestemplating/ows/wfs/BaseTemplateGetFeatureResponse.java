@@ -200,4 +200,9 @@ public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutput
             BigInteger featureCount,
             ReferencedEnvelope bounds)
             throws IOException;
+
+    @Override
+    public String getCharset(Operation operation) {
+        return gs.getSettings().getCharset();
+    }
 }

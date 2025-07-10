@@ -60,8 +60,7 @@ public final class DomainModelBuilder {
         DomainEntity entity = domainEntitiesIndex.get(entityMetadata.getName());
         if (entity == null) {
             // first time we are visiting this entity metadata so we need to build a domain entity
-            entity = new DomainEntity();
-            entity.setName(entityMetadata.getName());
+            entity = new DomainEntity(entityMetadata.getName(), domainModelConfig.getEntitiesPrefix());
             domainEntitiesIndex.put(entity.getName(), entity);
         } else {
             // we already have our entity

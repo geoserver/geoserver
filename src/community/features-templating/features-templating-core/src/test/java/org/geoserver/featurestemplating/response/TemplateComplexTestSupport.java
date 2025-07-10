@@ -34,14 +34,21 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
 
     protected JSON getJsonLd(String path) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
-        assertEquals(response.getContentType(), "application/ld+json");
+        assertEquals(removeCharset(response.getContentType()), "application/ld+json");
         return json(response);
     }
 
     protected JSON postJsonLd(String path, String xml) throws Exception {
         MockHttpServletResponse response = postAsServletResponse(path, xml);
-        assertEquals(response.getContentType(), "application/ld+json");
+        assertEquals(removeCharset(response.getContentType()), "application/ld+json");
         return json(response);
+    }
+
+    private String removeCharset(String contentType) {
+        if (contentType != null && contentType.contains(";")) {
+            return contentType.substring(0, contentType.indexOf(";"));
+        }
+        return contentType;
     }
 
     @Override
@@ -60,6 +67,7 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
                     anyOf(
                             equalTo("application/json"),
                             equalTo("application/geo+json"),
+                            equalTo("application/geo+json;charset=UTF-8"),
                             equalTo("application/json;charset=UTF-8")));
         return json(response);
     }
@@ -69,7 +77,14 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         String contentType = response.getContentType();
         // in case of GEOSJSON response with ogcapi, the output format is not
         // set to MockHttpServlet request, so skipping
-        if (contentType != null) assertEquals(contentType, "application/json");
+        if (contentType != null)
+            assertThat(
+                    contentType,
+                    anyOf(
+                            equalTo("application/json"),
+                            equalTo("application/geo+json"),
+                            equalTo("application/geo+json;charset=UTF-8"),
+                            equalTo("application/json;charset=UTF-8")));
         return json(response);
     }
 

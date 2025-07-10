@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 
@@ -98,7 +99,7 @@ public class ImporterInfoDAO {
         props.setProperty(MAX_ASYNCH_KEY, String.valueOf(configuration.getMaxAsynchronousImports()));
         props.setProperty(CONTEXT_EXPIRATION_KEY, String.valueOf(configuration.getContextExpiration()));
         try (OutputStream os = resource.out()) {
-            props.store(os, null);
+            SortedPropertiesWriter.storeSorted(props, os, null);
         }
     }
 }

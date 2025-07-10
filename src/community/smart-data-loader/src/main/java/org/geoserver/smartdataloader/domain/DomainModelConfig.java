@@ -17,6 +17,7 @@ public final class DomainModelConfig {
 
     private String rootEntityName;
     private Map<String, String> overrideExpressions = new HashMap<>();
+    private String entitiesPrefix;
 
     public String getRootEntityName() {
         return rootEntityName;
@@ -32,5 +33,21 @@ public final class DomainModelConfig {
 
     public void setOverrideExpressions(Map<String, String> overrideExpressions) {
         this.overrideExpressions = overrideExpressions;
+    }
+
+    public String getEntitiesPrefix() {
+        return entitiesPrefix;
+    }
+
+    public void setEntitiesPrefix(String entitiesPrefix) {
+        this.entitiesPrefix = entitiesPrefix;
+    }
+
+    @Override
+    public String toString() {
+        return "DomainModelConfig{" + "rootEntityName='"
+                + rootEntityName + '\'' + ", overrideExpressions="
+                + overrideExpressions + ", entitiesPrefix='"
+                + entitiesPrefix + '\'' + '}';
     }
 }

@@ -10,6 +10,7 @@ import static org.hamcrest.core.Is.is;
 import java.util.List;
 import javax.xml.namespace.QName;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -24,6 +25,7 @@ import org.junit.Test;
 public class CoverageViewEditorTest extends GeoServerWicketTestSupport {
 
     private static QName TIME_RANGES = new QName(MockData.DEFAULT_URI, "timeranges", MockData.DEFAULT_PREFIX);
+    private static QName S2MASK = new QName(MockData.WCS_URI, "s2mask", MockData.WCS_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -31,6 +33,7 @@ public class CoverageViewEditorTest extends GeoServerWicketTestSupport {
         // add raster file to perform some tests
         testData.addRasterLayer(TIME_RANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
         testData.addDefaultRasterLayer(SystemTestData.TASMANIA_BM, getCatalog());
+        testData.addRasterLayer(S2MASK, "s2mask.zip", null, null, SystemTestData.class, getCatalog());
     }
 
     @Test
@@ -151,5 +154,51 @@ public class CoverageViewEditorTest extends GeoServerWicketTestSupport {
         assertThat(bands.get(0).getDefinition(), is("res@0"));
         assertThat(bands.get(1).getDefinition(), is("res@1"));
         assertThat(bands.get(2).getDefinition(), is("res@2"));
+    }
+
+    @Test
+    public void testReferenceInput() throws Exception {
+        login();
+
+        // Open the CoverageViewNewPage for a multi-band coverage
+        CoverageViewNewPage newPage = new CoverageViewNewPage(S2MASK.getPrefix(), S2MASK.getLocalPart(), null, null);
+        tester.startPage(newPage);
+
+        // Set editor mode to JIFFLE
+        FormTester formTester = tester.newFormTester("form");
+        formTester.select("coverages:compositionMode", 1); // assuming 1 = JIFFLE
+        tester.executeAjaxEvent("form:coverages:compositionMode", "change");
+
+        // Input Jiffle script
+        String jiffleScript = "if (MASK16 == 0) {" + "NDVI = null;" + "} else {" + "NDVI = (B08 - B04) / (B04 + B08);}";
+
+        @SuppressWarnings("unchecked")
+        TextField<String> jiffleOutput = (TextField<String>)
+                tester.getComponentFromLastRenderedPage("form:coverages:jiffleEditorContainer:jiffleOutputName");
+        jiffleOutput.setModelObject("NDVI");
+        @SuppressWarnings("unchecked")
+        TextArea<String> jiffleFormulaField = (TextArea<String>)
+                tester.getComponentFromLastRenderedPage("form:coverages:jiffleEditorContainer:jiffleFormula");
+        jiffleFormulaField.setModelObject(jiffleScript);
+
+        // Set a coverage view name
+        formTester.setValue("name", "ndvitest");
+        @SuppressWarnings("unchecked")
+        DropDownChoice<String> referenceInput = (DropDownChoice<String>)
+                tester.getComponentFromLastRenderedPage("form:coverages:jiffleEditorContainer:referenceInput");
+        // Impose the reference input as B08. (This should become the 1st band of the view)
+        referenceInput.setModelObject("B08");
+
+        CoverageViewEditor coverageViewEditor =
+                (CoverageViewEditor) tester.getComponentFromLastRenderedPage("form:coverages");
+        coverageViewEditor.validateAndSave();
+
+        // Submit form
+        formTester.submit("save");
+
+        List<CoverageView.CoverageBand> outputBands = coverageViewEditor.currentOutputBands;
+
+        // Checking B08 is reported as 1st band
+        assertThat(outputBands.get(0).getInputCoverageBands().get(0).getCoverageName(), is("B08"));
     }
 }

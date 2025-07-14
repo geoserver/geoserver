@@ -1281,8 +1281,8 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testCharset() throws Exception {
         String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
-        MockHttpServletResponse response =
-            getAsServletResponse("ogc/features/v1/collections/" + roadSegments + "/items", StandardCharsets.UTF_8.name());
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/features/v1/collections/" + roadSegments + "/items", StandardCharsets.UTF_8.name());
         assertEquals(200, response.getStatus());
         assertEquals("UTF-8", response.getCharacterEncoding());
     }

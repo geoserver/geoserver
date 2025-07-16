@@ -454,3 +454,8 @@ The Smart Override rules are defined using the following parameters on the ``Add
 .. figure:: images/smart-loader-overrides.png
 
   Smart Overrides configuration panel
+
+Entities prefix
+---------------
+
+The ``Entities prefix`` parameter allows to generate all the mapped feature types adding the configured prefix text.  This is useful to generate an appschema mapping structure with shared feature types from other smart data loader store, but using a different root type and override rules.

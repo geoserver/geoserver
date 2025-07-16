@@ -16,16 +16,22 @@ public final class DomainEntity {
     private final List<DomainEntitySimpleAttribute> attributes = new ArrayList<>();
     private final List<DomainRelation> relations = new ArrayList<>();
 
-    private String name;
-    private GmlInfo gmlInfo;
+    private final String name;
+    private final GmlInfo gmlInfo;
+
+    public DomainEntity(String name, String entityPrefix) {
+        if (StringUtils.isBlank(name)) {
+            throw new IllegalArgumentException("Entity name cannot be null or empty");
+        }
+        if (StringUtils.isBlank(entityPrefix)) {
+            entityPrefix = "";
+        }
+        this.name = name;
+        this.gmlInfo = new GmlInfo(entityPrefix + name);
+    }
 
     public String getName() {
         return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-        gmlInfo = new GmlInfo(name);
     }
 
     public GmlInfo getGmlInfo() {

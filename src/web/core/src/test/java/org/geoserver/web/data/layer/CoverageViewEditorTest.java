@@ -10,6 +10,7 @@ import static org.hamcrest.core.Is.is;
 import java.util.List;
 import javax.xml.namespace.QName;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -130,6 +131,11 @@ public class CoverageViewEditorTest extends GeoServerWicketTestSupport {
         TextArea<String> jiffleFormulaField = (TextArea<String>)
                 tester.getComponentFromLastRenderedPage("form:coverages:jiffleEditorContainer:jiffleFormula");
         jiffleFormulaField.setModelObject(jiffleScript);
+
+        @SuppressWarnings("unchecked")
+        DropDownChoice<String> referenceInput = (DropDownChoice<String>)
+                tester.getComponentFromLastRenderedPage("form:coverages:jiffleEditorContainer:referenceInput");
+        referenceInput.setModelObject("tazbm");
 
         // Set a coverage view name
         formTester.setValue("name", "jiffle_based_view");

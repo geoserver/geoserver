@@ -134,6 +134,11 @@ public class CoverageViewEditorTest extends GeoServerWicketTestSupport {
                 tester.getComponentFromLastRenderedPage("form:coverages:jiffleEditorContainer:jiffleFormula");
         jiffleFormulaField.setModelObject(jiffleScript);
 
+        @SuppressWarnings("unchecked")
+        DropDownChoice<String> referenceInput = (DropDownChoice<String>)
+                tester.getComponentFromLastRenderedPage("form:coverages:jiffleEditorContainer:referenceInput");
+        referenceInput.setModelObject("tazbm");
+
         // Set a coverage view name
         formTester.setValue("name", "jiffle_based_view");
         CoverageViewEditor coverageViewEditor =

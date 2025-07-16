@@ -120,6 +120,15 @@ In that case, the band details of the coverage view will look like this:
    :align: center
 
 
+Finally, a dropdown selector allows selection of one of the inputs to serve as a reference for the internal logic - for example, when retrieving available time values in a time series context.
+
+.. figure:: images/coverageviewreferenceinput.png
+   :align: center
+
+This selection is necessary because some input bands used in the view (for example auxiliary bands as quality flags or masks) may have missing granules or lack data, so a clear reference input must be explicitly specified.
+
+The selected input must be one that is used in the Jiffle expression. If it isn’t, an error will be raised when attempting to save the view.
+
 There is an option that allows GeoServer to handle missing input coverages more gracefully when composing multi-band views.
 
 .. figure:: images/fillcoverageview.png

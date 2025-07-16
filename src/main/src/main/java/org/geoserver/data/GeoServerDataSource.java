@@ -14,6 +14,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.util.SortedPropertiesWriter;
 
 /**
  * A datasource that is user configurable via properties file stored in the geoserver data directory.
@@ -78,7 +79,7 @@ public class GeoServerDataSource extends BasicDataSource {
             if (dbprops.getType() != Type.RESOURCE) {
                 // use the default parameters and save them out
                 try (OutputStream fout = dbprops.out()) {
-                    defaultParameters.store(fout, null);
+                    SortedPropertiesWriter.storeSorted(defaultParameters, fout, null);
                 }
                 db.putAll(defaultParameters);
             } else {

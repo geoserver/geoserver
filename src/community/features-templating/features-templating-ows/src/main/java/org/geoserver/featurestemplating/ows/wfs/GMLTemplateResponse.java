@@ -103,16 +103,22 @@ public class GMLTemplateResponse extends BaseTemplateGetFeatureResponse {
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        if (operation != null) {
-            Object[] parameters = operation.getParameters();
-            if (parameters.length > 0) {
-                Object param = parameters[0];
-                if (param instanceof GetFeatureType) {
-                    return ((GetFeatureType) param).getOutputFormat();
-                }
-            }
+        GetFeatureType getFeatureType = getGetFeatureType(operation);
+        if (getFeatureType != null) {
+            return getFeatureType.getOutputFormat();
         }
         return TemplateIdentifier.GML32.getOutputFormat();
+    }
+
+    private static GetFeatureType getGetFeatureType(Operation operation) {
+        if (operation == null) {
+            return null;
+        }
+        Object[] parameters = operation.getParameters();
+        if (parameters.length > 0 && parameters[0] instanceof GetFeatureType) {
+            return (GetFeatureType) parameters[0];
+        }
+        return null;
     }
 
     @Override

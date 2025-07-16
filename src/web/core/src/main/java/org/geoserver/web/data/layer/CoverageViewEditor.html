@@ -50,6 +50,10 @@
             <input type="text" wicket:id="jiffleOutputName" class="form-control mb-2"/><br>
             <label for="jiffleFormulaLabel"><wicket:message key="jiffleFormulaLabel">Output</wicket:message></label>
             <textarea wicket:id="jiffleFormula" rows="40" cols="60" class="form-control"></textarea>
+            <label for="referenceInput">
+              <wicket:message key="referenceInput">Reference Input:</wicket:message>
+            </label>
+            <select wicket:id="referenceInput" class="form-control"></select>
           </div>
           <ul><li class="choiceItem">
             <input type="checkbox" wicket:id="fillMissingBands"/>

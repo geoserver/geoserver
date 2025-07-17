@@ -113,9 +113,8 @@ public class ImporterMosaicTest extends ImporterTestSupport {
 
         runChecks(l.getName());
 
-        Document dom = getAsDOM(String.format(
-                "/%s/%s/wms?request=getcapabilities",
-                r.getStore().getWorkspace().getName(), l.getName()));
+        Document dom = getAsDOM("/%s/%s/wms?request=getcapabilities"
+                .formatted(r.getStore().getWorkspace().getName(), l.getName()));
         XMLAssert.assertXpathExists("//wms:Layer[wms:Name = '" + m.getName() + "']/wms:Dimension[@name = 'time']", dom);
     }
 
@@ -138,9 +137,8 @@ public class ImporterMosaicTest extends ImporterTestSupport {
 
         runChecks(l.getName());
 
-        Document dom = getAsDOM(String.format(
-                "/%s/%s/wms?request=getcapabilities",
-                r.getStore().getWorkspace().getName(), l.getName()));
+        Document dom = getAsDOM("/%s/%s/wms?request=getcapabilities"
+                .formatted(r.getStore().getWorkspace().getName(), l.getName()));
         XMLAssert.assertXpathExists("//wms:Layer[wms:Name = '" + m.getName() + "']/wms:Dimension[@name = 'time']", dom);
     }
 

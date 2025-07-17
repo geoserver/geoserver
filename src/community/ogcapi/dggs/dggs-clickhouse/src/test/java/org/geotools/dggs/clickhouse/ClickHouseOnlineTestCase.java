@@ -41,7 +41,7 @@ public abstract class ClickHouseOnlineTestCase extends OnlineTestCase {
 
     protected ClickHouseDGGSDataStore getDataStore() throws Exception {
         String dggsId = getDGGSId();
-        if (!DGGSFactoryFinder.getFactory(dggsId).isPresent()) {
+        if (DGGSFactoryFinder.getFactory(dggsId).isEmpty()) {
             throw new Exception(dggsId + " is not present, skipping the test");
         }
 

@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
@@ -18,6 +19,7 @@ import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
 public class BasicAuthFilterPanel extends AuthenticationFilterPanel<BasicAuthenticationFilterConfig> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public BasicAuthFilterPanel(String id, IModel<BasicAuthenticationFilterConfig> model) {

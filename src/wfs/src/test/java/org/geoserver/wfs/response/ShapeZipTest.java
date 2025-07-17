@@ -421,15 +421,17 @@ public class ShapeZipTest extends WFSTestSupport {
 
     @Test
     public void testTemplatePOSTRequest11() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                + "<GetFeature xmlns=\"http://www.opengis.net/wfs\" xmlns:DigitalGlobe=\"http://www.digitalglobe.com\"\n"
-                + "    xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                + "    xmlns:gml=\"http://www.opengis.net/gml\" service=\"WFS\" version=\"1.1.0\"\n"
-                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
-                + "    outputFormat=\"shape-zip\" maxFeatures=\"100\" handle=\"\">\n"
-                + "    <Query typeName=\"cdf:Other\" srsName=\"urn:ogc:def:crs:EPSG::4326\">"
-                + "</Query> "
-                + "</GetFeature>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <GetFeature xmlns="http://www.opengis.net/wfs" xmlns:DigitalGlobe="http://www.digitalglobe.com"
+                    xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns:gml="http://www.opengis.net/gml" service="WFS" version="1.1.0"
+                xmlns:cdf="http://www.opengis.net/cite/data" \
+                    outputFormat="shape-zip" maxFeatures="100" handle="">
+                    <Query typeName="cdf:Other" srsName="urn:ogc:def:crs:EPSG::4326">\
+                </Query> \
+                </GetFeature>""";
 
         MockHttpServletResponse response = postAsServletResponse("wfs", xml);
         assertEquals("application/zip", response.getContentType());

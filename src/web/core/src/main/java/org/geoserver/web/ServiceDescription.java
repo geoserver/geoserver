@@ -4,6 +4,7 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,6 +17,7 @@ import org.geotools.text.Text;
 
 /** Description of a service acting as a model object to this panel's ListView. */
 public class ServiceDescription implements Serializable, Comparable<ServiceDescription> {
+    @Serial
     private static final long serialVersionUID = -7406652617944177247L;
 
     /**

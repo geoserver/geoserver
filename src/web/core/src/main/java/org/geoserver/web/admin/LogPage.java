@@ -8,6 +8,7 @@ package org.geoserver.web.admin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.Serial;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +45,7 @@ public class LogPage extends GeoServerSecuredPage {
 
     static final Logger LOGGER = Logging.getLogger(LogPage.class);
 
+    @Serial
     private static final long serialVersionUID = 4742103132576413211L;
 
     static final String LINES = "lines";
@@ -138,6 +140,7 @@ public class LogPage extends GeoServerSecuredPage {
     }
 
     public class GSLogsModel extends LoadableDetachableModel<String> {
+        @Serial
         private static final long serialVersionUID = 3364442904754424569L;
 
         @Override

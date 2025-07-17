@@ -46,15 +46,16 @@ public class XMLParsingTest extends WFSTestSupport {
         Parser p = new Parser(getXmlConfiguration11());
 
         String request =
-                "<wfs:GetFeatureWithLock xmlns:wfs=\"http://www.opengis.net/wfs\" expiry=\"10\" service=\"WFS\" \n"
-                        + "outputFormat=\"text/xml; subtype=gml/3.1.1\" version=\"1.1.0\"\n"
-                        + "xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
-                        + "<wfs:Query typeName=\"topp:states\" srsName=\"EPSG:4326\" xmlns:topp=\"http://www.openplans.org/topp\">\n"
-                        + "  <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\">\n"
-                        + "<ogc:FeatureId fid=\"states.1\"/>\n"
-                        + "</ogc:Filter>\n"
-                        + "</wfs:Query>\n"
-                        + "</wfs:GetFeatureWithLock>";
+                """
+                <wfs:GetFeatureWithLock xmlns:wfs="http://www.opengis.net/wfs" expiry="10" service="WFS"\s
+                outputFormat="text/xml; subtype=gml/3.1.1" version="1.1.0"
+                xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <wfs:Query typeName="topp:states" srsName="EPSG:4326" xmlns:topp="http://www.openplans.org/topp">
+                  <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+                <ogc:FeatureId fid="states.1"/>
+                </ogc:Filter>
+                </wfs:Query>
+                </wfs:GetFeatureWithLock>""";
 
         GetFeatureWithLockType gf = (GetFeatureWithLockType) p.parse(new ByteArrayInputStream(request.getBytes()));
 
@@ -70,37 +71,25 @@ public class XMLParsingTest extends WFSTestSupport {
         Parser p = new Parser(xmlConfiguration11);
         p.setHandleMixedContent(true);
 
-        String request = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
-                + //
-                "xmlns:topp=\"http://www.openplans.org/topp\" "
-                + //
-                "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                + //
-                "xmlns:wfs=\"http://www.opengis.net/wfs\">"
-                + //
-                "<wfs:Update typeName=\"topp:tasmania_roads\">"
-                + //
-                "<wfs:Property>"
-                + //
-                "<wfs:Name>TYPE</wfs:Name>"
-                + //
-                "<wfs:Value><![CDATA[street\n"
-                + //
-                "line2\n"
-                + //
-                "line3\n]]></wfs:Value>"
-                + //
-                "</wfs:Property>"
-                + //
-                "<ogc:Filter>"
-                + //
-                "<ogc:FeatureId fid=\"tasmania_roads.1\"/>"
-                + //
-                "</ogc:Filter>"
-                + //
-                "</wfs:Update>"
-                + //
-                "</wfs:Transaction>";
+        String request =
+                """
+                <wfs:Transaction service="WFS" version="1.1.0" \
+                xmlns:topp="http://www.openplans.org/topp" \
+                xmlns:ogc="http://www.opengis.net/ogc" \
+                xmlns:wfs="http://www.opengis.net/wfs">\
+                <wfs:Update typeName="topp:tasmania_roads">\
+                <wfs:Property>\
+                <wfs:Name>TYPE</wfs:Name>\
+                <wfs:Value><![CDATA[street
+                line2
+                line3
+                ]]></wfs:Value>\
+                </wfs:Property>\
+                <ogc:Filter>\
+                <ogc:FeatureId fid="tasmania_roads.1"/>\
+                </ogc:Filter>\
+                </wfs:Update>\
+                </wfs:Transaction>""";
 
         TransactionType obj = (TransactionType) p.parse(new ByteArrayInputStream(request.getBytes()));
         UpdateElementType update = (UpdateElementType) obj.getUpdate().get(0);
@@ -115,36 +104,25 @@ public class XMLParsingTest extends WFSTestSupport {
         Parser p = new Parser(xmlConfiguration11);
         p.setHandleMixedContent(true);
 
-        String request = "<wfs:Transaction xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                + "service=\"WFS\" version=\"1.1.0\" xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd\">"
-                + "<wfs:Insert>"
-                + //
-                "<feature:t2 xmlns:feature=\"http://test\">"
-                + //
-                "<feature:geom>"
-                + //
-                "<gml:Point xmlns:gml=\"http://www.opengis.net/gml\">"
-                + //
-                "<gml:pos>0 0</gml:pos>"
-                + //
-                "</gml:Point>"
-                + //
-                "</feature:geom>"
-                + //
-                "<feature:descr><![CDATA[1\n"
-                + //
-                "2\n"
-                + //
-                "3\n"
-                + //
-                "]]></feature:descr>"
-                + //
-                "</feature:t2>"
-                + //
-                "</wfs:Insert>"
-                + //
-                "</wfs:Transaction>";
+        String request =
+                """
+                <wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" \
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+                service="WFS" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">\
+                <wfs:Insert>\
+                <feature:t2 xmlns:feature="http://test">\
+                <feature:geom>\
+                <gml:Point xmlns:gml="http://www.opengis.net/gml">\
+                <gml:pos>0 0</gml:pos>\
+                </gml:Point>\
+                </feature:geom>\
+                <feature:descr><![CDATA[1
+                2
+                3
+                ]]></feature:descr>\
+                </feature:t2>\
+                </wfs:Insert>\
+                </wfs:Transaction>""";
 
         TransactionType obj = (TransactionType) p.parse(new ByteArrayInputStream(request.getBytes()));
         InsertElementType insert = (InsertElementType) obj.getInsert().get(0);

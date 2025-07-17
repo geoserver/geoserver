@@ -1273,10 +1273,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             if (!LayerGroupInfo.Mode.OPAQUE_CONTAINER.equals(layerGroup.getMode())
                     && !LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
                 for (PublishedInfo child : layerGroup.getLayers()) {
-                    if (child instanceof LayerInfo) {
-                        LayerInfo layer = (LayerInfo) child;
+                    if (child instanceof LayerInfo layer) {
                         if (isExposable(layer)) {
-                            handleLayer((LayerInfo) child, false);
+                            handleLayer(layer, false);
                         }
                     } else {
                         handleLayerGroup((LayerGroupInfo) child, false);
@@ -1315,10 +1314,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 layersAlreadyProcessed.addAll(layerGroup.layers());
             } else if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
                 for (PublishedInfo child : layerGroup.getLayers()) {
-                    if (child instanceof LayerInfo) {
-                        LayerInfo layer = (LayerInfo) child;
+                    if (child instanceof LayerInfo layer) {
                         if (isExposable(layer)) {
-                            layersAlreadyProcessed.add((LayerInfo) child);
+                            layersAlreadyProcessed.add(layer);
                         }
                     } else {
                         getLayersInGroup((LayerGroupInfo) child, layersAlreadyProcessed);

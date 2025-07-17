@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
+
 /**
  * Configuration for security interceptor filters
  *
@@ -32,7 +34,9 @@ class="org.springframework.security.web.access.intercept.FilterSecurityIntercept
 
 public class SecurityInterceptorFilterConfig extends SecurityFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private boolean allowIfAllAbstainDecisions;
     private String securityMetadataSource;
 

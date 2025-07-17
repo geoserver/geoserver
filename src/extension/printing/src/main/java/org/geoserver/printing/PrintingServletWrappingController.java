@@ -7,6 +7,7 @@ package org.geoserver.printing;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.Properties;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
@@ -114,7 +115,7 @@ public class PrintingServletWrappingController extends ServletWrappingController
         //     using a small helper or 'Resources.fromPath(...)' if available in your codebase.
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         Resource configResource;
-        java.nio.file.Path dirPath = java.nio.file.Paths.get(dir);
+        Path dirPath = Path.of(dir);
 
         if (dirPath.isAbsolute()) {
             String absoluteFile =

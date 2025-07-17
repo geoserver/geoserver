@@ -6,6 +6,7 @@ package org.geoserver.security;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -120,7 +121,7 @@ public class BruteForceListener implements ApplicationListener<AbstractAuthentic
     private long computeDelay(BruteForcePreventionConfig config) {
         long min = config.getMinDelaySeconds() * 1000;
         long max = config.getMaxDelaySeconds() * 1000;
-        return min + (long) ((max - min) * Math.random());
+        return min + (long) ((max - min) * ThreadLocalRandom.current().nextDouble());
     }
 
     /** Returns the username for this authentication, or null if missing or cannot be determined */
@@ -130,10 +131,10 @@ public class BruteForceListener implements ApplicationListener<AbstractAuthentic
         }
         Object principal = authentication.getPrincipal();
         if (principal != null) {
-            if (principal instanceof UserDetails) {
-                return ((UserDetails) principal).getUsername();
-            } else if (principal instanceof String) {
-                return (String) principal;
+            if (principal instanceof UserDetails details) {
+                return details.getUsername();
+            } else if (principal instanceof String string) {
+                return string;
             }
         }
         return authentication.getName();

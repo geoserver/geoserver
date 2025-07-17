@@ -33,8 +33,7 @@ public class InternationalStringUtils {
      */
     public static GrowableInternationalString growable(InternationalString textTranslations, String textDefault) {
         if (textTranslations != null) {
-            if (textTranslations instanceof GrowableInternationalString) {
-                GrowableInternationalString translations = (GrowableInternationalString) textTranslations;
+            if (textTranslations instanceof GrowableInternationalString translations) {
                 GrowableInternationalString combined = new GrowableInternationalString(textDefault);
                 for (Locale locale : translations.getLocales()) {
                     if (locale == null) {

@@ -64,11 +64,13 @@ public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
             st.execute("DROP TABLE IF EXISTS rpix");
             st.execute("DROP TABLE IF EXISTS not_dggs");
 
-            st.execute("CREATE TABLE \"rpix\"(\"zoneId\" String, "
-                    + "\"resolution\" Int32, \"value\" Float64) "
-                    + "ENGINE = MergeTree() "
-                    + "PARTITION BY substring(zoneId, 1, 1)\n"
-                    + "ORDER BY (resolution, zoneId)");
+            st.execute(
+                    """
+                    CREATE TABLE "rpix"("zoneId" String, \
+                    "resolution" Int32, "value" Float64) \
+                    ENGINE = MergeTree() \
+                    PARTITION BY substring(zoneId, 1, 1)
+                    ORDER BY (resolution, zoneId)""");
 
             // populate first 3 levels of the zone hierarchy with zones
             String[] zones = {"N", "O", "P", "Q", "R", "S"};
@@ -99,11 +101,13 @@ public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
             ps.executeBatch();
 
             // create a table that does not qualify as a DGGS source
-            st.execute("CREATE TABLE \"not_dggs\"(\"fid\" String, "
-                    + "\"test\" Int32) "
-                    + "ENGINE = MergeTree() "
-                    + "PARTITION BY fid\n"
-                    + "ORDER BY fid");
+            st.execute(
+                    """
+                    CREATE TABLE "not_dggs"("fid" String, \
+                    "test" Int32) \
+                    ENGINE = MergeTree() \
+                    PARTITION BY fid
+                    ORDER BY fid""");
         }
     }
 

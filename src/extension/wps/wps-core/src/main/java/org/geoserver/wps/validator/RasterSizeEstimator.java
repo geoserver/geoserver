@@ -17,11 +17,10 @@ public class RasterSizeEstimator implements ObjectSizeEstimator {
 
     @Override
     public long getSizeOf(Object object) {
-        if (object instanceof GridCoverage2D) {
-            GridCoverage2D coverage = (GridCoverage2D) object;
+        if (object instanceof GridCoverage2D coverage) {
             return estimateSize(coverage.getRenderedImage());
-        } else if (object instanceof RenderedImage) {
-            return estimateSize((RenderedImage) object);
+        } else if (object instanceof RenderedImage image) {
+            return estimateSize(image);
         }
 
         return ObjectSizeEstimator.UNKNOWN_SIZE;

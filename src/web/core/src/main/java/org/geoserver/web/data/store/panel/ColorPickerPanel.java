@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import java.io.Serial;
 import java.util.Locale;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -21,6 +22,7 @@ import org.geoserver.web.wicket.ColorPickerField;
  */
 public class ColorPickerPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 6661147317307298452L;
 
     /** @param validators any extra validator that should be added to the input field, or {@code null} */
@@ -43,6 +45,7 @@ public class ColorPickerPanel extends Panel {
         // the color picker. Notice that we need to convert between RRGGBB and
         // #RRGGBB,
         ColorPickerField textField = new ColorPickerField("paramValue", paramVale) {
+            @Serial
             private static final long serialVersionUID = 4185457152965032989L;
 
             @SuppressWarnings("unchecked")
@@ -50,6 +53,7 @@ public class ColorPickerPanel extends Panel {
             public <C> IConverter<C> getConverter(Class<C> type) {
                 if (type.isAssignableFrom(String.class)) {
                     return (IConverter<C>) new IConverter<String>() {
+                        @Serial
                         private static final long serialVersionUID = 4343895199315509104L;
 
                         @Override

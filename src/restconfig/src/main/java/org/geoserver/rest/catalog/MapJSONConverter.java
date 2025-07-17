@@ -80,8 +80,7 @@ public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
      * @return json representation
      */
     public Object toJSONObject(Object obj) {
-        if (obj instanceof Map) {
-            Map<?, ?> m = (Map<?, ?>) obj;
+        if (obj instanceof Map<?, ?> m) {
             JSONObject json = new JSONObject();
 
             for (Entry<?, ?> entry : m.entrySet()) {
@@ -90,8 +89,7 @@ public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
                 json.put(key, value);
             }
             return json;
-        } else if (obj instanceof Collection) {
-            Collection<?> collection = (Collection<?>) obj;
+        } else if (obj instanceof Collection<?> collection) {
             JSONArray json = new JSONArray();
             for (Object object : collection) {
                 Object value = toJSONObject(object);

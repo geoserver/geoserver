@@ -114,9 +114,7 @@ public class JMSQueueListener extends JMSApplicationListener implements SessionA
         }
 
         // USING INCOMING MESSAGE
-        if (message instanceof ObjectMessage) {
-
-            final ObjectMessage objMessage = (ObjectMessage) (message);
+        if (message instanceof ObjectMessage objMessage) {
             final Serializable obj = objMessage.getObject();
 
             try {

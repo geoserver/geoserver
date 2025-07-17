@@ -30,25 +30,18 @@ public class DescribeCoverageXmlParserTest {
 
     @Test
     public void testBasic() throws Exception {
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-                + //
-                "<wcs:DescribeCoverage service=\"WCS\" "
-                + //
-                "xmlns:ows=\"http://www.opengis.net/ows/1.1\"\r\n"
-                + //
-                "  xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\"\r\n"
-                + //
-                "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \r\n"
-                + //
-                "  xsi:schemaLocation=\"http://www.opengis.net/wcs/1.1.1 "
-                + //
-                "schemas/wcs/1.1.1/wcsAll.xsd\"\r\n"
-                + //
-                "  version=\"1.1.1\" >\r\n"
-                + //
-                "  <wcs:Identifier>wcs:BlueMarble</wcs:Identifier>\r\n"
-                + //
-                "</wcs:DescribeCoverage>";
+        String request =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <wcs:DescribeCoverage service="WCS" \
+                xmlns:ows="http://www.opengis.net/ows/1.1"
+                  xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 \
+                schemas/wcs/1.1.1/wcsAll.xsd"
+                  version="1.1.1" >
+                  <wcs:Identifier>wcs:BlueMarble</wcs:Identifier>
+                </wcs:DescribeCoverage>""";
 
         // smoke test, we only try out a very basic request
         DescribeCoverageType cap = (DescribeCoverageType) reader.read(null, new StringReader(request), null);

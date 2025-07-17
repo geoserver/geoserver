@@ -4,6 +4,7 @@
  */
 package org.geoserver.smartdataloader.data.store.panel;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.apache.wicket.model.util.SetModel;
 /** Panel that includes a NestedTree wicket component and a label. */
 public class NestedTreePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Label label;
@@ -59,6 +61,7 @@ public class NestedTreePanel extends Panel {
         };
         final SetModel<DefaultMutableTreeNode> checkedNodesModel = new SetModel<>(checkedNodes);
         tree = new NestedTree<DefaultMutableTreeNode>("paramValue", modelProvider, checkedNodesModel) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

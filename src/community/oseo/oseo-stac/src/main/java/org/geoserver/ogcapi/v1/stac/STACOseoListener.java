@@ -131,7 +131,7 @@ public class STACOseoListener implements OseoEventListener {
         Object evaluated = expression.evaluate(sampleFeature);
         if (evaluated instanceof NilExpression
                 || evaluated == null
-                || (evaluated instanceof Literal && ((Literal) evaluated).getValue() == null)) {
+                || (evaluated instanceof Literal literal && literal.getValue() == null)) {
             // if sample returns null try your best with text
             return Indexable.FieldType.JsonString;
         }
@@ -176,8 +176,7 @@ public class STACOseoListener implements OseoEventListener {
 
     private void checkAndFixJsonPointerWithoutLeadingSlash(JsonPointerFunction jsonPointerFunction) {
         Object secondArg = jsonPointerFunction.getParameters().get(1);
-        if (secondArg instanceof LiteralExpressionImpl) {
-            LiteralExpressionImpl literalExpression = (LiteralExpressionImpl) secondArg;
+        if (secondArg instanceof LiteralExpressionImpl literalExpression) {
             String path = (String) literalExpression.getValue();
             if (!path.startsWith("/")) {
                 literalExpression.setValue("/" + path);

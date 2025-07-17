@@ -656,8 +656,8 @@ public class XStreamPersister {
         // call resolve() to ensure that any references created during loading
         // get resolved to actual objects, for instance for links from datastores
         // to workspaces
-        if (obj instanceof CatalogImpl) {
-            ((CatalogImpl) obj).resolve();
+        if (obj instanceof CatalogImpl impl) {
+            impl.resolve();
         }
 
         return obj;
@@ -768,10 +768,10 @@ public class XStreamPersister {
             public void visit(String name, Class type, Class definedIn, Object value) {
 
                 // skip empty collections + maps
-                if (value instanceof Collection && ((Collection) value).isEmpty()) {
+                if (value instanceof Collection collection && collection.isEmpty()) {
                     return;
                 }
-                if (value instanceof Map && ((Map) value).isEmpty()) {
+                if (value instanceof Map map && map.isEmpty()) {
                     return;
                 }
 
@@ -1040,8 +1040,7 @@ public class XStreamPersister {
 
         @Override
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            if (source instanceof MetadataMap) {
-                MetadataMap mdmap = (MetadataMap) source;
+            if (source instanceof MetadataMap mdmap) {
                 source = mdmap.getMap();
             }
 
@@ -1417,8 +1416,7 @@ public class XStreamPersister {
             writer.endNode();
 
             // transform
-            if (tx instanceof AffineTransform) {
-                AffineTransform atx = (AffineTransform) tx;
+            if (tx instanceof AffineTransform atx) {
 
                 writer.startNode("transform");
                 writer.startNode("scaleX");
@@ -1605,8 +1603,8 @@ public class XStreamPersister {
 
         @Override
         protected void postDoMarshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            if (source instanceof WorkspaceInfo) {
-                callback.postEncodeWorkspace((WorkspaceInfo) source, writer, context);
+            if (source instanceof WorkspaceInfo info) {
+                callback.postEncodeWorkspace(info, writer, context);
             } else {
                 callback.postEncodeNamespace((NamespaceInfo) source, writer, context);
             }
@@ -1676,14 +1674,14 @@ public class XStreamPersister {
         protected void postDoMarshal(Object result, HierarchicalStreamWriter writer, MarshallingContext context) {
 
             StoreInfo store = (StoreInfo) result;
-            if (store instanceof DataStoreInfo) {
-                callback.postEncodeDataStore((DataStoreInfo) store, writer, context);
-            } else if (store instanceof CoverageStoreInfo) {
-                callback.postEncodeCoverageStore((CoverageStoreInfo) store, writer, context);
-            } else if (store instanceof WMSStoreInfo) {
-                callback.postEncodeWMSStore((WMSStoreInfo) store, writer, context);
-            } else if (store instanceof WMTSStoreInfo) {
-                callback.postEncodeWMTSStore((WMTSStoreInfo) store, writer, context);
+            if (store instanceof DataStoreInfo info3) {
+                callback.postEncodeDataStore(info3, writer, context);
+            } else if (store instanceof CoverageStoreInfo info2) {
+                callback.postEncodeCoverageStore(info2, writer, context);
+            } else if (store instanceof WMSStoreInfo info1) {
+                callback.postEncodeWMSStore(info1, writer, context);
+            } else if (store instanceof WMTSStoreInfo info) {
+                callback.postEncodeWMTSStore(info, writer, context);
             } else {
                 throw new IllegalArgumentException("Unknown store type: "
                         + (store == null ? "null" : store.getClass().getName()));
@@ -1695,8 +1693,7 @@ public class XStreamPersister {
             StoreInfo store = (StoreInfo) super.doUnmarshal(result, reader, context);
 
             // 2.1.3+ backwards compatibility check
-            if (store instanceof WMSStoreInfo) {
-                WMSStoreInfo wmsStore = (WMSStoreInfo) store;
+            if (store instanceof WMSStoreInfo wmsStore) {
                 MetadataMap metadata = wmsStore.getMetadata();
                 Integer maxConnections = null;
                 Integer connectTimeout = null;
@@ -1727,8 +1724,7 @@ public class XStreamPersister {
                                     ? readTimeout
                                     : WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT);
                 }
-            } else if (store instanceof WMTSStoreInfo) {
-                WMTSStoreInfo wmtsStore = (WMTSStoreInfo) store;
+            } else if (store instanceof WMTSStoreInfo wmtsStore) {
                 MetadataMap metadata = wmtsStore.getMetadata();
                 Integer maxConnections = null;
                 Integer connectTimeout = null;
@@ -2319,7 +2315,7 @@ public class XStreamPersister {
         public Object fromString(String str) {
             Matcher m = RE.matcher(str);
             if (!m.matches()) {
-                throw new IllegalArgumentException(String.format("%s does not match regular expression: %s", str, RE));
+                throw new IllegalArgumentException("%s does not match regular expression: %s".formatted(str, RE));
             }
 
             KeywordInfo kw = new Keyword(m.group(1));
@@ -2435,8 +2431,7 @@ public class XStreamPersister {
             SettingsInfo settings = geoServerInfo.getSettings();
             if (settings != null && settings.isUseHeadersProxyURL() == null) {
                 settings.setUseHeadersProxyURL(geoServerInfo.isUseHeadersProxyURL());
-                if (geoServerInfo instanceof GeoServerInfoImpl)
-                    ((GeoServerInfoImpl) geoServerInfo).setUseHeadersProxyURLRaw(null);
+                if (geoServerInfo instanceof GeoServerInfoImpl impl) impl.setUseHeadersProxyURLRaw(null);
             }
             super.doMarshal(source, writer, context);
         }

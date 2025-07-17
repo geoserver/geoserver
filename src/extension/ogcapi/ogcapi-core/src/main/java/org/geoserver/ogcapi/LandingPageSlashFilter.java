@@ -47,8 +47,7 @@ public class LandingPageSlashFilter implements GeoServerFilter, ApplicationConte
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
-        if (servletRequest instanceof HttpServletRequest
-                && isLandingPageWithSlash((HttpServletRequest) servletRequest)) {
+        if (servletRequest instanceof HttpServletRequest request && isLandingPageWithSlash(request)) {
             filterChain.doFilter(new SlashWrapper(servletRequest), servletResponse);
         } else {
             filterChain.doFilter(servletRequest, servletResponse);

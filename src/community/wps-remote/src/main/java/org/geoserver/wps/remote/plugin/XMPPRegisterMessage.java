@@ -68,8 +68,7 @@ public class XMPPRegisterMessage implements XMPPMessage {
             if (input != null) {
                 for (int ii = 0; ii < input.size(); ii++) {
                     final Object obj = input.get(ii);
-                    if (obj instanceof JSONArray) {
-                        final JSONArray jsonArray = (JSONArray) obj;
+                    if (obj instanceof JSONArray jsonArray) {
 
                         final String paramName = (String) jsonArray.get(0);
                         JSONObject paramType = null;
@@ -129,8 +128,7 @@ public class XMPPRegisterMessage implements XMPPMessage {
             if (output != null) {
                 for (int oo = 0; oo < output.size(); oo++) {
                     Object obj = output.get(oo);
-                    if (obj instanceof JSONArray) {
-                        final JSONArray jsonArray = (JSONArray) obj;
+                    if (obj instanceof JSONArray jsonArray) {
 
                         final String paramName = (String) jsonArray.get(0);
                         JSONObject paramType = null;

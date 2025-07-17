@@ -133,11 +133,14 @@ public class EchoesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPutEchoJSON() throws Exception {
-        String jsonBody = "{\"EchoParameter\": {\n"
-                + "  \"id\": 1,\n"
-                + "  \"parameter\": \"test123\",\n"
-                + "  \"activated\": true\n"
-                + "}}";
+        String jsonBody =
+                """
+                {"EchoParameter": {
+                  "id": 1,
+                  "parameter": "test123",
+                  "activated": true
+                }}\
+                """;
         MockHttpServletResponse response =
                 putAsServletResponse("/rest/params-extractor/echoes/1", jsonBody, "application/json");
         assertEquals(200, response.getStatus());

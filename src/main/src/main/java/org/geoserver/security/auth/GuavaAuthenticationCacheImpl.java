@@ -71,7 +71,7 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache, GeoSer
 
     private ThreadFactory getThreadFactory() {
         CustomizableThreadFactory tFactory =
-                new CustomizableThreadFactory(String.format("GuavaAuthCache-%d-", poolCounter.getAndIncrement()));
+                new CustomizableThreadFactory("GuavaAuthCache-%d-".formatted(poolCounter.getAndIncrement()));
         tFactory.setDaemon(true);
         return tFactory;
     }

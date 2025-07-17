@@ -471,8 +471,8 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
      *     not affine.
      */
     protected static AffineTransform getAffineTransform(final Coverage coverage) {
-        if (coverage instanceof GridCoverage) {
-            final GridGeometry geometry = ((GridCoverage) coverage).getGridGeometry();
+        if (coverage instanceof GridCoverage gridCoverage) {
+            final GridGeometry geometry = gridCoverage.getGridGeometry();
             if (geometry != null) {
                 final MathTransform gridToCRS;
                 if (geometry instanceof GridGeometry2D) {
@@ -480,8 +480,8 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 } else {
                     gridToCRS = geometry.getGridToCRS();
                 }
-                if (gridToCRS instanceof AffineTransform) {
-                    return (AffineTransform) gridToCRS;
+                if (gridToCRS instanceof AffineTransform transform) {
+                    return transform;
                 }
             }
         }

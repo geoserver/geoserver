@@ -118,7 +118,7 @@ public final class Files {
                 File tryTemp;
                 do {
                     UUID uuid = UUID.randomUUID();
-                    tryTemp = new File(file.getParentFile(), String.format("%s.%s.tmp", file.getName(), uuid));
+                    tryTemp = new File(file.getParentFile(), "%s.%s.tmp".formatted(file.getName(), uuid));
                 } while (tryTemp.exists());
 
                 temp = tryTemp;
@@ -245,10 +245,10 @@ public final class Files {
 
         @Override
         public boolean renameTo(Resource dest) {
-            if (dest instanceof FileSystemResourceStore.FileSystemResource) {
-                return file.renameTo(((FileSystemResourceStore.FileSystemResource) dest).file);
-            } else if (dest instanceof ResourceAdaptor) {
-                return file.renameTo(((ResourceAdaptor) dest).file);
+            if (dest instanceof FileSystemResourceStore.FileSystemResource resource) {
+                return file.renameTo(resource.file);
+            } else if (dest instanceof ResourceAdaptor adaptor) {
+                return file.renameTo(adaptor.file);
             } else {
                 return Resources.renameByCopy(this, dest);
             }

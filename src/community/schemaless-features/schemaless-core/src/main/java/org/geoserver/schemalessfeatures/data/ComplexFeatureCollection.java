@@ -152,8 +152,8 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
             }
             return true;
         } finally {
-            if (e instanceof FeatureIterator) {
-                ((FeatureIterator<?>) e).close();
+            if (e instanceof FeatureIterator<?> iterator) {
+                iterator.close();
             }
         }
     }

@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.io.Serial;
 import java.util.Date;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -11,6 +12,7 @@ import org.geoserver.web.wicket.DateField;
 
 public class DateTimeFieldPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -1829729746678003578L;
 
     public DateTimeFieldPanel(String id, IModel<Date> model, boolean time) {

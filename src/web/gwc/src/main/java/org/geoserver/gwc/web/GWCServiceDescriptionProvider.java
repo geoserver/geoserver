@@ -61,9 +61,9 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
     /** GWC-bases services don't have layer-specific enabling... */
     @Override
     protected boolean isAvailable(String serviceType, ServiceInfo serviceInfo, PublishedInfo layerInfo) {
-        if (layerInfo != null && layerInfo instanceof LayerInfo) {
+        if (layerInfo != null && layerInfo instanceof LayerInfo info) {
             GWCResourceServiceVoter voter = new GWCResourceServiceVoter();
-            if (voter.hideService(serviceType, ((LayerInfo) layerInfo).getResource())) {
+            if (voter.hideService(serviceType, info.getResource())) {
                 return false;
             }
         }

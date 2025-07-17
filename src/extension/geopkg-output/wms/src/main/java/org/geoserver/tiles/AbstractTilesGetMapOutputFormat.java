@@ -4,8 +4,6 @@
  */
 package org.geoserver.tiles;
 
-import static java.lang.String.format;
-
 import com.google.common.base.Preconditions;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -478,13 +476,13 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         }
 
         if (maxZoom < minZoom) {
-            throw new ServiceException(format("maxZoom (%d) can not be less than minZoom (%d)", maxZoom, minZoom));
+            throw new ServiceException("maxZoom (%d) can not be less than minZoom (%d)".formatted(maxZoom, minZoom));
         }
 
         // end index
         if (maxZoom > gridSet.getNumLevels()) {
-            LOGGER.warning(format(
-                    "Max zoom (%d) can't be greater than number of zoom levels (%d)", maxZoom, gridSet.getNumLevels()));
+            LOGGER.warning("Max zoom (%d) can't be greater than number of zoom levels (%d)"
+                    .formatted(maxZoom, gridSet.getNumLevels()));
             maxZoom = gridSet.getNumLevels();
         }
 
@@ -549,6 +547,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return PNG_MIME_TYPE;
     }
 
+    @SuppressWarnings("PMD.CloseResource") // FileBackedRawMap rawMap
     protected byte[] toBytes(WebMap map) throws IOException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
@@ -556,10 +555,10 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
             RenderedImageMapResponse response =
                     JPEG_MIME_TYPE.equals(map.getMimeType()) ? new JPEGMapResponse(wms) : new PNGMapResponse(wms);
             response.write(map, bout, null);
-        } else if (map instanceof RawMap) {
-            ((RawMap) map).writeTo(bout);
-        } else if (map instanceof FileBackedRawMap) {
-            ((FileBackedRawMap) map).writeTo(bout);
+        } else if (map instanceof RawMap rawMap) {
+            rawMap.writeTo(bout);
+        } else if (map instanceof FileBackedRawMap rawMap) {
+            rawMap.writeTo(bout);
         }
         bout.flush();
         return bout.toByteArray();

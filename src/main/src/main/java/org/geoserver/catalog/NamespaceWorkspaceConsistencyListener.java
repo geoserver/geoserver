@@ -148,12 +148,12 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
      * @param info catalog object associate to the event
      */
     private void syncIsolation(CatalogInfo info) {
-        if (info instanceof WorkspaceInfo) {
+        if (info instanceof WorkspaceInfo workspaceInfo) {
             // an workspace was modified or added, let's try to sync the namespace
-            syncNamespaceIsolation((WorkspaceInfo) info);
-        } else if (info instanceof NamespaceInfo) {
+            syncNamespaceIsolation(workspaceInfo);
+        } else if (info instanceof NamespaceInfo namespaceInfo) {
             // a namespace was modified or added, let's try to sync the workspace
-            syncWorkspaceIsolation((NamespaceInfo) info);
+            syncWorkspaceIsolation(namespaceInfo);
         }
     }
 

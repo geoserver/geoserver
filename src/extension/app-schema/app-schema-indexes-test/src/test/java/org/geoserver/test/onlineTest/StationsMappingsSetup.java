@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -31,13 +30,13 @@ public class StationsMappingsSetup {
         includedContent = replacePgPlaceholders(includedContent, pgProps);
         try {
             // save as mappings.xml final file
-            Path path = Paths.get(testDir.getAbsolutePath(), MAPPING_FILE_NAME);
+            Path path = Path.of(testDir.getAbsolutePath(), MAPPING_FILE_NAME);
             Files.write(path, mappingsContent.getBytes());
             // save as includedTypes.xml final file
-            Path itpath = Paths.get(testDir.getAbsolutePath(), INCLUDED_FILE_NAME);
+            Path itpath = Path.of(testDir.getAbsolutePath(), INCLUDED_FILE_NAME);
             Files.write(itpath, includedContent.getBytes());
             // create app-schema-cache directory
-            Path dirpath = Paths.get(testDir.getAbsolutePath(), "app-schema-cache");
+            Path dirpath = Path.of(testDir.getAbsolutePath(), "app-schema-cache");
             Files.createDirectories(dirpath);
             copyRelatedFiles(testDir.getAbsolutePath());
         } catch (IOException e) {
@@ -65,7 +64,7 @@ public class StationsMappingsSetup {
 
     private void copyFile(String fileName, String testDirPath) throws IOException {
         InputStream in = getClass().getClassLoader().getResourceAsStream("test-data/" + fileName);
-        Path target = Paths.get(testDirPath, fileName);
+        Path target = Path.of(testDirPath, fileName);
         Files.copy(in, target);
         in.close();
     }

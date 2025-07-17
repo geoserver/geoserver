@@ -29,8 +29,7 @@ public class OSEOFilter implements GeoServerFilter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        if (request instanceof HttpServletRequest) {
-            HttpServletRequest requestHTTP = (HttpServletRequest) request;
+        if (request instanceof HttpServletRequest requestHTTP) {
             if (requestNeedsWrapper(requestHTTP)) {
                 request = new RequestWrapper(requestHTTP);
             }

@@ -267,8 +267,7 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
                 tb.minOccurs(att.getMinOccurs());
                 tb.maxOccurs(att.getMaxOccurs());
                 tb.restrictions(att.getType().getRestrictions());
-                if (att instanceof GeometryDescriptor) {
-                    GeometryDescriptor gatt = (GeometryDescriptor) att;
+                if (att instanceof GeometryDescriptor gatt) {
                     tb.crs(gatt.getCoordinateReferenceSystem());
                 }
                 tb.add("z_" + att.getLocalName(), att.getType().getBinding());
@@ -435,12 +434,10 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
             ParameterValue<GridGeometry2D> gg = AbstractGridFormat.READ_GRIDGEOMETRY2D.createValue();
 
             for (Object temporalItem : times) {
-                if (temporalItem instanceof Date) {
-                    Date time = (Date) temporalItem;
+                if (temporalItem instanceof Date time) {
                     LOGGER.fine("Computing stat for time: " + time);
                     timeParam.setValue(Collections.singletonList(time));
-                } else if (temporalItem instanceof DateRange) {
-                    DateRange range = (DateRange) temporalItem;
+                } else if (temporalItem instanceof DateRange range) {
                     LOGGER.fine("Computing stat for time: " + range);
                     timeParam.setValue(Collections.singletonList(range));
                 } else {

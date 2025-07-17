@@ -33,7 +33,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
         Form<RuleModel> form = new Form<>("form");
         add(form);
         List<WrappedTab> tabs = new ArrayList<>();
-        if (!optionalRuleModel.isPresent() || optionalRuleModel.get().isEchoOnly()) {
+        if (optionalRuleModel.isEmpty() || optionalRuleModel.get().isEchoOnly()) {
             tabs.add(new WrappedTab("Echo Parameter", echoParameterModel) {
                 @Override
                 public Panel getPanel(String panelId) {
@@ -41,7 +41,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
                 }
             });
         }
-        if (!optionalRuleModel.isPresent() || optionalRuleModel.get().getPosition() != null) {
+        if (optionalRuleModel.isEmpty() || optionalRuleModel.get().getPosition() != null) {
             tabs.add(new WrappedTab("Basic Rule", simpleRuleModel) {
                 @Override
                 public Panel getPanel(String panelId) {
@@ -49,7 +49,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
                 }
             });
         }
-        if (!optionalRuleModel.isPresent() || optionalRuleModel.get().getMatch() != null) {
+        if (optionalRuleModel.isEmpty() || optionalRuleModel.get().getMatch() != null) {
             tabs.add(new WrappedTab("Advanced Rule", complexRuleModel) {
                 @Override
                 public Panel getPanel(String panelId) {

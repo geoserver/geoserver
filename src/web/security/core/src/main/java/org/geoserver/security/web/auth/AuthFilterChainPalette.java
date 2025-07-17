@@ -6,6 +6,7 @@
 package org.geoserver.security.web.auth;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -86,6 +87,7 @@ public class AuthFilterChainPalette extends Palette<String> {
     protected Recorder<String> newRecorderComponent() {
         Recorder<String> recorder = super.newRecorderComponent();
         recorder.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

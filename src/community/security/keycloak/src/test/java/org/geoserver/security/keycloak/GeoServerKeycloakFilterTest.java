@@ -144,7 +144,7 @@ public class GeoServerKeycloakFilterTest extends GeoServerSecurityTestSupport {
                 + "}";
 
         keycloackService.stubFor(
-                WireMock.get(urlEqualTo(String.format("/auth/realms/%s/.well-known/openid-configuration", REALM)))
+                WireMock.get(urlEqualTo("/auth/realms/%s/.well-known/openid-configuration".formatted(REALM)))
                         .willReturn(aResponse()
                                 .withHeader("Content-Type", "application/json")
                                 .withBody(openidConfig)));

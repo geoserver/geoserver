@@ -163,9 +163,12 @@ public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPan
             response.render(OnDomReadyHeaderItem.forScript(script));
 
             // Content-Security-Policy: inline styles must be nonce=...
-            String css = "  #roleConverterStringTable table, th, td {\n"
-                    + "            border: black 1px solid !important;\n"
-                    + "        }";
+            String css =
+                    """
+                      #roleConverterStringTable table, th, td {
+                                border: black 1px solid !important;
+                            }\
+                    """;
             response.render(CssHeaderItem.forCSS(
                     css, "org-geoserver-security-web-data-JwtHeaderAuthFilterPanel-JsonClaimPanel"));
         }

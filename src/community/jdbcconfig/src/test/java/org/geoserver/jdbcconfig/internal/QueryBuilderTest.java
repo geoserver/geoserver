@@ -77,14 +77,16 @@ public class QueryBuilderTest {
 
     @Test
     public void testForIdsSort1DebugEnabled() {
-        String expected = "SELECT id FROM"
-                + "\n    (SELECT oid, id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */"
-                + "\n) object"
-                + "\n  LEFT JOIN"
-                + "\n    (SELECT oid, value prop0 FROM"
-                + "\n      object_property WHERE property_type IN (:sortProperty0)) subSelect0 /* foo ASC */"
-                + "\n  ON object.oid = subSelect0.oid"
-                + "\n  ORDER BY prop0 ASC";
+        String expected =
+                """
+                SELECT id FROM
+                    (SELECT oid, id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */
+                ) object
+                  LEFT JOIN
+                    (SELECT oid, value prop0 FROM
+                      object_property WHERE property_type IN (:sortProperty0)) subSelect0 /* foo ASC */
+                  ON object.oid = subSelect0.oid
+                  ORDER BY prop0 ASC""";
         verifyForIds(expected, true, Predicates.acceptAll(), Predicates.asc("foo"));
     }
 
@@ -101,18 +103,20 @@ public class QueryBuilderTest {
 
     @Test
     public void testForIdsSort2DebugEnabled() {
-        String expected = "SELECT id FROM"
-                + "\n    (SELECT oid, id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */"
-                + "\n) object"
-                + "\n  LEFT JOIN"
-                + "\n    (SELECT oid, value prop0 FROM"
-                + "\n      object_property WHERE property_type IN (:sortProperty0)) subSelect0 /* foo ASC */"
-                + "\n  ON object.oid = subSelect0.oid"
-                + "\n  LEFT JOIN"
-                + "\n    (SELECT oid, value prop1 FROM"
-                + "\n      object_property WHERE property_type IN (:sortProperty1)) subSelect1 /* bar DESC */"
-                + "\n  ON object.oid = subSelect1.oid"
-                + "\n  ORDER BY prop0 ASC, prop1 DESC";
+        String expected =
+                """
+                SELECT id FROM
+                    (SELECT oid, id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */
+                ) object
+                  LEFT JOIN
+                    (SELECT oid, value prop0 FROM
+                      object_property WHERE property_type IN (:sortProperty0)) subSelect0 /* foo ASC */
+                  ON object.oid = subSelect0.oid
+                  LEFT JOIN
+                    (SELECT oid, value prop1 FROM
+                      object_property WHERE property_type IN (:sortProperty1)) subSelect1 /* bar DESC */
+                  ON object.oid = subSelect1.oid
+                  ORDER BY prop0 ASC, prop1 DESC""";
         verifyForIds(expected, true, Predicates.acceptAll(), Predicates.asc("foo"), Predicates.desc("bar"));
     }
 
@@ -137,22 +141,24 @@ public class QueryBuilderTest {
 
     @Test
     public void testForIdsSort3DebugEnabled() {
-        String expected = "SELECT id FROM"
-                + "\n    (SELECT oid, id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */"
-                + "\n) object"
-                + "\n  LEFT JOIN"
-                + "\n    (SELECT oid, value prop0 FROM"
-                + "\n      object_property WHERE property_type IN (:sortProperty0)) subSelect0 /* foo ASC */"
-                + "\n  ON object.oid = subSelect0.oid"
-                + "\n  LEFT JOIN"
-                + "\n    (SELECT oid, value prop1 FROM"
-                + "\n      object_property WHERE property_type IN (:sortProperty1)) subSelect1 /* bar DESC */"
-                + "\n  ON object.oid = subSelect1.oid"
-                + "\n  LEFT JOIN"
-                + "\n    (SELECT oid, value prop2 FROM"
-                + "\n      object_property WHERE property_type IN (:sortProperty2)) subSelect2 /* baz ASC */"
-                + "\n  ON object.oid = subSelect2.oid"
-                + "\n  ORDER BY prop0 ASC, prop1 DESC, prop2 ASC";
+        String expected =
+                """
+                SELECT id FROM
+                    (SELECT oid, id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */
+                ) object
+                  LEFT JOIN
+                    (SELECT oid, value prop0 FROM
+                      object_property WHERE property_type IN (:sortProperty0)) subSelect0 /* foo ASC */
+                  ON object.oid = subSelect0.oid
+                  LEFT JOIN
+                    (SELECT oid, value prop1 FROM
+                      object_property WHERE property_type IN (:sortProperty1)) subSelect1 /* bar DESC */
+                  ON object.oid = subSelect1.oid
+                  LEFT JOIN
+                    (SELECT oid, value prop2 FROM
+                      object_property WHERE property_type IN (:sortProperty2)) subSelect2 /* baz ASC */
+                  ON object.oid = subSelect2.oid
+                  ORDER BY prop0 ASC, prop1 DESC, prop2 ASC""";
         verifyForIds(
                 expected,
                 true,
@@ -184,23 +190,25 @@ public class QueryBuilderTest {
 
     @Test
     public void testForIdsSort3WithFilterDebugEnabled() {
-        String expected = "SELECT id FROM"
-                + "\n    (SELECT oid, id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */"
-                + "\n      AND oid IN (SELECT oid FROM object_property WHERE property_type IN (:ptype0) AND value = :value0) /* [ name = quux ] */"
-                + "\n) object"
-                + "\n  LEFT JOIN"
-                + "\n    (SELECT oid, value prop0 FROM"
-                + "\n      object_property WHERE property_type IN (:sortProperty0)) subSelect0 /* foo ASC */"
-                + "\n  ON object.oid = subSelect0.oid"
-                + "\n  LEFT JOIN"
-                + "\n    (SELECT oid, value prop1 FROM"
-                + "\n      object_property WHERE property_type IN (:sortProperty1)) subSelect1 /* bar DESC */"
-                + "\n  ON object.oid = subSelect1.oid"
-                + "\n  LEFT JOIN"
-                + "\n    (SELECT oid, value prop2 FROM"
-                + "\n      object_property WHERE property_type IN (:sortProperty2)) subSelect2 /* baz ASC */"
-                + "\n  ON object.oid = subSelect2.oid"
-                + "\n  ORDER BY prop0 ASC, prop1 DESC, prop2 ASC";
+        String expected =
+                """
+                SELECT id FROM
+                    (SELECT oid, id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */
+                      AND oid IN (SELECT oid FROM object_property WHERE property_type IN (:ptype0) AND value = :value0) /* [ name = quux ] */
+                ) object
+                  LEFT JOIN
+                    (SELECT oid, value prop0 FROM
+                      object_property WHERE property_type IN (:sortProperty0)) subSelect0 /* foo ASC */
+                  ON object.oid = subSelect0.oid
+                  LEFT JOIN
+                    (SELECT oid, value prop1 FROM
+                      object_property WHERE property_type IN (:sortProperty1)) subSelect1 /* bar DESC */
+                  ON object.oid = subSelect1.oid
+                  LEFT JOIN
+                    (SELECT oid, value prop2 FROM
+                      object_property WHERE property_type IN (:sortProperty2)) subSelect2 /* baz ASC */
+                  ON object.oid = subSelect2.oid
+                  ORDER BY prop0 ASC, prop1 DESC, prop2 ASC""";
         verifyForIds(
                 expected,
                 true,
@@ -304,8 +312,10 @@ public class QueryBuilderTest {
     @Test
     public void testForIdsIncludeWithOffSetDebugEnabled() {
         dialect.setDebugMode(true);
-        String expected = "SELECT id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */"
-                + "\nORDER BY oid LIMIT 2147483647 OFFSET 5";
+        String expected =
+                """
+                SELECT id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */
+                ORDER BY oid LIMIT 2147483647 OFFSET 5""";
         String actual = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings)
                 .offset(5)
                 .build();
@@ -315,8 +325,10 @@ public class QueryBuilderTest {
     @Test
     public void testForIdsIncludeWithLimitDebugEnabled() {
         dialect.setDebugMode(true);
-        String expected = "SELECT id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */"
-                + "\nORDER BY oid LIMIT 10";
+        String expected =
+                """
+                SELECT id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */
+                ORDER BY oid LIMIT 10""";
         String actual = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings)
                 .limit(10)
                 .build();
@@ -326,8 +338,10 @@ public class QueryBuilderTest {
     @Test
     public void testForIdsIncludeWithOffSetAndLimitDebugEnabled() {
         dialect.setDebugMode(true);
-        String expected = "SELECT id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */"
-                + "\nORDER BY oid LIMIT 10 OFFSET 5";
+        String expected =
+                """
+                SELECT id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */
+                ORDER BY oid LIMIT 10 OFFSET 5""";
         String actual = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings)
                 .offset(5)
                 .limit(10)
@@ -356,8 +370,10 @@ public class QueryBuilderTest {
 
     @Test
     public void testForIdsIncludeDebugEnabled() {
-        String expected = "SELECT id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */"
-                + "\nORDER BY oid";
+        String expected =
+                """
+                SELECT id FROM object WHERE type_id IN (:types) /* org.geoserver.catalog.WorkspaceInfo */
+                ORDER BY oid""";
         verifyForIds(expected, true, Predicates.acceptAll());
     }
 
@@ -370,8 +386,13 @@ public class QueryBuilderTest {
 
     @Test
     public void testForCountAndIsInstanceofDebugEnabled() {
-        String expected = "(\n    type_id = 14 /* isInstanceOf org.geoserver.catalog.LayerInfo */"
-                + "\n    AND\n    0 = 1 /* EXCLUDE */\n)";
+        String expected =
+                """
+                (
+                    type_id = 14 /* isInstanceOf org.geoserver.catalog.LayerInfo */
+                    AND
+                    0 = 1 /* EXCLUDE */
+                )""";
         Filter filter = Predicates.and(Predicates.isInstanceOf(LayerInfo.class), Predicates.isInstanceOf(String.class));
         verifyForCount(expected, true, filter);
     }
@@ -385,8 +406,13 @@ public class QueryBuilderTest {
 
     @Test
     public void testForIdsAndIsInstanceofDebugEnabled() {
-        String expected = "(\n    type_id = 14 /* isInstanceOf org.geoserver.catalog.LayerInfo */"
-                + "\n    AND\n    0 = 1 /* EXCLUDE */\n) ";
+        String expected =
+                """
+                (
+                    type_id = 14 /* isInstanceOf org.geoserver.catalog.LayerInfo */
+                    AND
+                    0 = 1 /* EXCLUDE */
+                ) """;
         Filter filter = Predicates.and(Predicates.isInstanceOf(LayerInfo.class), Predicates.isInstanceOf(String.class));
         verifyForIds(expected, true, filter);
     }
@@ -400,8 +426,13 @@ public class QueryBuilderTest {
 
     @Test
     public void testForCountOrIsInstanceofDebugEnabled() {
-        String expected = "(\n    type_id = 14 /* isInstanceOf org.geoserver.catalog.LayerInfo */"
-                + "\n    OR\n    0 = 1 /* EXCLUDE */\n)";
+        String expected =
+                """
+                (
+                    type_id = 14 /* isInstanceOf org.geoserver.catalog.LayerInfo */
+                    OR
+                    0 = 1 /* EXCLUDE */
+                )""";
         Filter filter = Predicates.or(Predicates.isInstanceOf(LayerInfo.class), Predicates.isInstanceOf(String.class));
         verifyForCount(expected, true, filter);
     }
@@ -415,8 +446,13 @@ public class QueryBuilderTest {
 
     @Test
     public void testForIdsOrIsInstanceofDebugEnabled() {
-        String expected = "(\n    type_id = 14 /* isInstanceOf org.geoserver.catalog.LayerInfo */"
-                + "\n    OR\n    0 = 1 /* EXCLUDE */\n) ";
+        String expected =
+                """
+                (
+                    type_id = 14 /* isInstanceOf org.geoserver.catalog.LayerInfo */
+                    OR
+                    0 = 1 /* EXCLUDE */
+                ) """;
         Filter filter = Predicates.or(Predicates.isInstanceOf(LayerInfo.class), Predicates.isInstanceOf(String.class));
         verifyForIds(expected, true, filter);
     }
@@ -527,16 +563,22 @@ public class QueryBuilderTest {
 
     @Test
     public void testForCountIsNotEqualToSensitiveDebugEnabled() {
-        String expected = "NOT (oid IN (SELECT oid FROM object_property WHERE property_type "
-                + "IN (:ptype0) AND value = :value0) /* [ name = quux ] */\n)";
+        String expected =
+                """
+                NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
+                IN (:ptype0) AND value = :value0) /* [ name = quux ] */
+                )""";
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("quux"), true);
         verifyForCount(expected, true, filter);
     }
 
     @Test
     public void testForCountIsNotEqualToSensitiveDebugEnabledEscaping() {
-        String expected = "NOT (oid IN (SELECT oid FROM object_property WHERE property_type "
-                + "IN (:ptype0) AND value = :value0) /* [ name = FOO*\\/BAR ] */\n)";
+        String expected =
+                """
+                NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
+                IN (:ptype0) AND value = :value0) /* [ name = FOO*\\/BAR ] */
+                )""";
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("FOO*/BAR"), true);
         verifyForCount(expected, true, filter);
     }
@@ -551,16 +593,22 @@ public class QueryBuilderTest {
 
     @Test
     public void testForIdsIsNotEqualToSensitiveDebugEnabled() {
-        String expected = "NOT (oid IN (SELECT oid FROM object_property WHERE property_type "
-                + "IN (:ptype0) AND value = :value0) /* [ name = quux ] */\n) ";
+        String expected =
+                """
+                NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
+                IN (:ptype0) AND value = :value0) /* [ name = quux ] */
+                ) """;
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("quux"), true);
         verifyForIds(expected, true, filter);
     }
 
     @Test
     public void testForIdsIsNotEqualToSensitiveDebugEnabledEscaping() {
-        String expected = "NOT (oid IN (SELECT oid FROM object_property WHERE property_type "
-                + "IN (:ptype0) AND value = :value0) /* [ name = FOO*\\/BAR ] */\n) ";
+        String expected =
+                """
+                NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
+                IN (:ptype0) AND value = :value0) /* [ name = FOO*\\/BAR ] */
+                ) """;
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("FOO*/BAR"), true);
         verifyForIds(expected, true, filter);
     }
@@ -575,16 +623,22 @@ public class QueryBuilderTest {
 
     @Test
     public void testForCountIsNotEqualToInsensitiveDebugEnabled() {
-        String expected = "NOT (oid IN (SELECT oid FROM object_property WHERE property_type "
-                + "IN (:ptype0) AND UPPER(value) = :value0) /* [ name = quux ] */\n)";
+        String expected =
+                """
+                NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
+                IN (:ptype0) AND UPPER(value) = :value0) /* [ name = quux ] */
+                )""";
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("quux"), false);
         verifyForCount(expected, true, filter);
     }
 
     @Test
     public void testForCountIsNotEqualToInsensitiveDebugEnabledEscaping() {
-        String expected = "NOT (oid IN (SELECT oid FROM object_property WHERE property_type "
-                + "IN (:ptype0) AND UPPER(value) = :value0) /* [ name = FOO*\\/BAR ] */\n)";
+        String expected =
+                """
+                NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
+                IN (:ptype0) AND UPPER(value) = :value0) /* [ name = FOO*\\/BAR ] */
+                )""";
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("FOO*/BAR"), false);
         verifyForCount(expected, true, filter);
     }
@@ -599,16 +653,22 @@ public class QueryBuilderTest {
 
     @Test
     public void testForIdsIsNotEqualToInsensitiveDebugEnabled() {
-        String expected = "NOT (oid IN (SELECT oid FROM object_property WHERE property_type "
-                + "IN (:ptype0) AND UPPER(value) = :value0) /* [ name = quux ] */\n) ";
+        String expected =
+                """
+                NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
+                IN (:ptype0) AND UPPER(value) = :value0) /* [ name = quux ] */
+                ) """;
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("quux"), false);
         verifyForIds(expected, true, filter);
     }
 
     @Test
     public void testForIdsIsNotEqualToInsensitiveDebugEnabledEscaping() {
-        String expected = "NOT (oid IN (SELECT oid FROM object_property WHERE property_type "
-                + "IN (:ptype0) AND UPPER(value) = :value0) /* [ name = FOO*\\/BAR ] */\n) ";
+        String expected =
+                """
+                NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
+                IN (:ptype0) AND UPPER(value) = :value0) /* [ name = FOO*\\/BAR ] */
+                ) """;
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("FOO*/BAR"), false);
         verifyForIds(expected, true, filter);
     }

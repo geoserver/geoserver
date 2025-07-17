@@ -93,8 +93,8 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
                 ((JSONObject) json).getJSONObject("coverageStores").get("coverageStore");
         assertNotNull(coveragestores);
 
-        if (coveragestores instanceof JSONArray) {
-            assertEquals(catalog.getCoverageStoresByWorkspace("wcs").size(), ((JSONArray) coveragestores).size());
+        if (coveragestores instanceof JSONArray array) {
+            assertEquals(catalog.getCoverageStoresByWorkspace("wcs").size(), array.size());
         } else {
             assertEquals(1, catalog.getCoverageStoresByWorkspace("wcs").size());
         }

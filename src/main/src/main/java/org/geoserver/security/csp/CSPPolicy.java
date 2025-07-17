@@ -8,6 +8,7 @@ import static com.google.common.base.MoreObjects.firstNonNull;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.geotools.util.logging.Logging;
 /** Contains the rules to determine the value for each Content Security Policy header. */
 public class CSPPolicy implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -6131742124949554000L;
 
     /** The CSPPolicy class logger. */
@@ -162,8 +164,7 @@ public class CSPPolicy implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CSPPolicy) {
-            CSPPolicy other = (CSPPolicy) obj;
+        if (obj instanceof CSPPolicy other) {
             return Objects.equals(this.name, other.name)
                     && Objects.equals(this.description, other.description)
                     && Objects.equals(this.enabled, other.enabled)

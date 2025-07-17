@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +25,7 @@ public class BruteForcePreventionConfig implements SecurityConfig {
 
     static final Logger LOGGER = Logging.getLogger(BruteForcePreventionConfig.class);
 
+    @Serial
     private static final long serialVersionUID = 5774047555637121124L;
 
     /** Default brute force attack configuration */

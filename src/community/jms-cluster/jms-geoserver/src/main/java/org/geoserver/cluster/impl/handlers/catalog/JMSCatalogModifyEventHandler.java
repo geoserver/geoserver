@@ -58,8 +58,8 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             throw new IllegalArgumentException("Incoming object is null");
         }
         try {
-            if (event instanceof CatalogModifyEvent) {
-                final CatalogModifyEvent modifyEv = ((CatalogModifyEvent) event);
+            if (event instanceof CatalogModifyEvent modifyEvent) {
+                final CatalogModifyEvent modifyEv = modifyEvent;
 
                 producer.disable();
                 JMSCatalogModifyEventHandler.modify(catalog, modifyEv);
@@ -95,12 +95,12 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
         // check if name is changed
         String name = getOldName(catalog, modifyEv);
 
-        if (info instanceof LayerGroupInfo) {
+        if (info instanceof LayerGroupInfo groupInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((LayerGroupInfo) info).getName();
+                name = groupInfo.getName();
             }
 
             final LayerGroupInfo localObject = catalog.getLayerGroupByName(name);
@@ -112,12 +112,12 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof LayerInfo) {
+        } else if (info instanceof LayerInfo layerInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((LayerInfo) info).getName();
+                name = layerInfo.getName();
             }
 
             final LayerInfo localObject = catalog.getLayerByName(name);
@@ -129,12 +129,12 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof MapInfo) {
+        } else if (info instanceof MapInfo mapInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((MapInfo) info).getName();
+                name = mapInfo.getName();
             }
 
             final MapInfo localObject = catalog.getMapByName(name);
@@ -146,7 +146,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof NamespaceInfo) {
+        } else if (info instanceof NamespaceInfo namespaceInfo) {
 
             final String uri;
             final Object uriObj = getOldValue(modifyEv, "uRI");
@@ -154,7 +154,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                 uri = uriObj.toString();
             } else {
                 // uri is unchanged
-                uri = ((NamespaceInfo) info).getURI();
+                uri = namespaceInfo.getURI();
             }
             final NamespaceInfo localObject = catalog.getNamespaceByURI(uri);
 
@@ -165,12 +165,12 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof StoreInfo) {
+        } else if (info instanceof StoreInfo storeInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((StoreInfo) info).getName();
+                name = storeInfo.getName();
             }
             // check if workspace is changed
             final WorkspaceInfo workspace;
@@ -179,7 +179,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                 workspace = (WorkspaceInfo) objWorkpsace;
             } else {
                 // workspace is unchanged
-                workspace = ((StoreInfo) info).getWorkspace();
+                workspace = storeInfo.getWorkspace();
             }
 
             final StoreInfo localObject;
@@ -200,12 +200,12 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof ResourceInfo) {
+        } else if (info instanceof ResourceInfo resourceInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((ResourceInfo) info).getName();
+                name = resourceInfo.getName();
             }
             // check if namespace is changed
             final NamespaceInfo namespace;
@@ -214,7 +214,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                 namespace = (NamespaceInfo) objWorkpsace;
             } else {
                 // workspace is unchanged
-                namespace = ((ResourceInfo) info).getNamespace();
+                namespace = resourceInfo.getNamespace();
             }
             final ResourceInfo localObject;
             if (info instanceof CoverageInfo) {
@@ -236,12 +236,12 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof StyleInfo) {
+        } else if (info instanceof StyleInfo styleInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((StyleInfo) info).getName();
+                name = styleInfo.getName();
             }
 
             final StyleInfo localObject = catalog.getStyleByName(name);
@@ -255,8 +255,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             // let's see if the style file was provided
             Resource oldStyleFile = null;
             GeoServerDataDirectory dd = new GeoServerDataDirectory(catalog.getResourceLoader());
-            if (modifyEv instanceof StyleModifyEvent) {
-                StyleModifyEvent styleModifyEvent = (StyleModifyEvent) modifyEv;
+            if (modifyEv instanceof StyleModifyEvent styleModifyEvent) {
                 byte[] fileContent = styleModifyEvent.getFile();
                 StyleInfo oldStyle = catalog.getStyleByName(name);
                 oldStyleFile = dd.style(oldStyle);
@@ -267,7 +266,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                         catalog.getResourcePool().writeStyle(oldStyle, new ByteArrayInputStream(fileContent));
                     } catch (Exception exception) {
                         throw new RuntimeException(
-                                String.format("Error writing style '%s' file.", localObject.getName()), exception);
+                                "Error writing style '%s' file.".formatted(localObject.getName()), exception);
                     }
                 }
             }
@@ -285,12 +284,12 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                 }
             }
 
-        } else if (info instanceof WorkspaceInfo) {
+        } else if (info instanceof WorkspaceInfo workspaceInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((WorkspaceInfo) info).getName();
+                name = workspaceInfo.getName();
             }
 
             final WorkspaceInfo localObject = catalog.getWorkspaceByName(name);

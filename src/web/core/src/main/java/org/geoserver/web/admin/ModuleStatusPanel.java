@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.admin;
 
+import java.io.Serial;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import org.geoserver.web.wicket.GSModalWindow;
 
 public class ModuleStatusPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 3892224318224575781L;
 
     final CatalogIconFactory icons = CatalogIconFactory.get();
@@ -57,6 +59,7 @@ public class ModuleStatusPanel extends Panel {
                 .collect(Collectors.toList());
 
         final ListView<ModuleStatus> moduleView = new ListView<>("modules", applicationStatus) {
+            @Serial
             private static final long serialVersionUID = 235576083712961710L;
 
             @Override
@@ -97,6 +100,7 @@ public class ModuleStatusPanel extends Panel {
 
     static class MessagePanel extends Panel {
 
+        @Serial
         private static final long serialVersionUID = -3200098674603724915L;
 
         public MessagePanel(String id, ListItem<ModuleStatus> item) {

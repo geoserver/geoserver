@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import net.opengis.ows10.Ows10Factory;
 import net.opengis.ows11.Ows11Factory;
-import net.opengis.wfs.GetCapabilitiesType;
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -22,10 +21,10 @@ public abstract class GetCapabilitiesRequest extends RequestObject {
     private String[] acceptLanguages;
 
     public static GetCapabilitiesRequest adapt(Object request) {
-        if (request instanceof GetCapabilitiesType) {
-            return new WFS11((EObject) request);
-        } else if (request instanceof net.opengis.wfs20.GetCapabilitiesType) {
-            return new WFS20((EObject) request);
+        if (request instanceof EObject type1) {
+            return new WFS11(type1);
+        } else if (request instanceof EObject type) {
+            return new WFS20(type);
         }
         return null;
     }

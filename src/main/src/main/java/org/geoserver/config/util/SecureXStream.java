@@ -364,10 +364,10 @@ public class SecureXStream extends XStream {
                     Class.forName(className, false, getClassLoaderReference().getReference());
             Constructor constructor = type.getConstructor(constructorParamTypes);
             Object instance = constructor.newInstance(constructorParamValues);
-            if (instance instanceof Converter) {
-                registerConverter((Converter) instance, priority);
-            } else if (instance instanceof SingleValueConverter) {
-                registerConverter((SingleValueConverter) instance, priority);
+            if (instance instanceof Converter converter1) {
+                registerConverter(converter1, priority);
+            } else if (instance instanceof SingleValueConverter converter) {
+                registerConverter(converter, priority);
             }
         } catch (Exception | LinkageError e) {
             throw new com.thoughtworks.xstream.InitializationException(

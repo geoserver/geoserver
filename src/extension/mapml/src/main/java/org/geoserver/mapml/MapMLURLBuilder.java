@@ -165,8 +165,7 @@ public class MapMLURLBuilder {
                 StoreInfo storeInfo = resourceInfo.getStore();
                 String requestedCRS = isSupportedOutputCRS ? outputCRS : proj;
                 reason = "RequestedCRS " + requestedCRS + " is not supported by layer: " + layerName;
-                if (storeInfo instanceof WMSStoreInfo) {
-                    WMSStoreInfo wmsStoreInfo = (WMSStoreInfo) storeInfo;
+                if (storeInfo instanceof WMSStoreInfo wmsStoreInfo) {
                     capabilitiesURL = wmsStoreInfo.getCapabilitiesURL();
                     try {
                         WMSCapabilities capabilities =
@@ -205,8 +204,7 @@ public class MapMLURLBuilder {
                         LOGGER.warning(reason + "due to:" + e);
                         cascadeToRemote = false;
                     }
-                } else if (storeInfo instanceof WMTSStoreInfo) {
-                    WMTSStoreInfo wmtsStoreInfo = (WMTSStoreInfo) storeInfo;
+                } else if (storeInfo instanceof WMTSStoreInfo wmtsStoreInfo) {
                     capabilitiesURL = wmtsStoreInfo.getCapabilitiesURL();
                     try {
                         WMTSCapabilities capabilities =
@@ -469,20 +467,16 @@ public class MapMLURLBuilder {
                 return true;
             }
             Geometry geom = null;
-            if (accessLimits instanceof WMSAccessLimits) {
-                WMSAccessLimits limits = (WMSAccessLimits) accessLimits;
+            if (accessLimits instanceof WMSAccessLimits limits) {
                 geom = limits.getRasterFilter();
             }
-            if (accessLimits instanceof WMTSAccessLimits) {
-                WMTSAccessLimits limits = (WMTSAccessLimits) accessLimits;
+            if (accessLimits instanceof WMTSAccessLimits limits) {
                 geom = limits.getRasterFilter();
             }
-            if (accessLimits instanceof VectorAccessLimits) {
-                VectorAccessLimits limits = (VectorAccessLimits) accessLimits;
+            if (accessLimits instanceof VectorAccessLimits limits) {
                 geom = limits.getClipVectorFilter();
             }
-            if (accessLimits instanceof CoverageAccessLimits) {
-                CoverageAccessLimits limits = (CoverageAccessLimits) accessLimits;
+            if (accessLimits instanceof CoverageAccessLimits limits) {
                 geom = limits.getRasterFilter();
             }
             if (geom != null) {

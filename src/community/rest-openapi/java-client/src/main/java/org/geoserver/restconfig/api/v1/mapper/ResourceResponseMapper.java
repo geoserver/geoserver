@@ -58,11 +58,11 @@ public interface ResourceResponseMapper {
         if (value == null) {
             return null;
         }
-        if (value instanceof String) {
-            return (String) value;
+        if (value instanceof String string) {
+            return string;
         }
-        if (value instanceof Map) {
-            return (String) ((Map) value).get("$");
+        if (value instanceof Map map) {
+            return (String) map.get("$");
         }
         throw new IllegalStateException();
     }

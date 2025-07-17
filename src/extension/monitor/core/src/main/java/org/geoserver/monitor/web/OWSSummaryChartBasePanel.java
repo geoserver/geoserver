@@ -6,6 +6,7 @@
 package org.geoserver.monitor.web;
 
 import java.awt.Color;
+import java.io.Serial;
 import java.util.Map;
 import org.apache.wicket.markup.html.image.NonCachingImage;
 import org.apache.wicket.markup.html.image.resource.BufferedDynamicImageResource;
@@ -17,7 +18,9 @@ import org.jfree.data.general.DefaultPieDataset;
 
 public abstract class OWSSummaryChartBasePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 8914945614020025223L;
+
     protected String owsService;
 
     public OWSSummaryChartBasePanel(String id, Monitor monitor, String owsService) {

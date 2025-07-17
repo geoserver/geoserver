@@ -101,8 +101,8 @@ class RasterDownloadContext {
                         .equalsIgnoreCase(
                                 readParameter.getDescriptor().getName().toString())) {
                     Object bgValue = ((ParameterValue) readParameter).getValue();
-                    if (bgValue != null && bgValue instanceof double[]) {
-                        backgroundValues = ((double[]) bgValue);
+                    if (bgValue != null && bgValue instanceof double[] doubles) {
+                        backgroundValues = doubles;
                     }
                     break;
                 }

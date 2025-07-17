@@ -6,6 +6,7 @@
 package org.geoserver.metadata.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -57,6 +58,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplatePage.class);
 
+    @Serial
     private static final long serialVersionUID = 2273966783474224452L;
 
     private final IModel<List<MetadataTemplate>> templates;
@@ -115,6 +117,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
         List<ITab> tabs = new ArrayList<>();
         tabs.add(new AbstractTab(new ResourceModel("editMetadata")) {
+            @Serial
             private static final long serialVersionUID = 4375160438369461475L;
 
             @Override
@@ -123,6 +126,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
             }
         });
         tabs.add(new AbstractTab(new ResourceModel("linkedLayers")) {
+            @Serial
             private static final long serialVersionUID = 871647379377450152L;
 
             @Override
@@ -142,6 +146,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
     private TextField<String> createNameField(final Form<?> form, final AjaxSubmitLink saveButton) {
         return new TextField<>("name", new PropertyModel<>(metadataTemplateModel, "name")) {
+            @Serial
             private static final long serialVersionUID = -3736209422699508894L;
 
             @Override
@@ -153,6 +158,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
     private AjaxSubmitLink createSaveButton() {
         return new AjaxSubmitLink("save") {
+            @Serial
             private static final long serialVersionUID = 8749672113664556346L;
 
             @Override
@@ -162,6 +168,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
                         private boolean ok = false;
 
+                        @Serial
                         private static final long serialVersionUID = 6769706050075583226L;
 
                         @Override
@@ -202,6 +209,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
     private AjaxLink<Object> createCancelButton() {
         return new AjaxLink<>("cancel") {
+            @Serial
             private static final long serialVersionUID = -6892944747517089296L;
 
             @Override
@@ -251,6 +259,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
                 });
 
                 progressPanel.start(target, progressModel, new ProgressPanel.EventHandler() {
+                    @Serial
                     private static final long serialVersionUID = 8967087707332457974L;
 
                     @Override

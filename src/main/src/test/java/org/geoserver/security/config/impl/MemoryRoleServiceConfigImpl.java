@@ -6,11 +6,14 @@
 
 package org.geoserver.security.config.impl;
 
+import java.io.Serial;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 
 public class MemoryRoleServiceConfigImpl extends BaseSecurityNamedServiceConfig implements SecurityRoleServiceConfig {
+    @Serial
     private static final long serialVersionUID = 1L;
+
     protected String adminRoleName;
     protected String groupAdminRoleName;
 

@@ -5,11 +5,13 @@
  */
 package org.geoserver.security.xml;
 
+import java.io.Serial;
 import org.geoserver.security.validation.SecurityConfigException;
 
 public class XMLSecurityConfigException extends SecurityConfigException {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String CHECK_INTERVAL_INVALID = "CHECK_INTERVAL_INVALID";

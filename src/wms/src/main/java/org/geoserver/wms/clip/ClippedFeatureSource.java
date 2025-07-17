@@ -94,8 +94,8 @@ public class ClippedFeatureSource<T extends FeatureType, F extends Feature> exte
 
     @SuppressWarnings("unchecked")
     private FeatureCollection<T, F> getClippedCollection(FeatureCollection<T, F> fc, Geometry clipGeom) {
-        if (fc instanceof SimpleFeatureCollection) {
-            return (FeatureCollection<T, F>) new ClipProcess().execute((SimpleFeatureCollection) fc, clipGeom, false);
+        if (fc instanceof SimpleFeatureCollection collection) {
+            return (FeatureCollection<T, F>) new ClipProcess().execute(collection, clipGeom, false);
         }
         return fc;
     }

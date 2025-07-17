@@ -194,8 +194,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
     private static String substitutePlaceHolders(String string, Map<String, String> placeHolderValues) {
         String processedString = string;
         for (Map.Entry<String, String> placeHolder : placeHolderValues.entrySet()) {
-            processedString =
-                    processedString.replace(String.format("${%s}", placeHolder.getKey()), placeHolder.getValue());
+            processedString = processedString.replace("${%s}".formatted(placeHolder.getKey()), placeHolder.getValue());
         }
         return processedString;
     }

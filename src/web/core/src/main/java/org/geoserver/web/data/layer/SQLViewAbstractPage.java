@@ -439,8 +439,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
             SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
             tb.setName(base.getName());
             for (AttributeDescriptor ad : base.getAttributeDescriptors()) {
-                if (ad instanceof GeometryDescriptor) {
-                    GeometryDescriptor gd = (GeometryDescriptor) ad;
+                if (ad instanceof GeometryDescriptor gd) {
                     Geometry g = (Geometry) f.getAttribute(ad.getLocalName());
                     if (g == null) {
                         // nothing new we can learn

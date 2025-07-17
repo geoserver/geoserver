@@ -249,8 +249,8 @@ class VectorDownload {
         // Get fileName
         //
         String extension = "";
-        if (ppio_ instanceof ComplexPPIO) {
-            extension = "." + ((ComplexPPIO) ppio_).getFileExtension();
+        if (ppio_ instanceof ComplexPPIO iO) {
+            extension = "." + iO.getFileExtension();
         }
 
         // create output file
@@ -262,8 +262,8 @@ class VectorDownload {
         // write checking limits
         try (OutputStream os = getResourceOutputStream(output, limit)) {
             // write with PPIO
-            if (ppio_ instanceof ComplexPPIO) {
-                ((ComplexPPIO) ppio_).encode(features, os);
+            if (ppio_ instanceof ComplexPPIO iO) {
+                iO.encode(features, os);
             }
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Flushing stream");

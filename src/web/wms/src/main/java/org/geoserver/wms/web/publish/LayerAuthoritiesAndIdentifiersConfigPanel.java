@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.web.publish;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -13,6 +14,7 @@ import org.geoserver.web.publish.PublishedConfigurationPanel;
 /** Configures {@link LayerGroupInfo} WMS specific attributes */
 public class LayerAuthoritiesAndIdentifiersConfigPanel extends PublishedConfigurationPanel<PublishedInfo> {
 
+    @Serial
     private static final long serialVersionUID = 8652096571563162644L;
 
     public LayerAuthoritiesAndIdentifiersConfigPanel(String id, IModel<? extends PublishedInfo> layerGroupModel) {

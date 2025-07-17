@@ -87,61 +87,64 @@ public class XStreamTest extends AbstractTaskManagerTest {
     @Test
     public void testImportFromXml() {
         config = dao.init(config);
-        String xml = "<org.geoserver.taskmanager.data.impl.ConfigurationImpl>\n"
-                + "  <name>my_config</name>\n"
-                + "  <id>1</id>\n"
-                + "  <template>false</template>\n"
-                + "  <workspace>some_ws</workspace>\n"
-                + "  <attributes/>\n"
-                + "  <tasks>\n"
-                + "    <entry>\n"
-                + "      <string>task1</string>\n"
-                + "      <org.geoserver.taskmanager.data.impl.TaskImpl>\n"
-                + "        <name>task1</name>\n"
-                + "        <type>testTask</type>\n"
-                + "        <configuration reference=\"../../../..\"/>\n"
-                + "        <parameters/>\n"
-                + "        <batchElements>\n"
-                + "          <org.geoserver.taskmanager.data.impl.BatchElementImpl>\n"
-                + "            <batch>\n"
-                + "              <elements>\n"
-                + "                <org.geoserver.taskmanager.data.impl.BatchElementImpl reference=\"../../..\"/>\n"
-                + "                <org.geoserver.taskmanager.data.impl.BatchElementImpl>\n"
-                + "                  <batch reference=\"../../..\"/>\n"
-                + "                  <task>\n"
-                + "                    <name>task2</name>\n"
-                + "                    <type>testTask</type>\n"
-                + "                    <configuration reference=\"../../../../../../../../../..\"/>\n"
-                + "                    <parameters/>\n"
-                + "                    <batchElements>\n"
-                + "                      <org.geoserver.taskmanager.data.impl.BatchElementImpl reference=\"../../..\"/>\n"
-                + "                    </batchElements>\n"
-                + "                  </task>\n"
-                + "                  <index>1</index>\n"
-                + "                </org.geoserver.taskmanager.data.impl.BatchElementImpl>\n"
-                + "              </elements>\n"
-                + "              <name>my_batch</name>\n"
-                + "              <configuration reference=\"../../../../../../..\"/>\n"
-                + "              <enabled>true</enabled>\n"
-                + "            </batch>\n"
-                + "            <task reference=\"../../..\"/>\n"
-                + "            <index>0</index>\n"
-                + "          </org.geoserver.taskmanager.data.impl.BatchElementImpl>\n"
-                + "        </batchElements>\n"
-                + "      </org.geoserver.taskmanager.data.impl.TaskImpl>\n"
-                + "    </entry>\n"
-                + "    <entry>\n"
-                + "      <string>task2</string>\n"
-                + "      <org.geoserver.taskmanager.data.impl.TaskImpl reference=\"../../entry/org.geoserver.taskmanager.data.impl.TaskImpl/batchElements/org.geoserver.taskmanager.data.impl.BatchElementImpl/batch/elements/org.geoserver.taskmanager.data.impl.BatchElementImpl[2]/task\"/>\n"
-                + "    </entry>\n"
-                + "  </tasks>\n"
-                + "  <batches>\n"
-                + "    <entry>\n"
-                + "      <string>my_batch</string>\n"
-                + "      <org.geoserver.taskmanager.data.impl.BatchImpl reference=\"../../../tasks/entry/org.geoserver.taskmanager.data.impl.TaskImpl/batchElements/org.geoserver.taskmanager.data.impl.BatchElementImpl/batch\"/>\n"
-                + "    </entry>\n"
-                + "  </batches>\n"
-                + "</org.geoserver.taskmanager.data.impl.ConfigurationImpl>\n";
+        String xml =
+                """
+                <org.geoserver.taskmanager.data.impl.ConfigurationImpl>
+                  <name>my_config</name>
+                  <id>1</id>
+                  <template>false</template>
+                  <workspace>some_ws</workspace>
+                  <attributes/>
+                  <tasks>
+                    <entry>
+                      <string>task1</string>
+                      <org.geoserver.taskmanager.data.impl.TaskImpl>
+                        <name>task1</name>
+                        <type>testTask</type>
+                        <configuration reference="../../../.."/>
+                        <parameters/>
+                        <batchElements>
+                          <org.geoserver.taskmanager.data.impl.BatchElementImpl>
+                            <batch>
+                              <elements>
+                                <org.geoserver.taskmanager.data.impl.BatchElementImpl reference="../../.."/>
+                                <org.geoserver.taskmanager.data.impl.BatchElementImpl>
+                                  <batch reference="../../.."/>
+                                  <task>
+                                    <name>task2</name>
+                                    <type>testTask</type>
+                                    <configuration reference="../../../../../../../../../.."/>
+                                    <parameters/>
+                                    <batchElements>
+                                      <org.geoserver.taskmanager.data.impl.BatchElementImpl reference="../../.."/>
+                                    </batchElements>
+                                  </task>
+                                  <index>1</index>
+                                </org.geoserver.taskmanager.data.impl.BatchElementImpl>
+                              </elements>
+                              <name>my_batch</name>
+                              <configuration reference="../../../../../../.."/>
+                              <enabled>true</enabled>
+                            </batch>
+                            <task reference="../../.."/>
+                            <index>0</index>
+                          </org.geoserver.taskmanager.data.impl.BatchElementImpl>
+                        </batchElements>
+                      </org.geoserver.taskmanager.data.impl.TaskImpl>
+                    </entry>
+                    <entry>
+                      <string>task2</string>
+                      <org.geoserver.taskmanager.data.impl.TaskImpl reference="../../entry/org.geoserver.taskmanager.data.impl.TaskImpl/batchElements/org.geoserver.taskmanager.data.impl.BatchElementImpl/batch/elements/org.geoserver.taskmanager.data.impl.BatchElementImpl[2]/task"/>
+                    </entry>
+                  </tasks>
+                  <batches>
+                    <entry>
+                      <string>my_batch</string>
+                      <org.geoserver.taskmanager.data.impl.BatchImpl reference="../../../tasks/entry/org.geoserver.taskmanager.data.impl.TaskImpl/batchElements/org.geoserver.taskmanager.data.impl.BatchElementImpl/batch"/>
+                    </entry>
+                  </batches>
+                </org.geoserver.taskmanager.data.impl.ConfigurationImpl>
+                """;
         final XStream xs = XStreamUtil.xs();
         Configuration newConfig = (Configuration) xs.fromXML(xml);
         assertNull(newConfig.getId());

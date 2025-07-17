@@ -166,10 +166,10 @@ public class SecurityUtils {
     public static String getUsername(Object principal) {
         String username = null;
         if (principal != null) {
-            if (principal instanceof UserDetails) {
-                username = ((UserDetails) principal).getUsername();
-            } else if (principal instanceof Principal) {
-                username = ((Principal) principal).getName();
+            if (principal instanceof UserDetails details) {
+                username = details.getUsername();
+            } else if (principal instanceof Principal principal1) {
+                username = principal1.getName();
             } else {
                 username = principal.toString();
             }

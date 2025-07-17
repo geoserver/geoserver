@@ -6,6 +6,7 @@
 package org.geoserver.web.data.resource;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,6 +42,7 @@ import org.geotools.util.logging.Logging;
  */
 public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerInfo> implements MetadataMapValidator {
 
+    @Serial
     private static final long serialVersionUID = 4702596541385329270L;
 
     static final Logger LOGGER = Logging.getLogger(ResourceDimensionsTabPanelInfo.class);
@@ -70,8 +72,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
 
         // handle raster data custom dimensions
         final List<RasterDimensionModel> customDimensionModels = new ArrayList<>();
-        if (resource instanceof CoverageInfo) {
-            CoverageInfo ci = (CoverageInfo) resource;
+        if (resource instanceof CoverageInfo ci) {
             try {
                 GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
                 ReaderDimensionsAccessor ra = new ReaderDimensionsAccessor(reader);
@@ -150,6 +151,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
     }
 
     static class RasterDimensionModel<T> extends MetadataMapModel<T> {
+        @Serial
         private static final long serialVersionUID = 4734439907138483817L;
 
         boolean hasRange;

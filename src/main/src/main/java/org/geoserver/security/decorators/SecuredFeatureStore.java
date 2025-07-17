@@ -82,7 +82,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
                 return storeDelegate.addFeatures(collection);
             } else {
                 if (collection.getSchema() instanceof SimpleFeatureType
-                        && storeDelegate instanceof SimpleFeatureStore) {
+                        && storeDelegate instanceof SimpleFeatureStore store) {
                     // see if the user specified the value of any attribute she cannot write
                     final SimpleFeatureCollection simpleCollection = (SimpleFeatureCollection) collection;
 
@@ -91,7 +91,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
                     List<String> writableAttributes = Arrays.asList(writeQuery.getPropertyNames());
                     CheckAttributesFeatureCollection checker = new CheckAttributesFeatureCollection(
                             simpleCollection, writableAttributes, policy.getResponse());
-                    return ((SimpleFeatureStore) storeDelegate).addFeatures(checker);
+                    return store.addFeatures(checker);
                 } else {
                     // TODO: add retyping to shave off attributes we cannot write
                     LOGGER.log(

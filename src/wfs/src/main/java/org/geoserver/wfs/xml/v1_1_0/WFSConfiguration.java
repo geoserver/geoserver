@@ -60,8 +60,7 @@ public class WFSConfiguration extends Configuration {
         // all...
         CurvedGeometryFactory gf = new CurvedGeometryFactory(Double.MAX_VALUE);
         for (Object configuration : allDependencies()) {
-            if (configuration instanceof GMLConfiguration) {
-                GMLConfiguration gml = (GMLConfiguration) configuration;
+            if (configuration instanceof GMLConfiguration gml) {
                 gml.setGeometryFactory(gf);
             }
         }

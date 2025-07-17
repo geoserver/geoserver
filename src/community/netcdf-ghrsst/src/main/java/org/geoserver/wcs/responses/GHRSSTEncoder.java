@@ -601,17 +601,17 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                 TreeSet<Object> values =
                         (TreeSet<Object>) dimension.getDimensionValues().getValues();
                 Object first = values.first();
-                if (first instanceof Date) {
-                    startDate = (Date) first;
-                } else if (first instanceof DateRange) {
-                    startDate = ((DateRange) first).getMinValue();
+                if (first instanceof Date date) {
+                    startDate = date;
+                } else if (first instanceof DateRange range) {
+                    startDate = range.getMinValue();
                 } else {
                     throw new IllegalArgumentException("Unrecognized data type for start date: " + first);
                 }
 
                 Object last = values.last();
-                if (last instanceof Date) {
-                    endDate = (Date) last;
+                if (last instanceof Date date) {
+                    endDate = date;
                 } else if (last instanceof DateRange) {
                     endDate = ((DateRange) first).getMaxValue();
                 } else {

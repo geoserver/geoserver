@@ -103,7 +103,7 @@ public abstract class IconProperties {
                     final byte[] hash = digest.digest();
                     final StringBuilder builder = new StringBuilder();
                     for (byte b : hash) {
-                        builder.append(String.format("%02x", b));
+                        builder.append("%02x".formatted(b));
                     }
                     return builder.toString();
                 } catch (NoSuchAlgorithmException e) {

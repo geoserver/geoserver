@@ -4,6 +4,7 @@
  */
 package org.geoserver.geofence.server.web;
 
+import java.io.Serial;
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,10 +35,12 @@ import org.locationtech.jts.geom.MultiPolygon;
  */
 public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
 
+    @Serial
     private static final long serialVersionUID = 380017886089304837L;
 
     /** Makes columns that are unsortable and display "*" instead of empty when null */
     public static class RuleBeanProperty<T> extends BeanProperty<T> {
+        @Serial
         private static final long serialVersionUID = 380019722644223446L;
 
         public RuleBeanProperty(String key, String propertyPath) {
@@ -53,6 +56,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         @SuppressWarnings("unchecked")
         public IModel getModel(IModel<T> itemModel) { // replace null by *
             return new PropertyModel<>(itemModel, getPropertyPath()) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override

@@ -172,10 +172,10 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         CloseableIterator<PublishedInfo> pi =
                 catalog.list(PublishedInfo.class, filter, (int) first, (int) count, sortOrder);
         return CloseableIteratorAdapter.transform(pi, input -> {
-            if (input instanceof LayerInfo) {
-                return new PreviewLayer((LayerInfo) input);
-            } else if (input instanceof LayerGroupInfo) {
-                return new PreviewLayer((LayerGroupInfo) input);
+            if (input instanceof LayerInfo info1) {
+                return new PreviewLayer(info1);
+            } else if (input instanceof LayerGroupInfo info) {
+                return new PreviewLayer(info);
             }
             return null;
         });

@@ -57,12 +57,11 @@ public class AudienceAccessTokenValidator implements TokenValidator {
         // azp - keycloak
         Object azp = claimsJWT.get(KEYCLOAK_AUDIENCE_CLAIM_NAME);
         if (azp != null) {
-            if (azp instanceof String) {
-                if (((String) azp).equals(config.getCliendId())) {
+            if (azp instanceof String string) {
+                if (string.equals(config.getCliendId())) {
                     return;
                 }
-            } else if (azp instanceof List) {
-                List azps = (List) azp;
+            } else if (azp instanceof List azps) {
                 for (Object o : azps) {
                     if ((o instanceof String) && (o.equals(clientId))) {
                         return;

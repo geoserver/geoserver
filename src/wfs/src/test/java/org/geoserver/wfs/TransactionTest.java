@@ -360,27 +360,29 @@ public class TransactionTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("2", "count(//gml:featureMember)", dom);
 
         // perform a delete
-        String delete = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
-                + "xmlns:cite=\"http://www.opengis.net/cite\" "
-                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                + "xmlns:wfs=\"http://www.opengis.net/wfs\"> "
-                + "<wfs:Delete typeName=\"cite:NamedPlaces\"> "
-                + "<ogc:Filter> "
-                + "<ogc:PropertyIsEqualTo>\n"
-                + "        <ogc:PropertyName>cite:NAME</ogc:PropertyName>\n"
-                + "        <ogc:Literal>ASHTON</ogc:Literal>\n"
-                + "</ogc:PropertyIsEqualTo>"
-                + "</ogc:Filter> "
-                + "</wfs:Delete> "
-                + "<wfs:Delete typeName=\"cite:Buildings\"> "
-                + "<ogc:Filter> "
-                + "<ogc:PropertyIsEqualTo>\n"
-                + "        <ogc:PropertyName>cite:ADDRESS</ogc:PropertyName>\n"
-                + "        <ogc:Literal>123 Main Street</ogc:Literal>\n"
-                + "</ogc:PropertyIsEqualTo>"
-                + "</ogc:Filter> "
-                + "</wfs:Delete> "
-                + "</wfs:Transaction>";
+        String delete =
+                """
+                <wfs:Transaction service="WFS" version="1.0.0" \
+                xmlns:cite="http://www.opengis.net/cite" \
+                xmlns:ogc="http://www.opengis.net/ogc" \
+                xmlns:wfs="http://www.opengis.net/wfs"> \
+                <wfs:Delete typeName="cite:NamedPlaces"> \
+                <ogc:Filter> \
+                <ogc:PropertyIsEqualTo>
+                        <ogc:PropertyName>cite:NAME</ogc:PropertyName>
+                        <ogc:Literal>ASHTON</ogc:Literal>
+                </ogc:PropertyIsEqualTo>\
+                </ogc:Filter> \
+                </wfs:Delete> \
+                <wfs:Delete typeName="cite:Buildings"> \
+                <ogc:Filter> \
+                <ogc:PropertyIsEqualTo>
+                        <ogc:PropertyName>cite:ADDRESS</ogc:PropertyName>
+                        <ogc:Literal>123 Main Street</ogc:Literal>
+                </ogc:PropertyIsEqualTo>\
+                </ogc:Filter> \
+                </wfs:Delete> \
+                </wfs:Transaction>""";
 
         dom = postAsDOM("wfs", delete);
         assertEquals("WFS_TransactionResponse", dom.getDocumentElement().getLocalName());
@@ -1001,31 +1003,32 @@ public class TransactionTest extends WFSTestSupport {
     }
 
     private String xmlEntityExpansionLimitBody() {
-        return "<?xml version=\"1.0\" encoding=\"utf-8\"?><!DOCTYPE convert [ <!ENTITY lol \"lol\"><!ENTITY lol1 \"&lol;&lol;&lol;&lol;&lol;&lol;&lol;\"> ]>\n"
-                + "<Transaction xmlns=\"http://www.opengis.net/wfs\" service=\"WFS\" xmlns:xxx=\"https://www.be/cbb\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:gml=\"http://www.opengis.net/gml\" version=\"1.0.0\" xsi:schemaLocation=\"\">\n"
-                + "   <Insert xmlns=\"http://www.opengis.net/wfs\">\n"
-                + "    <xxx_all_service_city xmlns=\"https://www.be/cbb\">\n"
-                + "      <NAME xmlns=\"https://www.be/cbb\">GENT PTEST1</NAME>\n"
-                + "      <DESCRIPTION xmlns=\"https://www.be/cbb\">ptest1</DESCRIPTION>\n"
-                + "      <STATUS xmlns=\"https://www.be/cbb\">default</STATUS>\n"
-                + "      <CREATED_BY xmlns=\"https://www.be/cbb\">upload service</CREATED_BY>\n"
-                + "      <CREATED_DT xmlns=\"https://www.be/cbb\">2019-04-04Z</CREATED_DT>\n"
-                + "      <EXTERNAL_ID xmlns=\"https://www.be/cbb\">City1ptest1</EXTERNAL_ID>\n"
-                + "      <EXTERNAL_SOURCE xmlns=\"https://www.be/cbb\">RIAN</EXTERNAL_SOURCE>\n"
-                + "      <TYPE xmlns=\"https://www.be/cbb\">TYPE.CITY</TYPE>\n"
-                + "      <WAVE xmlns=\"https://www.be/cbb\">3</WAVE>\n"
-                + "      <GEOM xmlns=\"https://www.be/cbb\">\n"
-                + "        <gml:Polygon srsName=\"EPSG:31370\">\n"
-                + "          <gml:outerBoundaryIs>\n"
-                + "            <gml:LinearRing>\n"
-                + "              <gml:coordinates cs=\",\" ts=\" \">&lol1;</gml:coordinates>\n"
-                + "            </gml:LinearRing>\n"
-                + "          </gml:outerBoundaryIs>\n"
-                + "        </gml:Polygon>\n"
-                + "      </GEOM>\n"
-                + "    </xxx_all_service_city>\n"
-                + "  </Insert>\n"
-                + "</Transaction>";
+        return """
+                <?xml version="1.0" encoding="utf-8"?><!DOCTYPE convert [ <!ENTITY lol "lol"><!ENTITY lol1 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;"> ]>
+                <Transaction xmlns="http://www.opengis.net/wfs" service="WFS" xmlns:xxx="https://www.be/cbb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" version="1.0.0" xsi:schemaLocation="">
+                   <Insert xmlns="http://www.opengis.net/wfs">
+                    <xxx_all_service_city xmlns="https://www.be/cbb">
+                      <NAME xmlns="https://www.be/cbb">GENT PTEST1</NAME>
+                      <DESCRIPTION xmlns="https://www.be/cbb">ptest1</DESCRIPTION>
+                      <STATUS xmlns="https://www.be/cbb">default</STATUS>
+                      <CREATED_BY xmlns="https://www.be/cbb">upload service</CREATED_BY>
+                      <CREATED_DT xmlns="https://www.be/cbb">2019-04-04Z</CREATED_DT>
+                      <EXTERNAL_ID xmlns="https://www.be/cbb">City1ptest1</EXTERNAL_ID>
+                      <EXTERNAL_SOURCE xmlns="https://www.be/cbb">RIAN</EXTERNAL_SOURCE>
+                      <TYPE xmlns="https://www.be/cbb">TYPE.CITY</TYPE>
+                      <WAVE xmlns="https://www.be/cbb">3</WAVE>
+                      <GEOM xmlns="https://www.be/cbb">
+                        <gml:Polygon srsName="EPSG:31370">
+                          <gml:outerBoundaryIs>
+                            <gml:LinearRing>
+                              <gml:coordinates cs="," ts=" ">&lol1;</gml:coordinates>
+                            </gml:LinearRing>
+                          </gml:outerBoundaryIs>
+                        </gml:Polygon>
+                      </GEOM>
+                    </xxx_all_service_city>
+                  </Insert>
+                </Transaction>""";
     }
 
     @Test

@@ -65,10 +65,10 @@ public class MapMLMessageConverter extends BaseMessageConverter<Object> {
     @Override
     protected void writeInternal(Object o, HttpOutputMessage outputMessage)
             throws UnsupportedEncodingException, IOException {
-        if (o instanceof org.geoserver.mapml.xml.Mapml) {
+        if (o instanceof org.geoserver.mapml.xml.Mapml mapml) {
             // write to output based on global verbose setting
             boolean verbose = geoServer.getGlobal().getSettings().isVerbose();
-            mapMLEncoder.encode((org.geoserver.mapml.xml.Mapml) o, outputMessage.getBody(), verbose);
+            mapMLEncoder.encode(mapml, outputMessage.getBody(), verbose);
         } else {
             throw new IllegalArgumentException("Can only write Mapml objects, got: " + o.getClass());
         }

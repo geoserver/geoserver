@@ -227,8 +227,8 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
     }
 
     private static <T> T unwrap(T o, Class<T> clazz) {
-        if (o instanceof Wrapper) {
-            return ((Wrapper) o).unwrap(clazz);
+        if (o instanceof Wrapper wrapper) {
+            return wrapper.unwrap(clazz);
         } else {
             return o;
         }

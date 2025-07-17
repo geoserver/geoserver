@@ -4,6 +4,7 @@
  */
 package org.geoserver.geofence.web.authentication;
 
+import java.io.Serial;
 import org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProvider;
 import org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProviderConfig;
 import org.geoserver.security.web.auth.AuthenticationProviderPanelInfo;
@@ -12,6 +13,7 @@ import org.geoserver.security.web.auth.AuthenticationProviderPanelInfo;
 public class GeoFenceAuthProviderPanelInfo
         extends AuthenticationProviderPanelInfo<GeoFenceAuthenticationProviderConfig, GeoFenceAuthProviderPanel> {
 
+    @Serial
     private static final long serialVersionUID = 8491501364970390005L;
 
     public GeoFenceAuthProviderPanelInfo() {

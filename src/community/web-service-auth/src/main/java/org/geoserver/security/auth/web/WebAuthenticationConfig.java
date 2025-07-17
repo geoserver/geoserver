@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.auth.web;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
@@ -13,6 +14,7 @@ import org.geoserver.security.config.SecurityAuthProviderConfig;
 public class WebAuthenticationConfig extends BaseSecurityNamedServiceConfig implements SecurityAuthProviderConfig {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -41214123098267966L;
 
     public static final String URL_PLACEHOLDER_USER = "{user}";

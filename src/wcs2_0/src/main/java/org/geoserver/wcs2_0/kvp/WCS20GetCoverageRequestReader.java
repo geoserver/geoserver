@@ -49,10 +49,10 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
 
         // handle dimension subsets
         Object subsets = kvp.get("subset");
-        if (subsets instanceof DimensionSubsetType) {
-            gc.getDimensionSubset().add((DimensionSubsetType) subsets);
-        } else if (subsets instanceof List) {
-            for (Object subset : (List) subsets) {
+        if (subsets instanceof DimensionSubsetType type) {
+            gc.getDimensionSubset().add(type);
+        } else if (subsets instanceof List list) {
+            for (Object subset : list) {
                 gc.getDimensionSubset().add((DimensionSubsetType) subset);
             }
         }
@@ -161,8 +161,8 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
     private void parseOverviewPolicyExtension(GetCoverageType gc, Map kvp) {
         if (kvp.containsKey(WCS20Const.OVERVIEW_POLICY_EXTENSION_LOWERCASE)) {
             Object item = kvp.get(WCS20Const.OVERVIEW_POLICY_EXTENSION_LOWERCASE);
-            if (item instanceof ExtensionItemType) {
-                gc.getExtension().getContents().add((ExtensionItemType) item);
+            if (item instanceof ExtensionItemType type) {
+                gc.getExtension().getContents().add(type);
             }
         }
     }

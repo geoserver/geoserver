@@ -41,8 +41,7 @@ class KMLCentroidFeatureCollection extends DecoratingSimpleFeatureCollection {
         // build the centroid collection schema
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         for (AttributeDescriptor ad : delegate.getSchema().getAttributeDescriptors()) {
-            if (ad instanceof GeometryDescriptor) {
-                GeometryDescriptor gd = (GeometryDescriptor) ad;
+            if (ad instanceof GeometryDescriptor gd) {
                 Class<?> binding = ad.getType().getBinding();
                 if (Point.class.isAssignableFrom(binding)) {
                     tb.add(ad);
@@ -91,8 +90,7 @@ class KMLCentroidFeatureCollection extends DecoratingSimpleFeatureCollection {
         public SimpleFeature next() throws NoSuchElementException {
             SimpleFeature f = delegate.next();
             for (Object attribute : f.getAttributes()) {
-                if ((attribute instanceof Geometry) && !(attribute instanceof Point)) {
-                    Geometry geom = (Geometry) attribute;
+                if ((attribute instanceof Geometry geom) && !(attribute instanceof Point)) {
                     Coordinate point = centroids.geometryCentroid(
                             geom, context.getRequest().getBbox(), centroidOpts);
                     attribute = geom.getFactory().createPoint(point);

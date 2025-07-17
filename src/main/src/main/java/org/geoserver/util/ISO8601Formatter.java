@@ -46,10 +46,9 @@ public class ISO8601Formatter {
      * DateRange (and will throw an {@link IllegalArgumentException} otherwise)
      */
     public String format(Object date) {
-        if (date instanceof Date) {
-            return format((Date) date);
-        } else if (date instanceof DateRange) {
-            DateRange range = (DateRange) date;
+        if (date instanceof Date date1) {
+            return format(date1);
+        } else if (date instanceof DateRange range) {
             StringBuilder sb = new StringBuilder();
             format(range.getMinValue(), sb);
             sb.append("/");

@@ -35,8 +35,8 @@ public class JaxbPPIO extends ComplexPPIO {
 
     @Override
     public Object decode(Object input) throws Exception {
-        if (input instanceof String) {
-            return decode(new ByteArrayInputStream(((String) input).getBytes()));
+        if (input instanceof String string) {
+            return decode(new ByteArrayInputStream(string.getBytes()));
         }
         return super.decode(input);
     }

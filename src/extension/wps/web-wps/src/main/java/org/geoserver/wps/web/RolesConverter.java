@@ -5,6 +5,7 @@
 
 package org.geoserver.wps.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +16,7 @@ import org.apache.wicket.util.convert.IConverter;
 public class RolesConverter implements IConverter {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -7814332099119849464L;
 
     private List<String> availableRoles;
@@ -41,8 +43,7 @@ public class RolesConverter implements IConverter {
     @Override
     public String convertToString(Object value, Locale locale) {
         String roleStr = "";
-        if (value != null && value instanceof List) {
-            List roles = (List) value;
+        if (value != null && value instanceof List roles) {
             roleStr = StringUtils.join(roles.toArray(), ";");
             if (!roleStr.isEmpty()) {
                 roleStr = roleStr + ";";

@@ -5,10 +5,12 @@
  */
 package org.geoserver.security.jdbc;
 
+import java.io.Serial;
 import org.geoserver.security.validation.SecurityConfigException;
 
 public class JDBCSecurityConfigException extends SecurityConfigException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String DRIVER_CLASSNAME_REQUIRED = "DRIVER_CLASSNAME_REQUIRED";

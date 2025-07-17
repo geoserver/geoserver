@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.web.data;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.ComponentInfo;
@@ -16,6 +17,7 @@ import org.geoserver.web.ComponentInfo;
  */
 public class StyleEditTabPanelInfo extends ComponentInfo<StyleEditTabPanel> {
 
+    @Serial
     private static final long serialVersionUID = 4849692244366766812L;
 
     /** order of the panel with respect to other panels. */

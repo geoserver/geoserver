@@ -352,23 +352,25 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     @Test
     public void testGeotiffExtensionBanded() throws Exception {
 
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<wcs:GetCoverage\n"
-                + "  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n"
-                + "  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n"
-                + "  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
-                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                + "  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n"
-                + "  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd\"\n"
-                + "  service=\"WCS\"\n"
-                + "  version=\"2.0.1\">\n"
-                + "  <wcs:Extension>\n"
-                + "    <wcsgeotiff:compression>None</wcsgeotiff:compression>\n"
-                + "    <wcsgeotiff:interleave>band</wcsgeotiff:interleave>\n"
-                + "  </wcs:Extension>\n"
-                + "  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n"
-                + "  <wcs:format>image/tiff</wcs:format>\n"
-                + "</wcs:GetCoverage>";
+        String request =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <wcs:GetCoverage
+                  xmlns:wcs="http://www.opengis.net/wcs/2.0"
+                  xmlns:wcsgeotiff="http://www.opengis.net/wcs/geotiff/1.0"
+                  xmlns:gml="http://www.opengis.net/gml/3.2"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.opengis.net/wcs/2.0\s
+                  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd"
+                  service="WCS"
+                  version="2.0.1">
+                  <wcs:Extension>
+                    <wcsgeotiff:compression>None</wcsgeotiff:compression>
+                    <wcsgeotiff:interleave>band</wcsgeotiff:interleave>
+                  </wcs:Extension>
+                  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>
+                  <wcs:format>image/tiff</wcs:format>
+                </wcs:GetCoverage>""";
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 

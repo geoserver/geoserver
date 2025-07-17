@@ -230,8 +230,7 @@ public class STACSortablesMapper {
         if (xpath != null) {
             if (!xpath.getPropertyName().contains("/")) {
                 Object result = xpath.evaluate(itemsSchema);
-                if (result instanceof PropertyDescriptor) {
-                    PropertyDescriptor pd = (PropertyDescriptor) result;
+                if (result instanceof PropertyDescriptor pd) {
                     return pd.getType().getBinding();
                 }
             }

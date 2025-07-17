@@ -5,6 +5,7 @@
  */
 package org.geoserver.csw.web;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -20,6 +21,7 @@ import org.geoserver.web.util.MetadataMapModel;
 
 public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
 
+    @Serial
     private static final long serialVersionUID = 8779684527875704719L;
 
     public CSWAdminPage() {

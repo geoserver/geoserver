@@ -124,7 +124,7 @@ public class TemplateGetFeatureResponseHelper {
 
     FeatureTypeInfo getFirstFeatureTypeInfo(Object request) {
         FeatureTypeInfo result;
-        if (request instanceof GetFeatureInfoRequest) result = getFirstFeatureTypeInfo((GetFeatureInfoRequest) request);
+        if (request instanceof GetFeatureInfoRequest infoRequest) result = getFirstFeatureTypeInfo(infoRequest);
         else result = getFirstFeatureTypeInfo(GetFeatureRequest.adapt(request));
         return result;
     }
@@ -132,7 +132,7 @@ public class TemplateGetFeatureResponseHelper {
     FeatureTypeInfo getFirstFeatureTypeInfo(GetFeatureInfoRequest request) {
         Optional<MapLayerInfo> op =
                 request.getQueryLayers().stream().filter(ml -> ml != null).findFirst();
-        if (!op.isPresent()) return null;
+        if (op.isEmpty()) return null;
         return op.get().getFeature();
     }
 

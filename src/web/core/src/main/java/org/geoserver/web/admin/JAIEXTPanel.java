@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.admin;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
@@ -19,6 +20,7 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 public class JAIEXTPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = -4274061927074052166L;
 
     public JAIEXTPanel(String id, IModel<JAIInfo> model) {
@@ -34,6 +36,7 @@ public class JAIEXTPanel extends Panel {
                         new JAChoiceRenderer(),
                         7,
                         false) {
+                    @Serial
                     private static final long serialVersionUID = -4665147378650094510L;
 
                     /** Override otherwise the header is not i18n'ized */
@@ -53,6 +56,7 @@ public class JAIEXTPanel extends Panel {
     }
 
     static class JAChoiceRenderer extends ChoiceRenderer<String> {
+        @Serial
         private static final long serialVersionUID = -1978519626641784908L;
 
         private static final String ALGEBRIC = "algebric";

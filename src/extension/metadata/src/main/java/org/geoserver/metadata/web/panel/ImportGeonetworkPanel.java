@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -32,6 +33,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  */
 // TODO WICKET8 - Verify this page works OK
 public abstract class ImportGeonetworkPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     public ImportGeonetworkPanel(String id) {
@@ -60,6 +62,7 @@ public abstract class ImportGeonetworkPanel extends Panel {
     private AjaxSubmitLink createImportAction(
             final DropDownChoice<String> dropDown, final TextField<String> inputUUID, GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
+            @Serial
             private static final long serialVersionUID = -8718015688839770852L;
 
             @Override
@@ -78,6 +81,7 @@ public abstract class ImportGeonetworkPanel extends Panel {
                     dialog.setTitle(new ParamResourceModel("confirmImportDialog.title", ImportGeonetworkPanel.this));
                     dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                        @Serial
                         private static final long serialVersionUID = -5552087037163833563L;
 
                         @Override

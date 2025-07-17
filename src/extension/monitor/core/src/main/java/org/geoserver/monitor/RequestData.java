@@ -5,6 +5,7 @@
  */
 package org.geoserver.monitor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,6 +22,7 @@ import org.geotools.api.geometry.BoundingBox;
  */
 public class RequestData implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 4115701065212157258L;
 
     private static AtomicLong COUNTER = new AtomicLong();

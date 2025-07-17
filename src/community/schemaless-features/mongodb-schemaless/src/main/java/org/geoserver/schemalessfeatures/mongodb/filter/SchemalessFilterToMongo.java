@@ -41,7 +41,7 @@ public class SchemalessFilterToMongo extends AbstractFilterToMongo {
     @Override
     protected Class<?> getValueTypeInternal(Expression e) {
         Class<?> clazz = null;
-        if (e instanceof PropertyName) clazz = typeFinder.getAttributeType(((PropertyName) e).getPropertyName());
+        if (e instanceof PropertyName name) clazz = typeFinder.getAttributeType(name.getPropertyName());
         return clazz;
     }
 }

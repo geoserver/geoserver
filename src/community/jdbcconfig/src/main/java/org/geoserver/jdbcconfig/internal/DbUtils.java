@@ -68,8 +68,7 @@ public class DbUtils {
     private static void replaceParameter(StringBuilder sb, Entry<String, ?> parameter) {
         Object value = parameter.getValue();
         String paramValue;
-        if (value instanceof Collection) {
-            Collection<?> c = (Collection<?>) value;
+        if (value instanceof Collection<?> c) {
             paramValue = c.stream().map(DbUtils::toString).collect(Collectors.joining(", "));
         } else {
             paramValue = toString(value);

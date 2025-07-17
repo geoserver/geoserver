@@ -61,32 +61,32 @@ public final class IconPropertyExtractor {
     /** Extracts a Graphic object from the given symbolizer */
     public static Graphic getGraphic(Symbolizer symbolizer, boolean includeNonPointGraphics) {
         // try point first
-        if (symbolizer instanceof PointSymbolizer) {
-            return ((PointSymbolizer) symbolizer).getGraphic();
+        if (symbolizer instanceof PointSymbolizer pointSymbolizer) {
+            return pointSymbolizer.getGraphic();
         }
         if (!includeNonPointGraphics) {
             return null;
         }
         // try in other symbolizers
-        if (symbolizer instanceof PolygonSymbolizer) {
-            final Fill fill = ((PolygonSymbolizer) symbolizer).getFill();
+        if (symbolizer instanceof PolygonSymbolizer polygonSymbolizer) {
+            final Fill fill = polygonSymbolizer.getFill();
             if (fill != null && fill.getGraphicFill() != null) {
                 return fill.getGraphicFill();
             }
-            final Stroke stroke = ((PolygonSymbolizer) symbolizer).getStroke();
+            final Stroke stroke = polygonSymbolizer.getStroke();
             if (stroke != null) {
                 return stroke.getGraphicStroke();
             }
-        } else if (symbolizer instanceof LineSymbolizer) {
-            final Stroke stroke = ((LineSymbolizer) symbolizer).getStroke();
+        } else if (symbolizer instanceof LineSymbolizer lineSymbolizer) {
+            final Stroke stroke = lineSymbolizer.getStroke();
             if (stroke != null) {
                 if (stroke.getGraphicStroke() != null) return stroke.getGraphicStroke();
                 if (stroke.getGraphicFill() != null) {
                     return stroke.getGraphicFill();
                 }
             }
-        } else if (symbolizer instanceof TextSymbolizer) {
-            return ((TextSymbolizer) symbolizer).getGraphic();
+        } else if (symbolizer instanceof TextSymbolizer textSymbolizer) {
+            return textSymbolizer.getGraphic();
         }
 
         return null;
@@ -125,7 +125,7 @@ public final class IconPropertyExtractor {
             try {
                 @SuppressWarnings("unchecked")
                 T value = (T) expression.evaluate(feature, defaultValue.getClass());
-                if (value == null || (value instanceof Double && Double.isNaN((Double) value))) {
+                if (value == null || (value instanceof Double double1 && Double.isNaN(double1))) {
                     return defaultValue;
                 }
                 return value;

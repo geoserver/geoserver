@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -18,6 +19,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  */
 public class StoreConnectionFailedInformationPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -4118332716894663905L;
 
     public StoreConnectionFailedInformationPanel(

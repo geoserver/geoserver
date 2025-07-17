@@ -7,6 +7,7 @@ package org.geoserver.gwc.config;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
 
 public class GWCConfig implements Cloneable, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 3287178222706781438L;
 
     private String version;

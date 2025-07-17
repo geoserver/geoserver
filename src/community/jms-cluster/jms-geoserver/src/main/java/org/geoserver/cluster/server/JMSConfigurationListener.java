@@ -142,16 +142,14 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer imple
     private void handleServiceEvent(JMSServiceModifyEvent event) {
         // if possible log about the received event
         if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-            LOGGER.fine(String.format(
-                    "Incoming service '%s' modified event of type '%s'.",
-                    event.getSource().getId(), event.getEventType()));
+            LOGGER.fine("Incoming service '%s' modified event of type '%s'."
+                    .formatted(event.getSource().getId(), event.getEventType()));
         }
         // skip incoming events if producer is not enabled
         if (!isEnabled()) {
             if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-                LOGGER.fine(String.format(
-                        "Skipping incoming service '%s' modified event of type '%s' since producer is not enabled.",
-                        event.getSource().getId(), event.getEventType()));
+                LOGGER.fine("Skipping incoming service '%s' modified event of type '%s' since producer is not enabled."
+                        .formatted(event.getSource().getId(), event.getEventType()));
             }
             return;
         }
@@ -160,9 +158,8 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer imple
             jmsPublisher.publish(getTopic(), getJmsTemplate(), getProperties(), event);
         } catch (Exception exception) {
             // failed to publish event
-            LOGGER.severe(String.format(
-                    "Error publishing service '%s' modified event of type '%s': %s",
-                    event.getSource().getId(), event.getEventType(), exception.getLocalizedMessage()));
+            LOGGER.severe("Error publishing service '%s' modified event of type '%s': %s"
+                    .formatted(event.getSource().getId(), event.getEventType(), exception.getLocalizedMessage()));
         }
     }
 
@@ -200,16 +197,14 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer imple
     private void handleSettingsEvent(JMSSettingsModifyEvent event) {
         // if possible log about the received event
         if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-            LOGGER.fine(String.format(
-                    "Incoming settings '%s' modified event of type '%s'.",
-                    event.getSource().getId(), event.getEventType()));
+            LOGGER.fine("Incoming settings '%s' modified event of type '%s'."
+                    .formatted(event.getSource().getId(), event.getEventType()));
         }
         // skip incoming events if producer is not enabled
         if (!isEnabled()) {
             if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-                LOGGER.fine(String.format(
-                        "Skipping incoming settings '%s' modified event of type '%s' since producer is not enabled.",
-                        event.getSource().getId(), event.getEventType()));
+                LOGGER.fine("Skipping incoming settings '%s' modified event of type '%s' since producer is not enabled."
+                        .formatted(event.getSource().getId(), event.getEventType()));
             }
             return;
         }
@@ -218,9 +213,8 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer imple
             jmsPublisher.publish(getTopic(), getJmsTemplate(), getProperties(), event);
         } catch (Exception exception) {
             // failed to publish event
-            LOGGER.severe(String.format(
-                    "Error publishing settings '%s' modified event of type '%s': %s",
-                    event.getSource().getId(), event.getEventType(), exception.getLocalizedMessage()));
+            LOGGER.severe("Error publishing settings '%s' modified event of type '%s': %s"
+                    .formatted(event.getSource().getId(), event.getEventType(), exception.getLocalizedMessage()));
         }
     }
 

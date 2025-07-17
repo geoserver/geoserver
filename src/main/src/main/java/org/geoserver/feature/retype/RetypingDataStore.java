@@ -169,11 +169,11 @@ public class RetypingDataStore extends DecoratingDataStore {
         updateMap(map, false);
         SimpleFeatureSource source = wrapped.getFeatureSource(map.getOriginalName());
         if (map.isUnchanged()) return source;
-        if (source instanceof FeatureLocking) {
-            SimpleFeatureLocking locking = DataUtilities.simple((FeatureLocking) source);
+        if (source instanceof FeatureLocking featureLocking) {
+            SimpleFeatureLocking locking = DataUtilities.simple(featureLocking);
             return new RetypingFeatureLocking(this, locking, map);
-        } else if (source instanceof FeatureStore) {
-            SimpleFeatureStore store = DataUtilities.simple((FeatureStore) source);
+        } else if (source instanceof FeatureStore featureStore) {
+            SimpleFeatureStore store = DataUtilities.simple(featureStore);
             return new RetypingFeatureStore(this, store, map);
         }
         return new RetypingFeatureSource(this, source, map);

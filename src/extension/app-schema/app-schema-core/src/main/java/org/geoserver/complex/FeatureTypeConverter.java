@@ -79,7 +79,7 @@ class FeatureTypeConverter {
     private void processRule(Entry<String, String> rule) {
         // get the descriptor
         Optional<AttributeDescriptor> descriptorOpt = getDescriptor(rule.getValue());
-        if (!descriptorOpt.isPresent()) {
+        if (descriptorOpt.isEmpty()) {
             LOGGER.warning(() ->
                     "Descriptor for attribute: '" + rule.getValue() + "' not found on feature type: " + featureType);
             return;
@@ -102,11 +102,11 @@ class FeatureTypeConverter {
         // check if current descriptor was already processed
         if (processedDescriptors.contains(descriptor)) return false;
         // if it is a geometry descriptor, pass the original
-        if (descriptor instanceof GeometryDescriptor) {
-            processGeometryDescriptor((GeometryDescriptor) descriptor);
+        if (descriptor instanceof GeometryDescriptor geometryDescriptor) {
+            processGeometryDescriptor(geometryDescriptor);
             return true;
-        } else if (descriptor instanceof AttributeDescriptor) {
-            return processAttributeDescriptor((AttributeDescriptor) descriptor);
+        } else if (descriptor instanceof AttributeDescriptor attributeDescriptor) {
+            return processAttributeDescriptor(attributeDescriptor);
         }
         return false;
     }

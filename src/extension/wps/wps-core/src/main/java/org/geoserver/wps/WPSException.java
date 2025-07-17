@@ -6,6 +6,7 @@
 
 package org.geoserver.wps;
 
+import java.io.Serial;
 import org.geoserver.platform.ServiceException;
 
 /**
@@ -14,6 +15,7 @@ import org.geoserver.platform.ServiceException;
  * @author Lucas Reed, Refractions Research Inc
  */
 public class WPSException extends ServiceException {
+    @Serial
     private static final long serialVersionUID = 7833862069590179589L;
 
     public WPSException(String message) {

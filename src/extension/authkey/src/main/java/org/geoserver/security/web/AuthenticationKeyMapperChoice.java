@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -21,6 +22,7 @@ import org.geoserver.security.AuthenticationKeyMapper;
 public class AuthenticationKeyMapperChoice extends DropDownChoice<String> {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public AuthenticationKeyMapperChoice(String id) {
@@ -33,7 +35,9 @@ public class AuthenticationKeyMapperChoice extends DropDownChoice<String> {
 
     static class AuthenticationKeyMapperNamesModel implements IModel<List<String>> {
 
+        @Serial
         private static final long serialVersionUID = 1L;
+
         List<String> mapperNames;
 
         AuthenticationKeyMapperNamesModel() {
@@ -65,6 +69,7 @@ public class AuthenticationKeyMapperChoice extends DropDownChoice<String> {
     }
 
     static class AuthenticationKeyMapperChoiceRenderer extends ChoiceRenderer<String> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override

@@ -568,8 +568,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     }
 
     private void lookForOp(String opName, RenderedImage image, RenderedImage[] returnedOp) {
-        if (image instanceof RenderedOp) {
-            RenderedOp op = (RenderedOp) image;
+        if (image instanceof RenderedOp op) {
             String operationName = op.getOperationName();
             if (opName.equalsIgnoreCase(operationName)) {
                 returnedOp[0] = op;
@@ -579,8 +578,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                     Iterator iterator = sources.iterator();
                     while (iterator.hasNext() && returnedOp[0] == null) {
                         Object next = iterator.next();
-                        if (next instanceof RenderedImage) {
-                            lookForOp(opName, (RenderedImage) next, returnedOp);
+                        if (next instanceof RenderedImage renderedImage) {
+                            lookForOp(opName, renderedImage, returnedOp);
                         }
                     }
                 }

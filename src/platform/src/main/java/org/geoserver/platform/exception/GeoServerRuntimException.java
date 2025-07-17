@@ -5,6 +5,8 @@
  */
 package org.geoserver.platform.exception;
 
+import java.io.Serial;
+
 /**
  * Base class for runtime exceptions whose messages can be localized.
  *
@@ -14,6 +16,7 @@ package org.geoserver.platform.exception;
 public class GeoServerRuntimException extends RuntimeException implements IGeoServerException {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** id for the exception, used to locate localized message for the exception */

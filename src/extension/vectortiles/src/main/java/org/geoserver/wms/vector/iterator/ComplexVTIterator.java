@@ -50,8 +50,8 @@ class ComplexVTIterator implements VTIterator {
             }
             String name = p.getName().getLocalPart();
             Object value;
-            if (p instanceof ComplexAttribute) {
-                value = getProperties((ComplexAttribute) p);
+            if (p instanceof ComplexAttribute attribute) {
+                value = getProperties(attribute);
             } else {
                 value = p.getValue();
             }

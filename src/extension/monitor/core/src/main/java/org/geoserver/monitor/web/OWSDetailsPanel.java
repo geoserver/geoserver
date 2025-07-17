@@ -5,6 +5,7 @@
  */
 package org.geoserver.monitor.web;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.monitor.Monitor;
@@ -15,6 +16,7 @@ import org.geoserver.monitor.RequestDataVisitor;
 
 public class OWSDetailsPanel extends OWSSummaryChartBasePanel {
 
+    @Serial
     private static final long serialVersionUID = 8958233133832178632L;
 
     public OWSDetailsPanel(String id, Monitor monitor, String owsService) {

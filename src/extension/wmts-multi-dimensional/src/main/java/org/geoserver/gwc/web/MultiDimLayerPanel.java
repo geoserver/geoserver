@@ -158,8 +158,7 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
 
                 layer.getResource().getMetadata().forEach((k, v) -> {
                     // validate enabled dimensions
-                    if (v instanceof DimensionInfo) {
-                        DimensionInfo di = (DimensionInfo) v;
+                    if (v instanceof DimensionInfo di) {
                         if (di.isEnabled()) {
                             validateDimension(di, sidecarType, sidecarAttributes, mainAttributes);
                         }

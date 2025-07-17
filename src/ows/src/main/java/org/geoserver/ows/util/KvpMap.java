@@ -5,6 +5,7 @@
  */
 package org.geoserver.ows.util;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 // KvpMap<Object> in the user code
 public class KvpMap<K extends String, V> extends HashMap<K, V> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public KvpMap() {
@@ -53,8 +55,8 @@ public class KvpMap<K extends String, V> extends HashMap<K, V> {
 
     @SuppressWarnings("unchecked")
     K upper(Object key) {
-        if ((key != null) && key instanceof String) {
-            return (K) ((String) key).toUpperCase();
+        if ((key != null) && key instanceof String string) {
+            return (K) string.toUpperCase();
         }
 
         return null;

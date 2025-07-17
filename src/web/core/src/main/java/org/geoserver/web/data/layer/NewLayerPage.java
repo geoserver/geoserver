@@ -309,8 +309,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
     void updateSpecialFunctionPanels(StoreInfo store) {
         // at the moment just assume every store can create types
         try {
-            createTypeContainer.setVisible(
-                    store instanceof DataStoreInfo && ((DataStoreInfo) store).getDataStore(null) instanceof DataStore);
+            createTypeContainer.setVisible(store instanceof DataStoreInfo dsi
+                    && ((DataStoreInfo) store).getDataStore(null) instanceof DataStore);
         } catch (IOException e) {
             LOGGER.log(Level.FINEST, e.getMessage());
         }
@@ -319,13 +319,13 @@ public class NewLayerPage extends GeoServerSecuredPage {
         // DataStoreInfo
         createSQLViewContainer.setVisible(false);
         createCascadedWFSStoredQueryContainer.setVisible(false);
-        if (store instanceof DataStoreInfo) {
+        if (store instanceof DataStoreInfo info) {
             try {
-                DataAccess<?, ?> da = ((DataStoreInfo) store).getDataStore(null);
+                DataAccess<?, ?> da = info.getDataStore(null);
 
-                if (da instanceof Wrapper) {
+                if (da instanceof Wrapper wrapper) {
                     try {
-                        da = ((Wrapper) da).unwrap(DataAccess.class);
+                        da = wrapper.unwrap(DataAccess.class);
                     } catch (IllegalArgumentException e) {
                         throw new IOException(e);
                     }
@@ -333,8 +333,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
 
                 createSQLViewContainer.setVisible(da instanceof JDBCDataStore);
 
-                if (da instanceof WFSDataStore) {
-                    createCascadedWFSStoredQueryContainer.setVisible(((WFSDataStore) da).supportsStoredQueries());
+                if (da instanceof WFSDataStore dataStore) {
+                    createCascadedWFSStoredQueryContainer.setVisible(dataStore.supportsStoredQueries());
                 }
             } catch (IOException e) {
                 LOGGER.log(Level.FINEST, e.getMessage());
@@ -351,16 +351,16 @@ public class NewLayerPage extends GeoServerSecuredPage {
         createWMSLayerImportContainer.setVisible(false);
         // WMSStoreInfo
         createWMTSLayerImportContainer.setVisible(false);
-        if (store instanceof WMTSStoreInfo) {
+        if (store instanceof WMTSStoreInfo info1) {
             try {
-                WebMapTileServer wmts = ((WMTSStoreInfo) store).getWebMapTileServer(null);
+                WebMapTileServer wmts = info1.getWebMapTileServer(null);
                 createWMTSLayerImportContainer.setVisible(wmts != null);
             } catch (IOException e) {
                 LOGGER.log(Level.FINEST, e.getMessage());
             }
-        } else if (store instanceof WMSStoreInfo) {
+        } else if (store instanceof WMSStoreInfo info) {
             try {
-                WebMapServer wms = ((WMSStoreInfo) store).getWebMapServer(null);
+                WebMapServer wms = info.getWebMapServer(null);
                 createWMSLayerImportContainer.setVisible(wms != null);
             } catch (IOException e) {
                 LOGGER.log(Level.FINEST, e.getMessage());
@@ -374,17 +374,13 @@ public class NewLayerPage extends GeoServerSecuredPage {
         StoreInfo store = catalog.getStore(getSelectedStoreId(), StoreInfo.class);
         StoreInfo expandedStore = null;
 
-        if (store instanceof DataStoreInfo) {
-            DataStoreInfo dstore = (DataStoreInfo) store;
+        if (store instanceof DataStoreInfo dstore) {
             expandedStore = getCatalog().getResourcePool().clone(dstore, true);
-        } else if (store instanceof CoverageStoreInfo) {
-            CoverageStoreInfo cstore = (CoverageStoreInfo) store;
+        } else if (store instanceof CoverageStoreInfo cstore) {
             expandedStore = getCatalog().getResourcePool().clone(cstore, true);
-        } else if (store instanceof WMSStoreInfo) {
-            WMSStoreInfo wmsInfo = (WMSStoreInfo) store;
+        } else if (store instanceof WMSStoreInfo wmsInfo) {
             expandedStore = getCatalog().getResourcePool().clone(wmsInfo, true);
-        } else if (store instanceof WMTSStoreInfo) {
-            WMTSStoreInfo wmsInfo = (WMTSStoreInfo) store;
+        } else if (store instanceof WMTSStoreInfo wmsInfo) {
             expandedStore = getCatalog().getResourcePool().clone(wmsInfo, true);
         }
 

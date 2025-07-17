@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.resources;
 
+import java.io.Serial;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Set;
@@ -20,6 +21,7 @@ import org.geoserver.web.treeview.TreeNode;
  */
 public class ResourceNode implements TreeNode<Resource>, Comparable<ResourceNode> {
 
+    @Serial
     private static final long serialVersionUID = 4941394483034830079L;
 
     private Resource resource;
@@ -119,7 +121,7 @@ public class ResourceNode implements TreeNode<Resource>, Comparable<ResourceNode
 
     @Override
     public boolean equals(Object node) {
-        return node instanceof ResourceNode && isSameAs((ResourceNode) node);
+        return node instanceof ResourceNode rn && isSameAs(rn);
     }
 
     @Override

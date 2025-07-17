@@ -315,9 +315,9 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         StyleParameterFilter styleFilter = null;
 
         for (ParameterFilter filter : filters) {
-            if (filter instanceof FloatParameterFilter) floatFilter = (FloatParameterFilter) filter;
-            if (filter instanceof StringParameterFilter) stringFilter = (StringParameterFilter) filter;
-            if (filter instanceof StyleParameterFilter) styleFilter = (StyleParameterFilter) filter;
+            if (filter instanceof FloatParameterFilter parameterFilter) floatFilter = parameterFilter;
+            if (filter instanceof StringParameterFilter parameterFilter) stringFilter = parameterFilter;
+            if (filter instanceof StyleParameterFilter parameterFilter) styleFilter = parameterFilter;
         }
 
         assertNotNull(floatFilter);
@@ -510,8 +510,8 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         StyleParameterFilter styleFilter = null;
 
         for (ParameterFilter filter : filters) {
-            if (filter instanceof FloatParameterFilter) floatFilter = (FloatParameterFilter) filter;
-            if (filter instanceof StyleParameterFilter) styleFilter = (StyleParameterFilter) filter;
+            if (filter instanceof FloatParameterFilter parameterFilter) floatFilter = parameterFilter;
+            if (filter instanceof StyleParameterFilter parameterFilter) styleFilter = parameterFilter;
         }
 
         assertNotNull(floatFilter);

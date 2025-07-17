@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.Map;
 import org.apache.wicket.Component;
@@ -30,6 +31,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
  */
 // TODO WICKET8 - Verify this page works OK
 public class RepeatableAttributesTablePanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     private GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel;
@@ -68,6 +70,7 @@ public class RepeatableAttributesTablePanel extends Panel {
         add(
                 new AjaxSubmitLink("addNew") {
 
+                    @Serial
                     private static final long serialVersionUID = 6840006565079316081L;
 
                     @Override
@@ -89,6 +92,7 @@ public class RepeatableAttributesTablePanel extends Panel {
 
                     private IModel<ComplexMetadataAttribute<String>> disabledValue = null;
 
+                    @Serial
                     private static final long serialVersionUID = 4333335931795175790L;
 
                     @SuppressWarnings("unchecked")
@@ -131,6 +135,7 @@ public class RepeatableAttributesTablePanel extends Panel {
                             } else {
                                 AjaxSubmitLink deleteAction = new AjaxSubmitLink(id) {
 
+                                    @Serial
                                     private static final long serialVersionUID = -8829474855848647384L;
 
                                     @Override

@@ -61,24 +61,21 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
             final String removedObjectName; // for logging
             final Predicate<DataAccessRule> filter;
             final CatalogInfo eventSource = event.getSource();
-            if (eventSource instanceof WorkspaceInfo) {
-                WorkspaceInfo ws = (WorkspaceInfo) eventSource;
+            if (eventSource instanceof WorkspaceInfo ws) {
                 filter = workspaceFilter(ws.getName());
                 removedObjectName = "Workspace " + ws.getName();
-            } else if (eventSource instanceof LayerInfo) {
-                LayerInfo l = (LayerInfo) eventSource;
+            } else if (eventSource instanceof LayerInfo l) {
                 WorkspaceInfo ws = l.getResource().getStore().getWorkspace();
                 filter = layerFilter(ws.getName(), l.getName());
                 removedObjectName = "Layer " + l.getName();
-            } else if (eventSource instanceof LayerGroupInfo) {
-                LayerGroupInfo lg = (LayerGroupInfo) eventSource;
+            } else if (eventSource instanceof LayerGroupInfo lg) {
                 filter = layerGroupFilter(lg.getWorkspace(), lg.getName());
                 removedObjectName = "Layer Group " + lg.getName();
             } else {
                 return;
             }
 
-            Supplier<String> message = () -> String.format("Removing Security Rules for deleted %s", removedObjectName);
+            Supplier<String> message = () -> "Removing Security Rules for deleted %s".formatted(removedObjectName);
             apply(filter, dao::removeRule, message);
         } finally {
             lock.release();
@@ -115,16 +112,14 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
                 filter = workspaceFilter(oldName);
                 updater = r -> r.setRoot(newName);
                 renamedObject = "Workspace";
-            } else if (eventSource instanceof ResourceInfo) {
+            } else if (eventSource instanceof ResourceInfo info) {
                 // if a layer has been renamed
                 // similar layer names can exist in different workspaces
-                String wsName =
-                        ((ResourceInfo) eventSource).getStore().getWorkspace().getName();
+                String wsName = info.getStore().getWorkspace().getName();
                 filter = layerFilter(wsName, oldName);
                 updater = r -> r.setLayer(newName);
                 renamedObject = "Resource";
-            } else if (eventSource instanceof LayerGroupInfo) {
-                LayerGroupInfo lg = (LayerGroupInfo) eventSource;
+            } else if (eventSource instanceof LayerGroupInfo lg) {
                 filter = layerGroupFilter(lg.getWorkspace(), oldName);
                 updater = layerGroupRuleUpdater(lg.getWorkspace(), newName);
                 renamedObject = "LayerGroup";
@@ -132,8 +127,8 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
                 return;
             }
 
-            Supplier<String> message = () ->
-                    String.format("Updating Security Rules for renamed %s: %s -> %s", renamedObject, oldName, newName);
+            Supplier<String> message =
+                    () -> "Updating Security Rules for renamed %s: %s -> %s".formatted(renamedObject, oldName, newName);
 
             // modifying directly a rule is not a good idea, depending on the DAO implementation
             // it might do nothing (the DAO uses defensive copies or secondary storage) or it

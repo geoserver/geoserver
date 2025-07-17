@@ -6,6 +6,7 @@
 package org.geoserver.web.data.store;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Map;
@@ -26,6 +27,7 @@ import org.geotools.api.data.DataAccessFactory.Param;
  */
 public abstract class StoreEditPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected final Form storeEditForm;

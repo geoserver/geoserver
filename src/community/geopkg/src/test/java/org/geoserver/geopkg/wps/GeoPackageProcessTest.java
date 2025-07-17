@@ -49,13 +49,12 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
-import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.api.data.Query;
 import org.geotools.api.data.SimpleFeatureReader;
@@ -189,10 +188,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
     @Before
     public void disableXXEDetection() {
         // running tests in the IDE having also GeoTools loaded otherwise fails
-        GeoServer gs = getGeoServer();
-        GeoServerInfo global = gs.getGlobal();
-        global.setXmlExternalEntitiesEnabled(true);
-        gs.save(global);
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
     }
 
     @Test
@@ -736,10 +732,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
     @Test
     public void testGeoPackageProcessValidationXXE() throws Exception {
         // for this one test we want the check on
-        GeoServer gs = getGeoServer();
-        GeoServerInfo global = gs.getGlobal();
-        global.setXmlExternalEntitiesEnabled(false);
-        gs.save(global);
+        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
 
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">"

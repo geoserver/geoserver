@@ -421,9 +421,10 @@ GeoServer provides a number of facilities to control external entity resolution:
   
   Access to local `file` references remains restricted.
 
-* To turn off all restrictions (allowing ``http``, ``https``, and ``file`` references) use the global setting :ref:`config_globalsettings_external_entities`.
+* To turn off all restrictions (allowing ``http``, ``https``, and ``file`` references) use the system property
+  ``-DENTITY_RESOLUTION_UNRESTRICTED=true``. Doing this is a **security risk**.
   
-  This setting prevents ``ENTITY_RESOLUTION_ALLOWLIST`` from being used.
+  This setting prevents ``ENTITY_RESOLUTION_RESTRICT_INTERNAL`` and ``ENTITY_RESOLUTION_ALLOWLIST`` from being used.
 
 .. _production_config_spring_firewall:
 

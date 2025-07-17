@@ -13,8 +13,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.util.Map;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.process.Processors;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -37,9 +37,7 @@ public class RawInputOutputTest extends WPSTestSupport {
 
         // disable entity resolver as it won't let the tests run in IntelliJ if also GeoTools is
         // loaded...
-        GeoServerInfo global = getGeoServer().getGlobal();
-        global.setXmlExternalEntitiesEnabled(true);
-        getGeoServer().save(global);
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
     }
 
     @Test

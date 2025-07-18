@@ -173,4 +173,14 @@ public class DecoratingCoverageStoreInfo extends AbstractDecorator<CoverageStore
     public void setDisableOnConnFailure(boolean disableOnConnFailure) {
         delegate.setDisableOnConnFailure(disableOnConnFailure);
     }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        delegate.setModifiedBy(userName);
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return delegate.getModifiedBy();
+    }
 }

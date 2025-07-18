@@ -42,6 +42,7 @@ import org.geoserver.catalog.PropertyStyleHandler;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -1309,6 +1310,44 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         // check the version has been updated to 1.0
         StyleInfo style10 = catalog.getStyleByName("foo");
         assertEquals(new Version("1.0.0"), style10.getFormatVersion());
+    }
+
+    @Test
+    public void testPostToWorkspaceWithModifiedUser() throws Exception {
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("gs", "foo"));
+
+        String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
+        MockHttpServletResponse response =
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs/styles", xml);
+        assertEquals(201, response.getStatus());
+        assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
+        assertNotNull(cat.getStyleByName("gs", "foo"));
+        assertNotNull(cat.getStyleByName("gs", "foo").getDateCreated());
+        assertNotNull(cat.getStyleByName("gs", "foo").getModifiedBy());
+    }
+
+    @Test
+    public void testPutWithModifiedUser() throws Exception {
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        StyleInfo style = catalog.getStyleByName("Ponds");
+        assertEquals("Ponds.sld", style.getFilename());
+
+        String xml = "<style>" + "<name>Ponds</name>" + "<filename>Forests.sld</filename>" + "</style>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/styles/Ponds", xml.getBytes(), "text/xml");
+        assertEquals(200, response.getStatus());
+
+        style = catalog.getStyleByName("Ponds");
+        assertEquals("Forests.sld", style.getFilename());
+        assertNotNull(style.getDateModified());
+        assertNotNull(style.getModifiedBy());
     }
 
     /**

@@ -18,6 +18,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.style.StyleDetachableModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -35,6 +36,8 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
     static final Property<StyleInfo> MODIFIED_TIMESTAMP = new BeanProperty<>("datemodfied", "dateModified");
 
     static final Property<StyleInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
+
+    static final Property<StyleInfo> MODIFIED_BY = new BeanProperty<>("modifiedby", "modifiedBy");
 
     static final Property<StyleInfo> FORMAT = new BeanProperty<>("format", "format");
 
@@ -57,10 +60,10 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
         List<Property<StyleInfo>> modifiedPropertiesList =
                 PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
         // check geoserver properties
-        if (GeoServerApplication.get().getGeoServer().getSettings().isShowCreatedTimeColumnsInAdminList())
-            modifiedPropertiesList.add(CREATED_TIMESTAMP);
-        if (GeoServerApplication.get().getGeoServer().getSettings().isShowModifiedTimeColumnsInAdminList())
-            modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        SettingsInfo settings = GeoServerApplication.get().getGeoServer().getSettings();
+        if (settings.isShowCreatedTimeColumnsInAdminList()) modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (settings.isShowModifiedTimeColumnsInAdminList()) modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        if (settings.isShowModifiedUserInAdminList()) modifiedPropertiesList.add(MODIFIED_BY);
         return modifiedPropertiesList;
     }
 

@@ -293,4 +293,14 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     public void setLayerGroupStyles(List<LayerGroupStyle> styles) {
         delegate.setLayerGroupStyles(styles);
     }
+
+    @Override
+    public String getModifiedBy() {
+        return delegate.getModifiedBy();
+    }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        delegate.setModifiedBy(userName);
+    }
 }

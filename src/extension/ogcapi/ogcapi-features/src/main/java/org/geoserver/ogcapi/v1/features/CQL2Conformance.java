@@ -4,7 +4,7 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
-import static org.geoserver.ogcapi.APIConformance.Level.DRAFT_STANDARD;
+import static org.geoserver.ogcapi.APIConformance.Level.STANDARD;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,16 +17,19 @@ import org.geoserver.wfs.WFSInfo;
 public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
     public static final String METADATA_KEY = "cql2";
     /** CQL Text conformance. */
-    public static final APIConformance CQL2_TEXT = new APIConformance(ConformanceClass.CQL2_TEXT);
+    public static final APIConformance CQL2_TEXT = new APIConformance(ConformanceClass.CQL2_TEXT, STANDARD, "text");
 
     /** CQL JSON conformance - not implemented yet (very different from the binding we have) */
-    public static final APIConformance CQL2_JSON = new APIConformance(ConformanceClass.CQL2_JSON, DRAFT_STANDARD);
+    public static final APIConformance CQL2_JSON = new APIConformance(ConformanceClass.CQL2_JSON, STANDARD, "json");
 
     // CQL is optional
-    public static final APIConformance CQL2_ADVANCED = new APIConformance(ConformanceClass.CQL2_ADVANCED);
-    public static final APIConformance CQL2_ARITHMETIC = new APIConformance(ConformanceClass.CQL2_ARITHMETIC);
-    public static final APIConformance CQL2_BASIC = new APIConformance(ConformanceClass.CQL2_BASIC);
-    public static final APIConformance CQL2_BASIC_SPATIAL = new APIConformance(ConformanceClass.CQL2_BASIC_SPATIAL);
+    public static final APIConformance CQL2_ADVANCED =
+            new APIConformance(ConformanceClass.CQL2_ADVANCED, STANDARD, "advanced");
+    public static final APIConformance CQL2_ARITHMETIC =
+            new APIConformance(ConformanceClass.CQL2_ARITHMETIC, STANDARD, "arithmetic");
+    public static final APIConformance CQL2_BASIC = new APIConformance(ConformanceClass.CQL2_BASIC, STANDARD, "basic");
+    public static final APIConformance CQL2_BASIC_SPATIAL =
+            new APIConformance(ConformanceClass.CQL2_BASIC_SPATIAL, STANDARD, "basicSpatial");
 
     /**
      * Indicates CQL2 Functions are supported.
@@ -34,18 +37,21 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
      * <p>FeatureService is required to support {@code /functions} endpoint, providing a
      * {@link org.geoserver.ogcapi.FunctionsDocument}
      */
-    public static final APIConformance CQL2_FUNCTIONS = new APIConformance(ConformanceClass.CQL2_FUNCTIONS);
+    public static final APIConformance CQL2_FUNCTIONS =
+            new APIConformance(ConformanceClass.CQL2_FUNCTIONS, STANDARD, "functions");
 
     /** CQL2_TEMPORAL excluded for now, no support for all operators. */
-    public static final APIConformance CQL2_TEMPORAL = new APIConformance(ConformanceClass.CQL2_TEMPORAL);
+    public static final APIConformance CQL2_TEMPORAL =
+            new APIConformance(ConformanceClass.CQL2_TEMPORAL, STANDARD, "temporal");
 
     /** CQL2_ARRAY excluded, no support for array operations now. */
     public static final APIConformance CQL2_ARRAY =
-            new APIConformance("http://www.opengis.net/spec/ogcapi-features-3/1.0/req/arrays");
+            new APIConformance("http://www.opengis.net/spec/ogcapi-features-3/1.0/req/arrays", STANDARD, "array");
 
     public static final APIConformance CQL2_PROPERTY_PROPERTY =
-            new APIConformance(ConformanceClass.CQL2_PROPERTY_PROPERTY);
-    public static final APIConformance CQL2_SPATIAL = new APIConformance(ConformanceClass.CQL2_SPATIAL);
+            new APIConformance(ConformanceClass.CQL2_PROPERTY_PROPERTY, STANDARD, "propertyProperty");
+    public static final APIConformance CQL2_SPATIAL =
+            new APIConformance(ConformanceClass.CQL2_SPATIAL, STANDARD, "spatial");
 
     // CQL2 formats
     private Boolean json;
@@ -61,6 +67,11 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
     private Boolean spatial;
 
     public CQL2Conformance() {}
+
+    @Override
+    public String getId() {
+        return "cql2";
+    }
 
     /**
      * Obtain CQL2Conformance configuration for WFSInfo.
@@ -88,6 +99,20 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
     @Override
     public boolean isEnabled(WFSInfo info) {
         return text(info) || json(info);
+    }
+
+    @Override
+    public List<APIConformance> configurableConformances() {
+        return List.of(
+                CQL2_TEXT,
+                CQL2_JSON,
+                CQL2_BASIC,
+                CQL2_ADVANCED,
+                CQL2_ARITHMETIC,
+                CQL2_PROPERTY_PROPERTY,
+                CQL2_BASIC_SPATIAL,
+                CQL2_SPATIAL,
+                CQL2_FUNCTIONS);
     }
 
     @Override

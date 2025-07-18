@@ -172,6 +172,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(new CheckBox(
                 "showModifiedTimeCols", new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList")));
 
+        form.add(new CheckBox("showModifiedByCols", new PropertyModel<>(settingsModel, "showModifiedUserInAdminList")));
+
         form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(settingsModel, "defaultLocale")));
         Button submit = new Button("submit") {
             @Override

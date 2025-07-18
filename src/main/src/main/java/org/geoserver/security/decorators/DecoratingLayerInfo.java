@@ -261,4 +261,14 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     public void setInternationalAbstract(InternationalString internationalAbstract) {
         delegate.setInternationalAbstract(internationalAbstract);
     }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        delegate.setModifiedBy(userName);
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return delegate.getModifiedBy();
+    }
 }

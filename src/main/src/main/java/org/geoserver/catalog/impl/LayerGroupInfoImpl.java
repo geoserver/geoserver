@@ -88,6 +88,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     protected Date dateModified;
 
+    protected String modifiedBy;
+
     protected List<LayerGroupStyle> layerGroupStyles = new ArrayList<>();
 
     @Override
@@ -440,5 +442,15 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     @Override
     public void setLayerGroupStyles(List<LayerGroupStyle> styles) {
         this.layerGroupStyles = styles;
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return this.modifiedBy;
+    }
+
+    @Override
+    public void setModifiedBy(String userModified) {
+        this.modifiedBy = userModified;
     }
 }

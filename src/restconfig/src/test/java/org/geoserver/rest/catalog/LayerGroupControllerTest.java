@@ -35,6 +35,8 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.config.CatalogModificationUserUpdater;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -1030,5 +1032,61 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         } finally {
             if (lg != null) catalog.remove(lg);
         }
+    }
+
+    @Test
+    public void testPostWithModifiedUser() throws Exception {
+        System.setProperty(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        String xml = "<layerGroup>"
+                + "    <name>newLayerGroup</name>"
+                + "    <layers>"
+                + "        <layer>Ponds</layer>"
+                + "        <layer>Forests</layer>"
+                + "    </layers>"
+                + "    <styles>"
+                + "        <style>polygon</style>"
+                + "        <style>point</style>"
+                + "    </styles>"
+                + "    <keywords>"
+                + "        <string>keyword1\\@language=en\\;\\@vocabulary=vocabulary1\\;</string>"
+                + "        <string>keyword2\\@language=pt\\;\\@vocabulary=vocabulary2\\;</string>"
+                + "    </keywords>"
+                + "</layerGroup>";
+        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", xml);
+        assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
+
+        assertNotNull(response.getHeader("Location"));
+        assertTrue(response.getHeader("Location").endsWith("/layergroups/newLayerGroup"));
+
+        LayerGroupInfo lg = catalog.getLayerGroupByName("newLayerGroup");
+        assertNotNull(lg);
+
+        assertEquals(2, lg.getLayers().size());
+        assertEquals("Ponds", lg.getLayers().get(0).getName());
+        assertEquals("Forests", lg.getLayers().get(1).getName());
+
+        assertEquals(2, lg.getStyles().size());
+        assertEquals("polygon", lg.getStyles().get(0).getName());
+        assertEquals("point", lg.getStyles().get(1).getName());
+
+        assertNotNull(lg.getBounds());
+
+        // expected keywords
+        Keyword keyword1 = new Keyword("keyword1");
+        keyword1.setLanguage("en");
+        keyword1.setVocabulary("vocabulary1");
+        Keyword keyword2 = new Keyword("keyword2");
+        keyword2.setLanguage("pt");
+        keyword2.setVocabulary("vocabulary2");
+        // check that the keywords were correctly added
+        assertThat(lg.getKeywords().size(), is(2));
+        assertThat(lg.getKeywords(), containsInAnyOrder(keyword1, keyword2));
+        // creation date
+        assertNotNull(lg.getDateCreated());
+        assertNotNull(lg.getModifiedBy());
     }
 }

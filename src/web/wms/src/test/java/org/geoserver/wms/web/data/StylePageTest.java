@@ -230,4 +230,27 @@ public class StylePageTest extends GeoServerWicketTestSupport {
 
         assertEquals(dv.size(), catalog.getStyles().size());
     }
+
+    @Test
+    public void testModificationUserColumnToggle() {
+        GeoServerInfo info = getGeoServerApplication().getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServerApplication().getGeoServer().save(info);
+
+        login();
+
+        tester.startPage(StylePage.class);
+        tester.assertRenderedPage(StylePage.class);
+
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+        Catalog catalog = getCatalog();
+        assertEquals(dv.size(), catalog.getStyles().size());
+        IDataProvider dataProvider = dv.getDataProvider();
+
+        assertTrue(dataProvider instanceof StyleProvider);
+
+        StyleProvider provider = (StyleProvider) dataProvider;
+        assertTrue(provider.getProperties().contains(StyleProvider.MODIFIED_BY));
+    }
 }

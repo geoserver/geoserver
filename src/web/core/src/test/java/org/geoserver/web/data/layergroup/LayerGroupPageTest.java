@@ -65,4 +65,25 @@ public class LayerGroupPageTest extends LayerGroupBaseTest {
         assertTrue(provider.getProperties().contains(LayerGroupProvider.CREATED_TIMESTAMP));
         assertTrue(provider.getProperties().contains(LayerGroupProvider.MODIFIED_TIMESTAMP));
     }
+
+    @Test
+    public void testUserModifiedColumnToggle() {
+        GeoServerInfo info = getGeoServerApplication().getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServerApplication().getGeoServer().save(info);
+
+        login();
+
+        tester.assertRenderedPage(LayerGroupPage.class);
+        tester.assertNoErrorMessage();
+
+        @SuppressWarnings("unchecked")
+        DataView<LayerGroupInfo> dv =
+                (DataView<LayerGroupInfo>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+        LayerGroupProvider provider = (LayerGroupProvider) dv.getDataProvider();
+
+        // should have these columns
+        assertTrue(provider.getProperties().contains(LayerGroupProvider.MODIFIED_BY));
+    }
 }

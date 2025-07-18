@@ -456,6 +456,14 @@ GeoServer Property Reference
      - 
      - x
 
+   * - TRACK_USER
+
+       Flag to enable user tracking in GeoServer.
+       Allows to store the username of user that performed creation/modification of layer, layergroup, store, style, workspace. Has precedence over "Display the user who performed last modification" option in global settings.
+     - x
+     -
+     -
+
 .. _application_properties_setting:
 
 Setting Application property

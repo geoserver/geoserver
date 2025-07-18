@@ -47,6 +47,8 @@ public class SettingsInfoImpl implements SettingsInfo {
 
     private boolean showModifiedTimeColumnsInAdminList = false;
 
+    private boolean showModifiedUserAdminList = false;
+
     protected Locale defaultLocale;
 
     protected Boolean useHeadersProxyURL;
@@ -294,5 +296,15 @@ public class SettingsInfoImpl implements SettingsInfo {
     @Override
     public void setDefaultLocale(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
+    }
+
+    @Override
+    public boolean isShowModifiedUserInAdminList() {
+        return showModifiedUserAdminList;
+    }
+
+    @Override
+    public void setShowModifiedUserInAdminList(boolean showModifiedUserInAdminList) {
+        this.showModifiedUserAdminList = showModifiedUserInAdminList;
     }
 }

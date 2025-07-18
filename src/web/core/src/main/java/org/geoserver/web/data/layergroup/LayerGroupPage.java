@@ -9,6 +9,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
@@ -69,6 +70,9 @@ public class LayerGroupPage extends GeoServerSecuredPage {
                             Fragment f = new Fragment(id, "iconFragment", LayerGroupPage.this);
                             f.add(new Image("layerIcon", icon));
                             return f;
+                        }
+                        if (property == LayerGroupProvider.MODIFIED_BY) {
+                            return new Label(id, LayerGroupProvider.MODIFIED_BY.getModel(itemModel));
                         }
                         return null;
                     }

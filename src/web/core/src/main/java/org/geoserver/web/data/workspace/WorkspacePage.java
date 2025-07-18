@@ -58,6 +58,8 @@ public class WorkspacePage extends GeoServerSecuredPage {
                             return new DateTimeLabel(id, WorkspaceProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
                         } else if (property == WorkspaceProvider.CREATED_TIMESTAMP) {
                             return new DateTimeLabel(id, WorkspaceProvider.CREATED_TIMESTAMP.getModel(itemModel));
+                        } else if (property == WorkspaceProvider.MODIFIED_BY) {
+                            return new Label(id, WorkspaceProvider.MODIFIED_BY.getModel(itemModel));
                         }
 
                         throw new IllegalArgumentException("No such property " + property.getName());

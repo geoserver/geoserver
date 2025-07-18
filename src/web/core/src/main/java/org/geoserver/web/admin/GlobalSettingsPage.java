@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.admin;
 
+import static org.geoserver.config.CatalogModificationUserUpdater.TRACK_USER;
 import static org.geoserver.filters.LoggingFilter.LOG_BODIES_ENABLED;
 import static org.geoserver.filters.LoggingFilter.LOG_HEADERS_ENABLED;
 import static org.geoserver.filters.LoggingFilter.LOG_REQUESTS_ENABLED;
@@ -37,6 +38,7 @@ import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.logging.LoggingUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.platform.resource.Paths;
@@ -170,6 +172,14 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(new CheckBox(
                 "showModifiedTimeCols", new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList")));
+
+        CheckBox showModifiedColumnCheckbox =
+                new CheckBox("showModifiedByCols", new PropertyModel<>(settingsModel, "showModifiedUserInAdminList"));
+        String property = GeoServerExtensions.getProperty(TRACK_USER);
+        if (property != null) {
+            showModifiedColumnCheckbox.setEnabled(false);
+        }
+        form.add(showModifiedColumnCheckbox);
 
         form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(settingsModel, "defaultLocale")));
         Button submit = new Button("submit") {

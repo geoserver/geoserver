@@ -165,7 +165,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
             // Have two threads work on encoding. The current thread builds the frames, and submits
             // them into a small queue that the encoder thread picks from
             BlockingQueue<BufferedImage> renderingQueue = new LinkedBlockingDeque<>(1);
-            BasicThreadFactory threadFactory = new BasicThreadFactory.Builder()
+            BasicThreadFactory threadFactory = BasicThreadFactory.builder()
                     .namingPattern("animation-encoder-%d")
                     .build();
             ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);

@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
@@ -95,7 +95,7 @@ public class DisabledServiceCheck implements DispatcherCallback {
                         List<String> disabledServices =
                                 DisabledServiceResourceFilter.disabledServices(layerInfo.getResource());
                         boolean disabled = disabledServices.stream()
-                                .anyMatch(serviceType -> StringUtils.equalsIgnoreCase(service.getId(), serviceType));
+                                .anyMatch(serviceType -> Strings.CI.equals(service.getId(), serviceType));
                         if (disabled) {
                             throw new ServiceException(
                                     "Service " + info.getName() + " is disabled for layer " + layerName,

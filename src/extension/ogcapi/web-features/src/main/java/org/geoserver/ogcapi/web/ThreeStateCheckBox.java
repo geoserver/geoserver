@@ -4,7 +4,12 @@
  */
 package org.geoserver.ogcapi.web;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
 import org.geoserver.ogcapi.ConformanceInfo;
 import org.springframework.lang.Nullable;
@@ -24,8 +29,7 @@ import org.springframework.lang.Nullable;
  *
  * <p><strong>Beware</strong> {@link #getModel()} can hence return {@code null}.
  */
-@SuppressWarnings("serial")
-abstract class ThreeStateAjaxCheckBox extends AjaxCheckBox {
+class ThreeStateCheckBox extends CheckBox {
 
     public enum State {
         TRUE(true),
@@ -53,11 +57,12 @@ abstract class ThreeStateAjaxCheckBox extends AjaxCheckBox {
 
     private final State initialState;
 
-    public ThreeStateAjaxCheckBox(String id, IModel<Boolean> model) {
+    public ThreeStateCheckBox(String id, IModel<Boolean> model) {
         super(id, model);
+        this.setOutputMarkupId(true);
         this.state = State.valueOf(model.getObject());
         this.initialState = state;
-        super.internalOnModelChanged();
+        this.add(new IndeterminateBehavior());
     }
 
     /**
@@ -87,15 +92,32 @@ abstract class ThreeStateAjaxCheckBox extends AjaxCheckBox {
         setModelObject(state.value());
     }
 
-    /** Ensure the “checked” attribute is removed when the state is undefined */
-    @Override
-    protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
-        super.onComponentTag(tag);
+    private static class IndeterminateBehavior extends Behavior {
 
-        if (state == State.TRUE) {
-            tag.put("checked", "checked");
-        } else { // holds on for both FALSE and UNDEFINED
-            tag.remove("checked");
+        @Override
+        public void renderHead(Component component, IHeaderResponse response) {
+            String id = component.getMarkupId();
+            if (component.getDefaultModelObject() == null) {
+                StringBuilder js = new StringBuilder();
+                js.append("(function() {"); // wrap in an IIFE to avoid polluting the global scope
+                js.append("var cb = document.getElementById('").append(id).append("');");
+                js.append("if (cb) {");
+                js.append("  cb.checked = false;");
+                js.append("  cb.indeterminate = true;");
+                js.append(" console.log(\"Identifier:\", cb.id);");
+                js.append("  cb.classList.add('indeterminate');"); // visual style
+                js.append("  cb.addEventListener('change', function() {");
+                js.append("    cb.indeterminate = false;");
+                js.append(" console.log(\"Identifier:\", cb.id);");
+                js.append(" console.log(\"Element classes before:\", cb.className);");
+                js.append("    cb.classList.remove('indeterminate');");
+                js.append(" console.log(\"Element classes after:\", cb.className);");
+                js.append(" cb.offsetWidth");
+                js.append("  }, { once: true });");
+                js.append("}");
+                js.append("})();");
+                response.render(OnDomReadyHeaderItem.forScript(js));
+            }
         }
     }
 }

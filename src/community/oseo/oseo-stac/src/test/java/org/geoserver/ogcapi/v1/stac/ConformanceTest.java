@@ -12,7 +12,6 @@ import static org.geoserver.ogcapi.ConformanceClass.CQL2_FUNCTIONS;
 import static org.geoserver.ogcapi.ConformanceClass.CQL2_PROPERTY_PROPERTY;
 import static org.geoserver.ogcapi.ConformanceClass.CQL2_SPATIAL;
 import static org.geoserver.ogcapi.ConformanceClass.CQL2_TEXT;
-import static org.geoserver.ogcapi.ConformanceClass.ECQL;
 import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
@@ -52,7 +51,6 @@ public class ConformanceTest extends STACTestSupport {
             STACService.STAC_SEARCH_FIELDS,
             FEATURES_FILTER,
             FILTER,
-            ECQL,
             ECQL_TEXT,
             CQL2_BASIC,
             CQL2_ADVANCED,

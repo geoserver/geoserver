@@ -627,9 +627,8 @@ li.conformanceItem > label.conformance {
   display: inline;
   margin-right: 0.5em;
 }
-li.conformanceItem > label.level {
-  display: block;
-  float: right;
+input[type="checkbox"].indeterminate {
+  opacity: 0.5;
 }
 
 textarea.cql {

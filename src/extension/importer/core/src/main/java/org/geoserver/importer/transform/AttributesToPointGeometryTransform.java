@@ -45,7 +45,7 @@ public class AttributesToPointGeometryTransform extends AbstractTransform implem
             String latField, String lngField, String pointFieldName, Boolean preserveGeometry) {
         this.latField = latField;
         this.lngField = lngField;
-        this.pointFieldName = ObjectUtils.defaultIfNull(pointFieldName, AttributesToPointGeometryTransform.POINT_NAME);
+        this.pointFieldName = ObjectUtils.getIfNull(pointFieldName, AttributesToPointGeometryTransform.POINT_NAME);
         this.preserveGeometry = preserveGeometry;
     }
 

@@ -57,10 +57,6 @@
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-iau-wkt</artifactId>
-    </dependency>
 
     <!-- test dependencies -->
     <dependency>

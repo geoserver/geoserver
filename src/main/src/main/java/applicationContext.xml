@@ -338,6 +338,11 @@
   	<constructor-arg ref="catalog"/>
   </bean>
 
+  <bean id="catalogModificationUserUpdater" class="org.geoserver.config.CatalogModificationUserUpdater">
+    <constructor-arg ref="catalog"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
+
   <bean id="httpWarningAppender" class="org.geoserver.util.HTTPWarningAppender"/>
 
   <bean id="coverageReaderFileConverter" class="org.geoserver.catalog.CoverageReaderFileConverter">

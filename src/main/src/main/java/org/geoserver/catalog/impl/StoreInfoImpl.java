@@ -47,6 +47,8 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected Date dateModified;
 
+    protected String modifiedBy;
+
     protected boolean disableOnConnFailure;
 
     protected StoreInfoImpl() {}
@@ -258,5 +260,15 @@ public abstract class StoreInfoImpl implements StoreInfo {
     @Override
     public void setDisableOnConnFailure(boolean disableOnConnFailure) {
         this.disableOnConnFailure = disableOnConnFailure;
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        this.modifiedBy = userName;
     }
 }

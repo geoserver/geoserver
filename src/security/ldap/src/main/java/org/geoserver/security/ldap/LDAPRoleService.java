@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import javax.naming.directory.DirContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
@@ -217,7 +218,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
                         user = m.group(1);
                     }
                     // only if hierarchical groups are activated, filter for full user dn group
-                    if (!(useNestedGroups && !StringUtils.containsIgnoreCase(username.toString(), userSearchBase))) {
+                    if (!(useNestedGroups && !Strings.CI.contains(username.toString(), userSearchBase))) {
                         user = removeBaseDN(user);
                         users.add(getUserNameFromMembership(user));
                     }
@@ -394,6 +395,6 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
                     .getNameInNamespace();
             roleDnReference.setValue(dn);
         });
-        return roleDnReference.getValue();
+        return roleDnReference.get();
     }
 }

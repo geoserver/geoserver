@@ -155,11 +155,10 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
                 request.getHeader(filterConfig.getJwtConfiguration().getUserNameHeaderAttributeName());
         JwtHeaderUserNameExtractor extractor =
                 new JwtHeaderUserNameExtractor(getFilterConfig().getJwtConfiguration());
-        String userName = extractor.extractUserName(headerValue);
-
-        if (userName == null) return null;
+        String userName;
 
         try {
+            userName = extractor.extractUserName(headerValue);
             tokenValidator.validate(headerValue);
         } catch (Exception e) {
             return null;
@@ -167,6 +166,7 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
 
         if (userName != null) {
             request.setAttribute(HTTP_ATTRIBUTE_CONFIG_ID, filterConfig.getId());
+            LOG.fine("Extracted user name from JWT token: " + userName);
         }
 
         return userName;
@@ -190,6 +190,7 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
                     request.getHeader(filterConfig.getJwtConfiguration().getRolesHeaderName());
             JwtHeadersRolesExtractor extractor = new JwtHeadersRolesExtractor(filterConfig.getJwtConfiguration());
             var roles = extractor.getRoles(headerValue);
+            LOG.fine("Extracted roles from JWT token: " + String.join(", ", roles));
             return roles.stream().map(x -> new GeoServerRole(x)).collect(Collectors.toList());
         }
 

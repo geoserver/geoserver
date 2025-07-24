@@ -847,6 +847,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             bands.add(band);
         }
         final CoverageView coverageView = new CoverageView(name, bands);
+        coverageView.setFillMissingBands(null);
         viewCustomizer.accept(coverageView);
 
         final Catalog cat = getCatalog();

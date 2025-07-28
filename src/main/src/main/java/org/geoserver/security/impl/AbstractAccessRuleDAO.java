@@ -27,13 +27,14 @@ import org.geoserver.platform.resource.Resource.Lock;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.util.logging.Logging;
 
 /**
  * Abstract class for security dao's whose configuration is stored in a property file.
  *
  * <p>Subclasses must implement {@link #loadRules(Properties)} and {@link #toProperties()} to provide the mapping back
- * and forth to the underlying properly file.
+ * and forth to the underlying property file.
  *
  * @author Justin Deoliveira, OpenGeo
  * @param <R> The access rule class.
@@ -138,7 +139,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
         // write out to the data dir
         Resource propFile = securityDir.get(propertyFileName);
         try (OutputStream os = propFile.out()) {
-            p.store(os, null);
+            SortedPropertiesWriter.storeSorted(p, os, null);
             lastModified = System.currentTimeMillis();
             // avoid unnecessary reloads, the file just got fully written
             if (watcher != null) watcher.setKnownLastModified(lastModified);

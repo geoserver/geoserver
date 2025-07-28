@@ -147,6 +147,7 @@ import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLRoleServiceConfig;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.security.xml.XMLUserGroupServiceConfig;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
@@ -458,7 +459,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         Properties p = new Properties();
         p.put(VERSION, CURR_VERSION.toString());
         try (OutputStream os = properties.out()) {
-            p.store(os, "Current version of the security directory. Do not remove or alter this file");
+            SortedPropertiesWriter.storeSorted(
+                    p, os, "Current version of the security directory. Do not remove or alter this file");
         }
     }
 

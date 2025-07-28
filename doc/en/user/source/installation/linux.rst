@@ -41,6 +41,13 @@ Installation
       echo "export GEOSERVER_HOME=/usr/share/geoserver" >> ~/.profile
       . ~/.profile
 
+#. Optionally, set the environment variable ``JETTY_OPTS`` to tweak the jetty configuration upfront:
+
+   .. code-block:: bash
+
+      echo "export JETTY_OPTS='jetty.http.port=1234'" >> ~/.profile
+      . ~/.profile
+
 #. Make yourself the owner of the ``geoserver`` folder.  Type the following command in the terminal window, replacing ``USER_NAME`` with your own username :
 
    .. code-block:: bash

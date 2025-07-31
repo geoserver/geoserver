@@ -448,11 +448,11 @@
         class="org.geoserver.wfs.kvp.v2_0.GetCapabilitiesKvpRequestReader"/>
         
   <bean id="describeFeatureTypeKvpReader" class="org.geoserver.wfs.kvp.DescribeFeatureTypeKvpRequestReader">
-    <constructor-arg ref="catalog" />
+    <constructor-arg ref="geoServer" />
   </bean>
   
   <bean id="describeFeature20TypeKvpReader" class="org.geoserver.wfs.kvp.v2_0.DescribeFeatureTypeKvpRequestReader">
-    <constructor-arg ref="catalog" />
+    <constructor-arg ref="geoServer" />
   </bean>
 
 	<bean id="getFeatureKvpReader" class="org.geoserver.wfs.kvp.GetFeatureKvpRequestReader">

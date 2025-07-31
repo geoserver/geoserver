@@ -15,10 +15,12 @@ import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.WfsFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
@@ -301,6 +303,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
         String localPart = qName.getLocalPart();
         String prefix = qName.getPrefix();
         if (namespaces != null) {
+            prefix = getSchemaOverridePrefix(qName, namespaces, prefix);
             if (XMLConstants.DEFAULT_NS_PREFIX.equals(prefix)) {
                 // request did not specify a namespace prefix for the typeName,
                 // let's see if it speficied a default namespace
@@ -312,7 +315,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
                 }
             } else if (namespaces.getURI(prefix) != null) {
                 // so request used a custom prefix and declared the prefix:uri mapping?
-                namespaceURI = namespaces.getURI(qName.getPrefix());
+                namespaceURI = namespaces.getURI(prefix);
             }
             NamespaceInfo ns = catalog.getNamespaceByURI(namespaceURI);
             if (ns == null) {
@@ -334,6 +337,18 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
             throw new WFSException("Feature type " + name + " unknown", "InvalidParameterValue", "typeName");
         }
         return qName;
+    }
+
+    private String getSchemaOverridePrefix(QName qName, NamespaceSupport namespaces, String prefix) {
+        WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();
+        WFSInfo service = geoServer.getService(defaultWorkspace, WFSInfo.class);
+        if (service == null) {
+            service = geoServer.getService(WFSInfo.class);
+        }
+        if (service.isEnabledSchemaOverrideForVirtualAPI() && StringUtils.isBlank(prefix)) {
+            prefix = namespaces.getPrefix(qName.getNamespaceURI());
+        }
+        return prefix;
     }
 
     protected BBOX bboxFilter(Envelope bbox) {

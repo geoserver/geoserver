@@ -6,7 +6,7 @@ Auth Filters
 .. _security_authfilters:
 
 ``/security/authFilters``
-----------------------------------
+-------------------------
 
 Adds or Lists the authentication filters in the geoserver systems
 

@@ -18,13 +18,13 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.security.AuthenticationFilterController.NotAuthorised;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
+import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.test.GeoServerTestSupport;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,7 +59,7 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
                 .filter(name -> name.startsWith(TEST_FILTER_PREFIX))
                 .forEach(name -> {
                     try {
-                        SecurityFilterConfig config = secMgr.loadFilterConfig(name, true);
+                        SecurityFilterConfig config = secMgr.loadFilterConfig(name, false);
                         secMgr.removeFilter(config);
                     } catch (Exception e) {
                         fail("Cannot remove security filters" + e.getMessage());
@@ -130,8 +130,8 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
 
             List<SecurityFilterConfig> list = (List<SecurityFilterConfig>) Objects.requireNonNull(result.getObject());
             List<String> names =
-                    list.stream().map(SecurityFilterConfig::getName).collect(Collectors.toList());
-            SortedSet<String> filters = getSecurityManager().listFilters();
+                    list.stream().map(SecurityFilterConfig::getName).toList();
+            SortedSet<String> filters = getSecurityManager().listFilters(GeoServerAuthenticationFilter.class);
             assertEquals("Expected all the filters to be returned", filters.size(), names.size());
             filters.stream()
                     .filter(name -> !names.contains(name))

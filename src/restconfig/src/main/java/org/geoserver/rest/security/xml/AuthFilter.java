@@ -10,7 +10,6 @@ import org.geoserver.security.config.SecurityFilterConfig;
 @XStreamAlias("authFilter")
 public class AuthFilter {
     private String name;
-    private int position;
 
     @XStreamAlias("config")
     private SecurityFilterConfig config;
@@ -37,13 +36,5 @@ public class AuthFilter {
 
     public void setConfig(SecurityFilterConfig config) {
         this.config = config;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
     }
 }

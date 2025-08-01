@@ -99,9 +99,9 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
             BasicAuthenticationFilterConfig newConfig =
                     securityConfigFilterHelper.createBasciAuthFilterConfig(name, true);
 
-            RestWrapper<AuthFilter> result = controller.view(newConfig.getName());
+            RestWrapper<SecurityFilterConfig> result = controller.view(newConfig.getName());
             assertNotNull(result.getObject());
-            SecurityFilterConfig config = ((AuthFilter) result.getObject()).getConfig();
+            SecurityFilterConfig config = (SecurityFilterConfig) result.getObject();
             assertEquals("The config name should be the same", newConfig.getName(), config.getName());
             assertEquals("The config className should be the same", newConfig.getClassName(), config.getClassName());
             assertEquals("The config id should be the same", newConfig.getId(), config.getId());
@@ -141,12 +141,12 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testView_ConfigDoesNotExist() {
         setUser();
         try {
             String name = TEST_FILTER_PREFIX + "create-" + UUID.randomUUID();
-            controller.view(name);
+            Assert.assertNull(controller.view(name).getObject());
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -159,17 +159,16 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
             String name = TEST_FILTER_PREFIX + "create-" + UUID.randomUUID();
             BasicAuthenticationFilterConfig newConfig =
                     securityConfigFilterHelper.createBasciAuthFilterConfig(name, false);
-            AuthFilter authFilter = new AuthFilter(newConfig);
             BasicAuthenticationFilterConfig actualConfig;
 
-            ResponseEntity<?> postResult = controller.post(authFilter, UriComponentsBuilder.newInstance());
+            ResponseEntity<?> postResult = controller.post(newConfig, UriComponentsBuilder.newInstance());
             assertEquals(TEXT_PLAIN, postResult.getHeaders().getContentType());
             String location = Objects.requireNonNull(postResult.getHeaders().getLocation())
                     .toString();
             assertTrue(location.endsWith(RestBaseController.ROOT_PATH + "/security/authFilters/" + name));
-            RestWrapper<AuthFilter> getResult = controller.view(newConfig.getName());
-            AuthFilter getFilter = (AuthFilter) Objects.requireNonNull(getResult.getObject());
-            actualConfig = (BasicAuthenticationFilterConfig) getFilter.getConfig();
+            RestWrapper<SecurityFilterConfig> getResult = controller.view(newConfig.getName());
+            SecurityFilterConfig getFilter = (SecurityFilterConfig) Objects.requireNonNull(getResult.getObject());
+            actualConfig = (BasicAuthenticationFilterConfig) getFilter;
             assertFalse("Remember me should be false", actualConfig.isUseRememberMe());
         } finally {
             SecurityContextHolder.clearContext();
@@ -180,9 +179,8 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
     public void testCreate_NotAuthorized() {
         String name = TEST_FILTER_PREFIX + "create-" + UUID.randomUUID();
         BasicAuthenticationFilterConfig newConfig = securityConfigFilterHelper.createBasciAuthFilterConfig(name, false);
-        AuthFilter authFilter = new AuthFilter(newConfig);
 
-        controller.post(authFilter, UriComponentsBuilder.newInstance());
+        controller.post(newConfig, UriComponentsBuilder.newInstance());
         SecurityContextHolder.clearContext();
     }
 
@@ -194,9 +192,7 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
             BasicAuthenticationFilterConfig newConfig =
                     securityConfigFilterHelper.createBasciAuthFilterConfig(name, false);
             newConfig.setName(null);
-            AuthFilter authFilter = new AuthFilter(newConfig);
-
-            controller.post(authFilter, UriComponentsBuilder.newInstance());
+            controller.post(newConfig, UriComponentsBuilder.newInstance());
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -209,13 +205,11 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
             String name = TEST_FILTER_PREFIX + "create" + UUID.randomUUID();
             BasicAuthenticationFilterConfig newConfig =
                     securityConfigFilterHelper.createBasciAuthFilterConfig(name, false);
-            AuthFilter authFilter = new AuthFilter(newConfig);
-
-            controller.post(authFilter, UriComponentsBuilder.newInstance());
+            controller.post(newConfig, UriComponentsBuilder.newInstance());
             if (newConfig.getId() != null) {
                 newConfig.setId(null);
             }
-            controller.post(authFilter, UriComponentsBuilder.newInstance());
+            controller.post(newConfig, UriComponentsBuilder.newInstance());
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -228,12 +222,10 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
             String name = TEST_FILTER_PREFIX + "create" + UUID.randomUUID();
             BasicAuthenticationFilterConfig newConfig =
                     securityConfigFilterHelper.createBasciAuthFilterConfig(name, true);
-            AuthFilter authFilter = new AuthFilter(newConfig);
-            controller.put(name, authFilter);
-
-            RestWrapper<AuthFilter> getResult = controller.view(newConfig.getName());
-            AuthFilter getFilter = (AuthFilter) Objects.requireNonNull(getResult.getObject());
-            BasicAuthenticationFilterConfig actualConfig = (BasicAuthenticationFilterConfig) getFilter.getConfig();
+            controller.put(name, newConfig);
+            RestWrapper<SecurityFilterConfig> getResult = controller.view(newConfig.getName());
+            SecurityFilterConfig getFilter = (SecurityFilterConfig) Objects.requireNonNull(getResult.getObject());
+            BasicAuthenticationFilterConfig actualConfig = (BasicAuthenticationFilterConfig) getFilter;
             assertNotNull(actualConfig);
         } finally {
             SecurityContextHolder.clearContext();
@@ -250,8 +242,7 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
             controller.delete(newConfig.getName());
 
             try {
-                controller.view(newConfig.getName());
-                Assert.fail("Should have thrown an exception");
+                Assert.assertNull(controller.view(newConfig.getName()).getObject());
             } catch (IllegalArgumentException e) {
                 // Expected
             }
@@ -272,16 +263,15 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
     public void testFind() {
         setUser();
         try {
-            RestWrapper<AuthFilter> getResult = controller.view("anonymous");
-            AuthFilter body = (AuthFilter) Objects.requireNonNull(getResult.getObject());
+            RestWrapper<SecurityFilterConfig> getResult = controller.view("anonymous");
+            SecurityFilterConfig body = (SecurityFilterConfig) Objects.requireNonNull(getResult.getObject());
             assertNotNull("A body should be returned", body);
             assertEquals("Expected the anonymous filter", "anonymous", body.getName());
-            assertEquals(
-                    "Expected the name to be set", "anonymous", body.getConfig().getName());
+            assertEquals("Expected the name to be set", "anonymous", body.getName());
             assertEquals(
                     "Expected the className to be set",
                     "org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter",
-                    body.getConfig().getClassName());
+                    body.getClassName());
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());

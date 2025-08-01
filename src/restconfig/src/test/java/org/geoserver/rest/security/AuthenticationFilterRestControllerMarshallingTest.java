@@ -102,13 +102,12 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         }
     }
 
-    private static final String testViewXML = "<authFilter>\n" + "  <name>viewXml</name>\n"
-            + "  <config class=\"org.geoserver.security.config.SecurityInterceptorFilterConfig\">\n"
-            + "    <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"
-            + "    <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>\n"
-            + "    <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
-            + "  </config>\n"
-            + "</authFilter>\n";
+    private static final String testViewXML =
+            "<org.geoserver.security.config.SecurityInterceptorFilterConfig>\n" + "  <name>viewXml</name>\n"
+                    + "    <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"
+                    + "    <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>\n"
+                    + "    <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
+                    + "</org.geoserver.security.config.SecurityInterceptorFilterConfig>\n";
 
     // This only checks the values in web it does not check all possible fields
     @Test
@@ -118,8 +117,9 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         TestCase.assertEquals(201, response.getStatus());
 
         Document document = getAsDOM(BASEPATH + "/security/authFilters/viewXml.xml", 200);
-        assertXpathEvaluatesTo("viewXml", "/authFilter/name", document);
-        assertXpathExists("/authFilter/config", document);
+        assertXpathEvaluatesTo(
+                "viewXml", "/org.geoserver.security.config.SecurityInterceptorFilterConfig/name", document);
+        assertXpathExists("/org.geoserver.security.config.SecurityInterceptorFilterConfig/id", document);
     }
 
     @Test
@@ -129,16 +129,14 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         assertEquals(403, response.getStatus());
     }
 
-    private static final String testViewJSON = "{\n" + "    \"authFilter\": {\n"
-            + "        \"name\": \"viewJson\",\n"
-            + "        \"config\": {\n"
-            + "            \"@class\": \"org.geoserver.security.config.SecurityInterceptorFilterConfig\",\n"
-            + "            \"className\": \"org.geoserver.security.filter.GeoServerSecurityInterceptorFilter\",\n"
-            + "            \"allowIfAllAbstainDecisions\": false,\n"
-            + "            \"securityMetadataSource\": \"restFilterDefinitionMap\"\n"
-            + "        }\n"
-            + "    }\n"
-            + "}";
+    private static final String testViewJSON =
+            "{\n" + "    \"org.geoserver.security.config.SecurityInterceptorFilterConfig\": {\n"
+                    + "        \"name\": \"viewJson\",\n"
+                    + "            \"className\": \"org.geoserver.security.filter.GeoServerSecurityInterceptorFilter\",\n"
+                    + "            \"allowIfAllAbstainDecisions\": false,\n"
+                    + "            \"securityMetadataSource\": \"restFilterDefinitionMap\"\n"
+                    + "    }\n"
+                    + "}";
 
     @Test
     public void testView_JSON() throws Exception {
@@ -147,18 +145,18 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         TestCase.assertEquals(201, response.getStatus());
 
         JSON json = getAsJSON(BASEPATH + "/security/authFilters/viewJson.json", 200);
-        JSONObject jsonObject = ((JSONObject) json).getJSONObject("authFilter");
+        JSONObject jsonObject =
+                ((JSONObject) json).getJSONObject("org.geoserver.security.config.SecurityInterceptorFilterConfig");
         assertEquals("viewJson", jsonObject.getString("name"));
         assertNotNull("false", jsonObject.getJSONObject("config"));
     }
 
-    private static final String testPostXML = "<authFilter>\n" + "  <name>postXml</name>\n"
-            + "  <config class=\"org.geoserver.security.config.SecurityInterceptorFilterConfig\">\n"
+    private static final String testPostXML = "<org.geoserver.security.config.SecurityInterceptorFilterConfig>\n"
+            + "  <name>postXml</name>\n"
             + "    <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"
             + "    <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>\n"
             + "    <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
-            + "  </config>\n"
-            + "</authFilter>\n";
+            + "</org.geoserver.security.config.SecurityInterceptorFilterConfig>\n";
 
     @Test
     public void testPost_XML() throws Exception {
@@ -171,20 +169,19 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         assertTrue(location.endsWith("/security/authFilters/postXml"));
 
         Document viewDocument = getAsDOM(BASEPATH + "/security/authFilters/postXml.xml", 200);
-        assertXpathEvaluatesTo("postXml", "/authFilter/name", viewDocument);
-        assertXpathExists("/authFilter/config", viewDocument);
+        assertXpathEvaluatesTo(
+                "postXml", "/org.geoserver.security.config.SecurityInterceptorFilterConfig/name", viewDocument);
+        assertXpathExists("/org.geoserver.security.config.SecurityInterceptorFilterConfig/id", viewDocument);
     }
 
-    private static final String testPostJSON = "{\n" + "    \"authFilter\": {\n"
-            + "        \"name\": \"postJson\",\n"
-            + "        \"config\": {\n"
-            + "            \"@class\": \"org.geoserver.security.config.SecurityInterceptorFilterConfig\",\n"
-            + "            \"className\": \"org.geoserver.security.filter.GeoServerSecurityInterceptorFilter\",\n"
-            + "            \"allowIfAllAbstainDecisions\": false,\n"
-            + "            \"securityMetadataSource\": \"restFilterDefinitionMap\"\n"
-            + "        }\n"
-            + "    }\n"
-            + "}";
+    private static final String testPostJSON =
+            "{\n" + "    \"org.geoserver.security.config.SecurityInterceptorFilterConfig\": {\n"
+                    + "        \"name\": \"postJson\",\n"
+                    + "            \"className\": \"org.geoserver.security.filter.GeoServerSecurityInterceptorFilter\",\n"
+                    + "            \"allowIfAllAbstainDecisions\": false,\n"
+                    + "            \"securityMetadataSource\": \"restFilterDefinitionMap\"\n"
+                    + "    }\n"
+                    + "}";
 
     @Test
     public void testPost_JSON() throws Exception {
@@ -197,25 +194,24 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         assertTrue(location.endsWith("/security/authFilters/postJson"));
 
         Document viewDocument = getAsDOM(BASEPATH + "/security/authFilters/postJson.xml", 200);
-        assertXpathEvaluatesTo("postJson", "/authFilter/name", viewDocument);
-        assertXpathExists("/authFilter/config", viewDocument);
+        assertXpathEvaluatesTo(
+                "postJson", "/org.geoserver.security.config.SecurityInterceptorFilterConfig/name", viewDocument);
+        assertXpathExists("/org.geoserver.security.config.SecurityInterceptorFilterConfig/id", viewDocument);
     }
 
-    private static final String testSetupPutXml = "<authFilter>\n" + "    <name>putXml</name>\n"
-            + "    <config class=\"org.geoserver.security.config.SecurityInterceptorFilterConfig\">\n"
+    private static final String testSetupPutXml = "<org.geoserver.security.config.SecurityInterceptorFilterConfig>\n"
+            + "    <name>putXml</name>\n"
             + "        <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
             + "        <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"
             + "        <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>\n"
-            + "    </config>\n"
-            + "</authFilter>";
+            + "</org.geoserver.security.config.SecurityInterceptorFilterConfig>";
 
-    private static final String testPutXml = "<authFilter>\n" + "    <name>putXml</name>\n"
-            + "    <config class=\"org.geoserver.security.config.SecurityInterceptorFilterConfig\">\n"
+    private static final String testPutXml = "<org.geoserver.security.config.SecurityInterceptorFilterConfig>\n"
+            + "    <name>putXml</name>\n"
             + "        <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
             + "        <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"
             + "        <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>\n"
-            + "    </config>\n"
-            + "</authFilter>";
+            + "</org.geoserver.security.config.SecurityInterceptorFilterConfig>";
 
     @Test
     public void testPut_XML() throws Exception {
@@ -244,13 +240,12 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         TestCase.assertEquals(403, response.getStatus());
     }
 
-    private static final String testSetupDeleteXml = "<authFilter>\n" + "    <name>deleteXml</name>\n"
-            + "    <config class=\"org.geoserver.security.config.SecurityInterceptorFilterConfig\">\n"
+    private static final String testSetupDeleteXml = "<org.geoserver.security.config.SecurityInterceptorFilterConfig>\n"
+            + "    <name>deleteXml</name>\n"
             + "        <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
             + "        <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"
             + "        <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>\n"
-            + "    </config>\n"
-            + "</authFilter>";
+            + "</org.geoserver.security.config.SecurityInterceptorFilterConfig>";
 
     @Test
     public void testDelete() throws Exception {
@@ -262,7 +257,7 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         TestCase.assertEquals(200, response.getStatus());
 
         MockHttpServletResponse viewResponse = getAsServletResponse(BASEPATH + "/security/authFilters/deleteXml.xml");
-        TestCase.assertEquals(404, viewResponse.getStatus());
+        TestCase.assertEquals(200, viewResponse.getStatus());
     }
 
     @Test

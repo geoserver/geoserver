@@ -28,6 +28,8 @@ import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.CatalogModificationUserUpdater;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
@@ -498,5 +500,36 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         namespace = getCatalog().getNamespaceByPrefix("isolated_workspace");
         assertThat(namespace, notNullValue());
         assertThat(namespace.isIsolated(), is(false));
+    }
+
+    @Test
+    public void testPostAsXMLWithModifiedUser() throws Exception {
+        System.setProperty(CatalogModificationUserUpdater.TRACK_USER, "true");
+        System.setProperty("TRACK_USER", "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        String xml = "<workspace>" + "<name>foo</name>" + "</workspace>";
+        MockHttpServletResponse response =
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces", xml, "text/xml");
+        assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
+        assertNotNull(response.getHeader("Location"));
+        // System.out.println(response.getHeader("Location"));
+        assertTrue(response.getHeader("Location").endsWith("/workspaces/foo"));
+
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
+        assertNotNull(ws);
+        assertNotNull(ws.getDateCreated());
+        assertNotNull(ws.getModifiedBy());
+        // check corresponding namespace creation
+        NamespaceInfo ns = getCatalog().getNamespaceByPrefix("foo");
+        assertNotNull(ns);
+
+        MockHttpServletResponse conflictResponse =
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces", xml, "text/xml");
+        assertEquals(409, conflictResponse.getStatus());
+
+        removeWorkspace("foo");
     }
 }

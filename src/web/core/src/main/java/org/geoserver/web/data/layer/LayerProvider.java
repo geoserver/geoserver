@@ -59,6 +59,8 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
 
     static final Property<LayerInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
 
+    static final Property<LayerInfo> MODIFIED_BY = new BeanProperty<>("modifiedby", "modifiedBy");
+
     /**
      * A custom property that uses the derived enabled() property instead of isEnabled() to account for disabled
      * resource/store
@@ -116,6 +118,8 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
             modifiedPropertiesList.add(CREATED_TIMESTAMP);
         if (GeoServerApplication.get().getGeoServer().getSettings().isShowModifiedTimeColumnsInAdminList())
             modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        if (GeoServerApplication.get().getGeoServer().getSettings().isShowModifiedUserInAdminList())
+            modifiedPropertiesList.add(MODIFIED_BY);
         return modifiedPropertiesList;
     }
 

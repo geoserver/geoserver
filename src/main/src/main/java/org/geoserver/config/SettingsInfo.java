@@ -138,6 +138,10 @@ public interface SettingsInfo extends Info {
 
     public void setShowModifiedTimeColumnsInAdminList(boolean showModifiedTimeColumnsInAdminList);
 
+    public boolean isShowModifiedUserInAdminList();
+
+    public void setShowModifiedUserInAdminList(boolean showModifiedUserInAdminList);
+
     /**
      * Get the default Locale
      *

@@ -30,6 +30,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.config.CatalogModificationUserUpdater;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.hamcrest.CoreMatchers;
@@ -435,5 +437,28 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
                     fileContents.toString().replace("<name>RoadSegments</name>", "<name>demo:RoadSegmentsDup</name>"));
             writer.write(fileContents.toString());
         }
+    }
+
+    @Test
+    public void testPutWithUserModified() throws Exception {
+        System.setProperty(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        LayerInfo l = catalog.getLayerByName("cite:Buildings");
+        assertEquals("Buildings", l.getDefaultStyle().getName());
+        String xml = "<layer>"
+                + "<defaultStyle>Forests</defaultStyle>"
+                + "<styles>"
+                + "<style>Ponds</style>"
+                + "</styles>"
+                + "</layer>";
+        MockHttpServletResponse response = putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        l = catalog.getLayerByName("cite:Buildings");
+        assertEquals("Forests", l.getDefaultStyle().getName());
+        assertNotNull(l.getDateModified());
+        assertNotNull(l.getModifiedBy());
     }
 }

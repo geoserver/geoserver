@@ -118,4 +118,30 @@ public class StorePageTest extends GeoServerWicketTestSupport {
 
         assertEquals(provider.getProperties(), provider2.getProperties());
     }
+
+    @Test
+    public void testModificationUserColumnToggle() {
+
+        GeoServerInfo info = getGeoServerApplication().getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServerApplication().getGeoServer().save(info);
+        login();
+        tester.startPage(StorePage.class);
+        tester.assertRenderedPage(StorePage.class);
+        tester.assertNoErrorMessage();
+
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        Catalog catalog = getCatalog();
+        assertEquals(dv.size(), catalog.getStores(StoreInfo.class).size());
+        IDataProvider dataProvider = dv.getDataProvider();
+
+        // Ensure the data provider is an instance of StoreProvider
+        assertTrue(dataProvider instanceof StoreProvider);
+
+        // Cast to StoreProvider
+        StoreProvider provider = (StoreProvider) dataProvider;
+
+        // should show both columns
+        assertTrue(provider.getProperties().contains(StoreProvider.MODIFIED_BY));
+    }
 }

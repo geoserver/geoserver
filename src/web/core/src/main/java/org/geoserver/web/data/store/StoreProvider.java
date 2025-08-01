@@ -27,7 +27,6 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.data.DataAccessFactory;
 import org.geotools.api.filter.Filter;
@@ -95,6 +94,8 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
     static final Property<StoreInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
 
+    static final Property<StoreInfo> MODIFIED_BY = new BeanProperty<>("modifiedby", "modifiedBy");
+
     static final List<Property<StoreInfo>> PROPERTIES = Arrays.asList(DATA_TYPE, WORKSPACE, NAME, TYPE, ENABLED);
 
     WorkspaceInfo workspace;
@@ -122,6 +123,8 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
             modifiedPropertiesList.add(CREATED_TIMESTAMP);
         if (GeoServerApplication.get().getGeoServer().getSettings().isShowModifiedTimeColumnsInAdminList())
             modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        if (GeoServerApplication.get().getGeoServer().getSettings().isShowModifiedUserInAdminList())
+            modifiedPropertiesList.add(MODIFIED_BY);
         return modifiedPropertiesList;
     }
 

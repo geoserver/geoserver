@@ -74,6 +74,8 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
 
     public static final Property<WorkspaceInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
 
+    static final Property<WorkspaceInfo> MODIFIED_BY = new BeanProperty<>("modifiedby", "modifiedBy");
+
     public WorkspaceProvider() {
         setSort(NAME.getName(), SortOrder.ASCENDING);
     }
@@ -155,6 +157,7 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
         SettingsInfo settings = getSettings();
         if (settings.isShowCreatedTimeColumnsInAdminList()) modifiedPropertiesList.add(CREATED_TIMESTAMP);
         if (settings.isShowModifiedTimeColumnsInAdminList()) modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        if (settings.isShowModifiedUserInAdminList()) modifiedPropertiesList.add(MODIFIED_BY);
         return modifiedPropertiesList;
     }
 

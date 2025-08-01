@@ -8,6 +8,7 @@ package org.geoserver.wms.web.data;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
@@ -62,6 +63,9 @@ public class StylePage extends GeoServerSecuredPage {
                                     id,
                                     StyleProvider.FORMAT.getModel(itemModel),
                                     StyleProvider.FORMAT_VERSION.getModel(itemModel));
+                        }
+                        if (property == StyleProvider.MODIFIED_BY) {
+                            return new Label(id, StyleProvider.MODIFIED_BY.getModel(itemModel));
                         }
                         return null;
                     }

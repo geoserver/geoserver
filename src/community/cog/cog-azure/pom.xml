@@ -27,7 +27,6 @@
     <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-cog-rangereader-azure</artifactId>
-      <version>${imageio-ext.version}</version>
     </dependency>
   </dependencies>
 </project>

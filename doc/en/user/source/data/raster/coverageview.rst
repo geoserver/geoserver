@@ -120,6 +120,25 @@ In that case, the band details of the coverage view will look like this:
    :align: center
 
 
+Finally, a dropdown selector allows selection of one of the inputs to serve as a reference for the internal logic - for example, when retrieving available time values in a time series context.
+
+.. figure:: images/coverageviewreferenceinput.png
+   :align: center
+
+This selection is necessary because some input bands used in the view (for example auxiliary bands as quality flags or masks) may have missing granules or lack data, so a clear reference input must be explicitly specified.
+
+The selected input must be one that is used in the Jiffle expression. If it isn’t, an error will be raised when attempting to save the view.
+
+There is an option that allows GeoServer to handle missing input coverages more gracefully when composing multi-band views.
+
+.. figure:: images/fillcoverageview.png
+   :align: center
+
+* By default, this option is disabled. In that case, if any of the input coverages are missing (null) for a given request, the entire CoverageView will return empty because some required inputs are missing.
+* When enabled, GeoServer will generate a synthetic coverage band filled with the appropriate NoData value for each missing input, allowing the view to remain complete and defined.
+* The NoData value is derived from the coverage itself—either defined directly in the data or, in the case of an ImageMosaic, eventually specified in the associated .properties file.
+*  This behavior applies only when at least one input coverage is available. If all inputs are missing, the request is assumed to either lie outside the view’s data extent or lack all required inputs, and no synthetic coverage will be generated.
+
 Heterogeneous coverage views
 ----------------------------
 

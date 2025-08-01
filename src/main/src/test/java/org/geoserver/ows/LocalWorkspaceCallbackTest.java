@@ -22,6 +22,7 @@ import org.geotools.feature.NameImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class LocalWorkspaceCallbackTest extends GeoServerSystemTestSupport {
 
@@ -145,5 +146,31 @@ public class LocalWorkspaceCallbackTest extends GeoServerSystemTestSupport {
     public void testInitRequest_NotAGlobalLayerGroup() {
         this.request.setContext("cite:LayerGroup2/ows");
         this.callback.init(this.request);
+    }
+
+    /**
+     * This test used to fail because the LocalWorkspaceCallback constructor was calling {@link GeoServer#getCatalog()}
+     * which randomly returned null when the catalog was not initialized.
+     */
+    @Test
+    public void testNullCatalogOnInit() {
+        GeoServer gsMock = Mockito.mock(GeoServer.class);
+        // return null when called from the LocalWorkspaceCatalog constructor, otherwise return a valid catalog
+        Mockito.when(gsMock.getCatalog()).thenAnswer(invocation -> {
+            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            for (StackTraceElement element : stackTrace) {
+                if (LocalWorkspaceCallback.class.getName().equals(element.getClassName())
+                        && "<init>".equals(element.getMethodName())) {
+                    return null;
+                }
+            }
+
+            return getCatalog();
+        });
+        LocalWorkspaceCallback cb = new LocalWorkspaceCallback(gsMock);
+        this.request.setContext("cite/BasicPolygons/ows");
+        cb.init(this.request);
+        assertNotNull(LocalWorkspace.get());
+        assertNotNull(LocalPublished.get());
     }
 }

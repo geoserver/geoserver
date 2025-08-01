@@ -75,7 +75,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
         form.add(new BookmarkablePageLink<>("cancel", ParamsExtractorConfigPage.class));
     }
 
-    public abstract class WrappedTab extends AbstractTab {
+    public abstract static class WrappedTab extends AbstractTab {
 
         private final IModel<RuleModel> model;
 
@@ -89,7 +89,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
         }
     }
 
-    public class SimpleRulePanel extends Panel {
+    public static class SimpleRulePanel extends Panel {
 
         public SimpleRulePanel(String panelId, IModel<RuleModel> model) {
             super(panelId, model);
@@ -100,7 +100,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
         }
     }
 
-    public class ComplexRulePanel extends Panel {
+    public static class ComplexRulePanel extends Panel {
 
         public ComplexRulePanel(String panelId, IModel<RuleModel> model) {
             super(panelId, model);
@@ -115,7 +115,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
         }
     }
 
-    public class EchoParameterPanel extends Panel {
+    public static class EchoParameterPanel extends Panel {
 
         public EchoParameterPanel(String panelId, IModel<RuleModel> model) {
             super(panelId, model);

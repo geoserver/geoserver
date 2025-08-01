@@ -82,7 +82,7 @@ public class PNGJWriter {
      *
      * @author Andrea Aime - GeoSolutions
      */
-    class RasterSymbolizerVisitor extends AbstractStyleVisitor {
+    static class RasterSymbolizerVisitor extends AbstractStyleVisitor {
 
         boolean highChangeRasterSymbolizer;
 

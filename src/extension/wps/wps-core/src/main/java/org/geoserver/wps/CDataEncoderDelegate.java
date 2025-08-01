@@ -50,6 +50,10 @@ public class CDataEncoderDelegate implements EncoderDelegate {
         ppio.encode(object, os);
     }
 
+    public CDataPPIO getPPIO() {
+        return ppio;
+    }
+
     static class ContentHandlerWriter extends Writer {
 
         ContentHandler ch;

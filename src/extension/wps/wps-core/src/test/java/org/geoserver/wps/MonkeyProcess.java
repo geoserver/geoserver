@@ -8,6 +8,7 @@ package org.geoserver.wps;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.geotools.api.util.ProgressListener;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -36,18 +37,28 @@ public class MonkeyProcess {
 
         Object value;
 
+        CountDownLatch latch;
+
         public Command(CommandType type, Object value) {
             this.type = type;
             this.value = value;
+            this.latch = new CountDownLatch(1);
+        }
+
+        public void done() {
+            latch.countDown();
+        }
+
+        public void waitFor() throws InterruptedException {
+            latch.await();
         }
     }
 
     public static void exit(String id, SimpleFeatureCollection value, boolean wait) throws InterruptedException {
-        getCommandQueue(id).put(new Command(CommandType.Exit, value));
+        Command command = new Command(CommandType.Exit, value);
+        getCommandQueue(id).put(command);
         if (wait) {
-            while (!getCommandQueue(id).isEmpty()) {
-                Thread.sleep(10);
-            }
+            command.waitFor();
         }
     }
 
@@ -62,11 +73,10 @@ public class MonkeyProcess {
     }
 
     public static void progress(String id, float progress, boolean wait) throws InterruptedException {
-        getCommandQueue(id).put(new Command(CommandType.SetProgress, progress));
+        Command command = new Command(CommandType.SetProgress, progress);
+        getCommandQueue(id).put(command);
         if (wait) {
-            while (!getCommandQueue(id).isEmpty()) {
-                Thread.sleep(10);
-            }
+            command.waitFor();
         }
     }
 
@@ -92,23 +102,28 @@ public class MonkeyProcess {
             throws Exception {
         BlockingQueue<Command> queue = getCommandQueue(id);
         while (true) {
+            // peek first, remove later, ensure that when we remove the command the action has taken place
             Command command = queue.take();
-            if (command.type == CommandType.Exit) {
-                listener.progress(100f);
-                listener.complete();
-                commands.remove(id);
-                return (SimpleFeatureCollection) command.value;
-            } else if (command.type == CommandType.SetProgress) {
-                float progress = ((Number) command.value).floatValue();
-                listener.progress(progress);
-                listener.setTask(new SimpleInternationalString("Currently at " + progress));
-            } else if (command.type == CommandType.Wait) {
-                long wait = ((Number) command.value).longValue();
-                Thread.sleep(wait);
-            } else {
-                ProcessException exception = (ProcessException) command.value;
-                listener.exceptionOccurred(exception);
-                throw exception;
+            try {
+                if (command.type == CommandType.Exit) {
+                    listener.progress(100f);
+                    listener.complete();
+                    commands.remove(id);
+                    return (SimpleFeatureCollection) command.value;
+                } else if (command.type == CommandType.SetProgress) {
+                    float progress = ((Number) command.value).floatValue();
+                    listener.progress(progress);
+                    listener.setTask(new SimpleInternationalString("Currently at " + progress));
+                } else if (command.type == CommandType.Wait) {
+                    long wait = ((Number) command.value).longValue();
+                    Thread.sleep(wait);
+                } else {
+                    ProcessException exception = (ProcessException) command.value;
+                    listener.exceptionOccurred(exception);
+                    throw exception;
+                }
+            } finally {
+                command.done();
             }
         }
     }

@@ -540,7 +540,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         }
     }
 
-    private class CancelLink extends AjaxLink<Long> {
+    private static class CancelLink extends AjaxLink<Long> {
         public CancelLink() {
             super("cancel", new Model<>());
         }

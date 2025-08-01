@@ -189,7 +189,6 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testDropDownLayerSelection() throws Exception {
         tester.startPage(GeoServerHomePage.class);
         tester.assertNoErrorMessage();
@@ -289,7 +288,7 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         logout();
         tester.startPage(GeoServerHomePage.class);
 
-        var version = new StringResourceModel("version", null, null).getString();
+        String version = new StringResourceModel("version", null, null).getString();
 
         String responseTxt = tester.getLastResponse().getDocument();
         assertFalse(responseTxt.contains(version));

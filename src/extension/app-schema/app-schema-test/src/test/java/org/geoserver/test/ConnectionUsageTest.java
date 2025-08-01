@@ -245,7 +245,6 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
         }
     }
 
-    @SuppressWarnings("PMD.CloseResource")
     private void testNestedIterators(FeatureIterator iterator) throws IOException {
         assertTrue(iterator instanceof DataAccessMappingFeatureIterator);
         DataAccessMappingFeatureIterator mappingIt = (DataAccessMappingFeatureIterator) iterator;

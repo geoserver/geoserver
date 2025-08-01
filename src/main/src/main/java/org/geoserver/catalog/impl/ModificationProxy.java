@@ -102,7 +102,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
             } else {
                 // if collection, create a wrapper
                 if (Collection.class.isAssignableFrom(method.getReturnType())) {
-                    Collection real = (Collection) method.invoke(proxyObject, null);
+                    Collection real = (Collection) method.invoke(proxyObject);
                     if (real == null) {
                         // in this case there is nothing we can do
                         return null;
@@ -115,7 +115,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                     oldCollectionValues().put(property, clone);
                     return wrap;
                 } else if (Map.class.isAssignableFrom(method.getReturnType())) {
-                    Map real = (Map) method.invoke(proxyObject, null);
+                    Map real = (Map) method.invoke(proxyObject);
                     if (real == null) {
                         // in this case there is nothing we can do
                         return null;
@@ -231,7 +231,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
                     // handle collection case
                     if (Collection.class.isAssignableFrom(g.getReturnType())) {
-                        Collection c = (Collection) g.invoke(proxyObject, null);
+                        Collection c = (Collection) g.invoke(proxyObject);
                         c.clear();
                         for (Object o : (Collection) v) {
                             // element of a collection
@@ -240,7 +240,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                         }
                     } else if (Map.class.isAssignableFrom(g.getReturnType())) {
                         Map proxied = (Map) v;
-                        Map m = (Map) g.invoke(proxyObject, null);
+                        Map m = (Map) g.invoke(proxyObject);
                         m.clear();
                         for (Object key : proxied.keySet()) {
                             Object uk = unwrap(key);
@@ -255,7 +255,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                             // another info is the changed property, it could be one of two cases
                             // 1) the info object was changed in place: x.getY().setFoo(...)
                             // 2) a new info object was set x.setY(...)
-                            Info original = (Info) g.invoke(proxyObject, null);
+                            Info original = (Info) g.invoke(proxyObject);
                             Info modified = (Info) unwrap(v);
                             if (original == modified) {
                                 // case 1, in this case get the proxy and commit it
@@ -345,7 +345,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                 }
             } else {
                 try {
-                    Object orig = unwrap(getter((String) e.getKey()).invoke(proxyObject, null));
+                    Object orig = unwrap(getter((String) e.getKey()).invoke(proxyObject));
                     if (orig == null) {
                         if (e.getValue() == null) {
                             continue;
@@ -376,7 +376,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                     // value is not the same as the current value of the property on the object
                     Object curr = unwrap(value);
                     try {
-                        Object orig = unwrap(getter(propertyName).invoke(proxyObject, null));
+                        Object orig = unwrap(getter(propertyName).invoke(proxyObject));
                         if (curr == orig) {
                             continue;
                         }
@@ -416,7 +416,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                         throw new IllegalArgumentException("No such property: " + propertyName);
                     }
 
-                    oldValues.add(g.invoke(proxyObject, null));
+                    oldValues.add(g.invoke(proxyObject));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -441,11 +441,11 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     Method getter(String propertyName) {
         Method g = null;
         try {
-            g = proxyObject.getClass().getMethod("get" + propertyName, null);
+            g = proxyObject.getClass().getMethod("get" + propertyName);
         } catch (NoSuchMethodException e1) {
             // could be boolean
             try {
-                g = proxyObject.getClass().getMethod("is" + propertyName, null);
+                g = proxyObject.getClass().getMethod("is" + propertyName);
             } catch (NoSuchMethodException e2) {
             }
         }

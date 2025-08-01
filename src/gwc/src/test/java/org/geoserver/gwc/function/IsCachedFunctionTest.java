@@ -5,7 +5,7 @@
  */
 package org.geoserver.gwc.function;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,7 +47,7 @@ public class IsCachedFunctionTest {
         FilterFactoryImpl ff = new FilterFactoryImpl();
 
         Function exp = ff.function("isCached", ff.property("."));
-        Object value = exp.evaluate(layerInfo);
-        assertEquals(true, value);
+        Boolean value = (Boolean) exp.evaluate(layerInfo);
+        assertTrue(value);
     }
 }

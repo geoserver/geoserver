@@ -675,7 +675,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
             BigDecimal expBd = new BigDecimal(expCoordinates[i]);
             origBd = origBd.setScale(leniency, RoundingMode.HALF_UP);
             expBd = expBd.setScale(leniency, RoundingMode.HALF_UP);
-            if (!origBd.equals(expBd)) {
+            if (origBd.compareTo(expBd) != 0) {
                 return false;
             }
         }

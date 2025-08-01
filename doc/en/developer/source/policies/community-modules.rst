@@ -94,11 +94,28 @@ The following outlines the steps to be taken in order to add a new community mod
 
           <dependencies>
             <!-- add any dependencies your module has here -->
+
+            <!-- Spring Framework dependencies - DO NOT specify version (managed by BOM) -->
+            <dependency>
+              <groupId>org.springframework</groupId>
+              <artifactId>spring-context</artifactId>
+            </dependency>
+            <!-- Spring Security dependencies - DO NOT specify version (managed by BOM) -->
+            <dependency>
+              <groupId>org.springframework.security</groupId>
+              <artifactId>spring-security-core</artifactId>
+            </dependency>
           </dependencies>
         </project>
      
    Add the file to the root of the new community module, 
    ``myCommunityModule/pom.xml``
+
+   .. note::
+
+      When adding Spring Framework or Spring Security dependencies, **never specify the version**. 
+      GeoServer uses Bill of Materials (BOM) to manage these versions centrally. 
+      See the :ref:`maven_guide` for more details on dependency management.
 
 #. **Add a build profile**
 

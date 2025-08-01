@@ -290,12 +290,12 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
                     requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
             GetLegendGraphicRequest.LegendRequest legend =
                     request.getLegend(new NameImpl("http://www.opengis.net/cite", "Ponds"));
-            assertEquals(legend.getTitle(), "it title");
+            assertEquals("it title", legend.getTitle());
 
             this.allParameters.put("LANGUAGE", "en");
             request = requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
             legend = request.getLegend(new NameImpl("http://www.opengis.net/cite", "Ponds"));
-            assertEquals(legend.getTitle(), "en title");
+            assertEquals("en title", legend.getTitle());
         } finally {
             getCatalog().save(old);
         }

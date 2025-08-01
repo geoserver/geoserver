@@ -206,7 +206,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue... parameters) throws IllegalArgumentException, IOException {
         return read(this.coverageName, parameters);
     }
 
@@ -215,7 +215,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
      * This specific read operation is a customized one since we need to wrap the coverage properties (null values,
      * ranges, sampleDimensions...)
      */
-    public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
+    public GridCoverage2D read(String coverageName, GeneralParameterValue... parameters)
             throws IllegalArgumentException, IOException {
         final GridCoverage2D coverage =
                 coverageName != null ? delegate.read(coverageName, parameters) : delegate.read(parameters);
@@ -489,8 +489,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             super(name, coverage);
             this.gridCoverage = coverage;
             this.wrappedSampleDimensions = sampleDimensions;
-            wrappedPropertySource =
-                    new PropertySourceImpl(properties, coverage instanceof PropertySource ? coverage : null);
+            wrappedPropertySource = new PropertySourceImpl(properties, (PropertySource) coverage);
         }
 
         @Override

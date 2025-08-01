@@ -80,7 +80,6 @@ import org.xml.sax.SAXParseException;
  *
  * @author Andrea Aime, GeoSolutions
  */
-@SuppressWarnings("serial")
 public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected static XpathEngine xpath;
 
@@ -448,7 +447,6 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 (GeneralBounds) expected.getEnvelope(), scaleA, (GeneralBounds) actual.getEnvelope(), scaleB);
     }
 
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // equality with tolerance
     protected static void assertEnvelopeEquals(
             GeneralBounds expected, double scaleExpected, GeneralBounds actual, double scaleActual) {
         final double tolerance;

@@ -9,6 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -25,6 +26,8 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
@@ -497,5 +500,83 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         request.setContent(new byte[] {});
         String resp = dispatch(request, "UTF-8").getContentAsString();
         return dom(new ByteArrayInputStream(resp.getBytes()), true);
+    }
+
+    /**
+     * Executes a request using the GET method and returns the raw response string.
+     *
+     * @param path The portion of the request after the context, example:
+     * @param query A map representing kvp to be used by the request.
+     * @return The raw response string.
+     */
+    protected String getMapMLAsString(final String path, HashMap<String, String> query) throws Exception {
+        MockHttpServletRequest request = createRequest(path, query);
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        return dispatch(request, "UTF-8").getContentAsString();
+    }
+
+    @Test
+    public void testVerboseSettingPrettyPrint() throws Exception {
+        // Test that output is pretty-printed when global verbose setting is true
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        // default is unchecked / false
+        info.getSettings().setVerbose(true);
+        gs.save(info);
+
+        HashMap<String, String> vars = new HashMap<>();
+        vars.put("service", "wfs");
+        vars.put("version", "1.0.0");
+        vars.put("request", "GetFeature");
+        vars.put("typename", MockData.STREAMS.getLocalPart());
+        vars.put("outputFormat", "MAPML");
+
+        String response = getMapMLAsString("wfs", vars);
+
+        // Check for pretty-printing indicators
+        assertTrue("Response should contain newlines for pretty-printing", response.contains("\n"));
+        assertTrue("Response should use two spaces before elements for indenting", response.contains("  <"));
+
+        // Verify XML structure is preserved
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // reset the default false
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+    }
+
+    @Test
+    public void testVerboseSettingDenseOutput() throws Exception {
+        // Test that output is dense when global verbose setting is false
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        // the default is actually false
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+
+        HashMap<String, String> vars = new HashMap<>();
+        vars.put("service", "wfs");
+        vars.put("version", "1.0.0");
+        vars.put("request", "GetFeature");
+        vars.put("typename", MockData.STREAMS.getLocalPart());
+        vars.put("outputFormat", "MAPML");
+
+        String response = getMapMLAsString("wfs", vars);
+
+        // Check that output is more compact (fewer newlines and no indentation)
+        // Should still have some structure but less whitespace
+        assertFalse(
+                "Dense output should have minimal indentation spaces",
+                response.contains("  <") && response.contains("    <"));
+
+        // Verify XML structure is still valid
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // the default is actually false
+        info.getSettings().setVerbose(false);
+        gs.save(info);
     }
 }

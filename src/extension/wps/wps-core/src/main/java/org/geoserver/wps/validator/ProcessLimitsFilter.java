@@ -99,7 +99,7 @@ public class ProcessLimitsFilter implements ProcessFilter, ApplicationContextAwa
                         processInfo != null ? processInfo.getValidators() : EMPTY_MULTIMAP;
                 // clone just to be on the safe side
                 HashMap<String, Parameter<?>> params = new LinkedHashMap<>(result);
-                for (String paramName : params.keySet()) {
+                for (String paramName : List.copyOf(params.keySet())) {
                     Parameter<?> param = params.get(paramName);
                     Collection<WPSInputValidator> validators = validatorsMap.get(paramName);
                     // can we skip to build a clone?

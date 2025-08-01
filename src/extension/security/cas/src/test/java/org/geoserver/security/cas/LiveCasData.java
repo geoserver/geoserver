@@ -163,7 +163,6 @@ public class LiveCasData extends LiveSystemTestData {
     }
 
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws Exception {
         // if the test was disabled we don't need to run the setup
         if (fixture == null) return;

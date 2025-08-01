@@ -203,9 +203,9 @@ public class WCSRequestBuilderPanel extends Panel {
                 coverage.processInput();
                 final String coverageName = WCSRequestBuilderPanel.this.getCoverage.coverage;
                 if (coverageName != null) {
-                    var xmlText = getDescribeXML(coverageName);
+                    String xmlText = getDescribeXML(coverageName);
                     @SuppressWarnings("unchecked")
-                    var xml = (TextField<String>) form.get("xml");
+                    TextField<String> xml = (TextField<String>) form.get("xml");
                     xml.setModelObject(xmlText);
                     target.add(xml);
                     target.appendJavaScript("getCoverage()");

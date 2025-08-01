@@ -13,7 +13,7 @@ import org.geotools.jdbc.JDBCDataStore;
 
 class MockConnectionLifecycleListener implements ConnectionLifecycleListener {
 
-    class ActionCount {
+    static class ActionCount {
         int borrowCount = 0;
 
         int releaseCount = 0;

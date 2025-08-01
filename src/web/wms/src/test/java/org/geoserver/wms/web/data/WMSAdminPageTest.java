@@ -97,7 +97,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("rootLayerEnabled", false);
         ft.submit("submit");
         tester.assertNoErrorMessage();
-        assertEquals(wms.getMetadata().get(WMS.ROOT_LAYER_IN_CAPABILITIES_KEY), false);
+        assertFalse((Boolean) wms.getMetadata().get(WMS.ROOT_LAYER_IN_CAPABILITIES_KEY));
     }
 
     @Test
@@ -108,8 +108,8 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("rootLayerTitleAndAbstract:abstract", "abstract test");
         ft.submit("submit");
         tester.assertNoErrorMessage();
-        assertEquals(wms.getRootLayerTitle(), "test");
-        assertEquals(wms.getRootLayerAbstract(), "abstract test");
+        assertEquals("test", wms.getRootLayerTitle());
+        assertEquals("abstract test", wms.getRootLayerAbstract());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("aph.densify", true);
         ft.submit("submit");
         tester.assertNoErrorMessage();
-        assertEquals(wms.getMetadata().get(WMS.ADVANCED_PROJECTION_DENSIFICATION_KEY), true);
+        assertTrue((Boolean) wms.getMetadata().get(WMS.ADVANCED_PROJECTION_DENSIFICATION_KEY));
     }
 
     @Test
@@ -129,7 +129,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("aph.dlh", true);
         ft.submit("submit");
         tester.assertNoErrorMessage();
-        assertEquals(wms.getMetadata().get(WMS.DATELINE_WRAPPING_HEURISTIC_KEY), true);
+        assertTrue((Boolean) wms.getMetadata().get(WMS.DATELINE_WRAPPING_HEURISTIC_KEY));
     }
 
     @Test

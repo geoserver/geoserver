@@ -48,7 +48,6 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
 
     // Setup the data.
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public abstract void setUp() throws Exception;
 
     @Override

@@ -180,7 +180,7 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
@@ -194,8 +194,8 @@ public class GetCoverageTest extends WCSTestSupport {
             assertEnvelopeEquals(expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(CRS.equalsIgnoreMetadata(
                     targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
-            assertEquals(gridRange.getSpan(0), 360);
-            assertEquals(gridRange.getSpan(1), 120);
+            assertEquals(360, gridRange.getSpan(0));
+            assertEquals(120, gridRange.getSpan(1));
 
         } finally {
             try {
@@ -225,7 +225,7 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
@@ -238,8 +238,8 @@ public class GetCoverageTest extends WCSTestSupport {
             assertEnvelopeEquals(expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(CRS.equalsIgnoreMetadata(
                     targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
-            assertEquals(gridRange.getSpan(0), 120);
-            assertEquals(gridRange.getSpan(1), 120);
+            assertEquals(120, gridRange.getSpan(0));
+            assertEquals(120, gridRange.getSpan(1));
 
         } finally {
             try {
@@ -294,11 +294,11 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             sourceCoverage = (GridCoverage2D) this.getCatalog()
                     .getCoverageByName("BlueMarble")
                     .getGridCoverageReader(null, null)
-                    .read(null);
+                    .read();
 
             // checks
             assertEquals(
@@ -390,7 +390,7 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
@@ -404,8 +404,8 @@ public class GetCoverageTest extends WCSTestSupport {
             assertEnvelopeEquals(expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(CRS.equalsIgnoreMetadata(
                     targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
-            assertEquals(gridRange.getSpan(0), 120);
-            assertEquals(gridRange.getSpan(1), 360);
+            assertEquals(120, gridRange.getSpan(0));
+            assertEquals(360, gridRange.getSpan(1));
 
         } finally {
             try {
@@ -435,7 +435,7 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
@@ -450,8 +450,8 @@ public class GetCoverageTest extends WCSTestSupport {
             assertEnvelopeEquals(expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(CRS.equalsIgnoreMetadata(
                     targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
-            assertEquals(gridRange.getSpan(1), 1);
-            assertEquals(gridRange.getSpan(0), 120);
+            assertEquals(1, gridRange.getSpan(1));
+            assertEquals(120, gridRange.getSpan(0));
 
         } finally {
             try {
@@ -479,7 +479,6 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testCoverageTrimmingBordersOverlap() throws Exception {
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTrimmingBordersOverlap.xml");
         testCoverageResult(xml, targetCoverage -> {
@@ -492,7 +491,6 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testCoverageTrimmingBordersOverlapVertical() throws Exception {
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTrimmingBordersOverlapVertical.xml");
         testCoverageResult(xml, targetCoverage -> {
@@ -505,7 +503,6 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion")
     public void testCoverageTrimmingBordersOverlapOutside() throws Exception {
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTrimmingBordersOverlapOutside.xml");
         testCoverageResult(xml, targetCoverage -> {
@@ -537,7 +534,7 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             tester.test(targetCoverage);
         } finally {
@@ -568,7 +565,7 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
@@ -582,8 +579,8 @@ public class GetCoverageTest extends WCSTestSupport {
             assertEnvelopeEquals(expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(CRS.equalsIgnoreMetadata(
                     targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
-            assertEquals(gridRange.getSpan(0), 1);
-            assertEquals(gridRange.getSpan(1), 360);
+            assertEquals(1, gridRange.getSpan(0));
+            assertEquals(360, gridRange.getSpan(1));
 
         } finally {
             try {
@@ -613,7 +610,7 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
@@ -628,8 +625,8 @@ public class GetCoverageTest extends WCSTestSupport {
             assertEnvelopeEquals(expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
             assertTrue(CRS.equalsIgnoreMetadata(
                     targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
-            assertEquals(gridRange.getSpan(1), 1);
-            assertEquals(gridRange.getSpan(0), 360);
+            assertEquals(1, gridRange.getSpan(1));
+            assertEquals(360, gridRange.getSpan(0));
 
         } finally {
             try {
@@ -881,7 +878,7 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks spatial consistency
             GridCoverage2DReader sourceReader = (GridCoverage2DReader)
@@ -931,7 +928,7 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // check we got the right envelope
             ReferencedEnvelope envelope = targetCoverage.getEnvelope2D();
@@ -973,7 +970,7 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // check we got the right envelope
             ReferencedEnvelope envelope = targetCoverage.getEnvelope2D();
@@ -1008,7 +1005,7 @@ public class GetCoverageTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // check we got the right envelope
             ReferencedEnvelope envelope = targetCoverage.getEnvelope2D();

@@ -132,6 +132,8 @@ If this information is not provided the contact information from the global :ref
 Service Settings
 ''''''''''''''''
 
+.. _data_webadmin_workspaces_service_settings:
+
 Other settings provide additional :ref:`config_globalsettings` can be overridden on a workspace-by-workspace basis.
 
 * :guilabel:`Include Layer Prefix in Local Workspace Capabilities`: Enable this setting to force the inclusion of the workspace name as a prefix when accessing workspace contents as a virtual web service. The layer ``ne:countries`` is always referenced as ``ne:countries`` with this setting enabled.
@@ -163,4 +165,11 @@ The Security tab allows to set data access rules at workspace level.
 
 To create/edit the workspace's data access rules, check/uncheck checkboxes according to the desired role. 
 The Grant access to any role checkbox grant each role for any access mode.
+
+The configuration of services inside a workspace is normally allowed only to a full administrator. In order to allow
+a workspace administrator access to the workspace service configuration, one can set the
+``WORKSPACE_ADMIN_SERVICE_ACCESS`` to true. Also See :ref:`Settings<application_properties>`
+
+.. note:: Some of the settings need to be managed with care as they can affect the performance and operations of the application.
+
 

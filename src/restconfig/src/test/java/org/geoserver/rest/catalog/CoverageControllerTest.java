@@ -447,7 +447,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         GridCoverage2D coverage = null;
         try {
             reader = catalog.getResourcePool().getGridCoverageReader(coverageStore, "tazdem", null);
-            coverage = (GridCoverage2D) reader.read("tazdem", null);
+            coverage = (GridCoverage2D) reader.read("tazdem");
             GridSampleDimension sampleDim = coverage.getSampleDimension(0);
             double[] noDataValues = sampleDim.getNoDataValues();
             assertEquals(-999.0, noDataValues[0], DELTA);

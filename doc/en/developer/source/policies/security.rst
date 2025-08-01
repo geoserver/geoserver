@@ -160,7 +160,7 @@ Working with vulnerability reports
          
          CVE-2023-41339 Not Yet Published
       
-3. Assign a placeholder Jira issue with ``Vulnerability`` category.
+3. Assign a placeholder Jira issue with ``Vulnerability`` category with security level "geoserver-security"
    
    * Mentioning the CVE is fine, even if it is not yet public, it will still show up in the database as reserved.
    

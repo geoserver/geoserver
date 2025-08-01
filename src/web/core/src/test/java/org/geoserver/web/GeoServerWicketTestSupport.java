@@ -168,7 +168,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         return results.get(n);
     }
 
-    class ComponentContentFinder implements IVisitor<Component, Void> {
+    static class ComponentContentFinder implements IVisitor<Component, Void> {
         Component candidate;
         Object content;
 

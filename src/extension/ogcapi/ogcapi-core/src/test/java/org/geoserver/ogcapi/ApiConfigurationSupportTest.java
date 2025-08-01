@@ -32,7 +32,9 @@ public class ApiConfigurationSupportTest extends OGCApiTestSupport {
     @Test
     public void testUrlHelperType() {
         RequestMappingHandlerMapping mappingHandler = applicationContext.getBean(RequestMappingHandlerMapping.class);
-        assertEquals(mappingHandler.getUrlPathHelper().getClass().getSimpleName(), "GeoServerUrlPathHelper");
+        assertEquals(
+                "GeoServerUrlPathHelper",
+                mappingHandler.getUrlPathHelper().getClass().getSimpleName());
     }
 
     @Test

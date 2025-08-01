@@ -302,7 +302,7 @@ public class ClassifierController extends BaseSLDServiceController {
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Error generating Classification!")
-    private class InvalidRules extends RuntimeException {
+    private static class InvalidRules extends RuntimeException {
         private static final long serialVersionUID = -5538194136398411147L;
     }
 
@@ -660,7 +660,7 @@ public class ClassifierController extends BaseSLDServiceController {
     }
 
     /** @author Fabiani */
-    public class RulesList {
+    public static class RulesList {
         private String layerName;
 
         private List<JSONObject> rules = new ArrayList<>();
@@ -689,7 +689,7 @@ public class ClassifierController extends BaseSLDServiceController {
     }
 
     /** @author Fabiani */
-    public class StyleConverter implements Converter {
+    public static class StyleConverter implements Converter {
 
         /** @see com.thoughtworks.xstream.converters.ConverterMatcher#canConvert(java .lang.Class) */
         @Override

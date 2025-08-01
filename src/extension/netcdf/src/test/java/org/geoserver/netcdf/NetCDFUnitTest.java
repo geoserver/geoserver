@@ -20,7 +20,6 @@ import org.junit.Test;
 
 public class NetCDFUnitTest extends GeoServerSystemTestSupport {
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         testData.addRasterLayer(

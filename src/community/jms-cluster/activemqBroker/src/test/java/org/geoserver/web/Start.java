@@ -111,12 +111,8 @@ public class Start {
         if (props == null || !props.exists()) {
             throw new IllegalArgumentException("Bad file name argument: " + props);
         }
-        FileInputStream is = null;
-        try {
-            is = new FileInputStream(props);
+        try (FileInputStream is = new FileInputStream(props)) {
             prop.load(is);
-        } finally {
-            if (is != null) is.close();
         }
 
         return prop;

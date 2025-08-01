@@ -149,7 +149,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
 
         dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
-        assertEquals(dv.size(), 2);
+        assertEquals(2, dv.size());
         tester.assertVisible("table:filterForm:clear");
         tester.assertModelValue("table:filterForm:filter", "polygon");
         // navigate to a style page for any style
@@ -167,7 +167,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         tester.assertVisible("table:filterForm:clear");
         tester.assertModelValue("table:filterForm:filter", "polygon");
         dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
-        assertEquals(dv.size(), 2);
+        assertEquals(2, dv.size());
 
         // clear the filter by click the Clear button
         tester.clickLink("table:filterForm:clear", true);
@@ -212,7 +212,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
 
         dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
-        assertEquals(dv.size(), 2);
+        assertEquals(2, dv.size());
         tester.assertVisible("table:filterForm:clear");
         tester.assertModelValue("table:filterForm:filter", "polygon");
 

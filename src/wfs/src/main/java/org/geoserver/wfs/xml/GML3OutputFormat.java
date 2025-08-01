@@ -430,7 +430,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements Compl
 
     // If an application does not register its own custom ErrorListener, the default ErrorListener
     // is used which reports all warnings and errors to System.err and does not throw any Exceptions
-    private class TransformerErrorListener implements ErrorListener {
+    private static class TransformerErrorListener implements ErrorListener {
 
         @Override
         public void error(TransformerException exception) throws TransformerException {

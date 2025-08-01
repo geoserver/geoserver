@@ -86,7 +86,7 @@ public class ProgressPanel extends Panel {
         progressBar.start(target);
     }
 
-    protected class ProgressPage extends WebPage {
+    protected static class ProgressPage extends WebPage {
         private static final long serialVersionUID = -6560263676965574430L;
 
         public ProgressPage(ProgressBar progressBar) {

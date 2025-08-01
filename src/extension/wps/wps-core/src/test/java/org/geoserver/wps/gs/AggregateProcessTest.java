@@ -264,7 +264,7 @@ public class AggregateProcessTest extends WPSTestSupport {
         assertEquals(1, aggregationResults.size());
         JSONArray sumResult = (JSONArray) aggregationResults.get(0);
         assertEquals(1, sumResult.size());
-        assertEquals(sumResult.get(0), -111);
+        assertEquals(-111, sumResult.get(0));
     }
 
     @Test

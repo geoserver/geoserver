@@ -190,7 +190,6 @@ import org.xml.sax.SAXParseException;
  * @author Justin Deoliveira, OpenGeo
  */
 @TestSetup(run = TestSetupFrequency.ONCE)
-@SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
 public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemTestData> {
 
     private MockHttpServletResponse lastResponse;
@@ -221,7 +220,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     public static final EntityResolver RESOLVE_DISABLED_PROVIDER_DEVMODE = new PreventLocalEntityResolver() {
         @Override
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-            if (isLocalGeoToolsSchema(null, systemId)) {
+            if (isLocalGeoToolsSchema(null, systemId) || isDataDirectory(systemId)) {
                 return null;
             }
 
@@ -231,7 +230,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         @Override
         public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
                 throws SAXException, IOException {
-            if (isLocalGeoToolsSchema(baseURI, systemId)) {
+            if (isLocalGeoToolsSchema(baseURI, systemId) || isDataDirectory(systemId)) {
                 return null;
             }
 
@@ -256,6 +255,21 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                     || path.matches(".*modules[\\\\/]ogc[\\\\/].*\\.xsd");
         }
 
+        private boolean isDataDirectory(String systemId) {
+            if (applicationContext != null) {
+                GeoServerDataDirectory dd = applicationContext.getBean(GeoServerDataDirectory.class);
+                try {
+                    String path = dd.getRoot("workspaces").dir().getCanonicalPath();
+                    if (systemId.startsWith("file:")) systemId = systemId.substring(5);
+                    String canonicalSystemId = new File(systemId).getCanonicalPath();
+                    return canonicalSystemId.startsWith(path);
+                } catch (IOException e) {
+                    return false;
+                }
+            }
+            return false;
+        }
+
         @Override
         public String toString() {
             return "PreventLocalEntityResolver";
@@ -275,10 +289,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         } catch (Exception e) {
             // ignore on VM where this optimization does not apply
         }
-
-        // disable security manager to speed up tests, we are spending a lot of time in privileged
-        // blocks
-        System.setSecurityManager(null);
 
         // setup quiet logging (we need to to this here because Data
         // is loaded before GeoServer has a chance to setup logging for good)
@@ -2195,7 +2205,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Performs basic checks on an OWS 2.0 exception. The check for status, exception code and locator is optional,
      * leave null if you don't want to check it.
      *
-     * @returns Returns the message of the inner exception.
+     * @return Returns the message of the inner exception.
      */
     protected String checkOws20Exception(
             MockHttpServletResponse response, Integer status, String exceptionCode, String locator) throws Exception {
@@ -2607,5 +2617,17 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             }
         }
         assertTrue("Module " + moduleId + " not found", requiredModuleWasFound);
+    }
+
+    /**
+     * Checks if the current build is running as a Github action, using the <code>GITHUB_ACTIONS</code> environment
+     * variable. See the <a
+     * href="https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables">
+     * default variables available in Github</a> too.
+     *
+     * @return
+     */
+    public static final boolean isGitHubAction() {
+        return Boolean.getBoolean("GITHUB_ACTIONS");
     }
 }

@@ -5,10 +5,9 @@
 
 package org.geoserver.mapml;
 
-import static org.geoserver.mapml.MapMLConstants.MAPML_MULTIEXTENT;
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_MULTIEXTENTS;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.MapMLLayerConfigurationPanel.getAvailableMimeTypes;
-import static org.geoserver.web.demo.MapMLFormatLink.FORMAT_OPTION_DEFAULT;
 
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -19,10 +18,8 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
-import org.geoserver.wms.WMSInfo;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -70,24 +67,25 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
         });
         add(useTiles);
 
-        // add the checkbox to select multiextent or not
-        MapModel<Boolean> multiextentModel = new MapModel<>(new PropertyModel<>(model, METADATA), MAPML_MULTIEXTENT);
-        // in previous versions, the multiextent option was stored in the WMSInfo
-        if (multiextentModel.getObject() == null) {
-            WMSInfo wmsInfo = GeoServerApplication.get().getGeoServer().getService(WMSInfo.class);
-            boolean multiExtent = Boolean.parseBoolean(
-                    wmsInfo.getMetadata().get(MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT) != null
-                            ? wmsInfo.getMetadata()
-                                    .get(MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT)
-                                    .toString()
-                            : FORMAT_OPTION_DEFAULT);
-            LayerGroupInfo layerGroupInfo = model.getObject();
-            layerGroupInfo.getMetadata().put(MAPML_MULTIEXTENT, multiExtent);
-            GeoServerApplication.get().getGeoServer().getCatalog().save(layerGroupInfo);
-            multiextentModel.setObject(multiExtent);
-        }
-        CheckBox multiextent = new CheckBox("multiextent", multiextentModel);
-        add(multiextent);
+        // add the checkbox to select features or not
+        MapModel<Boolean> useFeaturesModel =
+                new MapModel<>(new PropertyModel<>(model, METADATA), MapMLConstants.MAPML_USE_FEATURES);
+        CheckBox useFeatures = new CheckBox(MapMLConstants.USE_FEATURES, useFeaturesModel);
+        useFeatures.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(mime);
+                // if we are using features, we don't use a default mime type
+                mime.setEnabled(!useFeatures.getConvertedInput());
+            }
+        });
+        add(useFeatures);
+
+        // add the checkbox to expose sub-layers / set usemultiextents:true or :false
+        MapModel<Boolean> useMultiExtentsModel =
+                new MapModel<>(new PropertyModel<>(model, METADATA), MAPML_USE_MULTIEXTENTS);
+        CheckBox useMultiExtents = new CheckBox("useMultiExtents", useMultiExtentsModel);
+        add(useMultiExtents);
 
         MapModel<String> mimeModel = new MapModel<>(new PropertyModel<>(model, METADATA), MapMLConstants.MAPML_MIME);
         boolean useTilesFromModel =
@@ -96,6 +94,12 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
                 MapMLConstants.MIME, mimeModel, getAvailableMimeTypes(model.getObject(), useTilesFromModel));
         mime.setOutputMarkupId(true);
         mime.setNullValid(false);
+        // if we are using features, we don't use a mime type
+        if (useFeaturesModel.getObject() != null) {
+            String useFeaturesString = String.valueOf(useFeaturesModel.getObject());
+            boolean useFeaturesBoolean = Boolean.parseBoolean(useFeaturesString);
+            mime.setEnabled(!useFeaturesBoolean);
+        }
         add(mime);
     }
 }

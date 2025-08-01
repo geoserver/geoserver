@@ -422,6 +422,39 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - ALLOW_ENV_PARAMETRIZATION
+
+       :doc:`/datadirectory/configtemplate`
+     - x
+     - 
+     - 
+   * - ENV_PROPERTIES
+
+       :doc:`/datadirectory/configtemplate`
+     - x
+     - x
+     - x
+
+   * - WORKSPACE_ADMIN_SERVICE_ACCESS
+
+       :ref:`Workspaces <data_webadmin_workspaces_service_settings>`
+     - x
+     - x
+     - x
+
+   * - GEOSERVER_DATA_DIR_LOADER_ENABLED
+
+       :doc:`/datadirectory/setting`
+     - x
+     - 
+     - x
+
+   * - GEOSERVER_DATA_DIR_LOADER_THREADS
+
+       :doc:`/datadirectory/setting`
+     - x
+     - 
+     - x
 
 .. _application_properties_setting:
 

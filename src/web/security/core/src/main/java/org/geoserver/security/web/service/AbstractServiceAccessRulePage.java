@@ -113,7 +113,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
         }
     }
 
-    class MethodsModel implements IModel<List<String>> {
+    static class MethodsModel implements IModel<List<String>> {
 
         ServiceAccessRule rule;
 

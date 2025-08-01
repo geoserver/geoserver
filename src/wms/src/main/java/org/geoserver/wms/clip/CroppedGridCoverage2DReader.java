@@ -56,13 +56,13 @@ public class CroppedGridCoverage2DReader extends DecoratingGridCoverage2DReader 
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue... parameters) throws IllegalArgumentException, IOException {
 
         return getCroppedGrid(super.read(parameters), roiGeom);
     }
 
     @Override
-    public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
+    public GridCoverage2D read(String coverageName, GeneralParameterValue... parameters)
             throws IllegalArgumentException, IOException {
         return getCroppedGrid(super.read(coverageName, parameters), roiGeom);
     }

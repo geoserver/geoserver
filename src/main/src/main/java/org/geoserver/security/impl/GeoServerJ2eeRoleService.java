@@ -50,7 +50,7 @@ import org.xml.sax.XMLReader;
  */
 public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService implements GeoServerRoleService {
 
-    public class WebXMLContentHandler implements ContentHandler {
+    public static class WebXMLContentHandler implements ContentHandler {
 
         public static final String SECURITY_ROLE_REF = "security-role-ref";
         public static final String AUTH_CONSTRAINT = "auth-constraint";

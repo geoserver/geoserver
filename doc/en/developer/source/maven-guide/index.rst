@@ -57,7 +57,7 @@ Maven automatically downloads dependencies declared by
 modules being built. In the case of SNAPSHOT dependencies,
 Maven downloads updates each time it performs the first build of the day.
 
-GeoServer depends on SNAPSHOT versions of the GeoTools library.  
+GeoServer depends on SNAPSHOT versions of the GeoTools library managed through a Bill of Materials (BOM).
 The automatic download can result in lengthy build time
 while Maven downloads updated GeoTools modules. 
 If GeoTools was built locally, these downloads are not necessary.
@@ -199,3 +199,128 @@ This can also be used when running the local jetty application server:
   mvn jetty:run -DconfigId=release -DconfigDirectory=../../../data/release
 
 You may also use an absolute path, if you have a custom data directory you would like to use.
+
+Dependency Management
+---------------------
+
+GeoServer uses Maven's Bill of Materials (BOM) pattern to centrally manage dependency versions for GeoTools, Spring Framework, and Spring Security.
+This ensures consistent versions across all modules and simplifies dependency declarations.
+
+Bill of Materials (BOMs)
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The root ``src/pom.xml`` imports multiple BOMs in the ``<dependencyManagement>`` section:
+
+.. code-block:: xml
+
+   <dependencyManagement>
+     <dependencies>
+       <!-- GeoTools platform dependencies BOM - provides managed versions for third-party libraries -->
+       <dependency>
+         <groupId>org.geotools</groupId>
+         <artifactId>gt-platform-dependencies</artifactId>
+         <version>${gt.version}</version>
+         <type>pom</type>
+         <scope>import</scope>
+       </dependency>
+
+       <!-- GeoTools BOM - provides access to all GeoTools artifacts -->
+       <dependency>
+         <groupId>org.geotools</groupId>
+         <artifactId>gt-bom</artifactId>
+         <version>${gt.version}</version>
+         <type>pom</type>
+         <scope>import</scope>
+       </dependency>
+       
+       <!-- Spring Framework BOM -->
+       <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-framework-bom</artifactId>
+         <version>${spring.version}</version>
+         <type>pom</type>
+         <scope>import</scope>
+       </dependency>
+       
+       <!-- Spring Security BOM -->
+       <dependency>
+         <groupId>org.springframework.security</groupId>
+         <artifactId>spring-security-bom</artifactId>
+         <version>${spring.security.version}</version>
+         <type>pom</type>
+         <scope>import</scope>
+       </dependency>
+     </dependencies>
+   </dependencyManagement>
+
+Adding Dependencies
+^^^^^^^^^^^^^^^^^^^
+
+When adding GeoTools, Spring Framework, or Spring Security dependencies to any module, **do not specify the version**. The appropriate BOM will automatically provide the correct version:
+
+.. code-block:: xml
+
+   <dependencies>
+     <!-- GeoTools dependencies - no version specified -->
+     <dependency>
+       <groupId>org.geotools</groupId>
+       <artifactId>gt-process</artifactId>
+     </dependency>
+
+     <!-- Spring Framework dependencies - no version specified -->
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-context</artifactId>
+     </dependency>
+
+     <!-- Spring Security dependencies - no version specified -->
+     <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-core</artifactId>
+     </dependency>
+   </dependencies>
+
+For GeoTools test JARs, use the ``<classifier>tests</classifier>`` approach instead of ``<type>test-jar</type>``:
+
+.. code-block:: xml
+
+   <dependency>
+     <groupId>org.geotools</groupId>
+     <artifactId>gt-jdbc</artifactId>
+     <classifier>tests</classifier>
+     <scope>test</scope>
+   </dependency>
+
+.. warning::
+
+   Never specify explicit versions for GeoTools, Spring Framework, or Spring Security dependencies. 
+   This can lead to version conflicts and inconsistent behavior across modules.
+
+GeoTools BOM Structure
+^^^^^^^^^^^^^^^^^^^^^^
+
+GeoServer imports two separate GeoTools BOMs to provide fine-grained control over dependency management:
+
+* **gt-platform-dependencies**: Manages versions of third-party libraries (Jackson, Commons libraries, JTS, Guava, ImageIO-Ext, JAI-Ext, etc.)
+  that are shared across the GeoTools ecosystem. This BOM ensures consistent versions of transitive dependencies.
+
+* **gt-bom**: Provides access to all GeoTools module artifacts without specifying versions, allowing GeoServer to declare GeoTools dependencies cleanly.
+
+The separation of these BOMs provides better dependency resolution control and avoids potential conflicts in complex dependency scenarios.
+
+Managing GeoTools Dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When working with GeoTools dependencies, note that dependency management occurs at the GeoTools project level:
+
+* **New GeoTools dependencies**: If you need to add a new GeoTools module dependency, it must first be added to the ``gt-bom`` POM in the GeoTools project before it can be used in GeoServer.
+
+* **Transitive dependencies**: If you need to add or upgrade a transitive dependency that is managed by GeoTools, it must be added or upgraded in the ``gt-platform-dependencies`` BOM in the GeoTools project, not in GeoServer.
+
+This ensures that all GeoTools-related dependency versions are consistently managed upstream and shared across all projects that depend on GeoTools.
+
+For a complete list of dependencies managed by the BOMs, see the "Managed dependencies" section at:
+
+* `Spring Framework BOM <https://mvnrepository.com/artifact/org.springframework/spring-framework-bom/5.3.39>`_
+* `Spring Security BOM <https://mvnrepository.com/artifact/org.springframework.security/spring-security-bom/5.8.16>`_
+

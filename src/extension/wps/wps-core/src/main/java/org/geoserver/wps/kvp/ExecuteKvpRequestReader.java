@@ -329,7 +329,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements Appl
         this.applicationContext = applicationContext;
     }
 
-    class IOParam {
+    static class IOParam {
         String id;
         String value;
         Map<String, String> attributes;

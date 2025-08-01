@@ -68,7 +68,7 @@ public class UserGroupRoleServicesPage extends AbstractSecurityPage {
         }
     }
 
-    class UsersGroupsPanel extends Panel {
+    static class UsersGroupsPanel extends Panel {
 
         public UsersGroupsPanel(String id) {
             super(id);
@@ -77,7 +77,7 @@ public class UserGroupRoleServicesPage extends AbstractSecurityPage {
         }
     }
 
-    class RolesPanel extends Panel {
+    static class RolesPanel extends Panel {
 
         public RolesPanel(String id) {
             super(id);

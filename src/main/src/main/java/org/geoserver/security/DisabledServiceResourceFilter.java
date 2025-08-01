@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
@@ -53,8 +53,7 @@ public class DisabledServiceResourceFilter extends AbstractCatalogFilter impleme
 
             // if any disabled service match with current service -> hide resource
             String service = request().getService();
-            return disabledServices.stream()
-                    .anyMatch(serviceType -> StringUtils.equalsIgnoreCase(service, serviceType));
+            return disabledServices.stream().anyMatch(serviceType -> Strings.CI.equals(service, serviceType));
         }
         return false;
     }

@@ -7,17 +7,17 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Xmx1024m -Daether.connector.basic.threads=8 -Daether.metadataResolver.threads=8 -Daether.syncContext.named.time=120 -Daether.syncContext.named.factory=file-lock -Daether.syncContext.named.nameMapper=file-gav -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+  MAVEN_OPTS: -Xmx2g -Daether.connector.basic.threads=8 -Daether.metadataResolver.threads=8 -Daether.syncContext.named.time=120 -Daether.syncContext.named.factory=file-lock -Daether.syncContext.named.nameMapper=file-gav -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
 jobs:
   QA:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 11
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: 11
+        java-version: 17
         distribution: 'temurin'
     - name: Set up Maven
       uses: stCarolas/setup-maven@v5
@@ -32,10 +32,10 @@ jobs:
           gs-${{ runner.os }}-maven-
     - name: Build with Maven with full QA checks
       run: |
-        mvn -B -ntp -U -T3 -fae -Dspotless.action=check -Dpom.fmt.action=verify -Dqa -DskipTests -Prelease -f src/pom.xml clean install
-    - name: Build community modules without unit tests, but applying formatting checks
+        mvn -B -ntp -U -T1C -fae -Dspotless.action=check -Dpom.fmt.action=verify -Dqa -DskipTests -Prelease -f src/pom.xml clean install
+    - name: Build community and online test modules without unit tests, but applying formatting checks
       run: |
-        mvn -B -ntp -nsu -U -T4 -fae -Dspotless.action=check -Dpom.fmt.action=verify -DskipTests -Prelease,communityRelease -f src/community/pom.xml clean install
+        mvn -B -ntp -nsu -U -T1C -fae -Dspotless.action=check -Dpom.fmt.action=verify -DskipTests -Prelease,communityRelease,app-schema-online-test -f src/community/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
       if: always()
       run: |

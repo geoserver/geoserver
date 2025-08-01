@@ -286,7 +286,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         // Ensure that the Component is rendered again
         tester.assertComponent("form:panel:tileLayerEditor", GeoServerTileLayerEditor.class);
         // Ensure that an Error message has been thrown
-        tester.assertErrorMessages(new String[] {"Filter should not be empty"});
+        tester.assertErrorMessages("Filter should not be empty");
         // Create new form tester for the final submit
         FormTester form = tester.newFormTester("form");
         // Save the changes

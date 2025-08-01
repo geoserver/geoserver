@@ -44,7 +44,6 @@ public class InspireAdminPanel extends AdminPagePanel {
 
     private static final long serialVersionUID = -7670555379263411393L;
 
-    @SuppressWarnings("unchecked")
     public InspireAdminPanel(final String id, final IModel<ServiceInfo> model) {
         super(id, model);
 

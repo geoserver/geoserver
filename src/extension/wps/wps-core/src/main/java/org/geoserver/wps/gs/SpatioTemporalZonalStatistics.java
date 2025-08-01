@@ -4,23 +4,29 @@
  */
 package org.geoserver.wps.gs;
 
+import it.geosolutions.jaiext.range.Range;
+import it.geosolutions.jaiext.range.RangeDouble;
+import it.geosolutions.jaiext.stats.Statistics;
+import it.geosolutions.jaiext.stats.Statistics.StatsType;
+import it.geosolutions.jaiext.zonal.ZonalStatsDescriptor;
+import it.geosolutions.jaiext.zonal.ZoneGeometry;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.media.jai.ROI;
+import javax.media.jai.RenderedOp;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -60,11 +66,6 @@ import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
 import org.geotools.util.DateRange;
 import org.geotools.util.DateTimeParser;
 import org.geotools.util.logging.Logging;
-import org.jaitools.media.jai.zonalstats.ZonalStats;
-import org.jaitools.media.jai.zonalstats.ZonalStatsDescriptor;
-import org.jaitools.media.jai.zonalstats.ZonalStatsOpImage;
-import org.jaitools.numeric.Range;
-import org.jaitools.numeric.Statistic;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
@@ -93,8 +94,8 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
     public static final int MAX_TIME_ENTRIES =
             Integer.parseInt(System.getProperty("spatio.temporal.max.entries", "1000"));
 
-    private static final EnumSet<Statistic> ALLOWED_STATS =
-            EnumSet.of(Statistic.MIN, Statistic.MAX, Statistic.SUM, Statistic.MEAN, Statistic.MEDIAN);
+    private static final EnumSet<StatsType> ALLOWED_STATS =
+            EnumSet.of(StatsType.MIN, StatsType.MAX, StatsType.SUM, StatsType.MEAN, StatsType.MEDIAN);
 
     static final Logger LOGGER = Logging.getLogger(SpatioTemporalZonalStatistics.class);
 
@@ -126,7 +127,7 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
             throws ProcessException {
 
         GridCoverage2DReader reader;
-        Set<Statistic> requestedStats = parseStatistics(statsNames);
+        StatsType[] requestedStats = parseStatistics(statsNames);
         LayerInfo layer = catalog.getLayerByName(layerName);
         if (layer == null) {
             throw new ProcessException("Layer '" + layerName + "' not found in catalog.");
@@ -158,7 +159,7 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
      */
     static class StatisticsAggregator {
 
-        private Set<Statistic> requestedStats;
+        private StatsType[] requestedStats;
         private double aggregatedSum;
         private double aggregatedMean;
         private double aggregatedMin = Double.POSITIVE_INFINITY;
@@ -167,7 +168,7 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
         private int count;
         private int aggregated;
 
-        public StatisticsAggregator(Set<Statistic> requestedStats) {
+        public StatisticsAggregator(StatsType[] requestedStats) {
             this.requestedStats = requestedStats;
         }
 
@@ -176,36 +177,37 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
          *
          * @param stats the statistics for one temporal coverage reading.
          */
-        public void aggregate(ZonalStats stats) {
+        public void aggregate(List<ZoneGeometry> stats) {
             if (stats == null) {
                 return;
             }
+            // no classification raster, only one set of stats expected
+            Statistics[] statsArray = stats.get(0)
+                    .getStatsPerBand(0)
+                    .values()
+                    .iterator()
+                    .next()
+                    .values()
+                    .iterator()
+                    .next();
+
             aggregated++;
-            count += stats.statistic(requestedStats.iterator().next())
-                    .results()
-                    .get(0)
-                    .getNumAccepted();
+            count += statsArray[0].getNumSamples().intValue();
 
-            if (requestedStats.contains(Statistic.SUM)) {
-                this.aggregatedSum += getStatsValue(stats, Statistic.SUM);
-            }
-
-            if (requestedStats.contains(Statistic.MEAN)) {
-                this.aggregatedMean =
-                        this.aggregatedMean + (getStatsValue(stats, Statistic.MEAN) - this.aggregatedMean) / aggregated;
-            }
-
-            if (requestedStats.contains(Statistic.MIN)) {
-                this.aggregatedMin = Math.min(this.aggregatedMin, getStatsValue(stats, Statistic.MIN));
-            }
-
-            if (requestedStats.contains(Statistic.MAX)) {
-                this.aggregatedMax = Math.max(this.aggregatedMax, getStatsValue(stats, Statistic.MAX));
-            }
-
-            if (requestedStats.contains(Statistic.MEDIAN)) {
-                this.aggregatedMedian = this.aggregatedMedian
-                        + (getStatsValue(stats, Statistic.MEDIAN) - this.aggregatedMedian) / aggregated;
+            for (int i = 0; i < requestedStats.length; i++) {
+                StatsType stat = requestedStats[i];
+                double result = ((Number) statsArray[i].getResult()).doubleValue();
+                if (stat == StatsType.MIN) {
+                    aggregatedMin = Math.min(aggregatedMin, result);
+                } else if (stat == StatsType.MAX) {
+                    aggregatedMax = Math.max(aggregatedMax, result);
+                } else if (stat == StatsType.SUM) {
+                    aggregatedSum += result;
+                } else if (stat == StatsType.MEAN) {
+                    aggregatedMean = aggregatedMean + (result - aggregatedMean) / aggregated;
+                } else if (stat == StatsType.MEDIAN) {
+                    aggregatedMedian = aggregatedMedian + (result - aggregatedMedian) / aggregated;
+                }
             }
         }
 
@@ -248,13 +250,13 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
         private GridCoverage2DReader reader;
         private List<Object> times;
         private SimpleFeatureType targetSchema;
-        private Set<Statistic> requestedStats;
+        private StatsType[] requestedStats;
 
         public SpatioTemporalZonalStatisticsCollection(
                 GridCoverage2DReader reader,
                 SimpleFeatureCollection zones,
                 List<Object> times,
-                Set<Statistic> requestedStats) {
+                StatsType[] requestedStats) {
             super(zones);
             this.reader = reader;
             this.times = times;
@@ -277,23 +279,21 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
             targetSchema = tb.buildFeatureType();
         }
 
-        private static void addAttributes(SimpleFeatureTypeBuilder tb, Set<Statistic> requestedStats) {
+        private static void addAttributes(SimpleFeatureTypeBuilder tb, StatsType[] requestedStats) {
             tb.add("count", Long.class); // count is always added
 
-            if (requestedStats.contains(Statistic.MIN)) {
-                tb.add("min", Double.class);
-            }
-            if (requestedStats.contains(Statistic.MAX)) {
-                tb.add("max", Double.class);
-            }
-            if (requestedStats.contains(Statistic.SUM)) {
-                tb.add("sum", Double.class);
-            }
-            if (requestedStats.contains(Statistic.MEAN)) {
-                tb.add("mean", Double.class);
-            }
-            if (requestedStats.contains(Statistic.MEDIAN)) {
-                tb.add("median", Double.class);
+            for (StatsType requestedStat : requestedStats) {
+                if (requestedStat == StatsType.MIN) {
+                    tb.add("min", Double.class);
+                } else if (requestedStat == StatsType.MAX) {
+                    tb.add("max", Double.class);
+                } else if (requestedStat == StatsType.SUM) {
+                    tb.add("sum", Double.class);
+                } else if (requestedStat == StatsType.MEAN) {
+                    tb.add("mean", Double.class);
+                } else if (requestedStat == StatsType.MEDIAN) {
+                    tb.add("median", Double.class);
+                }
             }
         }
 
@@ -321,14 +321,14 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
         private SimpleFeatureIterator zones;
         private SimpleFeatureBuilder builder;
         private SimpleFeature nextFeature;
-        private Set<Statistic> requestedStats;
+        private StatsType[] requestedStats;
 
         public SpatioTemporalZonalStatisticsIterator(
                 SimpleFeatureIterator zones,
                 GridCoverage2DReader reader,
                 SimpleFeatureType targetSchema,
                 List<Object> times,
-                Set<Statistic> requestedStats) {
+                StatsType[] requestedStats) {
             this.zones = zones;
             this.builder = new SimpleFeatureBuilder(targetSchema);
             this.reader = reader;
@@ -397,39 +397,37 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
         }
 
         /** Add the statistics to the feature builder */
-        private void addStatsToFeature(StatisticsAggregator stats, Set<Statistic> requestedStats) {
+        private void addStatsToFeature(StatisticsAggregator stats, StatsType[] requestedStats) {
             double count = stats.getAggregatedCount();
             builder.add(count); // count
             addDynamicStatsToFeature(builder, stats, requestedStats);
         }
 
         private void addDynamicStatsToFeature(
-                SimpleFeatureBuilder builder, StatisticsAggregator stats, Set<Statistic> requestedStats) {
-            if (requestedStats.contains(Statistic.MIN)) {
-                builder.add(stats.getAggregatedMin());
-            }
-            if (requestedStats.contains(Statistic.MAX)) {
-                builder.add(stats.getAggregatedMax());
-            }
-            if (requestedStats.contains(Statistic.SUM)) {
-                builder.add(stats.getAggregatedSum());
-            }
-            if (requestedStats.contains(Statistic.MEAN)) {
-                builder.add(stats.getAggregatedMean());
-            }
-            if (requestedStats.contains(Statistic.MEDIAN)) {
-                builder.add(stats.getAggregatedMedian());
+                SimpleFeatureBuilder builder, StatisticsAggregator stats, StatsType[] requestedStats) {
+            for (StatsType requestedStat : requestedStats) {
+                if (requestedStat == StatsType.MIN) {
+                    builder.add(stats.getAggregatedMin());
+                } else if (requestedStat == StatsType.MAX) {
+                    builder.add(stats.getAggregatedMax());
+                } else if (requestedStat == StatsType.SUM) {
+                    builder.add(stats.getAggregatedSum());
+                } else if (requestedStat == StatsType.MEAN) {
+                    builder.add(stats.getAggregatedMean());
+                } else if (requestedStat == StatsType.MEDIAN) {
+                    builder.add(stats.getAggregatedMedian());
+                }
             }
         }
 
+        @SuppressWarnings("unchecked")
         private StatisticsAggregator processStatistics(Geometry geometry) throws TransformException, IOException {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("Starting statistics aggregation on geometry: " + geometry);
             }
-            List<Range<Double>> noDataValueRangeList = null;
+            List<RangeDouble> noDataValueRangeList = null;
             ROI roi = null;
             ParameterValue<List> timeParam = AbstractGridFormat.TIME.createValue();
-            Statistic[] reqStatsArr = requestedStats.toArray(new Statistic[0]);
             StatisticsAggregator aggregator = new StatisticsAggregator(requestedStats);
             boolean initialized = false;
             CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
@@ -451,6 +449,7 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
                 GeneralParameterValue[] gpv;
                 GridCoverage2D dataCoverage = null;
                 GridCoverage2D cropped = null;
+                Range nodata = null;
                 try {
                     // Assume we can share the same bbox/crop to all the times
                     if (!initialized) {
@@ -474,6 +473,9 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
                         dataCoverage = reader.read(gpv);
                         // check if the novalue is != from NaN
                         noDataValueRangeList = CoverageUtilities.getNoDataAsList(dataCoverage);
+                        if (noDataValueRangeList != null && !noDataValueRangeList.isEmpty()) {
+                            nodata = noDataValueRangeList.get(0);
+                        }
                         roi = CoverageUtilities.getSimplifiedRoiGeometry(dataCoverage, geometry);
                         initialized = true;
                     } else {
@@ -488,21 +490,20 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
                     LOGGER.fine("Cropping the coverage on geometry: " + geometryEnvelope);
                     cropped = CoverageUtilities.crop(dataCoverage, geometryEnvelope);
                     LOGGER.fine("Executing the zonal stat operation");
-                    final ZonalStatsOpImage zsOp = new ZonalStatsOpImage(
+                    RenderedOp op = ZonalStatsDescriptor.create(
                             cropped.getRenderedImage(),
                             null,
                             null,
-                            null,
-                            reqStatsArr,
-                            BAND_STAT,
-                            roi,
-                            null,
-                            null,
+                            Arrays.asList(roi),
+                            nodata,
                             null,
                             false,
-                            noDataValueRangeList);
-                    LOGGER.fine("Aggregating the result");
-                    aggregator.aggregate((ZonalStats) zsOp.getProperty(ZonalStatsDescriptor.ZONAL_STATS_PROPERTY));
+                            new int[] {0},
+                            requestedStats,
+                            null,
+                            false,
+                            null);
+                    aggregator.aggregate((List<ZoneGeometry>) op.getProperty(ZonalStatsDescriptor.ZS_PROPERTY));
                 } finally {
                     // dispose coverages
                     if (cropped != null) {
@@ -541,23 +542,19 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
         return new GridGeometry2D(gridRange, geometryEnvelope);
     }
 
-    private static double getStatsValue(ZonalStats zonalStats, Statistic statistic) {
-        return zonalStats.statistic(statistic).results().get(0).getValue();
-    }
-
-    private static Set<Statistic> parseStatistics(String statsNames) throws WPSException {
-        Set<Statistic> requestedStats = new HashSet<>();
+    private static StatsType[] parseStatistics(String statsNames) throws WPSException {
+        List<StatsType> requestedStats = new ArrayList<>();
 
         if (statsNames == null || statsNames.trim().isEmpty()) {
             requestedStats.addAll(ALLOWED_STATS);
-            return requestedStats;
+            return requestedStats.toArray(StatsType[]::new);
         }
 
         String[] tokens = statsNames.split(",");
         for (String token : tokens) {
             String statName = token.trim().toUpperCase();
             try {
-                Statistic stat = Statistic.valueOf(statName);
+                StatsType stat = StatsType.valueOf(statName);
                 if (!ALLOWED_STATS.contains(stat)) {
                     throw new WPSException(
                             "Statistic not allowed: " + statName, ServiceException.INVALID_PARAMETER_VALUE, statsNames);
@@ -571,7 +568,7 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
             }
         }
 
-        return requestedStats;
+        return requestedStats.toArray(StatsType[]::new);
     }
 
     private List<Object> parseTimes(GridCoverage2DReader reader, String timeValues) throws ProcessException {

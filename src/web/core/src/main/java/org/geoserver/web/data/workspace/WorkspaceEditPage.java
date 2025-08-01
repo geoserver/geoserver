@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.workspace;
 
+import static org.geoserver.web.services.BaseServiceAdminPage.WORKSPACE_ADMIN_SERVICE_ACCESS;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -53,6 +54,7 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
@@ -67,6 +69,7 @@ import org.geoserver.web.security.AccessDataRulePanel;
 import org.geoserver.web.security.DataAccessRuleInfo;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.services.ServiceMenuPageInfo;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -561,9 +564,16 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 protected void populateItem(ListItem<Service> item) {
                     Service service = item.getModelObject();
 
+                    // Enable the link if;
+                    //    1. the service is enabled
+                    //    2. We are a global admin or the WORKSPACE_ADMIN_SERVICE_ACCESS is set
+                    boolean workspaceAdminOverride =
+                            Boolean.parseBoolean(GeoServerExtensions.getProperty(WORKSPACE_ADMIN_SERVICE_ACCESS));
+                    boolean isEnabled = (isAuthenticatedAsAdmin() || workspaceAdminOverride);
+
                     final Link<Service> link = new ServiceLink(service, wsModel);
                     link.setOutputMarkupId(true);
-                    link.setEnabled(service.enabled);
+                    link.setEnabled(isEnabled);
 
                     AjaxCheckBox enabled = new AjaxCheckBox("enabled", new PropertyModel<>(service, "enabled")) {
                         private static final long serialVersionUID = 6369730006169869310L;
@@ -582,18 +592,19 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                             "title", new StringResourceModel(info.getDescriptionKey(), null, null)));
                     link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
 
-                    Image image;
+                    CachingImage image;
                     if (info.getIcon() != null) {
-                        image = new Image(
+                        image = new CachingImage(
                                 "link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
                     } else {
-                        image = new Image(
+                        image = new CachingImage(
                                 "link.icon",
                                 new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
                     }
                     image.add(new AttributeModifier("alt", new ParamResourceModel(info.getTitleKey(), null)));
                     link.add(image);
                     item.add(link);
+                    item.setEnabled(isEnabled);
                 }
             };
             add(serviceList);

@@ -32,4 +32,12 @@ public class XMLEncoderDelegate implements EncoderDelegate {
     public void encode(ContentHandler handler) throws Exception {
         ppio.encode(object, handler);
     }
+
+    public XMLPPIO getPPIO() {
+        return ppio;
+    }
+
+    public Object getObject() {
+        return object;
+    }
 }

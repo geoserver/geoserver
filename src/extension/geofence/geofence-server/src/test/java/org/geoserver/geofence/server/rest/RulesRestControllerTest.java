@@ -419,12 +419,11 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.setLayer("layer");
         rule.setAccess("ALLOW");
 
-        long id = prepareGeoFenceTestRules(rule);
+        prepareGeoFenceTestRules(rule);
 
         JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
         // print(json);
 
-        assertNotNull(id);
         assertEquals(1, json.getInt("count"));
 
         json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
@@ -574,7 +573,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 rule.getLimits().getCatalogMode(),
                 realRule.getRuleLimits().getCatalogMode().toString());
 
-        assertEquals(realRule.getRuleLimits().getAllowedArea().getSRID(), 3003);
+        assertEquals(3003, realRule.getRuleLimits().getAllowedArea().getSRID());
 
         assertTrue(rule.getLimits().getAllowedArea().contains("SRID=3003"));
 
@@ -595,7 +594,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 null, null, null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.Limits limits = r.getLimits();
-        assertEquals(limits.getSpatialFilterType(), "INTERSECT");
+        assertEquals("INTERSECT", limits.getSpatialFilterType());
         assertTrue(limits.getAllowedArea().contains("SRID"));
     }
 
@@ -617,7 +616,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         long id = prepareGeoFenceTestRules(rule);
 
         Rule realRule = adminService.get(id);
-        assertEquals(realRule.getLayerDetails().getArea().getSRID(), 3002);
+        assertEquals(3002, realRule.getLayerDetails().getArea().getSRID());
         assertTrue(rule.getLayerDetails().getAllowedArea().contains("SRID=3002"));
         assertEquals(
                 rule.getLayerDetails().getSpatialFilterType(),
@@ -635,7 +634,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 null, null, null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.LayerDetails details = r.getLayerDetails();
-        assertEquals(details.getSpatialFilterType(), "CLIP");
+        assertEquals("CLIP", details.getSpatialFilterType());
         assertTrue(details.getAllowedArea().contains("SRID"));
     }
 
@@ -747,7 +746,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertEquals("LIMIT", rule.getAccess());
         assertEquals("DE_USNG_UTM18", rule.getLayer());
         assertEquals("geonode", rule.getWorkspace());
-        assertEquals(1, rule.getPriority().intValue());
+        assertEquals(Long.valueOf(1), rule.getPriority());
 
         assertNotNull(rule.getLimits());
 

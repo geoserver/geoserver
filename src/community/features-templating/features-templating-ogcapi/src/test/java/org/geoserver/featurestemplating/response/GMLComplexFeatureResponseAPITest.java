@@ -9,7 +9,9 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.FeatureChainingMockData;
+import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport {
@@ -73,6 +75,26 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
                         + MF_GML32_PARAM);
         assertXpathCount(3, "//gsml:MappedFeature", doc);
         assertXpathCount(0, "gsml:MappedFeature[@gml:id=mf1 or @gml:id=mf5]", doc);
+    }
+
+    @Test
+    public void getMappedFeatureIdFilter() throws Exception {
+        Document doc = getAsDOM(
+                "ogc/features/v1/collections/gsml:MappedFeature/items/mf1?f=application%2Fgml%2Bxml%3Bversion%3D3.2"
+                        + "&"
+                        + MF_GML32_PARAM);
+        assertXpathCount(1, "//gsml:MappedFeature", doc);
+        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='mf1']", doc);
+    }
+
+    @Test
+    public void getMappedFeatureContentType() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/features/v1/collections/gsml:MappedFeature/items/mf1?f=application%2Fgml%2Bxml%3Bversion%3D3.2"
+                        + "&"
+                        + MF_GML32_PARAM);
+        Assert.assertEquals("UTF-8", response.getCharacterEncoding());
+        assertContentType("application/gml+xml;version=3.2;charset=UTF-8", response);
     }
 
     @Override

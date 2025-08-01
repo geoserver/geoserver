@@ -127,7 +127,7 @@ public class RESTfulDefinitionSourceDelegateMap {
     // ~ Inner Classes
     // ==================================================================================================
 
-    protected class EntryHolder {
+    protected static class EntryHolder {
         private Collection<ConfigAttribute> configAttributes;
         private String antPath;
         private String[] httpMethodList;

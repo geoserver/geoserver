@@ -180,7 +180,7 @@ public class WCSUtilsTest extends GeoServerSystemTestSupport {
     public void testGridSize() throws IOException {
         CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(SystemTestData.TASMANIA_DEM));
         GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
-        GridCoverage2D coverage = reader.read(null);
+        GridCoverage2D coverage = reader.read();
         try {
             long size = WCSUtils.getReadCoverageSize(coverage);
             long expected = 120 * 240 * 2; // w * h * pixel size
@@ -194,7 +194,7 @@ public class WCSUtilsTest extends GeoServerSystemTestSupport {
     public void testGridSizeCropped() throws IOException {
         CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(SystemTestData.TASMANIA_DEM));
         GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
-        GridCoverage2D coverage = reader.read(null);
+        GridCoverage2D coverage = reader.read();
         ReferencedEnvelope envelope = coverage.getEnvelope2D();
         double cropWidth = envelope.getWidth() / 4;
         // image is 120x240, with tiles that are 120x34. Crop so that we get part of the tile width

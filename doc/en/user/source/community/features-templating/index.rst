@@ -34,3 +34,4 @@ The first part of the plug-in documentation will go through the template syntax.
    configuration  
    querying
    rest
+   schemas

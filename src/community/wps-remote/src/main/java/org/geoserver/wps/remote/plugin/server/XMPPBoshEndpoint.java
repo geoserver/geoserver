@@ -186,7 +186,7 @@ public class XMPPBoshEndpoint implements Endpoint {
             // to know about. Much more configuration is available the ssl context,
             // including things like choosing the particular certificate out of a
             // keystore to be used.
-            SslContextFactory sslContextFactory = new SslContextFactory();
+            SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
             sslContextFactory.setKeyStorePath(sslKeystorePath);
             sslContextFactory.setKeyManagerPassword(sslKeystorePassword);
             sslContextFactory.setKeyStorePassword(sslKeystorePassword);

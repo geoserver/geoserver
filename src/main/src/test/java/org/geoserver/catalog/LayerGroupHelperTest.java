@@ -148,7 +148,6 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     public void testSimpleLoop() {
         Assert.assertNull(new LayerGroupHelper(nested).checkLoops());
 
@@ -164,7 +163,6 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     public void testSimpleLoopWithNotEqualGroups() {
         LayerGroupInfo myLoop = buildGroup("myLoop", forestLayer);
         myLoop.getStyles().add(null);

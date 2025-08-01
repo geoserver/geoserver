@@ -36,8 +36,11 @@ public enum TimeMode {
                         return Dates.matchAndParse(g.getFile().getName());
                     case MANUAL:
                         return g.getTimestamp();
+                    case FILENAME:
+                    case NONE:
+                    default:
+                        return null;
                 }
-                return null;
             }
         };
     }

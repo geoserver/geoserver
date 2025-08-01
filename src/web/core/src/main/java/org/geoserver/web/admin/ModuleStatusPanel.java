@@ -12,7 +12,6 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -24,6 +23,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.ModuleStatusImpl;
 import org.geoserver.web.CatalogIconFactory;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.GSModalWindow;
 
 public class ModuleStatusPanel extends Panel {
@@ -91,11 +91,11 @@ public class ModuleStatusPanel extends Panel {
     final Fragment getIcons(String id, boolean status) {
         PackageResourceReference icon = status ? icons.getEnabledIcon() : icons.getDisabledIcon();
         Fragment f = new Fragment(id, "iconFragment", this);
-        f.add(new Image("statusIcon", icon));
+        f.add(new CachingImage("statusIcon", icon));
         return f;
     }
 
-    class MessagePanel extends Panel {
+    static class MessagePanel extends Panel {
 
         private static final long serialVersionUID = -3200098674603724915L;
 

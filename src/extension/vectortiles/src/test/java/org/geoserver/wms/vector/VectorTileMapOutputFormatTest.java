@@ -398,7 +398,7 @@ public class VectorTileMapOutputFormatTest {
         // Simple class to MOCK a Datastore supporting PreGeneralized features
         final class PregenDataStore extends MemoryDataStore {
 
-            final class _FeatureSource extends MemoryFeatureSource {
+            static final class _FeatureSource extends MemoryFeatureSource {
                 public _FeatureSource(ContentEntry entry, Query q) {
                     super(entry, q);
                 }

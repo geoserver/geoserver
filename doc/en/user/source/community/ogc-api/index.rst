@@ -23,6 +23,7 @@ Community modules:
    tiles/index
    maps/index
    coverages/index
+   processes/index
    styles/index
    tiled-features/index
    testbed

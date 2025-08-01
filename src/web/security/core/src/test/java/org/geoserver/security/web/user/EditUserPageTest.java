@@ -86,7 +86,7 @@ public class EditUserPageTest extends AbstractUserPageTest {
         // print(tester.getLastRenderedPage(),true,true);
         form.submit("save");
 
-        tester.assertErrorMessages(new String[0]);
+        tester.assertErrorMessages();
         // tester.assertRenderedPage(UserGroupTabbedPage.class);
 
         GeoServerUser user = ugService.getUserByUsername("user1");

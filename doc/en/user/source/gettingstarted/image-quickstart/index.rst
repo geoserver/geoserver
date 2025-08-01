@@ -115,12 +115,6 @@ Once the workspace is created, we are ready to add a new store. The store tells 
 
       * - database
         - :kbd:`file:data/ne/SR_50M.tif`
-   
-   The use of :guilabel:`read_only` above indicates that we will not be writing to this GeoPackage, allowing GeoServer to avoid managing write locks when accessing this content for greater performance.
-   
-   .. figure:: images/connection_params.png
-      
-      Connection Parameters
 
 #. Press :guilabel:`Save`. 
 

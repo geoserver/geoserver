@@ -114,7 +114,7 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
         return header;
     }
 
-    private class EditButtonPanel extends Panel {
+    private static class EditButtonPanel extends Panel {
 
         public EditButtonPanel(String id, final RuleModel ruleModel) {
             super(id);
@@ -134,7 +134,7 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
         }
     }
 
-    private class ActivateButtonPanel extends Panel {
+    private static class ActivateButtonPanel extends Panel {
 
         public ActivateButtonPanel(String id, final RuleModel ruleModel) {
             super(id);

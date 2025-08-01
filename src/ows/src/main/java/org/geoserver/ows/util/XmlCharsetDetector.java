@@ -26,7 +26,7 @@ public class XmlCharsetDetector {
     protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
 
     /** In current context naming this "GT", "GREATER_THAN" or like would be misleading. */
-    private static final char RIGHT_ANGLE_BRACKET = '\u003E';
+    private static final char RIGHT_ANGLE_BRACKET = '>';
 
     private static final Pattern ENCODING_PATTERN = Pattern.compile("encoding\\s*\\=\\s*\"([^\"]+)\"");
 
@@ -53,7 +53,6 @@ public class XmlCharsetDetector {
     @SuppressWarnings("PMD.CloseResource") // reader being re-assigned
     public static Reader getCharsetAwareReader(InputStream istream, EncodingInfo encInfo)
             throws IOException, UnsupportedCharsetException {
-        @SuppressWarnings("PMD.CloseResource") // just a wrapper
         RewindableInputStream stream = new RewindableInputStream(istream, false);
 
         //
@@ -452,7 +451,7 @@ public class XmlCharsetDetector {
             }
 
             /*
-             * Continuing reading declaration(?) til the first '>' ('\u003E')
+             * Continuing reading declaration(?) til the first '>'
              * encountered. Conversion from `int` to `char` should be safe
              * for our purposes, at least I'm not expecting any extended
              * (0x10000+) characters in xml declaration. I also limited

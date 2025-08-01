@@ -5,9 +5,15 @@
  */
 package org.geoserver.wms.web.publish;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +28,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.image.NonCachingImage;
@@ -30,6 +37,9 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.CollectionModel;
+import org.apache.wicket.util.convert.ConversionException;
+import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
@@ -133,7 +143,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         initWMSCascadedUI(layerModel);
     }
 
-    private class InterpolationRenderer extends ChoiceRenderer<WMSInterpolation> {
+    private static class InterpolationRenderer extends ChoiceRenderer<WMSInterpolation> {
 
         private static final long serialVersionUID = 4230274692882585457L;
 
@@ -162,17 +172,20 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         WebMarkupContainer remoteForamtsContainer = new WebMarkupContainer("remoteformats");
         WebMarkupContainer metaDataCheckBoxContainer = new WebMarkupContainer("metaDataCheckBoxContainer");
         WebMarkupContainer scaleDenominatorContainer = new WebMarkupContainer("scaleDenominatorContainer");
+        WebMarkupContainer vendorParametersContainer = new WebMarkupContainer("vendorParametersContainer");
 
         add(styleContainer);
         add(remoteForamtsContainer);
         add(metaDataCheckBoxContainer);
         add(scaleDenominatorContainer);
+        add(vendorParametersContainer);
 
         if (!(layerModel.getObject().getResource() instanceof WMSLayerInfo)) {
             styleContainer.setVisible(false);
             remoteForamtsContainer.setVisible(false);
             metaDataCheckBoxContainer.setVisible(false);
             scaleDenominatorContainer.setVisible(false);
+            vendorParametersContainer.setVisible(false);
             return;
         }
 
@@ -246,6 +259,21 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         scaleDenominatorContainer.add(maxScale);
 
         minScale.add(new ScalesValidator(minScale, maxScale));
+
+        TextArea<Object> vendorParameters =
+                new TextArea<>("vendorParameters", new PropertyModel<>(wmsLayerInfo, "vendorParameters")) {
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public <C> IConverter<C> getConverter(Class<C> type) {
+                        if (Map.class.isAssignableFrom(type)) {
+                            // The cast is safe because we explicitly check that the type is assignable from Map.
+                            return (IConverter<C>) new VendorParametersConvertor();
+                        }
+                        return super.getConverter(type);
+                    }
+                };
+        vendorParameters.setConvertEmptyInputStringToNull(false);
+        vendorParametersContainer.add(vendorParameters);
     }
 
     private Set<String> getRemoteStyleNames(final List<StyleInfo> styleInfoList) {
@@ -253,7 +281,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     }
 
     // validator to make sure min scale smaller than max scale and vice-versa
-    private class ScalesValidator implements IValidator<Double> {
+    private static class ScalesValidator implements IValidator<Double> {
 
         /** serialVersionUID */
         private static final long serialVersionUID = 1349568700386246273L;
@@ -284,6 +312,41 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                     validatable.error(new ValidationError("Minimum Scale cannot be greater than Maximum Scale"));
                 }
             }
+        }
+    }
+
+    static class VendorParametersConvertor implements IConverter<Map<String, String>> {
+
+        @Override
+        public Map<String, String> convertToObject(String text, Locale locale) throws ConversionException {
+            Properties properties = new Properties();
+            if (text != null && !text.isEmpty()) {
+                try (StringReader reader = new StringReader(text)) {
+                    properties.load(reader); // Load properties from the string
+                } catch (IOException e) {
+                    throw new ConversionException(e);
+                }
+            }
+
+            // No empty keys as they break the url protocol when mapped to url parameters
+            return properties.entrySet().stream()
+                    .filter(e -> e.getKey() != null)
+                    .map(e -> Map.entry((String) e.getKey(), e.getValue() != null ? (String) e.getValue() : ""))
+                    .filter(e -> !Strings.isEmpty(e.getKey()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
+
+        @Override
+        public String convertToString(Map<String, String> parameters, Locale locale) {
+            if (parameters != null && !parameters.isEmpty()) {
+                try (StringWriter writer = new StringWriter()) {
+                    parameters.forEach((key, value) -> writer.write(key + "=" + value + "\n"));
+                    return writer.toString();
+                } catch (IOException e) {
+                    throw new ConversionException(e);
+                }
+            }
+            return "";
         }
     }
 }

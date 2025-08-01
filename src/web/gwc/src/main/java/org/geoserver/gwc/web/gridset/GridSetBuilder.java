@@ -117,7 +117,7 @@ class GridSetBuilder {
         return scales;
     }
 
-    private static <T extends Object> T checkNotNull(final T val, final String msg) throws IllegalStateException {
+    private static <T> T checkNotNull(final T val, final String msg) throws IllegalStateException {
         if (val == null) {
             throw new IllegalStateException(msg);
         }

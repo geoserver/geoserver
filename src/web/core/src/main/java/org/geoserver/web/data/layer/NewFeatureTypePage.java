@@ -293,7 +293,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
      *
      * @author Andrea Aime
      */
-    class PlaceholderLink extends ImageAjaxLink<Void> {
+    static class PlaceholderLink extends ImageAjaxLink<Void> {
 
         public PlaceholderLink(String id) {
             super(id, new PackageResourceReference(NewFeatureTypePage.class, "../../img/icons/blank.png"));

@@ -18,18 +18,18 @@ least make a note of the issue so that someone might fix it for you.
 File an issue
 -------------
 
-If you don't want to write the documentation, and/or would like to suggest a page that isn't included, you can request it.  Use Jira to file an issue.  Please include the name of the page, content, and the place where this new information should be included.  As with all issues, it is not guaranteed that someone will fulfill your request.
+If you don't want to write the documentation, and/or would like to suggest a page that isn't included, you can request it.  Use `Jira <https://osgeo-org.atlassian.net/projects/GEOS>`_ to file an issue.  Please include the name of the page, content, and the place where this new information should be included.  As with all issues, it is not guaranteed that someone will fulfill your request.
 
 .. _file_an_issue_with_patch:
 
-File an issue and include a documentation patch
------------------------------------------------
+Fix the documentation yourself
+------------------------------
 
-GeoServer uses `Jira <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issue tracking.  New documentation is treated like part of the code, so those who want to submit content (patches etc.) can use a pull request or file an issue with Jira and attach the content to the issue.  If the content is deemed satisfactory, a contributor with commit rights will add the content to the documentation.
+For :ref:`small edits or Quickfixes <quickfix>` GitHub supports direct reviewing and editing of documentation pages, any edit you make will be automatically forked and submitted to the project team as a pull request.
+
+For substantial changes, GeoServer uses `Jira <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issue tracking.  New documentation is treated like part of the code, so those who want to submit content (patches etc.) can use a pull request.  If the content is deemed satisfactory, a contributor with commit rights will add the content to the documentation.
 
 For more information see `CONTRIBUTING.md <https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md>`_ in GitHub.
-
-GitHub supports direct reviewing and editing of documentation pages, any edit you make will be automatically forked and submitted to the project team as a pull request.
 
 .. _commit_rights:
 

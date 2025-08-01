@@ -40,10 +40,10 @@ Process accepts following parameters:
 #. layerName - name of the raster layer (coverage) which will be used for altitude profile creation
 #. coverage - the actual raster to be used for altitude profile creation. This is an alternative to layerName, allows for process chaining (a chained process might have computed the input coverage)
 #. geometry - geometry in wkt or ewkt format, along which the altitude profile will be created. If wkt is used, its CRS will be assumed as CRS of coverage.
-#. distance - maximal distance between points of altitude profile
 
 **Optional:**
 
+#. distance - maximum distance (in meters) between points in the altitude profile. If not specified, this distance will be automatically determined based on the coverage resolution, by calculating the diagonal length of a central pixel.
 #. adjustmentLayerName - name of the layer with altitude, which will be used to adjust altitude values. Layer should have polygon or multipolygon geometry, and altitude attribute. Layer should be configured in the GeoServer
 #. targetProjection - target CRS of result
 #. altitudeIndex - index of altitude field in the array of coverage coordinates (0 by default)

@@ -65,11 +65,10 @@ public class RenderTimeStatisticsTest {
         }
         statistics.renderingComplete();
         assertEquals(statistics.getRenderingLayersIdxs(), Arrays.asList(0, 1));
-        assertEquals(statistics.getLayerNames().get(0), "Layer1");
-        assertEquals(statistics.getLayerNames().get(1), "Layer2");
+        assertEquals("Layer1", statistics.getLayerNames().get(0));
+        assertEquals("Layer2", statistics.getLayerNames().get(1));
         assertNotNull(statistics.getRenderingTime(0));
         assertNotNull(statistics.getRenderingTime(1));
-        assertNotNull(statistics.getLabellingTime());
         assertNotNull(attrs.getAttribute(RenderTimeStatistics.ID, 0));
     }
 

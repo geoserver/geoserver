@@ -18,6 +18,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 import java.util.logging.Level;
@@ -43,8 +45,13 @@ public class WatermarkDecoration implements MapDecoration {
 
     private float opacity = 1.0f;
 
-    /** Transient cache to avoid reloading the same file over and over */
-    private static final Map<URL, LogoCacheEntry> logoCache = new SoftValueHashMap<>();
+    /**
+     * Transient cache to avoid reloading the same file over and over
+     *
+     * <p>Uses URI as key to avoid hash-based containers of java.net.URL--the containers rely on equals() and
+     * hashCode(), which cause java.net.URL to make blocking internet connections.
+     */
+    private static final Map<URI, LogoCacheEntry> logoCache = new SoftValueHashMap<>();
 
     @Override
     public void loadOptions(Map<String, Expression> options) {
@@ -127,12 +134,18 @@ public class WatermarkDecoration implements MapDecoration {
             return null;
         }
 
-        LogoCacheEntry entry = logoCache.get(url);
+        URI key;
+        try {
+            key = url.toURI();
+        } catch (URISyntaxException e) {
+            throw new IOException(e);
+        }
+        LogoCacheEntry entry = logoCache.get(key);
         if (entry == null || entry.isExpired()) {
             logo = ImageIO.read(url);
             if (url.getProtocol().equals("file")) {
                 entry = new LogoCacheEntry(logo, new File(url.getFile()));
-                logoCache.put(url, entry);
+                logoCache.put(key, entry);
             }
         } else {
             logo = entry.getLogo();

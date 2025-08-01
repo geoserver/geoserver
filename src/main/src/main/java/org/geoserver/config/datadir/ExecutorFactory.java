@@ -7,7 +7,6 @@ package org.geoserver.config.datadir;
 import static java.lang.String.format;
 import static org.geoserver.config.datadir.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_THREADS;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory;
 import java.util.concurrent.ForkJoinWorkerThread;
@@ -53,7 +52,8 @@ class ExecutorFactory {
     public static ForkJoinPool createExecutor(Authentication admin) {
         final int parallelism = determineParallelism();
         final boolean asyncMode = false;
-        return new ForkJoinPool(parallelism, threadFactory(admin), uncaughtExceptionHandler(), asyncMode);
+        return new ForkJoinPool(
+                parallelism, threadFactory(admin), ExecutorFactory::uncaughtExceptionHandler, asyncMode);
     }
 
     /**
@@ -78,17 +78,11 @@ class ExecutorFactory {
         };
     }
 
-    /**
-     * Creates an exception handler to properly log unhandled exceptions in worker threads.
-     *
-     * @return an UncaughtExceptionHandler to log an error message in case of unrecoverable exception
-     */
-    private static UncaughtExceptionHandler uncaughtExceptionHandler() {
-        return (t, ex) -> {
-            String msg = format(
-                    "Uncaught exception loading catalog or config at thread %s: %s", t.getName(), ex.getMessage());
-            LOGGER.log(Level.SEVERE, msg, ex);
-        };
+    /** Exception handler to properly log unhandled exceptions in worker threads. */
+    private static void uncaughtExceptionHandler(Thread t, Throwable ex) {
+        String msg =
+                format("Uncaught exception loading catalog or config at thread %s: %s", t.getName(), ex.getMessage());
+        LOGGER.log(Level.SEVERE, msg, ex);
     }
 
     /**

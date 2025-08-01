@@ -8,7 +8,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Daether.connector.basic.threads=8 -Daether.metadataResolver.threads=8 -Daether.syncContext.named.time=120 -Daether.syncContext.named.factory=file-lock -Daether.syncContext.named.nameMapper=file-gav -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx756m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Daether.connector.basic.threads=8 -Daether.metadataResolver.threads=8 -Daether.syncContext.named.time=120 -Daether.syncContext.named.factory=file-lock -Daether.syncContext.named.nameMapper=file-gav -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx2g -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-22.04
-            jdk: 11
+            jdk: 17
             dist: 'temurin'
     steps:
     - uses: actions/checkout@v4
@@ -40,13 +40,13 @@ jobs:
     - name: Build GeoServer modules and extensions without tests
       run: |
         mvn --version
-        mvn -B -ntp -U -T3 -DskipTests -Prelease -f src/pom.xml install
+        mvn -B -ntp -U -T1C -DskipTests -Prelease -f src/pom.xml install
     - name: Package GeoServer modules and extensions
       run: |
         mvn -B -ntp -nsu -N -f src/pom.xml assembly:single
     - name: Build and package community modules (without tests)
       run: |
-        mvn -B -ntp -nsu -U -T3 -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
+        mvn -B -ntp -nsu -U -T1C -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
     - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

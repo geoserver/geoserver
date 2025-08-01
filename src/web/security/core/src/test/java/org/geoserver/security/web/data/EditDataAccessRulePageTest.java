@@ -65,13 +65,14 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
         form.setValue("roles:anyRole", true);
         form.submit("save");
 
-        tester.assertErrorMessages(new String[0]);
+        tester.assertErrorMessages();
         tester.assertRenderedPage(DataSecurityPage.class);
 
         DataAccessRule rule = getRule(ruleName);
         assertNotNull(rule);
         assertEquals(1, rule.getRoles().size());
-        assertEquals(GeoServerRole.ANY_ROLE, rule.getRoles().iterator().next());
+        String actual = rule.getRoles().iterator().next();
+        assertEquals(GeoServerRole.ANY_ROLE.getAuthority(), actual);
     }
 
     @Test

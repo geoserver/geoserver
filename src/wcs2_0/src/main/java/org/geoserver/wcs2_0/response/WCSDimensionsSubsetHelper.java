@@ -27,6 +27,7 @@ import net.opengis.wcs20.GetCoverageType;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.util.NearestMatchFinder;
@@ -1032,8 +1033,14 @@ public class WCSDimensionsSubsetHelper {
         Polygon llPolygon = JTS.toGeometry(new ReferencedEnvelope(envelope));
         GeometryDescriptor geom = source.getSchema().getGeometryDescriptor();
         PropertyName geometryProperty = ff.property(geom.getLocalName());
+
         Geometry nativeCRSPolygon = JTS.transform(
-                llPolygon, CRS.findMathTransform(envelope.getCoordinateReferenceSystem(), coverageInfo.getCRS()));
+                llPolygon,
+                CRS.findMathTransform(
+                        envelope.getCoordinateReferenceSystem(),
+                        ProjectionPolicy.FORCE_DECLARED.equals(coverageInfo.getProjectionPolicy())
+                                ? coverageInfo.getCRS()
+                                : coverageInfo.getNativeCRS()));
         Literal polygonLiteral = ff.literal(nativeCRSPolygon);
         //                    if(overlaps) {
         return ff.intersects(geometryProperty, polygonLiteral);
@@ -1211,7 +1218,24 @@ public class WCSDimensionsSubsetHelper {
 
     /** Prepare the DimensionBean list for this reader */
     public List<DimensionBean> setupDimensions() throws IOException {
-        StructuredGridCoverage2DReader structuredReader = null;
+        return setupDimensionBeans(reader, accessor, getCoverageName(), coverageInfo);
+    }
+
+    /**
+     * Setup all the {@link DimensionBean}s
+     *
+     * @param reader the reader used to retrieve dimensionDescriptor and metadata
+     * @param accessor the ReaderDimensionsAccessor used to access the dimensions
+     * @param coverageName the name of the coverage for which we want to setup the dimensions
+     * @param coverageInfo the coverageInfo containing the enabled dimensionInfo
+     */
+    public static List<DimensionBean> setupDimensionBeans(
+            GridCoverage2DReader reader,
+            ReaderDimensionsAccessor accessor,
+            String coverageName,
+            CoverageInfo coverageInfo)
+            throws IOException {
+        StructuredGridCoverage2DReader structuredReader;
         if (reader instanceof StructuredGridCoverage2DReader) {
             structuredReader = (StructuredGridCoverage2DReader) reader;
         } else {
@@ -1223,20 +1247,20 @@ public class WCSDimensionsSubsetHelper {
             return dimensions;
         }
         @SuppressWarnings("unchecked")
-        List<String> customDimensions =
-                (List<String>) (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
+        List<String> customDimensions = (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
+        Map<String, DimensionInfo> dimInfo = WCSDimensionsHelper.getDimensionsFromMetadata(coverageInfo.getMetadata());
 
         // Put custom dimensions as first
         for (String customDimension : customDimensions) {
-            dimensions.add(setupDimensionBean(structuredReader, customDimension));
+            dimensions.add(setupDimensionBean(structuredReader, accessor, coverageName, customDimension, dimInfo));
         }
-        // Put known dimensions afterwards similarly to what COARDS convention suggest: 1) Time ->
+        // Put known dimensions afterward similarly to what COARDS convention suggest: 1) Time ->
         // 2) Elevation
-        DimensionBean timeD = setupDimensionBean(structuredReader, "TIME");
+        DimensionBean timeD = setupDimensionBean(structuredReader, accessor, coverageName, "TIME", dimInfo);
         if (timeD != null) {
             dimensions.add(timeD);
         }
-        DimensionBean elevationD = setupDimensionBean(structuredReader, "ELEVATION");
+        DimensionBean elevationD = setupDimensionBean(structuredReader, accessor, coverageName, "ELEVATION", dimInfo);
         if (elevationD != null) {
             dimensions.add(elevationD);
         }
@@ -1249,13 +1273,20 @@ public class WCSDimensionsSubsetHelper {
      * {@link StructuredGridCoverage2DReader}
      *
      * @param structuredReader the reader used to retrieve dimensionDescriptor and metadata
+     * @param accessor the ReaderDimensionsAccessor used to access the dimensions
+     * @param coverageName the name of the coverage for which we want to setup the dimension
      * @param dimensionID the ID of the dimension to be setup
+     * @param enabledDimensions the set of enabled dimensionInfo retrieved from the metadata
      */
-    private DimensionBean setupDimensionBean(StructuredGridCoverage2DReader structuredReader, String dimensionID)
+    public static DimensionBean setupDimensionBean(
+            StructuredGridCoverage2DReader structuredReader,
+            ReaderDimensionsAccessor accessor,
+            String coverageName,
+            String dimensionID,
+            Map<String, DimensionInfo> enabledDimensions)
             throws IOException {
         Utilities.ensureNonNull("structuredReader", structuredReader);
         // Retrieve the proper dimension descriptor
-        final String coverageName = getCoverageName();
         final DimensionDescriptor descriptor =
                 WCSDimensionsHelper.getDimensionDescriptor(structuredReader, coverageName, dimensionID);
         if (descriptor == null) {

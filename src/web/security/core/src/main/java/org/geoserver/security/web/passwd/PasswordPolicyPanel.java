@@ -61,7 +61,7 @@ public class PasswordPolicyPanel extends SecurityNamedServicePanel<PasswordPolic
         getSecurityManager().loadPasswordPolicyConfig(config.getName());
     }
 
-    class MaxLengthPanel extends FormComponentPanel<PasswordPolicyConfig> {
+    static class MaxLengthPanel extends FormComponentPanel<PasswordPolicyConfig> {
 
         public MaxLengthPanel(String id) {
             super(id, new Model<>());

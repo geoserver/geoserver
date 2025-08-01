@@ -8,6 +8,7 @@ package org.geoserver.web.services;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -35,8 +36,10 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
+import org.geoserver.web.UnauthorizedPage;
 import org.geoserver.web.data.resource.TitleAndAbstractPanel;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
@@ -70,6 +73,8 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  */
 // TODO WICKET8 - Verify this page (and derived pages?) work OK
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
+    /** Allows workspace admins access to the workspace service configuration too * */
+    public static final String WORKSPACE_ADMIN_SERVICE_ACCESS = "WORKSPACE_ADMIN_SERVICE_ACCESS";
 
     protected GeoServerDialog dialog;
     protected List<SerializableConsumer<Void>> onSubmitHooks = new ArrayList<>();
@@ -96,8 +101,15 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         Form<T> form = new Form<>("form", new CompoundPropertyModel<>(infoModel));
         add(form);
 
-        if (service.getWorkspace() == null) {
-            // create the panel that has the drop down list to switch between workspace
+        boolean allowAccess = Boolean.parseBoolean(GeoServerExtensions.getProperty(WORKSPACE_ADMIN_SERVICE_ACCESS));
+        if (service.getWorkspace() == null || !allowAccess) {
+            // check it's really a full admin (to make sure the page cannot be accessed by workspace admins using
+            // a direct link to the global edit page)
+            if (!isAuthenticatedAsAdmin()) {
+                throw new RestartResponseException(UnauthorizedPage.class);
+            }
+
+            // create the panel that has the dropdown list to switch between workspace
             form.add(new GlobalWorkspacePanel("workspace"));
         } else {
             // create just a panel with a label that signifies the workspace
@@ -395,5 +407,14 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             fragment.add(new TextArea<>("abstract"));
         }
         return fragment;
+    }
+
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        // This page is used in two context, for global services and workspace services
+        // the authorizer is set to workspace admin to allow access to workspace services
+        // but a check for full admin is performed in the constructor to verify access to global services
+        // Rationale: this method is called when the page is constructed, and the workspace is not yet known
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 }

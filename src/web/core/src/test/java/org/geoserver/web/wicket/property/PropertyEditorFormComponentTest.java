@@ -64,7 +64,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
     }
 
     @Test
-    @SuppressWarnings({"TryFailThrowable", "PMD.ForLoopCanBeForEach"})
+    @SuppressWarnings("TryFailThrowable")
     public void testRemove() {
         foo.getProps().put("foo", "bar");
         foo.getProps().put("bar", "baz");

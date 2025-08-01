@@ -119,9 +119,6 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
 
         Document document = getAsDOM(BASEPATH + "/security/authFilters/viewXml.xml", 200);
         assertXpathEvaluatesTo("viewXml", "/authFilter/name", document);
-        assertXpathEvaluatesTo(
-                "org.geoserver.security.config.SecurityInterceptorFilterConfig", "/authFilter/className", document);
-        assertXpathExists("/authFilter/id", document);
         assertXpathExists("/authFilter/config", document);
     }
 
@@ -151,11 +148,7 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
 
         JSON json = getAsJSON(BASEPATH + "/security/authFilters/viewJson.json", 200);
         JSONObject jsonObject = ((JSONObject) json).getJSONObject("authFilter");
-
         assertEquals("viewJson", jsonObject.getString("name"));
-        assertEquals(
-                "org.geoserver.security.config.SecurityInterceptorFilterConfig", jsonObject.getString("className"));
-        assertNotNull("false", jsonObject.getString("id"));
         assertNotNull("false", jsonObject.getJSONObject("config"));
     }
 
@@ -179,9 +172,6 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
 
         Document viewDocument = getAsDOM(BASEPATH + "/security/authFilters/postXml.xml", 200);
         assertXpathEvaluatesTo("postXml", "/authFilter/name", viewDocument);
-        assertXpathEvaluatesTo(
-                "org.geoserver.security.config.SecurityInterceptorFilterConfig", "/authFilter/className", viewDocument);
-        assertXpathExists("/authFilter/id", viewDocument);
         assertXpathExists("/authFilter/config", viewDocument);
     }
 
@@ -208,9 +198,6 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
 
         Document viewDocument = getAsDOM(BASEPATH + "/security/authFilters/postJson.xml", 200);
         assertXpathEvaluatesTo("postJson", "/authFilter/name", viewDocument);
-        assertXpathEvaluatesTo(
-                "org.geoserver.security.config.SecurityInterceptorFilterConfig", "/authFilter/className", viewDocument);
-        assertXpathExists("/authFilter/id", viewDocument);
         assertXpathExists("/authFilter/config", viewDocument);
     }
 
@@ -223,7 +210,6 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
             + "</authFilter>";
 
     private static final String testPutXml = "<authFilter>\n" + "    <name>putXml</name>\n"
-            + "    <id>-6f36fd15:1977e3a5d47:-7fff</id>\n"
             + "    <config class=\"org.geoserver.security.config.SecurityInterceptorFilterConfig\">\n"
             + "        <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
             + "        <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"

@@ -310,7 +310,7 @@ public class GetMap {
             }
         }
 
-        RenderingVariables.setupEnvironmentVariables(mapContent);
+        RenderingVariablesCallback.setupEnvironmentVariables(mapContent);
 
         // set the buffer value if the admin has set a specific value for some layers
         // in this map

@@ -855,6 +855,8 @@
   
   <bean id="clipWMSGetMapCallBack" class="org.geoserver.wms.clip.ClipWMSGetMapCallBack"/>
 
+  <bean id="renderingVariablesCallback" class="org.geoserver.wms.RenderingVariablesCallback"/>
+
     <bean id="wmsDefaultLocaleCallback" class="org.geoserver.wms.WMSDefaultLocaleCallback">
         <constructor-arg ref="geoServer"/>
     </bean>

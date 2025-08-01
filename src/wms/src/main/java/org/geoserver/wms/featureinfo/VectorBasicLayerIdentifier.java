@@ -17,6 +17,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.RenderingVariables;
 import org.geoserver.wms.WMS;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
@@ -142,23 +143,25 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
 
         // build the query
         String typeName = schema.getName().getLocalPart();
-        Query q = new Query(typeName, null, getFInfoFilter, maxFeatures, params.getPropertyNames(), null);
-        q.setSortBy(params.getSort());
+        Query query = new Query(typeName, null, getFInfoFilter, maxFeatures, params.getPropertyNames(), null);
+        query.setSortBy(params.getSort());
 
         // handle sql view params
+        RenderingVariables.setupEnvironmentVariables(params);
+        query = RenderingVariables.setHintsToQuery(query);
         final Map<String, String> viewParams = params.getViewParams();
         if (viewParams != null && !viewParams.isEmpty()) {
-            q.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams));
+            query.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams));
         }
 
-        LOGGER.log(Level.FINE, q.toString());
+        LOGGER.log(Level.FINE, query.toString());
         // let's see if we need to reproject
         if (!wms.isFeaturesReprojectionDisabled()) {
             // reproject the features to the getMapRequest CRS, this way complex feature will also
             // be reprojected
-            q.setCoordinateSystemReproject(requestedCRS);
+            query.setCoordinateSystemReproject(requestedCRS);
         }
-        FeatureCollection<? extends FeatureType, ? extends Feature> match = featureSource.getFeatures(q);
+        FeatureCollection<? extends FeatureType, ? extends Feature> match = featureSource.getFeatures(query);
 
         // if we could not include the rules filter into the query, post process in
         // memory

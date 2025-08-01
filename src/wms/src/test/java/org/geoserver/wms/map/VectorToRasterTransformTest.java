@@ -12,7 +12,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.RenderingVariables;
+import org.geoserver.wms.RenderingVariablesCallback;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.api.data.Query;
@@ -75,7 +75,7 @@ public class VectorToRasterTransformTest extends WMSTestSupport {
         map.addLayer(new FeatureLayer(source, style));
         request.setFormat("image/gif");
 
-        RenderingVariables.setupEnvironmentVariables(map);
+        RenderingVariablesCallback.setupEnvironmentVariables(map);
         final RenderedImageMap imageMap = new RenderedImageMapOutputFormat(getWMS()).produceMap(map);
         imageMap.dispose();
         assertTrue("The query filter should have a BBOX", containsBBox.booleanValue());

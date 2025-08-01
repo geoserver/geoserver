@@ -40,7 +40,7 @@ import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.RenderingVariables;
+import org.geoserver.wms.RenderingVariablesCallback;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
@@ -163,7 +163,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             FeatureLayer layer = getLayer(params, style);
             mc.addLayer(layer);
             // setup the env variables just like in the original GetMap
-            RenderingVariables.setupEnvironmentVariables(mc);
+            RenderingVariablesCallback.setupEnvironmentVariables(mc);
 
             // setup the transformation from screen to world space
             AffineTransform worldToScreen = RendererUtilities.worldToScreenTransform(

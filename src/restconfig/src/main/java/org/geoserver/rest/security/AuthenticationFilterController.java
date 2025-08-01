@@ -20,6 +20,7 @@ import org.geoserver.rest.security.xml.AuthFilter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityFilterConfig;
+import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.security.validation.FilterConfigValidator;
 import org.geoserver.security.validation.SecurityConfigException;
@@ -162,10 +163,10 @@ public class AuthenticationFilterController extends RestBaseController {
 
     protected List<AuthFilter> loadAuthFilters() {
         try {
-            Set<String> authFilterNames = securityManager.listFilters();
+            Set<String> authFilterNames = securityManager.listFilters(GeoServerAuthenticationFilter.class);
             List<AuthFilter> authFilters = new ArrayList<>();
             for (String filterName : authFilterNames) {
-                SecurityFilterConfig securityFilterConfig = securityManager.loadFilterConfig(filterName, true);
+                SecurityFilterConfig securityFilterConfig = securityManager.loadFilterConfig(filterName, false);
                 if (securityFilterConfig != null) {
                     authFilters.add(new AuthFilter(securityFilterConfig));
                 }
@@ -178,7 +179,7 @@ public class AuthenticationFilterController extends RestBaseController {
 
     protected AuthFilter loadAuthFilter(String filterName) {
         try {
-            SecurityFilterConfig authFilter = securityManager.loadFilterConfig(filterName, true);
+            SecurityFilterConfig authFilter = securityManager.loadFilterConfig(filterName, false);
             if (authFilter == null) {
                 LOGGER.warning(format("Cannot find %s because it does not exist", filterName));
                 throw new IllegalArgumentException(format("Cannot find %s because it does not exist", filterName));
@@ -204,7 +205,7 @@ public class AuthenticationFilterController extends RestBaseController {
         }
 
         try {
-            if (securityManager.loadFilterConfig(newFilter.getName(), true) != null) {
+            if (securityManager.loadFilterConfig(newFilter.getName(), false) != null) {
                 LOGGER.warning(format(
                         "Cannot create the filter %s because a filter with the name already exists",
                         newFilter.getName()));
@@ -225,7 +226,7 @@ public class AuthenticationFilterController extends RestBaseController {
         }
 
         try {
-            SecurityFilterConfig authFilter = securityManager.loadFilterConfig(newFilter.getName(), true);
+            SecurityFilterConfig authFilter = securityManager.loadFilterConfig(newFilter.getName(), false);
             return new AuthFilter(authFilter);
         } catch (IOException ex) {
             throw new IllegalStateException(
@@ -242,7 +243,7 @@ public class AuthenticationFilterController extends RestBaseController {
         }
 
         try {
-            SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, true);
+            SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, false);
             if (filter == null) {
                 LOGGER.warning(format("Cannot update %s because it does not exist", filterName));
                 throw new IllegalArgumentException(format("Cannot update %s because it does not exist", filterName));
@@ -272,7 +273,7 @@ public class AuthenticationFilterController extends RestBaseController {
         }
 
         try {
-            SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, true);
+            SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, false);
             if (filter == null) {
                 LOGGER.warning(format("Cannot delete %s because it does not exist", filterName));
                 throw new IllegalArgumentException("Cannot find filter " + filterName);

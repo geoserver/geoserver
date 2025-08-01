@@ -50,8 +50,8 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
                 && bbox.getMinY() == -90.0
                 && bbox.getMaxY() == 90.0);
         assertEquals("image/png", format);
-        assertEquals(width, 768);
-        assertEquals(height, 384);
+        assertEquals(768, width);
+        assertEquals(384, height);
     }
 
     /** Tests basic reprojection */
@@ -149,7 +149,7 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
 
         // request too stretched south/north
         request = createGetMapRequest(MockData.BRIDGES);
-        request.setBbox(new Envelope(-0, 10, -90, 90));
+        request.setBbox(new Envelope(-0.0, 10, -90, 90));
         request.setFormat("application/openlayers");
         reflector.autoSetBoundsAndSize(request);
         assertEquals(330, request.getWidth());

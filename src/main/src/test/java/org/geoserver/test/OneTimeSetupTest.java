@@ -5,8 +5,8 @@
  */
 package org.geoserver.test;
 
-import junit.extensions.TestSetup; // NOPMD
-import junit.framework.TestSuite; // NOPMD
+import junit.extensions.TestSetup;
+import junit.framework.TestSuite;
 import org.junit.After;
 import org.junit.Before;
 
@@ -32,11 +32,6 @@ import org.junit.Before;
  * @author Andrea Aime - TOPP
  * @author Gabriel Roldan - TOPP
  */
-@SuppressWarnings({
-    "PMD.DisallowJunit3",
-    "PMD.JUnit4TestShouldUseBeforeAnnotation",
-    "PMD.JUnit4TestShouldUseAfterAnnotation"
-})
 public abstract class OneTimeSetupTest {
     private static boolean oneTimeSetupDone;
     private static boolean forceOneTimeTearDown;

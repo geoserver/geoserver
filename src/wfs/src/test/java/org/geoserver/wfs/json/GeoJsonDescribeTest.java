@@ -30,16 +30,16 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
 
     private void testOutput(String output) {
         JSONObject description = JSONObject.fromObject(output);
-        assertEquals(description.get("elementFormDefault"), "qualified");
-        assertEquals(description.get("targetNamespace"), "http://cite.opengeospatial.org/gmlsf");
-        assertEquals(description.get("targetPrefix"), "sf");
+        assertEquals("qualified", description.get("elementFormDefault"));
+        assertEquals("http://cite.opengeospatial.org/gmlsf", description.get("targetNamespace"));
+        assertEquals("sf", description.get("targetPrefix"));
         JSONArray array = description.getJSONArray("featureTypes");
         // print(array);
 
         assertEquals(1, array.size());
         JSONObject feature = array.getJSONObject(0);
 
-        assertEquals(feature.get("typeName"), "PrimitiveGeoFeature");
+        assertEquals("PrimitiveGeoFeature", feature.get("typeName"));
 
         JSONArray props = feature.getJSONArray("properties");
         assertNotNull(props);
@@ -49,7 +49,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("description", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:string", props.getJSONObject(i).get("type"));
         assertEquals("string", props.getJSONObject(i).get("localType"));
 
@@ -58,7 +58,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("name", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:string", props.getJSONObject(i).get("type"));
         assertEquals("string", props.getJSONObject(i).get("localType"));
 
@@ -67,7 +67,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("surfaceProperty", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("gml:Polygon", props.getJSONObject(i).get("type"));
         assertEquals("Polygon", props.getJSONObject(i).get("localType"));
 
@@ -76,7 +76,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("pointProperty", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:Point", props.getJSONObject(i).get("type"));
         assertEquals("Point", props.getJSONObject(i).get("localType"));
 
@@ -85,7 +85,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("curveProperty", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:LineString", props.getJSONObject(i).get("type"));
         assertEquals("LineString", props.getJSONObject(i).get("localType"));
 
@@ -94,7 +94,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("intProperty", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:int", props.getJSONObject(i).get("type"));
         assertEquals("int", props.getJSONObject(i).get("localType"));
 
@@ -103,7 +103,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("uriProperty", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:string", props.getJSONObject(i).get("type"));
         assertEquals("string", props.getJSONObject(i).get("localType"));
 
@@ -112,7 +112,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("measurand", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:string", props.getJSONObject(i).get("type"));
         assertEquals("string", props.getJSONObject(i).get("localType"));
 
@@ -121,7 +121,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("dateTimeProperty", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:date-time", props.getJSONObject(i).get("type"));
         assertEquals("date-time", props.getJSONObject(i).get("localType"));
 
@@ -130,7 +130,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("dateProperty", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:date", props.getJSONObject(i).get("type"));
         assertEquals("date", props.getJSONObject(i).get("localType"));
 
@@ -139,7 +139,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("decimalProperty", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:number", props.getJSONObject(i).get("type"));
         assertEquals("number", props.getJSONObject(i).get("localType"));
 
@@ -148,7 +148,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals("booleanProperty", props.getJSONObject(i).get("name"));
         assertEquals(Integer.valueOf(0), props.getJSONObject(i).get("minOccurs"));
         assertEquals(Integer.valueOf(1), props.getJSONObject(i).get("maxOccurs"));
-        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertTrue((Boolean) props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:boolean", props.getJSONObject(i).get("type"));
         assertEquals("boolean", props.getJSONObject(i).get("localType"));
     }

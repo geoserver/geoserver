@@ -52,7 +52,7 @@ public class GetLegendGraphicGeofenceTest extends GeofenceWMSTestSupport {
                     + "&style="
                     + "&format=image/png&width=20&height=20";
             MockHttpServletResponse response = getAsServletResponse(url);
-            assertEquals(response.getContentType(), "image/png");
+            assertEquals("image/png", response.getContentType());
 
         } finally {
             deleteRules(ruleService, ruleId1);
@@ -106,7 +106,7 @@ public class GetLegendGraphicGeofenceTest extends GeofenceWMSTestSupport {
                     + "&format=image/png&width=20&height=20";
             MockHttpServletResponse response = getAsServletResponse(url);
             // default lg style should not fail
-            assertEquals(response.getContentType(), "image/png");
+            assertEquals("image/png", response.getContentType());
 
             url = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
                     + "&layer="
@@ -115,7 +115,7 @@ public class GetLegendGraphicGeofenceTest extends GeofenceWMSTestSupport {
                     + "&format=image/png&width=20&height=20";
             response = getAsServletResponse(url);
             // should fail the forests_style contains the not allowed polygon style
-            assertEquals(getBaseMimeType(response.getContentType()), "application/vnd.ogc.se_xml");
+            assertEquals("application/vnd.ogc.se_xml", getBaseMimeType(response.getContentType()));
             assertTrue(response.getContentAsString().contains("style is not available on this layer"));
         } finally {
             deleteRules(ruleService, ruleId1, ruleId2);

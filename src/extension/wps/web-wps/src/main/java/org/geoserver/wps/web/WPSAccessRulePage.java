@@ -116,7 +116,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                             TextArea<String> roles = new TextArea<>("roles", pm) {
                                 @Override
                                 @SuppressWarnings("unchecked")
-                                public <C extends Object> IConverter<C> getConverter(java.lang.Class<C> type) {
+                                public <C> IConverter<C> getConverter(java.lang.Class<C> type) {
                                     return new RolesConverter(availableRoles);
                                 }
                             };

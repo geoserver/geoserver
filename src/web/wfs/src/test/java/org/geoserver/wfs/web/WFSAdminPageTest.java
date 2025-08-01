@@ -117,6 +117,13 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
         assertTrue("getFeatureOutputTypeCheckingEnabled= true", wfs.isGetFeatureOutputTypeCheckingEnabled());
         assertEquals("getFeatureOutputTypes= KML", Collections.singleton("KML"), wfs.getGetFeatureOutputTypes());
+        // test disableStoredQueries
+        tester.startPage(WFSAdminPage.class);
+        ft = tester.newFormTester("form");
+        ft.setValue("disableStoredQueriesManagement", true);
+        ft.submit("submit");
+        wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
+        assertTrue("disableStoredQueriesManagement = true", wfs.isDisableStoredQueriesManagement());
     }
 
     @Test
@@ -295,7 +302,9 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("csvDateFormat", "yyyy-MM-dd'T'HH:mm:ss'Z'");
         ft.submit("submit");
         assertNotNull(getGeoServer().getService(WFSInfo.class).getCsvDateFormat());
-        assertEquals(getGeoServer().getService(WFSInfo.class).getCsvDateFormat(), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+        assertEquals(
+                "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                getGeoServer().getService(WFSInfo.class).getCsvDateFormat());
     }
 
     @Test

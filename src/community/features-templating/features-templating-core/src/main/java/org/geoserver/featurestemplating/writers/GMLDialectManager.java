@@ -110,12 +110,18 @@ abstract class GMLDialectManager {
         Coordinate[] coordinates = exteriorRing.getCoordinates();
         streamWriter.writeStartElement(GML_PREFIX, "Surface", gmlNsUri);
         writeGeometryAttributes(index);
+
+        streamWriter.writeStartElement(GML_PREFIX, "patches", gmlNsUri);
+        streamWriter.writeStartElement(GML_PREFIX, "PolygonPatch", gmlNsUri);
+
         writePolygonRing("exterior", coordinates, gmlNsUri);
         int numInterior = polygon.getNumInteriorRing();
         for (int i = 0; i < numInterior; i++) {
             coordinates = polygon.getInteriorRingN(i).getCoordinates();
             writePolygonRing("interior", coordinates, gmlNsUri);
         }
+        streamWriter.writeEndElement();
+        streamWriter.writeEndElement();
         streamWriter.writeEndElement();
     }
 

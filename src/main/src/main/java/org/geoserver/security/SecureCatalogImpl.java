@@ -1511,7 +1511,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         // create secured decorators on-demand. Assume this method is used only for listing, not
         // for accessing a single resource by name/id, thus use hide policy for mixed mode
         final Function<T, T> securityWrapper = securityWrapper(of, MixedModeBehavior.HIDE);
-        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         final CloseableIterator<T> filteredWrapped = CloseableIteratorAdapter.transform(filtered, securityWrapper);
 
         // wrap the iterator in a notNull filter to ensure any filtered
@@ -1533,7 +1532,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         // create secured decorators on-demand. Assume this method is used only for listing, not
         // for accessing a single resource by name/id, thus use hide policy for mixed mode
         final Function<T, T> securityWrapper = securityWrapper(of, MixedModeBehavior.HIDE);
-        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         final CloseableIterator<T> filteredWrapped = CloseableIteratorAdapter.transform(filtered, securityWrapper);
 
         // wrap the iterator in a notNull filter to ensure any filtered

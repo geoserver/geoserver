@@ -50,7 +50,7 @@ public interface GeoServerFactory {
      * @param clazz The class of object to create.
      * @return The new object.
      */
-    <T extends Object> T create(Class<T> clazz);
+    <T> T create(Class<T> clazz);
 
     /** Factory extension. */
     interface Extension {
@@ -60,7 +60,7 @@ public interface GeoServerFactory {
          *
          * @param clazz The class of object to create.
          */
-        <T extends Object> boolean canCreate(Class<T> clazz);
+        <T> boolean canCreate(Class<T> clazz);
 
         /**
          * Creates an instance of the specified class.
@@ -70,6 +70,6 @@ public interface GeoServerFactory {
          * @param clazz The class of object to create.
          * @return The new object.
          */
-        <T extends Object> T create(Class<T> clazz);
+        <T> T create(Class<T> clazz);
     }
 }

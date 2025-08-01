@@ -82,7 +82,7 @@ public class NewGroupPageTest extends AbstractSecurityWicketTestSupport {
         form.submit("save");
         tester.assertRenderedPage(SecurityNamedServiceEditPage.class);
 
-        tester.assertErrorMessages(new String[0]);
+        tester.assertErrorMessages();
 
         GeoServerUserGroup group = ugService.getGroupByGroupname("testgroup");
         assertNotNull(group);

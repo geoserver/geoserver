@@ -155,7 +155,7 @@ public class LegacyServiceExceptionHandler extends ServiceExceptionHandler {
 
             if (geoServer.getSettings().isVerboseExceptions()) {
                 ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();
-                exception.printStackTrace(new PrintStream(stackTrace)); // NOPMD
+                exception.printStackTrace(new PrintStream(stackTrace));
 
                 sb.append("\nDetails:\n");
                 sb.append(ResponseUtils.encodeXML(new String(stackTrace.toByteArray())));

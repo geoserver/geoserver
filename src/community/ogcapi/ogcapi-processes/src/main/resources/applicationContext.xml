@@ -18,7 +18,7 @@
     <context:component-scan base-package="org.geoserver.ogcapi.v1.processes"/>
 
     <!-- Bridges to have OGC services show up as OWS services too -->
-    <bean id="mapsServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">
+    <bean id="processesServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">
         <constructor-arg index="0" value="Processes"/>
         <constructor-arg index="1" value="1.0.0"/>
     </bean>

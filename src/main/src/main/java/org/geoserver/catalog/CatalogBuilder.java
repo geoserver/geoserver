@@ -42,18 +42,15 @@ import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeographicCRS;
 import org.geotools.api.referencing.datum.PixelInCell;
-import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.feature.FeatureTypes;
-import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
@@ -66,12 +63,9 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Lineal;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.Puntal;
 
 /**
  * Builder class which provides convenience methods for interacting with the catalog.
@@ -1028,8 +1022,7 @@ public class CatalogBuilder {
         }
         cinfo.setNativeCoverageName(nativeCoverageName);
 
-        cinfo.setDescription(
-                new StringBuilder("Generated from ").append(format.getName()).toString());
+        cinfo.setDescription("Generated from " + format.getName());
 
         // keywords
         cinfo.getKeywords().add(new Keyword("WCS"));
@@ -1037,13 +1030,7 @@ public class CatalogBuilder {
 
         // native format name
         cinfo.setNativeFormat(format.getName());
-        cinfo.getMetadata()
-                .put(
-                        "dirName",
-                        new StringBuilder(store.getName())
-                                .append("_")
-                                .append(nativeCoverageName)
-                                .toString());
+        cinfo.getMetadata().put("dirName", store.getName() + "_" + nativeCoverageName);
 
         // request and response SRS's
         if (cinfo.getSRS() != null) {
@@ -1113,51 +1100,14 @@ public class CatalogBuilder {
     private GridSampleDimension[] getCoverageSampleDimensions(
             GridCoverage2DReader reader, Map<String, Serializable> customParameters)
             throws TransformException, IOException, Exception {
-        GridEnvelope originalRange = reader.getOriginalGridRange();
+
         Format format = reader.getFormat();
         final ParameterValueGroup readParams = format.getReadParameters();
         final Map<String, Serializable> parameters = CoverageUtils.getParametersKVP(readParams);
-        final int minX = originalRange.getLow(0);
-        final int minY = originalRange.getLow(1);
-        final int width = originalRange.getSpan(0);
-        final int height = originalRange.getSpan(1);
-        final int maxX = minX + (width <= 5 ? width : 5);
-        final int maxY = minY + (height <= 5 ? height : 5);
-
-        // we have to be sure that we are working against a valid grid range.
-        final GridEnvelope2D testRange = new GridEnvelope2D(minX, minY, maxX, maxY);
-
-        // build the corresponding envelope
-        final MathTransform gridToWorldCorner = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
-
-        final GeneralBounds testEnvelope = CRS.transform(gridToWorldCorner, new GeneralBounds(testRange.getBounds()));
-        testEnvelope.setCoordinateReferenceSystem(reader.getCoordinateReferenceSystem());
-
-        if (customParameters != null) {
-            parameters.putAll(customParameters);
-        }
-
-        // make sure mosaics with many superimposed tiles won't blow up with
-        // a "too many open files" exception
-        String maxAllowedTiles = ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString();
-        if (parameters.keySet().contains(maxAllowedTiles)) {
-            parameters.put(maxAllowedTiles, 1);
-        }
-
-        // Since the read sample image won't be greater than 5x5 pixels and we are limiting the
-        // number of granules to 1, we may do direct read instead of using JAI
-        String useJaiImageRead = ImageMosaicFormat.USE_JAI_IMAGEREAD.getName().toString();
-        if (parameters.keySet().contains(useJaiImageRead)) {
-            parameters.put(useJaiImageRead, false);
-        }
-
-        parameters.put(
-                AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
-                new GridGeometry2D(testRange, testEnvelope));
-
-        // try to read this coverage
-        final GridCoverage2D gc = reader.read(CoverageUtils.getParameters(readParams, parameters, true));
         final GridSampleDimension[] sampleDimensions;
+
+        final GridCoverage2D gc =
+                CoverageUtils.readSampleGridCoverage(reader, readParams, parameters, customParameters, true);
         if (gc != null) {
             // remove read grid geometry since it is request specific
             parameters.remove(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString());
@@ -1546,14 +1496,12 @@ public class CatalogBuilder {
         }
 
         Class<?> gtype = gd.getType().getBinding();
-        if (Point.class.isAssignableFrom(gtype) || MultiPoint.class.isAssignableFrom(gtype)) {
+        if (Puntal.class.isAssignableFrom(gtype)) {
             styleName = StyleInfo.DEFAULT_POINT;
-        } else if (LineString.class.isAssignableFrom(gtype) || MultiLineString.class.isAssignableFrom(gtype)) {
+        } else if (Lineal.class.isAssignableFrom(gtype)) {
             styleName = StyleInfo.DEFAULT_LINE;
-        } else if (Polygon.class.isAssignableFrom(gtype) || MultiPolygon.class.isAssignableFrom(gtype)) {
+        } else if (Polygonal.class.isAssignableFrom(gtype)) {
             styleName = StyleInfo.DEFAULT_POLYGON;
-        } else if (Point.class.isAssignableFrom(gtype) || MultiPoint.class.isAssignableFrom(gtype)) {
-            styleName = StyleInfo.DEFAULT_POINT;
         } else {
             // fall back to the generic style
             styleName = StyleInfo.DEFAULT_GENERIC;

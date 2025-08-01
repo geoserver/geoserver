@@ -2315,7 +2315,7 @@ public class ResourcePool {
      * @param <K>
      * @param <V>
      */
-    abstract class CatalogResourceCache<K, V> extends SoftValueHashMap<K, V> {
+    abstract static class CatalogResourceCache<K, V> extends SoftValueHashMap<K, V> {
 
         public CatalogResourceCache() {
             this(100);
@@ -2494,7 +2494,7 @@ public class ResourcePool {
         }
     }
 
-    class FeatureTypeAttributeCache extends CatalogResourceCache<String, List<AttributeTypeInfo>> {
+    static class FeatureTypeAttributeCache extends CatalogResourceCache<String, List<AttributeTypeInfo>> {
 
         FeatureTypeAttributeCache(int size) {
             super(size);
@@ -2506,7 +2506,7 @@ public class ResourcePool {
         }
     }
 
-    class WMSCache extends CatalogResourceCache<String, WebMapServer> {
+    static class WMSCache extends CatalogResourceCache<String, WebMapServer> {
 
         @Override
         protected void dispose(String key, WebMapServer server) {
@@ -2526,7 +2526,7 @@ public class ResourcePool {
         }
     }
 
-    class WMTSCache extends CatalogResourceCache<String, WebMapTileServer> {
+    static class WMTSCache extends CatalogResourceCache<String, WebMapTileServer> {
 
         @Override
         protected void dispose(String key, WebMapTileServer server) {

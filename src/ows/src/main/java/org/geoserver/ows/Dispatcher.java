@@ -819,7 +819,7 @@ public class Dispatcher extends AbstractController {
                 // GEOS-934  and GEOS-1288
                 Method setBaseUrl = OwsUtils.setter(requestBean.getClass(), "baseUrl", String.class);
                 if (setBaseUrl != null) {
-                    setBaseUrl.invoke(requestBean, new String[] {ResponseUtils.baseURL(req.getHttpRequest())});
+                    setBaseUrl.invoke(requestBean, ResponseUtils.baseURL(req.getHttpRequest()));
                 }
 
                 // another couple of thos of those lovley cite things, version+service has to

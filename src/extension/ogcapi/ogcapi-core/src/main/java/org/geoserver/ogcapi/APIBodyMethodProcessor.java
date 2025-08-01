@@ -100,9 +100,13 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         response = fireResponseDispatchedCallback(dr, dr.getOperation(), value, response);
 
         // write using the response provided by the callbacks
-        outputMessage
-                .getHeaders()
-                .setContentType(MediaType.parseMediaType(response.getMimeType(value, dr.getOperation())));
+        String contentType = response.getMimeType(value, dr.getOperation());
+        outputMessage.getHeaders().setContentType(MediaType.parseMediaType(contentType));
+        servletResponse.setContentType(contentType);
+        String responseCharset = response.getCharset(dr.getOperation());
+        if (responseCharset != null) {
+            servletResponse.setCharacterEncoding(response.getCharset(dr.getOperation()));
+        }
         response.write(value, servletResponse.getOutputStream(), dr.getOperation());
     }
 

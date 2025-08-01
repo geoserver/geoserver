@@ -16,6 +16,7 @@
  */
 package org.geotools.dggs.clickhouse;
 
+import static org.geotools.dggs.clickhouse.ClickHouseDGGSDataStore.DEFAULT_CRS;
 import static org.geotools.dggs.clickhouse.ClickHouseDGGSDataStore.DEFAULT_GEOMETRY;
 import static org.geotools.dggs.clickhouse.ClickHouseDGGSDataStore.GEOMETRY;
 
@@ -48,7 +49,6 @@ import org.geotools.feature.collection.FilteringSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStore;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 
 public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
 
@@ -231,7 +231,7 @@ public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
         CoordinateReferenceSystem sourceCRS = query.getCoordinateSystem();
         CoordinateReferenceSystem targetCRS = query.getCoordinateSystemReproject();
 
-        if (sourceCRS != null && !sourceCRS.equals(DefaultGeographicCRS.WGS84)) {
+        if (sourceCRS != null && !sourceCRS.equals(DEFAULT_CRS)) {
             // override the nativeCRS
             try {
                 result = DataUtilities.simple(new ForceCoordinateSystemFeatureResults(result, sourceCRS));
@@ -240,7 +240,7 @@ public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
             }
         } else {
             // no override
-            sourceCRS = DefaultGeographicCRS.WGS84;
+            sourceCRS = DEFAULT_CRS;
         }
         if (targetCRS != null) {
             if (sourceCRS == null) {

@@ -57,7 +57,7 @@ public class DirectTemplateFeatureCollectionFactory
         return new TemplateFeatureCollection(collection, wrapper);
     }
 
-    protected class TemplateFeatureCollection implements TemplateCollectionModel, TemplateSequenceModel {
+    protected static class TemplateFeatureCollection implements TemplateCollectionModel, TemplateSequenceModel {
         protected BeansWrapper wrapper;
 
         protected FeatureCollection collection;
@@ -118,7 +118,7 @@ public class DirectTemplateFeatureCollectionFactory
         }
     }
 
-    protected class TemplateFeatureIterator implements TemplateModelIterator {
+    protected static class TemplateFeatureIterator implements TemplateModelIterator {
 
         protected BeansWrapper wrapper;
 

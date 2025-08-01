@@ -234,7 +234,7 @@ public class GetMapTest {
         assertEquals(wmtsInfo.getNativeCRS(), crs);
     }
 
-    class MockWMTSStoreInfo extends WMTSStoreInfoImpl {
+    static class MockWMTSStoreInfo extends WMTSStoreInfoImpl {
 
         MockWMTSStoreInfo(Catalog catalog) {
             super(catalog);

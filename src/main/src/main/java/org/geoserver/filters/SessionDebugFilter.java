@@ -56,7 +56,7 @@ public class SessionDebugFilter implements Filter {
      *
      * @author Andrea Aime - GeoSolutions
      */
-    class SessionDebugWrapper extends HttpServletRequestWrapper {
+    static class SessionDebugWrapper extends HttpServletRequestWrapper {
 
         public SessionDebugWrapper(HttpServletRequest request) {
             super(request);

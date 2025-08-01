@@ -79,7 +79,7 @@ public class GMLPPIO extends XMLPPIO {
         }
 
         /** PPIO with alternate mime type suitable for usage in Execute KVP */
-        public static class GeometryAlternate extends Geometry {
+        public static class GeometryAlternate extends GMLPPIO.GML2.Geometry {
 
             public GeometryAlternate() {
                 super();
@@ -127,7 +127,7 @@ public class GMLPPIO extends XMLPPIO {
         }
 
         /** PPIO with alternate mime type suitable for usage in Execute KVP */
-        public static class GeometryAlternate extends Geometry {
+        public static class GeometryAlternate extends GMLPPIO.GML3.Geometry {
 
             public GeometryAlternate() {
                 super();

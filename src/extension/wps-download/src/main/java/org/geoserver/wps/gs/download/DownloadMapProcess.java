@@ -67,6 +67,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.http.HTTPClient;
 import org.geotools.http.HTTPClientFinder;
+import org.geotools.image.ImageWorker;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.response.GetMapResponse;
@@ -626,8 +627,8 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     private RenderedImage mergeImage(RenderedImage result, RenderedImage image, Layer layer) {
         if (result == null && layer != null) {
             // assume this is the first layer
-            // nothing to do if no opacity is requested
-            if (layer.getOpacity() == null) {
+            // nothing to do if no opacity is requested and the image is not gray/alpha (see below)
+            if ((layer.getOpacity() == null) && (image.getSampleModel().getNumBands() != 2)) {
                 return image;
             } else {
                 // if opacity is requested, create an empty image to merge with
@@ -644,6 +645,17 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         Graphics2D graphics = (Graphics2D) bi.getGraphics();
         if (layer != null && layer.getOpacity() != null) {
             applyOpacity(image, layer, graphics);
+        }
+        // Graphics2D does not handle gray/alpha images all that well, the rendering is washed out compared
+        // to the original, so if we have a gray/alpha image, we convert it to RGB with alpha manually
+        if (image.getSampleModel().getNumBands() == 2) {
+            RenderedImage gray =
+                    new ImageWorker(image).retainBands(new int[] {0}).getRenderedImage();
+            RenderedImage alpha =
+                    new ImageWorker(image).retainBands(new int[] {1}).getRenderedImage();
+            image = new ImageWorker(gray)
+                    .addBands(new RenderedImage[] {gray, gray, gray, alpha}, true, null)
+                    .getRenderedImage();
         }
         graphics.drawRenderedImage(image, AffineTransform.getScaleInstance(1, 1));
         graphics.dispose();

@@ -368,18 +368,14 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     }
 
     @Override
-    public <T extends Object> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
+    public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         // subclasses should override
         return null;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName())
-                .append('[')
-                .append(name)
-                .append(']')
-                .toString();
+        return getClass().getSimpleName() + '[' + name + ']';
     }
 
     @Override

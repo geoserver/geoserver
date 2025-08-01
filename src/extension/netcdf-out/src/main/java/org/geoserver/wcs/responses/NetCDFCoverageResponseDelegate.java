@@ -44,7 +44,6 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
     public static final Logger LOGGER = Logging.getLogger("org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate");
     private List<NetCDFEncoderFactory> encoderFactories;
 
-    @SuppressWarnings("serial")
     public NetCDFCoverageResponseDelegate(GeoServer geoserver) {
         super(
                 geoserver,

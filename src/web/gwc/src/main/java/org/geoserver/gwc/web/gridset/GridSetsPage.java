@@ -122,7 +122,6 @@ public class GridSetsPage extends GeoServerSecuredPage {
         setHeaderPanel(headerPanel());
     }
 
-    @SuppressWarnings("unchecked")
     protected Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 

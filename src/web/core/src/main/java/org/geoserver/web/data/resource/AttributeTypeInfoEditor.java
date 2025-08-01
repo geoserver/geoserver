@@ -228,7 +228,7 @@ class AttributeTypeInfoEditor extends Panel {
      * This behavior ensures that if the raw source is null and the name of the attribute has changed, the source is set
      * to the previous name (the original name of the attribute).
      */
-    private class SourceUpdateBehavior extends AjaxFormComponentUpdatingBehavior {
+    private static class SourceUpdateBehavior extends AjaxFormComponentUpdatingBehavior {
 
         private final IModel<AttributeTypeInfo> itemModel;
         private final String previousName;

@@ -190,7 +190,6 @@ import org.xml.sax.SAXParseException;
  * @author Justin Deoliveira, OpenGeo
  */
 @TestSetup(run = TestSetupFrequency.ONCE)
-@SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
 public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemTestData> {
 
     private MockHttpServletResponse lastResponse;
@@ -290,10 +289,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         } catch (Exception e) {
             // ignore on VM where this optimization does not apply
         }
-
-        // disable security manager to speed up tests, we are spending a lot of time in privileged
-        // blocks
-        System.setSecurityManager(null);
 
         // setup quiet logging (we need to to this here because Data
         // is loaded before GeoServer has a chance to setup logging for good)
@@ -2210,7 +2205,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Performs basic checks on an OWS 2.0 exception. The check for status, exception code and locator is optional,
      * leave null if you don't want to check it.
      *
-     * @returns Returns the message of the inner exception.
+     * @return Returns the message of the inner exception.
      */
     protected String checkOws20Exception(
             MockHttpServletResponse response, Integer status, String exceptionCode, String locator) throws Exception {

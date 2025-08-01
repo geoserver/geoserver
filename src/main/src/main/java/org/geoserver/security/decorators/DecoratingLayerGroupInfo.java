@@ -202,11 +202,7 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName())
-                .append('[')
-                .append(delegate)
-                .append(']')
-                .toString();
+        return getClass().getSimpleName() + '[' + delegate + ']';
     }
 
     @Override

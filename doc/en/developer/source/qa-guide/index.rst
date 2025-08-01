@@ -24,11 +24,15 @@ PMD checks
 
 The `PMD <https://pmd.github.io/>`__ checks are based on source code analysis for common errors, we have configured :command:`PMD` to check for common mistakes and bad practices such as accidentally including debug ``System.out.println()`` statements in your commit.
 
+The plugin version is managed in the pluginManagement section.
+
+The actual plugin configuration and execution is defined as:
+
 .. literalinclude:: /../../../../src/pom.xml
    :language: xml
-   :start-at: <artifactId>maven-pmd-plugin</artifactId>
-   :end-before: </plugin>
-   :dedent: 12
+   :start-after: <!-- doc-include-pmd-plugin-start
+   :end-at: </plugin>
+   :dedent: 10
 
 Rules are configured in our build `build/qa/pmd-ruleset.xml <https://github.com/geoserver/geoserver/blob/main/build/qa/pmd-ruleset.xml>`_:
 
@@ -140,11 +144,15 @@ Spotbugs
 
 The `Spotbugs <https://spotbugs.github.io/>`_ checker runs as a post-compile bytecode analyzer.
 
+The plugin version is managed in the pluginManagement section.
+
+The actual plugin configuration and execution is defined as:
+
 .. literalinclude:: /../../../../src/pom.xml
    :language: xml
-   :start-at: <groupId>com.github.spotbugs</groupId>
-   :end-before: </plugin>
-   :dedent: 12
+   :start-after: <!-- doc-include-spotbugs-plugin-start
+   :end-at: </plugin>
+   :dedent: 10
    
 Any failure to comply with the rules will show up as a compile error, e.g.::
 
@@ -175,11 +183,15 @@ Spotless
 
 Spotless is used as a fast way to check that the `palantir-java -format <https://github.com/palantir/palantir-java-format?tab=readme-ov-file#palantir-java-format>`__ is being applied to the codebase.
 
+The plugin version is managed in the pluginManagement section.
+
+The actual plugin configuration and execution is defined as:
+
 .. literalinclude:: /../../../../src/pom.xml
    :language: xml
-   :start-at: <groupId>com.diffplug.spotless</groupId>
-   :end-before: </plugin>
-   :dedent: 8
+   :start-after: <!-- doc-include-spotless-plugin-start
+   :end-at: </plugin>
+   :dedent: 6
 
 This has been setup for incremental checking, with hidden :file:`.spotless-index` files used determine
 when files were last checked.
@@ -217,11 +229,15 @@ Sortpom
 
 Sortpom is used to keep the :file:`pom.xml` files formatting consistent:
 
+The plugin version is managed in the pluginManagement section.
+
+The actual plugin configuration and execution is defined as:
+
 .. literalinclude:: /../../../../src/pom.xml
    :language: xml
-   :start-at: <groupId>com.github.ekryd.sortpom</groupId>
-   :end-before: </plugin>
-   :dedent: 8
+   :start-after: <!-- doc-include-sortpom-plugin-start
+   :end-at: </plugin>
+   :dedent: 6
 
 The plugin is attached to verification phase to sort :file:`pom.xml` files.
 
@@ -253,11 +269,15 @@ Checkstyle
 Spotless is already in use to keep the code formatted, so `maven checkstyle plugin <https://maven.apache.org/plugins/maven-checkstyle-plugin/>`__ is used mainly to verify javadocs errors
 and presence of copyright headers, which none of the other tools can cover.
 
+The plugin version is managed in the pluginManagement section.
+
+The actual plugin configuration and execution is defined as:
+
 .. literalinclude:: /../../../../src/pom.xml
    :language: xml
-   :start-at: <artifactId>maven-checkstyle-plugin</artifactId>
-   :end-before: </plugin>
-   :dedent: 12
+   :start-after: <!-- doc-include-checkstyle-plugin-start
+   :end-at: </plugin>
+   :dedent: 10
 
 The checkstyle ruleset checks the following:
 

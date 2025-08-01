@@ -24,7 +24,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
-import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -35,7 +34,6 @@ import org.junit.Test;
 /** @author prushforth */
 public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport {
     static QName MOSAIC = new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX);
-    GeoServerTileLayer tileLayer;
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -76,6 +74,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertModelValue("form:panel:licenseLink", null);
         tester.assertModelValue("form:panel:useTiles", null);
         tester.assertModelValue("form:panel:useFeatures", null);
+        tester.assertModelValue("form:panel:useMultiExtents", null);
         tester.assertModelValue("form:panel:dimension", null);
         tester.assertModelValue("form:panel:featurecaptionattributes", null);
         tester.assertModelValue("form:panel:featureCaptionTemplate", null);
@@ -118,14 +117,15 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         // check that the "attributes" (works with raster dimensions) dropdown is available
         tester.assertComponent("form:panel:featurecaptionattributes", ListMultipleChoice.class);
         tester.assertComponent("form:panel:mime", DropDownChoice.class);
-        // check that the "useFeatures" checkbox is disabled as expected with raster data
-        tester.assertDisabled("form:panel:useFeatures");
+        // check that the "useFeatures" checkbox is no longer disabled with raster data
+        tester.assertEnabled("form:panel:useFeatures");
         FormTester ft = tester.newFormTester("form");
         tester.assertModelValue("form:panel:featurecaptionattributes", null);
         tester.assertModelValue("form:panel:licenseTitle", null);
         tester.assertModelValue("form:panel:licenseLink", null);
         tester.assertModelValue("form:panel:useTiles", null);
         tester.assertModelValue("form:panel:useFeatures", null);
+        tester.assertModelValue("form:panel:useMultiExtents", null);
         tester.assertModelValue("form:panel:dimension", null);
         tester.assertModelValue("form:panel:featurecaptionattributes", null);
         tester.assertModelValue("form:panel:featureCaptionTemplate", null);

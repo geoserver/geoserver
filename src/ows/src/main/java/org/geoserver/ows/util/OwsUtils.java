@@ -134,7 +134,7 @@ public class OwsUtils {
                 throw new IllegalArgumentException("No such property '" + prop + "' for object " + result);
             }
             try {
-                result = g.invoke(result, null);
+                result = g.invoke(result);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -222,7 +222,7 @@ public class OwsUtils {
      * @return The object of the specified type, or <code>null</code>
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Object> T parameter(Object[] parameters, Class<T> type) {
+    public static <T> T parameter(Object[] parameters, Class<T> type) {
         for (Object parameter : parameters) {
             if ((parameter != null) && type.isAssignableFrom(parameter.getClass())) {
                 return (T) parameter;
@@ -293,7 +293,7 @@ public class OwsUtils {
             }
 
             try {
-                Object newValue = getter.invoke(source, null);
+                Object newValue = getter.invoke(source);
                 if (newValue == null) {
                     continue;
                     // TODO: make this a flag whether to overwrite with null values
@@ -337,7 +337,7 @@ public class OwsUtils {
 
             // if the getter returns null, call the setter
             try {
-                Object value = g.invoke(object, null);
+                Object value = g.invoke(object);
                 if (value == null) {
                     // first attempt to instantiate the type directly in case the method declares
                     // a non interface or abstract class
@@ -372,7 +372,7 @@ public class OwsUtils {
     /** Helper method for updating a collection based property. Only used if setter is null. */
     @SuppressWarnings("unchecked")
     static void updateCollectionProperty(Object object, Collection newValue, Method getter) throws Exception {
-        Collection<Object> oldValue = (Collection) getter.invoke(object, null);
+        Collection<Object> oldValue = (Collection) getter.invoke(object);
         if (oldValue != null) {
             oldValue.clear();
             oldValue.addAll(newValue);
@@ -382,7 +382,7 @@ public class OwsUtils {
     /** Helper method for updating a map based property. Only used if setter is null. */
     @SuppressWarnings("unchecked")
     static void updateMapProperty(Object object, Map newValue, Method getter) throws Exception {
-        Map<Object, Object> oldValue = (Map) getter.invoke(object, null);
+        Map<Object, Object> oldValue = (Map) getter.invoke(object);
         if (oldValue != null) {
             oldValue.clear();
             oldValue.putAll(newValue);

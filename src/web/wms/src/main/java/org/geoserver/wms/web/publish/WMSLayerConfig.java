@@ -143,7 +143,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         initWMSCascadedUI(layerModel);
     }
 
-    private class InterpolationRenderer extends ChoiceRenderer<WMSInterpolation> {
+    private static class InterpolationRenderer extends ChoiceRenderer<WMSInterpolation> {
 
         private static final long serialVersionUID = 4230274692882585457L;
 
@@ -281,7 +281,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     }
 
     // validator to make sure min scale smaller than max scale and vice-versa
-    private class ScalesValidator implements IValidator<Double> {
+    private static class ScalesValidator implements IValidator<Double> {
 
         /** serialVersionUID */
         private static final long serialVersionUID = 1349568700386246273L;
@@ -315,7 +315,6 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     static class VendorParametersConvertor implements IConverter<Map<String, String>> {
 
         @Override

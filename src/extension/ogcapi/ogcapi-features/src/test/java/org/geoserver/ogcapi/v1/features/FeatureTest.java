@@ -85,7 +85,6 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked") // matchers make for generic varargs
     public void testGetLayerAsGeoJsonReproject() throws Exception {
         String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
         MockHttpServletResponse response = getAsMockHttpServletResponse(
@@ -744,7 +743,6 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testSearchCRSFilter() throws Exception {
         WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
         FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
@@ -887,6 +885,25 @@ public class FeatureTest extends FeaturesTestSupport {
         } finally {
             featureServiceInfo.setSearch(null); // default
             featureServiceInfo.setSortBy(null); // enable
+            getGeoServer().save(wfsInfo);
+        }
+    }
+
+    @Test
+    public void testSearchNextLinkPresent() throws Exception {
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setSearch(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+            String request = "{\"limit\":1}";
+            DocumentContext json =
+                    postAsJSONPath("ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(1, json.read("links[?(@.rel == 'next')]", List.class).size());
+        } finally {
+            featureServiceInfo.setSearch(null); // default
             getGeoServer().save(wfsInfo);
         }
     }
@@ -1259,5 +1276,14 @@ public class FeatureTest extends FeaturesTestSupport {
         assertThrows(PathNotFoundException.class, () -> feature.read("geometry"));
         assertEquals("Point", feature.read("place.type"));
         assertArrayEquals(new double[] {22, 78}, feature.read("place.coordinates", double[].class), 1d);
+    }
+
+    @Test
+    public void testCharset() throws Exception {
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/features/v1/collections/" + roadSegments + "/items", StandardCharsets.UTF_8.name());
+        assertEquals(200, response.getStatus());
+        assertEquals("UTF-8", response.getCharacterEncoding());
     }
 }

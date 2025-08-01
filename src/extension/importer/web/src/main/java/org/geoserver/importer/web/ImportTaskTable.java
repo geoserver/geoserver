@@ -223,8 +223,11 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                     return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/error.png");
                 case ERROR:
                     return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/delete.png");
+                case CANCELED:
+                case PENDING:
+                default:
+                    return null;
             }
-            return null;
         }
 
         public String getCssClass() {
@@ -246,8 +249,10 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                     //    return "error-link";
                 case CANCELED:
                     return "cancel-link";
+                case PENDING:
+                default:
+                    return "";
             }
-            return "";
         }
     }
 
@@ -439,7 +444,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                     + "});"));
         }
 
-        class PreviewLink implements Serializable {
+        static class PreviewLink implements Serializable {
             String id;
             String href;
 

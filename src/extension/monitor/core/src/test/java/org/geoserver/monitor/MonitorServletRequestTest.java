@@ -56,6 +56,11 @@ public class MonitorServletRequestTest {
                 public int read() throws IOException {
                     return bis.read();
                 }
+
+                @Override
+                public int read(byte[] b, int off, int len) throws IOException {
+                    return bis.read(b, off, len);
+                }
             };
         }
 

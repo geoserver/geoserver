@@ -201,8 +201,8 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
         for (GeoServerRole role : roleService.getRoles()) {
             if (role_auth.getAuthority().equals(role.getAuthority())) {
                 assertEquals(2, role.getProperties().size());
-                assertEquals(role.getProperties().getProperty("employee"), "");
-                assertEquals(role.getProperties().getProperty("bbox"), "lookupAtRuntime");
+                assertEquals("", role.getProperties().getProperty("employee"));
+                assertEquals("lookupAtRuntime", role.getProperties().getProperty("bbox"));
             } else {
                 assertEquals(0, role.getProperties().size());
             }
@@ -213,16 +213,18 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
         assertEquals(0, role_wms.getProperties().size());
 
         assertEquals(2, role_auth.getProperties().size());
-        assertEquals(role_auth.getProperties().getProperty("employee"), "");
-        assertEquals(role_auth.getProperties().getProperty("bbox"), "lookupAtRuntime");
+        assertEquals("", role_auth.getProperties().getProperty("employee"));
+        assertEquals("lookupAtRuntime", role_auth.getProperties().getProperty("bbox"));
 
         assertNull(roleService.getParentRole(role_admin));
         assertNull(roleService.getParentRole(role_auth));
         assertEquals(role_auth, roleService.getParentRole(role_wms));
         assertEquals(role_auth, roleService.getParentRole(role_wfs));
         assertEquals(2, roleService.getParentRole(role_wfs).getProperties().size());
-        assertEquals(roleService.getParentRole(role_wfs).getProperties().getProperty("employee"), "");
-        assertEquals(roleService.getParentRole(role_wfs).getProperties().getProperty("bbox"), "lookupAtRuntime");
+        assertEquals("", roleService.getParentRole(role_wfs).getProperties().getProperty("employee"));
+        assertEquals(
+                "lookupAtRuntime",
+                roleService.getParentRole(role_wfs).getProperties().getProperty("bbox"));
 
         assertEquals(0, roleService.getRolesForUser("xxx").size());
         assertEquals(1, roleService.getRolesForUser("admin").size());
@@ -307,8 +309,8 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
         for (GeoServerUser user : userGroupService.getUsers()) {
             if (user2.getUsername().equals(user.getUsername())) {
                 assertEquals(2, user.getProperties().size());
-                assertEquals(user.getProperties().getProperty("mail"), "user2@gmx.com");
-                assertEquals(user.getProperties().getProperty("tel"), "12-34-38");
+                assertEquals("user2@gmx.com", user.getProperties().getProperty("mail"));
+                assertEquals("12-34-38", user.getProperties().getProperty("tel"));
             } else {
                 assertEquals(0, user.getProperties().size());
             }
@@ -335,8 +337,8 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
         assertEquals(0, disableduser.getProperties().size());
 
         assertEquals(2, user2.getProperties().size());
-        assertEquals(user2.getProperties().getProperty("mail"), "user2@gmx.com");
-        assertEquals(user2.getProperties().getProperty("tel"), "12-34-38");
+        assertEquals("user2@gmx.com", user2.getProperties().getProperty("mail"));
+        assertEquals("12-34-38", user2.getProperties().getProperty("tel"));
 
         assertEquals(4, userGroupService.getUserGroups().size());
         assertEquals(4, userGroupService.getGroupCount());
@@ -364,8 +366,8 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
         for (GeoServerUser user : userGroupService.getUsersForGroup(group1)) {
             if (user2.getUsername().equals(user.getUsername())) {
                 assertEquals(2, user.getProperties().size());
-                assertEquals(user.getProperties().getProperty("mail"), "user2@gmx.com");
-                assertEquals(user.getProperties().getProperty("tel"), "12-34-38");
+                assertEquals("user2@gmx.com", user.getProperties().getProperty("mail"));
+                assertEquals("12-34-38", user.getProperties().getProperty("tel"));
             } else {
                 assertEquals(0, user.getProperties().size());
             }
@@ -408,8 +410,8 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
         for (GeoServerUser user : userGroupService.getUsersNotHavingProperty("unknown")) {
             if (user2.getUsername().equals(user.getUsername())) {
                 assertEquals(2, user.getProperties().size());
-                assertEquals(user.getProperties().getProperty("mail"), "user2@gmx.com");
-                assertEquals(user.getProperties().getProperty("tel"), "12-34-38");
+                assertEquals("user2@gmx.com", user.getProperties().getProperty("mail"));
+                assertEquals("12-34-38", user.getProperties().getProperty("tel"));
             } else {
                 assertEquals(0, user.getProperties().size());
             }
@@ -419,8 +421,8 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
 
         assertEquals(1, userGroupService.getUsersHavingProperty("mail").size());
         user2 = userGroupService.getUsersHavingProperty("mail").first();
-        assertEquals(user2.getProperties().getProperty("mail"), "user2@gmx.com");
-        assertEquals(user2.getProperties().getProperty("tel"), "12-34-38");
+        assertEquals("user2@gmx.com", user2.getProperties().getProperty("mail"));
+        assertEquals("12-34-38", user2.getProperties().getProperty("tel"));
 
         assertEquals(
                 userGroupService.getUserCount() - 1,
@@ -433,8 +435,8 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
                 1,
                 userGroupService.getUsersHavingPropertyValue("tel", "12-34-38").size());
         user2 = userGroupService.getUsersHavingPropertyValue("tel", "12-34-38").first();
-        assertEquals(user2.getProperties().getProperty("mail"), "user2@gmx.com");
-        assertEquals(user2.getProperties().getProperty("tel"), "12-34-38");
+        assertEquals("user2@gmx.com", user2.getProperties().getProperty("mail"));
+        assertEquals("12-34-38", user2.getProperties().getProperty("tel"));
     }
 
     protected void checkValuesModified(GeoServerUserGroupService userGroupService) throws IOException {

@@ -20,7 +20,7 @@ GeoServer implements them as :ref:`filter_function` with the same names.
 
 These functions can make style documents more concise,
 since they express logic which would otherwise require
-many separate rules or complex Filter expressions,
+many separate rules or complex Filter expressions.
 They even allow logic which is impossible to express any other way.
 A further advantage is that they often provide superior performance
 to explicit rules.
@@ -42,7 +42,7 @@ The recoding is defined by a set of *(input, output)* value pairs.
 Example
 ^^^^^^^
 
-Consider a chloropleth map of the US states dataset 
+Consider a choropleth map of the US states dataset 
 using the fill color to indicate the topographic regions for the states.  
 The dataset has an attribute ``SUB_REGION`` containing the region code for each state.
 The ``Recode`` function is used to map each region code into a different color.
@@ -109,12 +109,12 @@ into specific values for a parameter such as color, size, width, opacity, etc.
 The categorization is defined by a list of alternating output values 
 and data thresholds.
 The threshold values define the breaks between the input ranges.
-Inputs are converted into output values depending on which range they fall in.
+Inputs are converted into output values depending on which range they fall into.
 
 Example
 ^^^^^^^
 
-Consider a chloropleth map of the US states dataset 
+Consider a choropleth map of the US states dataset 
 using the fill color to indicate a categorization of the states by population.  
 The dataset has attributes ``PERSONS`` and ``LAND_KM`` from which the population density 
 is computed using the ``Div`` operator.
@@ -182,7 +182,7 @@ Example
 ^^^^^^^
 
 Interpolating over color ranges allows concise definition of 
-continuously-varying colors for chloropleth (thematic) maps.
+continuously-varying colors for choropleth (thematic) maps.
 As an example, consider a map of the US states dataset 
 using the fill color to indicate the population of the states.  
 The dataset has an attribute ``PERSONS`` containing the population of each state.

@@ -286,8 +286,12 @@ public class MemoryMonitorDAO implements MonitorDAO {
                     return c > 0;
                 case GTE:
                     return c >= 0;
+                case EQ:
+                case IN:
+                case NEQ:
+                default:
+                    return false;
             }
-            return false;
         }
     }
 

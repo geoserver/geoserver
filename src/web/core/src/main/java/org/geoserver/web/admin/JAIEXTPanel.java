@@ -26,7 +26,6 @@ public class JAIEXTPanel extends Panel {
 
         PropertyModel<JAIEXTInfo> jaiextModel = new PropertyModel<>(model, "JAIEXTInfo");
 
-        @SuppressWarnings("unchecked")
         Palette jaiextSelector =
                 new Palette<>(
                         "jaiextOps",

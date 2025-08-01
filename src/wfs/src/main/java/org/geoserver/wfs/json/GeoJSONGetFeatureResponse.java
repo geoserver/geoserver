@@ -321,7 +321,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat impleme
             FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {}
 
     /** Container class for information related with a group of features. */
-    protected class FeaturesInfo {
+    protected static class FeaturesInfo {
 
         final CoordinateReferenceSystem crs;
         final boolean hasGeometry;

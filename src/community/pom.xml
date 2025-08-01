@@ -179,6 +179,7 @@
         <module>acl</module>
         <module>geoparquet</module>
         <module>wps-download-netcdf</module>
+        <module>singlestore</module>
       </modules>
     </profile>
     <profile>
@@ -375,6 +376,12 @@
       </modules>
     </profile>
     <profile>
+      <id>oidc</id>
+      <modules>
+        <module>security</module>
+      </modules>
+    </profile>
+    <profile>
       <id>oseo</id>
       <modules>
         <module>oseo</module>
@@ -444,6 +451,13 @@
       <id>ogcapi</id>
       <modules>
         <module>ogcapi</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ogcapi-tiles</id>
+      <modules>
+        <module>ogcapi/ogcapi-tiles</module>
+        <module>ogcapi/web-tiles</module>
       </modules>
     </profile>
     <profile>
@@ -558,6 +572,12 @@
       <id>wps-download-netcdf</id>
       <modules>
         <module>wps-download-netcdf</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>singlestore</id>
+      <modules>
+        <module>singlestore</module>
       </modules>
     </profile>
     <profile>

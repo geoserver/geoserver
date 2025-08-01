@@ -264,6 +264,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         return info.getName();
     }
 
+    /** Returns the local name, useful to create file names for tiles for example */
+    public String getSimpleName() {
+        return CatalogConfiguration.removeWorkspacePrefix(info.getName(), catalog);
+    }
+
     void setConfigErrorMessage(String configErrorMessage) {
         this.configErrorMessage = configErrorMessage;
     }

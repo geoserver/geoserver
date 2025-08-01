@@ -279,23 +279,20 @@
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>${jetty.version}</version>
         <configuration>
           <webApp>
             <contextPath>/geoserver</contextPath>
           </webApp>
-          <connectors>
-            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-              <port>${jetty.port}</port>
-              <maxIdleTime>10000</maxIdleTime>
-            </connector>
-          </connectors>
+          <httpConnector>
+            <port>${jetty.port}</port>
+            <idleTimeout>10000</idleTimeout>
+          </httpConnector>
           <supportedPackagings>
             <supportedPackaging>jar</supportedPackaging>
           </supportedPackagings>
           <stopPort>${jetty.stopPort}</stopPort>
           <stopKey>GEOSERVER_JETTY_STOPKEY</stopKey>
-          <daemon>false</daemon>
+          <!-- daemon parameter removed in Jetty 10 -->
           <!-- uncomment following to set a GEOSERVER_DATA_DIR -->
           <!--
             <systemProperties> <systemProperty> <name>GEOSERVER_DATA_DIR</name>
@@ -341,7 +338,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.0.0</version>
         <executions>
           <execution>
             <id>attach-war</id>
@@ -1068,6 +1064,16 @@
           <groupId>org.postgis</groupId>
           <artifactId>postgis-jdbc</artifactId>
           <version>${postgis.jdbc.version}</version>
+          <exclusions>
+            <exclusion>
+              <artifactId>postgis-stubs</artifactId>
+              <groupId>org.postgis</groupId>
+            </exclusion>
+            <exclusion>
+              <artifactId>postgresql</artifactId>
+              <groupId>postgresql</groupId>
+            </exclusion>
+          </exclusions>
         </dependency>
       </dependencies>
     </profile>
@@ -1343,6 +1349,16 @@
         <dependency>
           <groupId>org.geoserver.community.security</groupId>
           <artifactId>gs-sec-oauth2-openid-connect-web</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>oidc</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community.security</groupId>
+          <artifactId>gs-sec-oidc-web</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -1657,6 +1673,21 @@
       </dependencies>
     </profile>
     <profile>
+      <id>ogcapi-tiles</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-tiles</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-tiles</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>importer-jdbc</id>
       <dependencies>
         <dependency>
@@ -1953,6 +1984,16 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-wps-download-netcdf</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>singlestore</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-singlestore</artifactId>
           <version>${gs.version}</version>
         </dependency>
       </dependencies>

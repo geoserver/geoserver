@@ -798,7 +798,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
      *
      * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
      */
-    public class ReferenceValueValidator implements IValidator<String> {
+    public static class ReferenceValueValidator implements IValidator<String> {
         String dimension;
         IModel<DimensionDefaultValueSetting.Strategy> strategyModel;
 
@@ -870,7 +870,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
     }
 
     /** Validator for start and end data range values. */
-    public class StartEndValueValidator implements IValidator<String> {
+    public static class StartEndValueValidator implements IValidator<String> {
         String dimension;
 
         public StartEndValueValidator(String dimensionId) {

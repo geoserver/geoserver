@@ -75,7 +75,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] params) throws IOException {
+    public GridCoverage2D read(GeneralParameterValue... params) throws IOException {
         boolean haveDimension = false;
         final List<GridCoverage2D> returnValues = new ArrayList<>();
         for (GeneralParameterValue p : params) {

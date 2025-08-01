@@ -117,7 +117,7 @@ public class AuthenticationKeyFilterPanel extends AuthenticationFilterPanel<Auth
                 }.setDefaultFormProcessing(true));
     }
 
-    class ParamsPanel extends FormComponentPanel<Serializable> {
+    static class ParamsPanel extends FormComponentPanel<Serializable> {
 
         public ParamsPanel(String id, String authMapperName, Map<String, String> parameters) {
             super(id, new Model<>());

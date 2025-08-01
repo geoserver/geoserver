@@ -52,7 +52,7 @@ public class NewDataPageTest extends GeoServerWicketTestSupport {
 
         String expectedErrMsg = new ResourceModel("NewDataPage.noWorkspacesErrorMessage").getObject();
         assertNotNull(expectedErrMsg);
-        tester.assertErrorMessages(new String[] {expectedErrMsg});
+        tester.assertErrorMessages(expectedErrMsg);
     }
 
     @Test

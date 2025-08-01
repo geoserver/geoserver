@@ -95,7 +95,7 @@ public class ModuleStatusPanel extends Panel {
         return f;
     }
 
-    class MessagePanel extends Panel {
+    static class MessagePanel extends Panel {
 
         private static final long serialVersionUID = -3200098674603724915L;
 

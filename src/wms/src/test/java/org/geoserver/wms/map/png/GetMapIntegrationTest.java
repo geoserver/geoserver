@@ -154,7 +154,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             BufferedImage bi = ImageIO.read(is);
             IndexColorModel cm = (IndexColorModel) bi.getColorModel();
             assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
-            assertEquals(cm.getMapSize(), 256);
+            assertEquals(256, cm.getMapSize());
         }
 
         MockHttpServletResponse response1 = getAsServletResponse(
@@ -196,7 +196,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             BufferedImage bi = ImageIO.read(is);
             IndexColorModel cm = (IndexColorModel) bi.getColorModel();
             assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
-            assertEquals(cm.getMapSize(), 256);
+            assertEquals(256, cm.getMapSize());
         }
 
         MockHttpServletResponse response1 = getAsServletResponse(
@@ -238,7 +238,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             BufferedImage bi = ImageIO.read(is);
             IndexColorModel cm = (IndexColorModel) bi.getColorModel();
             assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
-            assertEquals(cm.getMapSize(), 256);
+            assertEquals(256, cm.getMapSize());
         }
 
         MockHttpServletResponse response1 = getAsServletResponse(

@@ -60,7 +60,7 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
 
         final ParameterValue pv = ImageMosaicFormat.FILTER.createValue();
         pv.setValue(requestFilter);
-        secured.read(new GeneralParameterValue[] {pv});
+        secured.read(pv);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
 
         final ParameterValue pv = ImageMosaicFormat.FILTER.createValue();
         pv.setValue(requestFilter);
-        secured.read(new GeneralParameterValue[] {pv});
+        secured.read(pv);
     }
 
     @Test

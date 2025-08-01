@@ -130,7 +130,7 @@ public class GeoJSONTest extends WFSTestSupport {
             JSONObject rootObject = JSONObject.fromObject(out);
 
             JSONObject bbox = rootObject.getJSONObject("bbox");
-            assertEquals(JSONNull.getInstance(), bbox);
+            assertTrue(bbox.isNullObject());
         } finally {
             wfs.setFeatureBounding(before);
             gs.save(wfs);
@@ -147,10 +147,10 @@ public class GeoJSONTest extends WFSTestSupport {
 
         JSONObject rootObject = JSONObject.fromObject(out);
         // print(rootObject);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
+        assertEquals("surfaceProperty", aFeature.getString("geometry_name"));
 
         // check a timestamp exists and matches the structure of a ISO timestamp
         String timeStamp = rootObject.getString("timeStamp");
@@ -174,10 +174,10 @@ public class GeoJSONTest extends WFSTestSupport {
             String out = response.getContentAsString();
 
             JSONObject rootObject = JSONObject.fromObject(out);
-            assertEquals(rootObject.get("type"), "FeatureCollection");
+            assertEquals("FeatureCollection", rootObject.get("type"));
             JSONArray featureCol = rootObject.getJSONArray("features");
             JSONObject aFeature = featureCol.getJSONObject(0);
-            assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
+            assertEquals("surfaceProperty", aFeature.getString("geometry_name"));
         } finally {
             FeatureTypeInfo primitive = catalog.getFeatureTypeByName(getLayerId(MockData.PRIMITIVEGEOFEATURE));
             primitive.setSkipNumberMatched(false);
@@ -196,10 +196,10 @@ public class GeoJSONTest extends WFSTestSupport {
         String out = response.getContentAsString();
 
         JSONObject rootObject = JSONObject.fromObject(out);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
+        assertEquals("surfaceProperty", aFeature.getString("geometry_name"));
     }
 
     @Test
@@ -214,7 +214,7 @@ public class GeoJSONTest extends WFSTestSupport {
         String out = response.getContentAsString();
 
         JSONObject rootObject = JSONObject.fromObject(out);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
 
@@ -236,7 +236,7 @@ public class GeoJSONTest extends WFSTestSupport {
         String out = response.getContentAsString();
 
         JSONObject rootObject = JSONObject.fromObject(out);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
 
@@ -255,7 +255,7 @@ public class GeoJSONTest extends WFSTestSupport {
         String out = response.getContentAsString();
 
         JSONObject rootObject = JSONObject.fromObject(out);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
 
@@ -286,10 +286,10 @@ public class GeoJSONTest extends WFSTestSupport {
         String out = postAsServletResponse("wfs", xml).getContentAsString();
 
         JSONObject rootObject = JSONObject.fromObject(out);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
+        assertEquals("surfaceProperty", aFeature.getString("geometry_name"));
     }
 
     @Test
@@ -299,16 +299,16 @@ public class GeoJSONTest extends WFSTestSupport {
                         + JSONType.json);
 
         JSONObject rootObject = JSONObject.fromObject(out);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(1);
         JSONObject aPropeties = aFeature.getJSONObject("properties");
         JSONObject aGeometry = aPropeties.getJSONObject("multiCurveProperty");
-        assertEquals(aGeometry.getString("type"), "MultiLineString");
+        assertEquals("MultiLineString", aGeometry.getString("type"));
         JSONArray geomArray = aGeometry.getJSONArray("coordinates");
         geomArray = geomArray.getJSONArray(0);
         geomArray = geomArray.getJSONArray(0);
-        assertEquals(geomArray.getString(0), "55.174");
+        assertEquals("55.174", geomArray.getString(0));
         CoordinateReferenceSystem expectedCrs = getCatalog()
                 .getLayerByName(getLayerId(SystemTestData.AGGREGATEGEOFEATURE))
                 .getResource()
@@ -339,7 +339,7 @@ public class GeoJSONTest extends WFSTestSupport {
 
         JSONObject rootObject = JSONObject.fromObject(out);
         // System.out.println(rootObject.get("type"));
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
 
         JSONArray featureCol = rootObject.getJSONArray("features");
 
@@ -355,7 +355,7 @@ public class GeoJSONTest extends WFSTestSupport {
         JSONObject aProperties = aFeature.getJSONObject("properties");
         JSONObject aGeometry = aProperties.getJSONObject("multiCurveProperty");
         // System.out.println(aGeometry.getString("type"));
-        assertEquals(aGeometry.getString("type"), "MultiLineString");
+        assertEquals("MultiLineString", aGeometry.getString("type"));
     }
 
     @Test
@@ -377,10 +377,10 @@ public class GeoJSONTest extends WFSTestSupport {
         // extract the json and check it
         out = out.substring(7, out.length() - 1);
         JSONObject rootObject = JSONObject.fromObject(out);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
+        assertEquals("surfaceProperty", aFeature.getString("geometry_name"));
     }
 
     @Test
@@ -390,7 +390,7 @@ public class GeoJSONTest extends WFSTestSupport {
                 "wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="
                         + JSONType.json);
         JSONObject rootObject = JSONObject.fromObject(out);
-        assertEquals(rootObject.get("totalFeatures"), 5);
+        assertEquals(5, rootObject.get("totalFeatures"));
     }
 
     @Test
@@ -401,7 +401,7 @@ public class GeoJSONTest extends WFSTestSupport {
                         + JSONType.json
                         + "&featureid=PrimitiveGeoFeature.f001");
         JSONObject rootObject2 = JSONObject.fromObject(out2);
-        assertEquals(rootObject2.get("totalFeatures"), 1);
+        assertEquals(1, rootObject2.get("totalFeatures"));
     }
 
     @Test
@@ -412,7 +412,7 @@ public class GeoJSONTest extends WFSTestSupport {
                         + JSONType.json
                         + "&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002");
         JSONObject rootObject3 = JSONObject.fromObject(out3);
-        assertEquals(rootObject3.get("totalFeatures"), 2);
+        assertEquals(2, rootObject3.get("totalFeatures"));
     }
 
     @Test
@@ -423,7 +423,7 @@ public class GeoJSONTest extends WFSTestSupport {
                         + JSONType.json
                         + "&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002,AggregateGeoFeature.f009");
         JSONObject rootObject4 = JSONObject.fromObject(out4);
-        assertEquals(rootObject4.get("totalFeatures"), 3);
+        assertEquals(3, rootObject4.get("totalFeatures"));
     }
 
     @Test
@@ -458,7 +458,7 @@ public class GeoJSONTest extends WFSTestSupport {
         String out5 = postAsServletResponse("wfs", xml).getContentAsString();
 
         JSONObject rootObject5 = JSONObject.fromObject(out5);
-        assertEquals(rootObject5.get("totalFeatures"), 1);
+        assertEquals(1, rootObject5.get("totalFeatures"));
     }
 
     @Test
@@ -469,8 +469,8 @@ public class GeoJSONTest extends WFSTestSupport {
                         + JSONType.json);
         JSONObject rootObject = JSONObject.fromObject(out);
         // print(rootObject);
-        assertEquals(rootObject.get("totalFeatures"), 5);
-        assertEquals(rootObject.get("numberMatched"), 5);
+        assertEquals(5, rootObject.get("totalFeatures"));
+        assertEquals(5, rootObject.get("numberMatched"));
         assertNull(rootObject.get("links"));
 
         // request with filter (featureid=PrimitiveGeoFeature.f001)
@@ -479,8 +479,8 @@ public class GeoJSONTest extends WFSTestSupport {
                         + JSONType.json
                         + "&featureid=PrimitiveGeoFeature.f001");
         JSONObject rootObject2 = JSONObject.fromObject(out2);
-        assertEquals(rootObject2.get("totalFeatures"), 1);
-        assertEquals(rootObject2.get("numberMatched"), 1);
+        assertEquals(1, rootObject2.get("totalFeatures"));
+        assertEquals(1, rootObject2.get("numberMatched"));
         assertNull(rootObject2.get("links"));
 
         // check if maxFeatures doesn't affect totalFeatureCount; set Filter and maxFeatures
@@ -489,8 +489,8 @@ public class GeoJSONTest extends WFSTestSupport {
                         + JSONType.json
                         + "&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002");
         JSONObject rootObject3 = JSONObject.fromObject(out3);
-        assertEquals(rootObject3.get("totalFeatures"), 2);
-        assertEquals(rootObject3.get("numberMatched"), 2);
+        assertEquals(2, rootObject3.get("totalFeatures"));
+        assertEquals(2, rootObject3.get("numberMatched"));
         assertNull(rootObject3.get("links"));
 
         // request with multiple featureTypes and Filter
@@ -499,8 +499,8 @@ public class GeoJSONTest extends WFSTestSupport {
                         + JSONType.json
                         + "&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002,AggregateGeoFeature.f009");
         JSONObject rootObject4 = JSONObject.fromObject(out4);
-        assertEquals(rootObject4.get("totalFeatures"), 3);
-        assertEquals(rootObject4.get("numberMatched"), 3);
+        assertEquals(3, rootObject4.get("totalFeatures"));
+        assertEquals(3, rootObject4.get("numberMatched"));
         assertNull(rootObject4.get("links"));
     }
 
@@ -512,9 +512,9 @@ public class GeoJSONTest extends WFSTestSupport {
                 + JSONType.json);
         JSONObject rootObject = JSONObject.fromObject(out);
         // print(rootObject);
-        assertEquals(rootObject.get("totalFeatures"), 5);
-        assertEquals(rootObject.get("numberMatched"), 5);
-        assertEquals(rootObject.get("numberReturned"), 2);
+        assertEquals(5, rootObject.get("totalFeatures"));
+        assertEquals(5, rootObject.get("numberMatched"));
+        assertEquals(2, rootObject.get("numberReturned"));
         JSONArray links = rootObject.getJSONArray("links");
         assertNotNull(links);
         assertEquals(1, links.size());
@@ -537,9 +537,9 @@ public class GeoJSONTest extends WFSTestSupport {
                 + JSONType.json);
         JSONObject rootObject = JSONObject.fromObject(out);
         print(rootObject);
-        assertEquals(rootObject.get("totalFeatures"), 5);
-        assertEquals(rootObject.get("numberMatched"), 5);
-        assertEquals(rootObject.get("numberReturned"), 2);
+        assertEquals(5, rootObject.get("totalFeatures"));
+        assertEquals(5, rootObject.get("numberMatched"));
+        assertEquals(2, rootObject.get("numberReturned"));
         JSONArray links = rootObject.getJSONArray("links");
         assertNotNull(links);
         assertEquals(2, links.size());
@@ -571,9 +571,9 @@ public class GeoJSONTest extends WFSTestSupport {
                 + JSONType.json);
         JSONObject rootObject = JSONObject.fromObject(out);
         print(rootObject);
-        assertEquals(rootObject.get("totalFeatures"), 5);
-        assertEquals(rootObject.get("numberMatched"), 5);
-        assertEquals(rootObject.get("numberReturned"), 1);
+        assertEquals(5, rootObject.get("totalFeatures"));
+        assertEquals(5, rootObject.get("numberMatched"));
+        assertEquals(1, rootObject.get("numberReturned"));
         JSONArray links = rootObject.getJSONArray("links");
         assertNotNull(links);
         assertEquals(1, links.size());
@@ -835,7 +835,7 @@ public class GeoJSONTest extends WFSTestSupport {
                 + JSONType.json
                 + "&sortby=name";
         JSONObject rootObject = (JSONObject) getAsJSON(url, 200);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray features = rootObject.getJSONArray("features");
 
         // f1 has NaN in both

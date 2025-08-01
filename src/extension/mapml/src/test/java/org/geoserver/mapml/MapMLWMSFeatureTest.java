@@ -280,7 +280,6 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testCoordinateSimplification() throws Exception {
         Catalog cat = getCatalog();
         LayerInfo li = cat.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart());
@@ -316,7 +315,6 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testCoordinatePrecision() throws Exception {
         Catalog cat = getCatalog();
         LayerInfo li = cat.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart());
@@ -343,7 +341,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 .feature(true)
                 .getAsMapML();
         features = mapml.getBody().getFeatures();
-        testScale(features, 4);
+        testScale(features, 3);
     }
 
     private static void testScale(List<Feature> features, int expectedScale) {

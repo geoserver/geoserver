@@ -69,7 +69,6 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
     }
 
     @Override
-    @SuppressWarnings("PMD.CloseResource") // just a wrapper, actual output managed by servlet
     public void formatImageOutputStream(RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
             throws ServiceException, IOException {
         // tiff
@@ -111,7 +110,7 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
             }
 
             writer = new GeoTiffWriter(imageOutStream);
-            writer.write(gc, null);
+            writer.write(gc);
         } finally {
             try {
                 if (writer != null) writer.dispose();

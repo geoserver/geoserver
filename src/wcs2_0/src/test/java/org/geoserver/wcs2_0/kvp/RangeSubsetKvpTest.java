@@ -63,13 +63,13 @@ public class RangeSubsetKvpTest extends WCSKVPTestSupport {
         assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:32611", true)));
         assertEquals(68, reader.getOriginalGridRange().getSpan(0));
         assertEquals(56, reader.getOriginalGridRange().getSpan(1));
-        final GridCoverage2D coverage = reader.read(null);
+        final GridCoverage2D coverage = reader.read();
         assertEquals(3, coverage.getSampleDimensions().length);
 
         GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog()
                 .getCoverageByName("multiband")
                 .getGridCoverageReader(null, null)
-                .read(null);
+                .read();
         assertEnvelopeEquals(sourceCoverage, coverage);
         reader.dispose();
         scheduleForCleaning(coverage);
@@ -91,13 +91,13 @@ public class RangeSubsetKvpTest extends WCSKVPTestSupport {
         assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:32611", true)));
         assertEquals(68, reader.getOriginalGridRange().getSpan(0));
         assertEquals(56, reader.getOriginalGridRange().getSpan(1));
-        final GridCoverage2D coverage = reader.read(null);
+        final GridCoverage2D coverage = reader.read();
         assertEquals(4, coverage.getSampleDimensions().length);
 
         GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog()
                 .getCoverageByName("multiband")
                 .getGridCoverageReader(null, null)
-                .read(null);
+                .read();
         assertEnvelopeEquals(sourceCoverage, coverage);
         reader.dispose();
         scheduleForCleaning(coverage);
@@ -120,13 +120,13 @@ public class RangeSubsetKvpTest extends WCSKVPTestSupport {
         assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:32611", true)));
         assertEquals(68, reader.getOriginalGridRange().getSpan(0));
         assertEquals(56, reader.getOriginalGridRange().getSpan(1));
-        final GridCoverage2D coverage = reader.read(null);
+        final GridCoverage2D coverage = reader.read();
         assertEquals(7, coverage.getSampleDimensions().length);
 
         GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog()
                 .getCoverageByName("multiband")
                 .getGridCoverageReader(null, null)
-                .read(null);
+                .read();
         assertEnvelopeEquals(sourceCoverage, coverage);
         reader.dispose();
         scheduleForCleaning(coverage);
@@ -148,13 +148,13 @@ public class RangeSubsetKvpTest extends WCSKVPTestSupport {
         assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
         assertEquals(360, reader.getOriginalGridRange().getSpan(0));
         assertEquals(360, reader.getOriginalGridRange().getSpan(1));
-        final GridCoverage2D coverage = reader.read(null);
+        final GridCoverage2D coverage = reader.read();
         assertEquals(1, coverage.getSampleDimensions().length);
 
         GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog()
                 .getCoverageByName("BlueMarble")
                 .getGridCoverageReader(null, null)
-                .read(null);
+                .read();
         assertEnvelopeEquals(sourceCoverage, coverage);
         reader.dispose();
         scheduleForCleaning(coverage);
@@ -176,13 +176,13 @@ public class RangeSubsetKvpTest extends WCSKVPTestSupport {
         assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
         assertEquals(360, reader.getOriginalGridRange().getSpan(0));
         assertEquals(360, reader.getOriginalGridRange().getSpan(1));
-        final GridCoverage2D coverage = reader.read(null);
+        final GridCoverage2D coverage = reader.read();
         assertEquals(3, coverage.getSampleDimensions().length);
 
         GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog()
                 .getCoverageByName("BlueMarble")
                 .getGridCoverageReader(null, null)
-                .read(null);
+                .read();
         assertEnvelopeEquals(sourceCoverage, coverage);
         reader.dispose();
         scheduleForCleaning(coverage);
@@ -204,13 +204,13 @@ public class RangeSubsetKvpTest extends WCSKVPTestSupport {
         assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
         assertEquals(360, reader.getOriginalGridRange().getSpan(0));
         assertEquals(360, reader.getOriginalGridRange().getSpan(1));
-        final GridCoverage2D coverage = reader.read(null);
+        final GridCoverage2D coverage = reader.read();
         assertEquals(5, coverage.getSampleDimensions().length);
 
         GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog()
                 .getCoverageByName("BlueMarble")
                 .getGridCoverageReader(null, null)
-                .read(null);
+                .read();
         assertEnvelopeEquals(sourceCoverage, coverage);
         reader.dispose();
         scheduleForCleaning(coverage);

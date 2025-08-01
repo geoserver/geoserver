@@ -92,7 +92,7 @@ public class ScaleCoverageTest extends WPSTestSupport {
         try (InputStream is = getBinaryInputStream(response)) {
 
             ArcGridFormat format = new ArcGridFormat();
-            GridCoverage gc = format.getReader(is).read(null);
+            GridCoverage gc = format.getReader(is).read();
 
             GridCoverage2D original = (GridCoverage2D) getCatalog()
                     .getCoverageByName(getLayerId(MockData.TASMANIA_DEM))

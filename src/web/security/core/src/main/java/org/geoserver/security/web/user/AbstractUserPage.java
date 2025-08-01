@@ -151,7 +151,6 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
         container.add(
                 calculatedRoles = new ListView<>("calculatedRoles", new CalculatedRoleModel(user)) {
                     @Override
-                    @SuppressWarnings("unchecked")
                     protected void populateItem(ListItem<GeoServerRole> item) {
                         IModel<GeoServerRole> model = item.getModel();
                         item.add(new RoleEditLink(model));

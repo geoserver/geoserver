@@ -106,7 +106,6 @@ public class WPSRequestBuilder extends GeoServerBasePage {
 
         form.add(new AjaxSubmitLink("execute") {
 
-            @SuppressWarnings("unchecked")
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 HttpServletRequest http = GeoServerApplication.get().servletRequest();
@@ -175,7 +174,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         response.render(CssHeaderItem.forCSS("#xml {display: none;}", "wpsRequestBuilderCSS"));
     }
 
-    public class WPSRequestModel implements Serializable {
+    public static class WPSRequestModel implements Serializable {
         public String xml;
 
         public String getXml() {

@@ -32,6 +32,9 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.api.data.Query;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.geometry.Bounds;
 import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.parameter.ParameterValue;
@@ -46,10 +49,13 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.grid.io.footprint.FootprintBehavior;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.NameImpl;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
@@ -63,12 +69,14 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     private static final String BANDS_FLAGS_VIEW = "BandsFlagsView";
     private static final String NDVI_VIEW = "NDVI";
     private static final String NDVI_VIEW2 = "NDVI2";
+    private static final String NDVI_MASK = "NDVIMASK";
     private static final String BGR_VIEW = "BGR";
     private static final double ERROR = 1E-5;
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static QName S2REDUCED = new QName(MockData.SF_URI, "s2reduced", MockData.SF_PREFIX);
     protected static QName IR_RGB = new QName(MockData.SF_URI, "ir-rgb", MockData.SF_PREFIX);
     protected static QName BANDS_FLAGS = new QName(MockData.SF_URI, "bands-flags", MockData.SF_PREFIX);
+    protected static QName S2MASK = new QName(MockData.WCS_URI, "s2mask", MockData.WCS_PREFIX);
 
     @Before
     public void cleanupCatalog() {
@@ -82,6 +90,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         testData.setUpRasterLayer(WATTEMP, "watertemp.zip", null, null, TestData.class);
         testData.setUpRasterLayer(S2REDUCED, "s2reduced.zip", null, null, TestData.class);
+        testData.setUpRasterLayer(S2MASK, "s2mask.zip", null, null, TestData.class);
         testData.setUpRasterLayer(IR_RGB, "ir-rgb.zip", null, null, TestData.class);
         testData.setUpRasterLayer(BANDS_FLAGS, "bands-flags.zip", null, null, TestData.class);
 
@@ -98,6 +107,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         configureBandsFlagsOnCatalog(cat);
         configureNDVIonCatalog(cat);
         configureNDVI2(cat);
+        configureNDVIMaskOnCatalog(cat);
         configureBGRonCatalogWithJiffle(cat);
     }
 
@@ -139,6 +149,24 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(NDVI_VIEW, storeInfo, builder);
+        cat.add(coverageInfo);
+    }
+
+    private void configureNDVIMaskOnCatalog(Catalog cat) throws Exception {
+        final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("s2mask");
+        InputCoverageBand mask16 = new InputCoverageBand("MASK16", "0");
+        InputCoverageBand ib04 = new InputCoverageBand("B04", "0");
+        InputCoverageBand ib08 = new InputCoverageBand("B08", "0");
+        final CoverageBand ndvi =
+                new CoverageBand(Arrays.asList(mask16, ib04, ib08), "NDVI", 0, CompositionType.JIFFLE);
+        final CoverageView coverageView = new CoverageView(NDVI_MASK, Collections.singletonList(ndvi));
+        coverageView.setOutputName("NDVI");
+        coverageView.setDefinition(
+                "if (MASK16 == 0) {" + "NDVI = null;" + "} else {" + "NDVI = (B08 - B04) / (B04 + B08);}");
+        coverageView.setCompositionType(CompositionType.JIFFLE);
+        final CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(storeInfo);
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(NDVI_MASK, storeInfo, builder);
         cat.add(coverageInfo);
     }
 
@@ -260,7 +288,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         final ResourcePool resPool = cat.getResourcePool();
         final ReferencedEnvelope bbox = coverageInfo.getLatLonBoundingBox();
         final GridCoverage coverage = resPool.getGridCoverage(coverageInfo, "waterView", bbox, null);
-        assertEquals(coverage.getNumSampleDimensions(), 1);
+        assertEquals(1, coverage.getNumSampleDimensions());
 
         disposeCoverage(coverage);
         final GridCoverageReader reader = resPool.getGridCoverageReader(coverageInfo, null);
@@ -318,7 +346,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         sameViewDifferentName.setName("winds");
         sameViewDifferentName.setCoverageBands(bands);
         assertNotEquals(coverageView, sameViewDifferentName);
-        assertEquals(coverageView.getCompositionType(), defaultComposition);
+        assertEquals(defaultComposition, coverageView.getCompositionType());
 
         assertEquals(coverageView.getBand(1), outputBandV);
         assertEquals(outputBandU, coverageView.getBands("u-component").get(0));
@@ -346,12 +374,12 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             CoverageInfo coverageInfo = cat.getCoverageByName(viewName);
             final ResourcePool rp = cat.getResourcePool();
             GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, viewName, null);
-            solidCoverage = (GridCoverage2D) reader.read(viewName, null);
+            solidCoverage = (GridCoverage2D) reader.read(viewName);
             assertBandNames(solidCoverage, viewName);
             GridCoverageReader rb04 = rp.getGridCoverageReader(cat.getCoverageByName("B04"), "B04", null);
             GridCoverageReader rb08 = rp.getGridCoverageReader(cat.getCoverageByName("B08"), "B08", null);
-            b04Coverage = rb04.read("B04", null);
-            b08Coverage = rb08.read("B08", null);
+            b04Coverage = rb04.read("B04");
+            b08Coverage = rb08.read("B08");
 
             RenderedImage ri = solidCoverage.getRenderedImage();
             Raster raster = ri.getData();
@@ -383,10 +411,10 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         CoverageInfo coverageInfo = cat.getCoverageByName(BGR_VIEW);
         final ResourcePool rp = cat.getResourcePool();
         GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, BGR_VIEW, null);
-        GridCoverage solidCoverage = reader.read(BGR_VIEW, null);
+        GridCoverage solidCoverage = reader.read(BGR_VIEW);
         coverageInfo = cat.getCoverageByName("rgb");
         GridCoverageReader rgbReader = rp.getGridCoverageReader(coverageInfo, "rgb", null);
-        GridCoverage rgbCoverage = rgbReader.read("rgb", null);
+        GridCoverage rgbCoverage = rgbReader.read("rgb");
         try {
             RenderedImage ri = solidCoverage.getRenderedImage();
             Raster raster = solidCoverage.getRenderedImage().getData();
@@ -640,7 +668,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
             // checking the coverage it's not particularly useful as it does not get cut,
             // the bounds are just metadata
-            coverage = reader.read(null);
+            coverage = reader.read();
             assertCoverageResolution(coverage, 1007, 1007);
             Bounds coverageEnvelope = coverage.getEnvelope();
             assertEquals(399960, coverageEnvelope.getMinimum(0), 1);
@@ -683,7 +711,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
             // no point checking the coverage, this is again just metadata, just smoke testing
             // the read will work
-            coverage = reader.read(null);
+            coverage = reader.read();
         } finally {
             getCatalog().remove(info);
             if (coverage != null) {
@@ -722,7 +750,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             gg.setValue(new GridGeometry2D(
                     new GridEnvelope2D(0, 0, 10, 10), new ReferencedEnvelope(0, 1000, 0, 1000, UTM32N)));
             GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
-            coverage = reader.read(new GeneralParameterValue[] {gg});
+            coverage = reader.read(gg);
             assertNull(coverage);
         } finally {
             getCatalog().remove(info);
@@ -798,7 +826,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
             ParameterValue<int[]> bandsValue = AbstractGridFormat.BANDS.createValue();
             bandsValue.setValue(bands);
-            coverage = reader.read(new GeneralParameterValue[] {bandsValue});
+            coverage = reader.read(bandsValue);
             assertNotNull(coverage);
             assertCoverageResolution(coverage, expectedResolutionX, expectedResolutionY);
         } finally {
@@ -819,6 +847,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             bands.add(band);
         }
         final CoverageView coverageView = new CoverageView(name, bands);
+        coverageView.setFillMissingBands(null);
         viewCustomizer.accept(coverageView);
 
         final Catalog cat = getCatalog();
@@ -887,8 +916,96 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
         CoverageInfo info = getCatalog().getCoverageByName(BANDS_FLAGS_VIEW);
         GridCoverageReader reader = info.getGridCoverageReader(null, null);
-        GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
+        GridCoverage2D coverage = (GridCoverage2D) reader.read();
         assertEquals(11, coverage.getRenderedImage().getSampleModel().getNumBands());
         coverage.dispose(true);
+    }
+
+    @Test
+    public void testMissingBandsFill() throws Exception {
+        GridCoverage2D solidCoverage = null;
+        GridCoverage b04Coverage = null;
+        GridCoverage b08Coverage = null;
+        try {
+            Catalog cat = getCatalog();
+            CoverageInfo coverageInfo = cat.getCoverageByName(NDVI_MASK);
+            final ResourcePool rp = cat.getResourcePool();
+            // The dataset has 3 bands (B04,B08,MASK16) with extension tif
+            // and 2 bands (B04,B08) with extension tiff
+            // The Jiffle coverageView is like this:
+            // if (MASK16 == 0) {;
+            //     NDVI = null;
+            // } else {;
+            //   NDVI = (B08 - B04) / (B04 + B08);
+            // }
+
+            // We are going to put a filter to only return tiff images (so that MASK16 will be missing)
+            // and then we will check the coverageView computation
+
+            // First, without filling enabled. ImageMosaic dryrun will identify that there are granules
+            // on that area that are not matching the filter so it will return null instead of a blank
+            // response
+            GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, NDVI_MASK, null);
+            ParameterValue<Filter> filterParam = ImageMosaicFormat.FILTER.createValue();
+            FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+            Filter locationFilter = ff.like(ff.property("location"), "*.tiff");
+            filterParam.setValue(locationFilter);
+
+            solidCoverage = (GridCoverage2D) reader.read(NDVI_MASK, filterParam);
+            // Returned null coverage since there was a missing band.
+            assertNull(solidCoverage);
+
+            // Then, we are going to enable the fillMissingBands in the coverageView
+            MetadataMap metadata = coverageInfo.getMetadata();
+            CoverageView view = metadata.get("COVERAGE_VIEW", CoverageView.class);
+            view.setFillMissingBands(true);
+            cat.save(coverageInfo);
+
+            // Let's repeat the read now
+            reader = rp.getGridCoverageReader(coverageInfo, NDVI_MASK, null);
+            solidCoverage = (GridCoverage2D) reader.read(NDVI_MASK, filterParam);
+            assertNotNull(solidCoverage);
+            assertBandNames(solidCoverage, "NDVI");
+
+            Name b04Name = new NameImpl(MockData.WCS_PREFIX, "B04");
+            Name b08Name = new NameImpl(MockData.WCS_PREFIX, "B08");
+
+            // Make sure NDVI has been computed properly
+            GridCoverageReader rb04 = rp.getGridCoverageReader(cat.getCoverageByName(b04Name), "B04", null);
+            GridCoverageReader rb08 = rp.getGridCoverageReader(cat.getCoverageByName(b08Name), "B08", null);
+            b04Coverage = rb04.read("B04", filterParam);
+            b08Coverage = rb08.read("B08", filterParam);
+
+            RenderedImage ri = solidCoverage.getRenderedImage();
+            ImageWorker iw = new ImageWorker(ri);
+            double[] maxs = iw.getMaximums();
+            double[] mins = iw.getMinimums();
+            assertEquals(maxs[0], 0.986842, ERROR);
+            assertEquals(mins[0], -0.931034, ERROR);
+
+            Raster raster = ri.getData();
+            Raster b04 = b04Coverage.getRenderedImage().getData();
+            Raster b08 = b08Coverage.getRenderedImage().getData();
+            double d;
+            double ndvi;
+            double b04v;
+            double b08v;
+
+            for (int j = ri.getMinY(); j < raster.getHeight(); j++) {
+                for (int i = ri.getMinX(); i < raster.getWidth(); i++) {
+                    d = raster.getSampleDouble(i, j, 0);
+                    if (!Double.isNaN(d)) {
+                        b04v = b04.getSample(i, j, 0) & 0xFF;
+                        b08v = b08.getSample(i, j, 0) & 0xFF;
+                        ndvi = (b08v - b04v) / (b08v + b04v);
+                        assertEquals(d, ndvi, ERROR);
+                    }
+                }
+            }
+        } finally {
+            disposeCoverage(solidCoverage);
+            disposeCoverage(b04Coverage);
+            disposeCoverage(b08Coverage);
+        }
     }
 }

@@ -30,38 +30,9 @@
           ]
         }
       },
-      "cube:dimensions": {
-        "x": {
-          "type": "spatial",
-          "axis": "x",
-          "extent": "$${eoSummaries('bounds',eo:identifier,'x')}",
-          "reference_system": 4326
-        },
-        "y": {
-          "type": "spatial",
-          "axis": "y",
-          "extent": "$${eoSummaries('bounds',eo:identifier,'y')}",
-          "reference_system": 4326
-        },
-        "time": {
-          "type": "temporal",
-          "extent": [
-            "$${eoSummaries('min',eo:identifier,'timeStart')}",
-            "$${eoSummaries('max',eo:identifier,'timeEnd')}"
-          ],
-          "step": "P5D"
-        }
-      },
-      "providers": [
-        {
-          "name": "GeoServer",
-          "url": "https://www.geoserver.org/",
-          "roles": [
-            "host"
-          ]
-        }
-      ],
+      "providers": "${providers}",
       "assets": "${assets}",
+      "summaries": "${summaries}",
       "links": [
         {
           "href": "$${serviceLink('ogc/stac/v1/collections/%s', name)}",
@@ -92,7 +63,9 @@
           "href": "$${serviceLink('ogc/stac/v1/collections/%s/sortables', name)}",
           "rel": "http://www.opengis.net/def/rel/ogc/1.0/sortables",
           "type": "application/schema+json"
-        }
+        },
+        "${license_link}",
+        "${derivedFrom}"
       ]
     }
   ]

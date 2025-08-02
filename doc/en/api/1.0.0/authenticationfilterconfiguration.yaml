@@ -2,22 +2,26 @@
 swagger: '2.0'
 info:
   version: 1.0.0
-  title: Filters, Filter Chain and Provider Rest endpoints
-  description: Management of security filters, filter chains and prover endpoints
+  title: Filters, Filter Chain and Provider REST endpoints
+  description: Management of security filters, filter chains and provider endpoints
   contact:
     name: GeoServer
-    email: 'geoserver-users@osgeo.org'
-    url: 'https://geoserver.org/comm/'
-securityDefinitions:
-    basicAuth: # <-- arbitrary name for the security scheme
-      type: basic
-      description: The user name and password of a admin user.
-
+    email: geoserver-users@osgeo.org
+    url: https://geoserver.org/comm/
 schemes:
   - https
   - http
-host: localhost
+host: localhost:9002
 basePath: /geoserver/rest/security
+
+securityDefinitions:
+  basicAuth:
+    type: basic
+    description: The user name and password of an admin user.
+
+tags:
+  - name: AuthFilters
+    description: Authentication filters management
 
 paths:
   /authFilters:
@@ -25,10 +29,9 @@ paths:
       security:
         - basicAuth: []
       operationId: listAuthFilters
-      tags:
-        - "AuthFilters"
-      summary: List all the auth filters available in the system.
-      description: List all the auth filters available in the system.
+      tags: [AuthFilters]
+      summary: List all auth filters in the system.
+      description: Returns names and links to individual auth filter resources.
       produces:
         - application/xml
         - application/json
@@ -36,180 +39,238 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/AuthFilters"
+            $ref: '#/definitions/AuthFiltersIndex'
           examples:
             application/xml: |
-              <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
               <authFilters>
                 <authFilter>
-                  <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="anonymousAuthenticationFilterConfig">
-                    <className>org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter</className>
-                  </config>
-                  <id>-3737ce2b:196b56d5575:-7fed</id>
-                  <name>anonymous</name>
+                  <name>Keycloak</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom"
+                             rel="alternate"
+                             href="http://localhost:9002/geoserver/rest/security/authFilters/Keycloak.xml"
+                             type="application/atom+xml"/>
                 </authFilter>
               </authFilters>
             application/json: |
               {
-              "filters": [
-                {
-                  "id": "-3737ce2b:196b56d5575:-7fed",
-                  "name": "anonymous",
-                  "config": {
-                    "@class": "org.geoserver.security.config.AnonymousAuthenticationFilterConfig",
-                    "className": "org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter"
-                  }
+                "authFilters": {
+                  "authFilter": [
+                    {
+                      "name": "Keycloak",
+                      "href": "http://localhost:9002/geoserver/rest/security/authFilters/Keycloak.json"
+                    }
+                  ]
                 }
-              ]}
+              }
+        403:
+          description: No administrative privileges.
         500:
-          description: INTERNAL_SERVER_ERROR
+          description: Internal Server Error.
     post:
       security:
         - basicAuth: []
       operationId: createAuthFilter
-      description: | 
-        This method will create the specified authentication filter on the server. 
-        The name of the filter must be unique. It expects the id field to be
-        omitted as the server will generate this value.
-      tags:
-        - "AuthFilters"
-      summary: Create a new auth filter
+      tags: [AuthFilters]
+      summary: Create a new auth filter.
+      description: |
+        Creates a new authentication filter. The payload is the specific filter configuration object
+        (e.g., OpenIdConnectFilterConfig). On success, the Location header points to the new resource.
       consumes:
         - application/xml
         - application/json
       parameters:
-        - name: filter
+        - name: filterConfig
           in: body
           required: true
-          description: The filter chain configuration to create
+          description: The specific authentication filter configuration to create.
           schema:
-            $ref: "#/definitions/AuthFilter"
+            $ref: '#/definitions/AuthFilterConfig'
       responses:
         201:
-          description: |
-            The filter configuration has been saved on the server
+          description: Created.
+          headers:
+            Location:
+              type: string
+              description: URL of the created filter.
+          examples:
+            application/xml: |
+              <!-- No body; see Location header -->
+        200:
+          description: Created (some deployments return 200 on create).
+          headers:
+            Location:
+              type: string
+              description: URL of the created filter.
         400:
-          description: |
-            The data supplied by the client was invalid. Typically check that the name 
-            is unqiue and that no id is supplied.
+          description: Malformed request (e.g., invalid or missing fields).
+        403:
+          description: No administrative privileges.
+        500:
+          description: Internal Server Error.
+
   /authFilters/{filterName}:
     parameters:
       - name: filterName
         in: path
         required: true
         type: string
-        description: The name of the filter chain to retrieve
+        description: The name of the authentication filter.
     get:
       security:
         - basicAuth: []
       operationId: viewAuthFilter
-      tags:
-        - "AuthFilters"
-      summary: Views the details of a single filter.
-      description: |
-        Displays the contents of the configuration object on the server.
+      tags: [AuthFilters]
+      summary: View details of a single auth filter.
       produces:
         - application/xml
         - application/json
       responses:
         200:
-          description: |
-            The request completed successfully and the name filter configuration 
-            has been returned.
+          description: The filter configuration.
           schema:
-            $ref: "#/definitions/AuthFilter"
+            $ref: '#/definitions/AuthFilterConfig'
+          examples:
+            application/xml: |
+              <org.geoserver.security.config.AnonymousAuthenticationFilterConfig>
+                <id>52857278:13c7ffd66a8:-7ff7</id>
+                <name>anonymous</name>
+                <className>org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter</className>
+              </org.geoserver.security.config.AnonymousAuthenticationFilterConfig>
+            application/json: |
+              {
+                "org.geoserver.security.oauth2.OpenIdConnectFilterConfig": {
+                  "id": "6bc4a33d:196d8c8ede2:-8000",
+                  "name": "Keycloak",
+                  "@class": "org.geoserver.security.oauth2.OpenIdConnectFilterConfig",
+                  "className": "org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter",
+                  "roleSource": {
+                    "@class": "org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig$PreAuthenticatedUserNameRoleSource",
+                    "$": "RoleService"
+                  },
+                  "roleServiceName": "default",
+                  "cliendId": "myclient",
+                  "clientSecret": "UGIAvmT8qgfikS9cbAi2vUJOTVUU61sG",
+                  "accessTokenUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/token",
+                  "userAuthorizationUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/auth",
+                  "redirectUri": "http://localhost:9001/geoserver/",
+                  "checkTokenEndpointUrl": "http://localhost:8080/realms/myrealm/protocol/openid-connect/userinfo",
+                  "introspectionEndpointUrl": "http://localhost:8080/realms/myrealm/protocol/openid-connect/token/introspect",
+                  "logoutUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/logout",
+                  "scopes": "openid email",
+                  "enableRedirectAuthenticationEntryPoint": false,
+                  "forceAccessTokenUriHttps": false,
+                  "forceUserAuthorizationUriHttps": false,
+                  "loginEndpoint": "/j_spring_oauth2_openid_connect_login",
+                  "logoutEndpoint": "/j_spring_oauth2_openid_connect_logout",
+                  "allowUnSecureLogging": false,
+                  "principalKey": "email",
+                  "jwkURI": "http://localhost:8080/realms/myrealm/protocol/openid-connect/certs",
+                  "postLogoutRedirectUri": "http://localhost:9001/geoserver/",
+                  "sendClientSecret": false,
+                  "allowBearerTokens": true,
+                  "usePKCE": false,
+                  "enforceTokenValidation": false,
+                  "cacheAuthentication": false
+                }
+              }
+        403:
+          description: No administrative privileges.
         404:
-          description: |
-            The named configuration does not exist on the server
+          description: Authentication filter not found.
         500:
-          description: |
-            A problem occurred within the server, this cannot be fixed by changing the data
-            in the request contact you administrator
+          description: Internal Server Error.
     put:
       security:
         - basicAuth: []
       operationId: updateAuthFilter
-      tags:
-        - "AuthFilters"
-      summary: Update the named filter configuration.
-      description: |
-        Update the named filter configuration.
+      tags: [AuthFilters]
+      summary: Update the named authentication filter.
       consumes:
         - application/xml
         - application/json
       parameters:
-        - name: filter
+        - name: filterConfig
           in: body
           required: true
-          description: The filter chain configuration to create
+          description: The updated filter configuration.
           schema:
-            $ref: "#/definitions/AuthFilter"
+            $ref: '#/definitions/AuthFilterConfig'
       responses:
         200:
-          description: |
-            The configuration has been updated
+          description: The configuration has been updated.
+          examples:
+            application/xml: |
+              <org.geoserver.security.config.SecurityInterceptorFilterConfig>
+                <id>-2bf62d17:196c4deaf9b:-7fff</id>
+                <name>restInterceptor9</name>
+                <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>
+                <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>
+                <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>
+              </org.geoserver.security.config.SecurityInterceptorFilterConfig>
+            application/json: |
+              {
+                "org.geoserver.security.config.SecurityInterceptorFilterConfig": {
+                  "id": "-3abefb99:196c5207331:-7ffe",
+                  "name": "restInterceptor13",
+                  "className": "org.geoserver.security.filter.GeoServerSecurityInterceptorFilter",
+                  "allowIfAllAbstainDecisions": true,
+                  "securityMetadataSource": "restFilterDefinitionMap"
+                }
+              }
         400:
-          description: |
-            The filter configuration cannot be updated. Check that the supplied name matches
-            the name in the body of the request. Check that the Id matches the Id of the 
-            configuration in memory. Check all required fields the type of authentication
-            filter have been supplied.
+          description: Malformed request (e.g., mismatched name/ID or missing required fields).
+        403:
+          description: No administrative privileges.
+        404:
+          description: Authentication filter not found.
         500:
-          description: |
-            The server is experiencing some issue. If this persists contact your administrator.
+          description: Internal Server Error.
     delete:
       security:
         - basicAuth: []
       operationId: deleteAuthFilter
-      tags:
-        - "AuthFilters"
-      summary: Deletes the named filter.
-      description: |
-        Removes the authentication configuration from the server.
+      tags: [AuthFilters]
+      summary: Delete the named authentication filter.
       responses:
         200:
-          description: |
-            The authentication filter was successfully removed
+          description: The authentication filter was successfully removed.
+        403:
+          description: No administrative privileges.
         410:
-          description: |
-            The authentication filter does not exist or has already been removed
+          description: The authentication filter does not exist or has already been removed.
         500:
-          description: |
-            The server is experiencing some issue. If this persists contact your administrator.
-
+          description: Internal Server Error.
 
 definitions:
-  AuthFilters:
-    title: Auth Filters
-    type: array
-    items:
-      $ref: "#/definitions/AuthFilter"
-  AuthFilter:
-    title: Auth Filter
+  AuthFilterListItem:
+    title: Auth Filter List Item
     type: object
     properties:
-      id:
-        type: string
-        description: |
-          The unique id assigned to the configuration by geoserver
       name:
         type: string
-        description: |
-          The unique name assigned to the configuration by client
-      config:
+        description: The unique name assigned to the configuration by the client.
+      href:
+        type: string
+        description: Link to the detailed resource representation.
+    required: [name]
+  AuthFiltersIndex:
+    title: Auth Filters Index
+    description: Wrapper for list responses.
+    type: object
+    properties:
+      authFilters:
         type: object
-        description: |
-          Bespoke configuration fields required by the specific type
-          of authentication filter
         properties:
-          className:
-            type: string
-            description: |
-              The className of the actual filter class used in geoserver
-          AnyValue: {}
-        required:
-          - className
-    required:
-      - id
-      - name
-      - config
+          authFilter:
+            type: array
+            items:
+              $ref: '#/definitions/AuthFilterListItem'
+  AuthFilterConfig:
+    title: Auth Filter Config (polymorphic)
+    description: >
+      A polymorphic configuration object for an authentication filter. For JSON, responses may be
+      wrapped under a key naming the concrete config class
+      (e.g., "org.geoserver.security.oauth2.OpenIdConnectFilterConfig": { ... }).
+      For XML, the root element is the concrete config class. The set of fields depends on the filter type.
+    type: object
+    additionalProperties: true

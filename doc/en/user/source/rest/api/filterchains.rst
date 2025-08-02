@@ -158,10 +158,10 @@ Exceptions
      - 500
 
 
-.. _security_authfilters_authfilter:
+.. _security_authfilters_filterchain:
 
 ``/security/filterChains/{filterChain}``
------------------------------------------
+----------------------------------------
 
 View, Update or Delete an existing auth filter
 

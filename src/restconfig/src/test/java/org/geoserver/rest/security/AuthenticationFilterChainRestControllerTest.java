@@ -4,7 +4,10 @@
  */
 package org.geoserver.rest.security;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.thoughtworks.xstream.XStream;
 import java.io.ByteArrayInputStream;

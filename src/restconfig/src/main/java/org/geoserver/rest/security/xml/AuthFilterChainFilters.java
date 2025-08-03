@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @XStreamAlias("filters")
-public class FilterChainDTO {
+public class AuthFilterChainFilters {
 
     @XStreamAsAttribute
     private String name;

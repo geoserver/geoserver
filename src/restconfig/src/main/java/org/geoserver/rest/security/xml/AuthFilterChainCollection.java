@@ -10,15 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @XStreamAlias("filterChain")
-public class FilterChainCollection {
+public class AuthFilterChainCollection {
     @XStreamImplicit(itemFieldName = "filters")
-    private List<FilterChainDTO> chains = new ArrayList<>();
+    private List<AuthFilterChainFilters> chains = new ArrayList<>();
 
-    public List<FilterChainDTO> getChains() {
+    public List<AuthFilterChainFilters> getChains() {
         return chains;
     }
 
-    public void setChains(List<FilterChainDTO> chains) {
+    public void setChains(List<AuthFilterChainFilters> chains) {
         this.chains = chains;
     }
 }

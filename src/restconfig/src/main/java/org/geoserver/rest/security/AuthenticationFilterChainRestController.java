@@ -4,31 +4,51 @@
  */
 package org.geoserver.rest.security;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 
-import com.google.common.base.Strings;
 import com.thoughtworks.xstream.XStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.rest.RestBaseController;
-import org.geoserver.rest.security.xml.AuthFilterChain;
-import org.geoserver.rest.security.xml.FilterChainCollection;
-import org.geoserver.rest.security.xml.FilterChainDTO;
-import org.geoserver.rest.security.xml.FilterChainOrderDTO;
+import org.geoserver.rest.security.xml.AuthFilterChainCollection;
+import org.geoserver.rest.security.xml.AuthFilterChainFilters;
+import org.geoserver.rest.security.xml.AuthFilterChainOrder;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
@@ -48,36 +68,31 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         xs.allowTypesByWildcard(new String[] {"org.geoserver.rest.security.xml.*"});
 
         // root
-        xs.alias("filterChain", org.geoserver.rest.security.xml.FilterChainCollection.class);
+        xs.alias("filterChain", AuthFilterChainCollection.class);
 
         // collection: no <chains> wrapper; each item is <filters>
-        xs.addImplicitCollection(
-                org.geoserver.rest.security.xml.FilterChainCollection.class,
-                "chains",
-                "filters",
-                org.geoserver.rest.security.xml.FilterChainDTO.class);
+        xs.addImplicitCollection(AuthFilterChainCollection.class, "chains", "filters", AuthFilterChainFilters.class);
 
         // item
-        xs.alias("filters", org.geoserver.rest.security.xml.FilterChainDTO.class);
-        xs.aliasField("class", org.geoserver.rest.security.xml.FilterChainDTO.class, "clazz");
-        xs.aliasAttribute(org.geoserver.rest.security.xml.FilterChainDTO.class, "requireSSL", "ssl");
+        xs.alias("filters", AuthFilterChainFilters.class);
+        xs.aliasField("class", AuthFilterChainFilters.class, "clazz");
+        xs.aliasAttribute(AuthFilterChainFilters.class, "requireSSL", "ssl");
         // Disable XStream's special meaning for the "class" attribute
         xs.aliasSystemAttribute(null, "class");
         xs.aliasSystemAttribute(null, "resolves-to"); // (optional, belts & braces)
 
-        xs.useAttributeFor(org.geoserver.rest.security.xml.FilterChainDTO.class, "name");
-        xs.useAttributeFor(org.geoserver.rest.security.xml.FilterChainDTO.class, "clazz");
-        xs.useAttributeFor(org.geoserver.rest.security.xml.FilterChainDTO.class, "path");
-        xs.useAttributeFor(org.geoserver.rest.security.xml.FilterChainDTO.class, "disabled");
-        xs.useAttributeFor(org.geoserver.rest.security.xml.FilterChainDTO.class, "allowSessionCreation");
-        xs.useAttributeFor(org.geoserver.rest.security.xml.FilterChainDTO.class, "requireSSL");
-        xs.useAttributeFor(org.geoserver.rest.security.xml.FilterChainDTO.class, "matchHTTPMethod");
-        xs.useAttributeFor(org.geoserver.rest.security.xml.FilterChainDTO.class, "interceptorName");
-        xs.useAttributeFor(org.geoserver.rest.security.xml.FilterChainDTO.class, "exceptionTranslationName");
-        xs.useAttributeFor(org.geoserver.rest.security.xml.FilterChainDTO.class, "roleFilterName");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "name");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "clazz");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "path");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "disabled");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "allowSessionCreation");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "requireSSL");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "matchHTTPMethod");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "interceptorName");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "exceptionTranslationName");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "roleFilterName");
 
-        xs.addImplicitCollection(
-                org.geoserver.rest.security.xml.FilterChainDTO.class, "filters", "filter", String.class);
+        xs.addImplicitCollection(AuthFilterChainFilters.class, "filters", "filter", String.class);
     }
 
     // ---------- Endpoints ----------
@@ -91,7 +106,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             SecurityManagerConfig cfg = securityManager.loadSecurityConfig();
             List<RequestFilterChain> chains = cfg.getFilterChain().getRequestChains();
 
-            FilterChainCollection col = new FilterChainCollection();
+            AuthFilterChainCollection col = new AuthFilterChainCollection();
             col.setChains(chains.stream().map(this::toDTO).collect(Collectors.toList()));
 
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
@@ -121,14 +136,15 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
             configureAliases(xp);
 
-            FilterChainCollection incoming = xp.load(new ByteArrayInputStream(body), FilterChainCollection.class);
+            AuthFilterChainCollection incoming =
+                    xp.load(new ByteArrayInputStream(body), AuthFilterChainCollection.class);
 
-            List<FilterChainDTO> dtos =
+            List<AuthFilterChainFilters> dtos =
                     Optional.ofNullable(incoming.getChains()).orElse(Collections.emptyList());
             checkArgument(!dtos.isEmpty(), "At least one chain must be provided");
 
             Set<String> names = new HashSet<>();
-            for (FilterChainDTO dto : dtos) {
+            for (AuthFilterChainFilters dto : dtos) {
                 checkArgument(dto.getName() != null && !dto.getName().isEmpty(), "Each chain needs a name");
                 checkArgument(dto.getClazz() != null && !dto.getClazz().isEmpty(), "Each chain needs a class");
                 checkArgument(names.add(dto.getName()), "Duplicate chain name: %s", dto.getName());
@@ -142,7 +158,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             securityManager.saveSecurityConfig(cfg);
             securityManager.reload();
 
-            FilterChainCollection out = new FilterChainCollection();
+            AuthFilterChainCollection out = new AuthFilterChainCollection();
             out.setChains(rewritten.stream().map(this::toDTO).collect(Collectors.toList()));
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -168,7 +184,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
     public ResponseEntity<Void> reorder(HttpServletRequest request) {
         checkAuthorised();
         try {
-            FilterChainOrderDTO order = parseOrder(request);
+            AuthFilterChainOrder order = parseOrder(request);
             List<String> wanted = Optional.ofNullable(order.getOrder()).orElse(Collections.emptyList());
             checkArgument(!wanted.isEmpty(), "`order` list required");
 
@@ -227,10 +243,10 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             RequestFilterChain chain = Optional.ofNullable(cfg.getFilterChain().getRequestChainByName(chainName))
                     .orElseThrow(() -> new FilterChainNotFound(finalChainName));
 
-            FilterChainDTO dto = toDTO(chain);
+            AuthFilterChainFilters dto = toDTO(chain);
 
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
-            configureAliases(xp); // already defines alias "filters" -> FilterChainDTO as element
+            configureAliases(xp); // already defines alias "filters" -> AuthFilterChainFilters as element
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             xp.save(dto, baos); // root element will be <filters ...>
             return ResponseEntity.ok()
@@ -255,7 +271,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
             configureAliases(xp);
 
-            FilterChainDTO dto = xp.load(new ByteArrayInputStream(body), FilterChainDTO.class);
+            AuthFilterChainFilters dto = xp.load(new ByteArrayInputStream(body), AuthFilterChainFilters.class);
             ensureNotReserved(dto.getName());
             RequestFilterChain model = toModel(dto);
 
@@ -336,7 +352,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
             configureAliases(xp);
 
-            FilterChainDTO dto = xp.load(new ByteArrayInputStream(body), FilterChainDTO.class);
+            AuthFilterChainFilters dto = xp.load(new ByteArrayInputStream(body), AuthFilterChainFilters.class);
             ensureNotReserved(dto.getName());
             RequestFilterChain incoming = toModel(dto);
 
@@ -400,7 +416,6 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             securityManager.saveSecurityConfig(cfg);
             securityManager.reload();
         } catch (Exception e) {
-            // >>> ADD THESE LINES FIRST <<<
             rethrowIfDomain(e); // lets NothingToDelete/BadRequest/etc. bubble out
 
             // optional: classify common infrastructural errors
@@ -431,20 +446,20 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         checkArgument(!RESERVED.contains(name.toLowerCase()), "'%s' is reserved", name);
     }
 
-    private FilterChainOrderDTO parseOrder(HttpServletRequest req) throws IOException {
+    private AuthFilterChainOrder parseOrder(HttpServletRequest req) throws IOException {
         byte[] body = req.getInputStream().readAllBytes();
         String ct = Optional.ofNullable(req.getContentType()).orElse("");
         if (ct.contains(MediaType.APPLICATION_XML_VALUE) || ct.contains(MediaType.TEXT_XML_VALUE)) {
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
             configureAliases(xp);
-            return xp.load(new ByteArrayInputStream(body), FilterChainOrderDTO.class);
+            return xp.load(new ByteArrayInputStream(body), AuthFilterChainOrder.class);
         } else {
-            return new com.fasterxml.jackson.databind.ObjectMapper().readValue(body, FilterChainOrderDTO.class);
+            return new com.fasterxml.jackson.databind.ObjectMapper().readValue(body, AuthFilterChainOrder.class);
         }
     }
 
-    private FilterChainDTO toDTO(RequestFilterChain c) {
-        FilterChainDTO dto = new FilterChainDTO();
+    private AuthFilterChainFilters toDTO(RequestFilterChain c) {
+        AuthFilterChainFilters dto = new AuthFilterChainFilters();
         dto.setName(c.getName());
         dto.setClazz(c.getClass().getName());
         // path is a CSV in XML — join patterns
@@ -463,14 +478,13 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         return dto;
     }
 
-    private RequestFilterChain toModel(FilterChainDTO dto) {
+    private RequestFilterChain toModel(AuthFilterChainFilters dto) {
         try {
             Class<?> raw = Class.forName(dto.getClazz());
             checkArgument(
                     RequestFilterChain.class.isAssignableFrom(raw),
                     "Class %s is not a RequestFilterChain",
                     dto.getClazz());
-            @SuppressWarnings("unchecked")
             Class<?> chainClass = Class.forName(dto.getClazz());
             RequestFilterChain chain = instantiateChain(chainClass.asSubclass(RequestFilterChain.class), dto);
 
@@ -496,8 +510,8 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private RequestFilterChain instantiateChain(Class<? extends RequestFilterChain> type, FilterChainDTO dto)
+    @SuppressWarnings("PMD.UseExplicitTypes")
+    private RequestFilterChain instantiateChain(Class<? extends RequestFilterChain> type, AuthFilterChainFilters dto)
             throws Exception {
 
         // Prefer a no-arg if it exists
@@ -536,7 +550,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 + (last != null ? " (last: " + last.getClass().getSimpleName() + ": " + last.getMessage() + ")" : ""));
     }
 
-    private Object defaultArgFor(Class<?> t, FilterChainDTO dto) {
+    private Object defaultArgFor(Class<?> t, AuthFilterChainFilters dto) {
         if (t.isArray() && t.getComponentType() == String.class) {
             return splitCSVToArray(dto.getPath()); // [] not null
         }
@@ -754,157 +768,6 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
     // ///////////////////////////////////////////////////////////////////////
     // Helper methods
-    private List<AuthFilterChain> listFilterChains() {
-        try {
-            checkState(securityManager != null, "GeoServerSecurityManager not initialized");
-
-            SecurityManagerConfig config = securityManager.loadSecurityConfig();
-            List<RequestFilterChain> chains = config.getFilterChain().getRequestChains();
-
-            return chains.stream()
-                    .filter(Objects::nonNull)
-                    .map(AuthFilterChain::new)
-                    .peek(chain -> {
-                        RequestFilterChain filterChain = chains.stream()
-                                .filter(c -> c.getName().equals(chain.getName()))
-                                .findFirst()
-                                .orElse(null);
-                        int position = filterChain != null ? chains.indexOf(filterChain) : 0;
-                        chain.setPosition(position);
-                    })
-                    .collect(Collectors.toList());
-        } catch (IOException ex) {
-            throw new CannotReadConfig(ex);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequest(e.getMessage());
-        }
-    }
-
-    private AuthFilterChain viewFilterChain(String chainName) {
-        try {
-            checkState(securityManager != null, "GeoServerSecurityManager not initialized");
-            checkArgument(!Strings.isNullOrEmpty(chainName), "chainName is required");
-
-            SecurityManagerConfig config = securityManager.loadSecurityConfig();
-            RequestFilterChain chain = config.getFilterChain().getRequestChainByName(chainName);
-            if (chain == null) {
-                throw new FilterChainNotFound(chainName);
-            }
-
-            AuthFilterChain authFilterChain = new AuthFilterChain(chain);
-            authFilterChain.setPosition(
-                    config.getFilterChain().getRequestChains().indexOf(chain));
-            return authFilterChain;
-        } catch (IllegalArgumentException e) {
-            throw new BadRequest(e.getMessage());
-        } catch (IOException e) {
-            throw new CannotReadConfig(e);
-        }
-    }
-
-    private void deleteFilterChain(String chainName) {
-        try {
-            checkState(securityManager != null, "GeoServerSecurityManager not initialized");
-            checkArgument(!Strings.isNullOrEmpty(chainName), "chainName is required");
-
-            SecurityManagerConfig config = securityManager.loadSecurityConfig();
-            GeoServerSecurityFilterChain chain = config.getFilterChain();
-            RequestFilterChain filterChain = chain.getRequestChains().stream()
-                    .filter(c -> c.getName().equals(chainName))
-                    .findFirst()
-                    .orElse(null);
-
-            if (filterChain == null) {
-                throw new NothingToDelete(chainName);
-            }
-            checkArgument(filterChain.canBeRemoved(), "Filter chain " + chainName + " cannot be removed.");
-
-            if (!chain.getRequestChains().remove(filterChain)) {
-                throw new NothingToDelete(chainName);
-            }
-            saveAndReturnAuthFilterChain(filterChain, config, chain.getRequestChains());
-        } catch (IllegalArgumentException e) {
-            throw new BadRequest(e.getMessage());
-        } catch (IOException e) {
-            throw new CannotUpdateConfig(e);
-        }
-    }
-
-    private void updateFilterChain(String chainName, RequestFilterChain filterChain, int position)
-            throws CannotSaveConfig {
-        try {
-            checkState(securityManager != null, "GeoServerSecurityManager not initialized");
-
-            checkArgument(!Strings.isNullOrEmpty(chainName), "chainName is required");
-            checkArgument(
-                    Objects.equals(filterChain.getName(), chainName),
-                    "chainName must be the same as the name of the filter chain to be updated");
-            checkArgument(position >= 0, "position must be greater than or equal to 0");
-
-            SecurityManagerConfig config = securityManager.loadSecurityConfig();
-            List<RequestFilterChain> chains = config.getFilterChain().getRequestChains();
-            checkArgument(position < chains.size(), "position must be less than the number of filter chains");
-
-            List<RequestFilterChain> updatedChains = chains.stream()
-                    .map(chain -> chain.getName().equals(chainName) ? filterChain : chain)
-                    .collect(Collectors.toList());
-
-            // If position is different to actual position move it
-            if (position != updatedChains.indexOf(filterChain)) {
-                updatedChains.remove(filterChain);
-                updatedChains.add(position, filterChain);
-            }
-            saveAndReturnAuthFilterChain(filterChain, config, updatedChains);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequest(e.getMessage());
-        } catch (IllegalStateException | IOException e) {
-            throw new CannotSaveConfig(e);
-        }
-    }
-
-    private AuthFilterChain saveFilterChain(RequestFilterChain filterChain, int position) {
-        try {
-            checkState(securityManager != null, "GeoServerSecurityManager not initialized");
-            checkArgument(Objects.nonNull(filterChain), "filterChain is required");
-            checkArgument(position >= 0, "position must be greater than or equal to 0");
-
-            SecurityManagerConfig config = securityManager.loadSecurityConfig();
-            List<RequestFilterChain> chains = config.getFilterChain().getRequestChains();
-            if (chains.contains(filterChain)) {
-                throw new DuplicateChainName(filterChain.getName());
-            }
-
-            chains.add(position, filterChain);
-
-            return saveAndReturnAuthFilterChain(filterChain, config, chains);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequest(e.getMessage());
-        } catch (IllegalStateException | IOException e) {
-            throw new CannotSaveConfig(e);
-        }
-    }
-
-    private AuthFilterChain saveAndReturnAuthFilterChain(
-            RequestFilterChain filterChain, SecurityManagerConfig config, List<RequestFilterChain> chains) {
-        GeoServerSecurityFilterChain updateGeoServerFilterChains = new GeoServerSecurityFilterChain(chains);
-        config.setFilterChain(updateGeoServerFilterChains);
-        try {
-            securityManager.saveSecurityConfig(config);
-        } catch (Exception e) {
-            throw new CannotSaveConfig(e);
-        }
-        securityManager.reload();
-        AuthFilterChain authFilterChain = new AuthFilterChain(filterChain);
-        authFilterChain.setPosition(chains.indexOf(filterChain));
-        return authFilterChain;
-    }
-
-    private void checkAuthorisation() {
-        if (!securityManager.checkAuthenticationForAdminRole()) {
-            throw new NotAuthorised();
-        }
-    }
-
     private static boolean causedBy(Throwable t, Class<? extends Throwable> type) {
         while (t != null) {
             if (type.isInstance(t)) return true;

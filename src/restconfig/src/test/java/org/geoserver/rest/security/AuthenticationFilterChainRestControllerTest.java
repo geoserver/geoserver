@@ -13,11 +13,14 @@ import com.thoughtworks.xstream.XStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.rest.security.xml.FilterChainCollection;
-import org.geoserver.rest.security.xml.FilterChainDTO;
+import org.geoserver.rest.security.xml.AuthFilterChainCollection;
+import org.geoserver.rest.security.xml.AuthFilterChainFilters;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.HtmlLoginFilterChain;
 import org.geoserver.test.GeoServerTestSupport;
@@ -77,28 +80,28 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
 
         xs.allowTypesByWildcard(new String[] {"org.geoserver.rest.security.xml.*"});
 
-        xs.alias("filterChain", FilterChainCollection.class);
-        xs.addImplicitCollection(FilterChainCollection.class, "chains", "filters", FilterChainDTO.class);
+        xs.alias("filterChain", AuthFilterChainCollection.class);
+        xs.addImplicitCollection(AuthFilterChainCollection.class, "chains", "filters", AuthFilterChainFilters.class);
 
-        xs.alias("filters", FilterChainDTO.class);
-        xs.aliasField("class", FilterChainDTO.class, "clazz");
-        xs.aliasAttribute(FilterChainDTO.class, "requireSSL", "ssl");
+        xs.alias("filters", AuthFilterChainFilters.class);
+        xs.aliasField("class", AuthFilterChainFilters.class, "clazz");
+        xs.aliasAttribute(AuthFilterChainFilters.class, "requireSSL", "ssl");
 
-        xs.useAttributeFor(FilterChainDTO.class, "name");
-        xs.useAttributeFor(FilterChainDTO.class, "clazz");
-        xs.useAttributeFor(FilterChainDTO.class, "path");
-        xs.useAttributeFor(FilterChainDTO.class, "disabled");
-        xs.useAttributeFor(FilterChainDTO.class, "allowSessionCreation");
-        xs.useAttributeFor(FilterChainDTO.class, "requireSSL");
-        xs.useAttributeFor(FilterChainDTO.class, "matchHTTPMethod");
-        xs.useAttributeFor(FilterChainDTO.class, "interceptorName");
-        xs.useAttributeFor(FilterChainDTO.class, "exceptionTranslationName");
-        xs.useAttributeFor(FilterChainDTO.class, "roleFilterName");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "name");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "clazz");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "path");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "disabled");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "allowSessionCreation");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "requireSSL");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "matchHTTPMethod");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "interceptorName");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "exceptionTranslationName");
+        xs.useAttributeFor(AuthFilterChainFilters.class, "roleFilterName");
 
-        xs.addImplicitCollection(FilterChainDTO.class, "filters", "filter", String.class);
+        xs.addImplicitCollection(AuthFilterChainFilters.class, "filters", "filter", String.class);
     }
 
-    private static String toXml(FilterChainDTO dto) throws Exception {
+    private static String toXml(AuthFilterChainFilters dto) throws Exception {
         XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
         configureAliases(xp);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -106,24 +109,24 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
         return bos.toString(StandardCharsets.UTF_8);
     }
 
-    private static FilterChainDTO fromXmlChain(String xml) throws Exception {
+    private static AuthFilterChainFilters fromXmlChain(String xml) throws Exception {
         XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
         configureAliases(xp);
-        return xp.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), FilterChainDTO.class);
+        return xp.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), AuthFilterChainFilters.class);
     }
 
-    private static FilterChainCollection fromXmlCollection(String xml) throws Exception {
+    private static AuthFilterChainCollection fromXmlCollection(String xml) throws Exception {
         XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
         configureAliases(xp);
-        return xp.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), FilterChainCollection.class);
+        return xp.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), AuthFilterChainCollection.class);
     }
 
     private static String joinPatterns(List<String> patterns) {
         return String.join(",", patterns);
     }
 
-    private static FilterChainDTO newDTO(String name) {
-        FilterChainDTO dto = new FilterChainDTO();
+    private static AuthFilterChainFilters newDTO(String name) {
+        AuthFilterChainFilters dto = new AuthFilterChainFilters();
         dto.setName(name);
         dto.setClazz(CLASS_NAME);
         dto.setPath(joinPatterns(PATTERNS));
@@ -138,8 +141,8 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
         return dto;
     }
 
-    private static FilterChainDTO updatedDTO(FilterChainDTO base) {
-        FilterChainDTO dto = new FilterChainDTO();
+    private static AuthFilterChainFilters updatedDTO(AuthFilterChainFilters base) {
+        AuthFilterChainFilters dto = new AuthFilterChainFilters();
         dto.setName(base.getName());
         dto.setClazz(base.getClazz());
         dto.setPath(joinPatterns(NEW_PATTERNS));
@@ -172,7 +175,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
             String xml = resp.getBody();
             assertNotNull(xml);
 
-            FilterChainCollection col = fromXmlCollection(xml);
+            AuthFilterChainCollection col = fromXmlCollection(xml);
             assertNotNull(col);
             boolean found = col.getChains().stream().anyMatch(c -> DEFAULT_CHAIN_NAME.equals(c.getName()));
             assertTrue("default chain should be present", found);
@@ -187,7 +190,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
         try {
             ResponseEntity<String> resp = controller.getOneXml(DEFAULT_CHAIN_NAME);
             assertEquals(200, resp.getStatusCodeValue());
-            FilterChainDTO dto = fromXmlChain(resp.getBody());
+            AuthFilterChainFilters dto = fromXmlChain(resp.getBody());
             assertNotNull(dto);
             assertEquals(DEFAULT_CHAIN_NAME, dto.getName());
         } finally {
@@ -210,7 +213,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
         setAdminUser();
         try {
             String name = TEST_CHAIN_NAME_PREFIX + UUID.randomUUID();
-            FilterChainDTO dto = newDTO(name);
+            AuthFilterChainFilters dto = newDTO(name);
             String body = toXml(dto);
 
             UriComponentsBuilder b = UriComponentsBuilder.fromPath("");
@@ -218,7 +221,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
             assertEquals(201, created.getStatusCodeValue());
 
             ResponseEntity<String> view = controller.getOneXml(name);
-            FilterChainDTO got = fromXmlChain(view.getBody());
+            AuthFilterChainFilters got = fromXmlChain(view.getBody());
 
             assertEquals(dto.getName(), got.getName());
             assertEquals(dto.getClazz(), got.getClazz());
@@ -240,7 +243,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
         setAdminUser();
         try {
             String name = TEST_CHAIN_NAME_PREFIX + UUID.randomUUID();
-            FilterChainDTO dto = newDTO(name);
+            AuthFilterChainFilters dto = newDTO(name);
             String body = toXml(dto);
 
             UriComponentsBuilder b = UriComponentsBuilder.fromPath("");
@@ -256,15 +259,15 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
         setAdminUser();
         try {
             String name = TEST_CHAIN_NAME_PREFIX + UUID.randomUUID();
-            FilterChainDTO dto = newDTO(name);
+            AuthFilterChainFilters dto = newDTO(name);
             controller.createOneXml(xmlRequest(toXml(dto)), null, UriComponentsBuilder.fromPath(""));
 
-            FilterChainDTO updated = updatedDTO(dto);
+            AuthFilterChainFilters updated = updatedDTO(dto);
             ResponseEntity<String> updatedResp = controller.updateOneXml(name, xmlRequest(toXml(updated)), null);
             assertEquals(200, updatedResp.getStatusCodeValue());
 
             ResponseEntity<String> view = controller.getOneXml(name);
-            FilterChainDTO got = fromXmlChain(view.getBody());
+            AuthFilterChainFilters got = fromXmlChain(view.getBody());
 
             assertEquals(updated.getName(), got.getName());
             assertEquals(updated.getClazz(), got.getClazz());
@@ -284,11 +287,11 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSu
         setAdminUser();
         try {
             String name = TEST_CHAIN_NAME_PREFIX + UUID.randomUUID();
-            FilterChainDTO dto = newDTO(name);
+            AuthFilterChainFilters dto = newDTO(name);
             controller.createOneXml(xmlRequest(toXml(dto)), null, UriComponentsBuilder.fromPath(""));
 
             // change DTO name but put with different path var
-            FilterChainDTO changedName = newDTO(TEST_CHAIN_NAME_PREFIX + UUID.randomUUID());
+            AuthFilterChainFilters changedName = newDTO(TEST_CHAIN_NAME_PREFIX + UUID.randomUUID());
             controller.updateOneXml(name, xmlRequest(toXml(changedName)), null);
         } finally {
             clearUser();

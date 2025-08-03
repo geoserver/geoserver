@@ -6,7 +6,7 @@ package org.geoserver.rest.security.xml;
 
 import java.util.List;
 
-public class FilterChainOrderDTO {
+public class AuthFilterChainOrder {
     private List<String> order;
 
     public List<String> getOrder() {

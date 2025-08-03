@@ -4,9 +4,12 @@
  */
 package org.geoserver.ogcapi.v1.processes;
 
+import static org.geoserver.ogcapi.v1.processes.JobStatus.RESULTS_REL;
+import static org.geoserver.ogcapi.v1.processes.JobStatus.STATUS_REL;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +20,8 @@ import javax.mail.Multipart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import javax.mail.util.SharedByteArrayInputStream;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCApiTestSupport;
@@ -115,5 +120,30 @@ public class AbstractExecutionTest extends OGCApiTestSupport {
         ByteArrayDataSource ds = new ByteArrayDataSource(new SharedByteArrayInputStream(body), contentType);
         // MimeMultipart(DataSource) will parse using the provided Content-Type (boundary included)
         return new MimeMultipart(ds);
+    }
+
+    protected void checkStatusLinks(JSONObject statusObject, String jobId) {
+        // check the links
+        JSONArray links = statusObject.getJSONArray("links");
+        boolean resultsLinkFound = false;
+        boolean selfLinkFound = false;
+        for (int i = 0; i < links.size(); i++) {
+            JSONObject link = links.getJSONObject(i);
+            if (!"application/json".equals(link.getString("type"))) continue;
+            String rel = link.getString("rel");
+            if (RESULTS_REL.equals(rel)) {
+                String resultsHref = link.getString("href");
+                assertEquals(JOBS_BASE + jobId + "/results", resultsHref);
+                resultsLinkFound = true;
+            } else if (STATUS_REL.equals(rel)) {
+                String href = link.getString("href");
+                assertEquals(JOBS_BASE + jobId, href);
+                selfLinkFound = true;
+            } else {
+                fail("Unexpected link rel: " + rel);
+            }
+        }
+        assertTrue(selfLinkFound);
+        assertTrue(resultsLinkFound);
     }
 }

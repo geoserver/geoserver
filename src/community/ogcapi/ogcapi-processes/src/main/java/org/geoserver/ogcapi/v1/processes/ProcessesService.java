@@ -536,12 +536,11 @@ public class ProcessesService {
         return mapExecutionStatus(status, StatusCode.DISMISSED);
     }
 
-    private static JobStatus mapExecutionStatus(ExecutionStatus status, StatusCode dismissed) {
-        JobStatus response = new JobStatus();
-        response.setProcessID(status.getSimpleProcessName());
+    private static JobStatus mapExecutionStatus(ExecutionStatus status, StatusCode statusCode) {
+        JobStatus response = new JobStatus(status.getSimpleProcessName(), status.getExecutionId(), statusCode);
         response.setCreated(status.getCreationTime());
         response.setFinished(status.getCompletionTime());
-        response.setStatus(dismissed);
+        response.setStatus(statusCode);
         response.setProgress(Math.round(status.getProgress()));
         return response;
     }

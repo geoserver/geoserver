@@ -4,10 +4,17 @@
  */
 package org.geoserver.ogcapi.v1.processes;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.Date;
+import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractDocument;
+import org.geoserver.ogcapi.Link;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
 
 /** Maps a JSON job status from the OGC API Processes specification to a Java object. */
 @JsonPropertyOrder({
@@ -26,16 +33,26 @@ import org.geoserver.ogcapi.AbstractDocument;
 public class JobStatus extends AbstractDocument {
 
     public static final String RESULTS_REL = "http://www.opengis.net/def/rel/ogc/1.0/results";
+    public static final String STATUS_REL = "status";
 
     private String processID;
     private final String type = "process";
     private String jobID;
     private StatusCode status;
     private String message;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "UTC")
     private Date created;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "UTC")
     private Date started;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "UTC")
     private Date finished;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "UTC")
     private Date updated;
+
     private Integer progress;
 
     public enum StatusCode {
@@ -53,6 +70,20 @@ public class JobStatus extends AbstractDocument {
 
         @JsonProperty("dismissed")
         DISMISSED
+    }
+
+    public JobStatus(String processID, String jobID, StatusCode status) {
+        this.processID = processID;
+        this.jobID = jobID;
+        this.status = status;
+
+        Link statusLink = new Link();
+        statusLink.setRel(STATUS_REL);
+        statusLink.setType(APPLICATION_JSON_VALUE);
+        String href = ResponseUtils.buildURL(
+                APIRequestInfo.get().getBaseURL(), "ogc/processes/v1/jobs/" + jobID, null, URLMangler.URLType.SERVICE);
+        statusLink.setHref(href);
+        addLink(statusLink);
     }
 
     // Getters and setters

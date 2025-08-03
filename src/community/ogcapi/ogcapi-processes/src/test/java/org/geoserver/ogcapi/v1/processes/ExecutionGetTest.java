@@ -219,11 +219,7 @@ public class ExecutionGetTest extends AbstractExecutionTest {
         statusObject = waitMonkey(jobId, Set.of("successful", "running"), "successful");
         assertEquals(100, statusObject.getInt("progress"));
 
-        // gather results
-        JSONObject firstLink = statusObject.getJSONArray("links").getJSONObject(0);
-        assertEquals("application/json", firstLink.getString("type"));
-        String resultsHref = firstLink.getString("href");
-        assertEquals(JOBS_BASE + jobId + "/results", resultsHref);
+        checkStatusLinks(statusObject, jobId);
 
         MockHttpServletResponse processOutput = getAsServletResponse("ogc/processes/v1/jobs/" + jobId + "/results");
         assertEquals("application/json", processOutput.getContentType());
@@ -253,7 +249,7 @@ public class ExecutionGetTest extends AbstractExecutionTest {
         assertNotNull(jobId);
 
         // step
-        MonkeyProcess.progress("test123", 20, false);
+        MonkeyProcess.progress("test123", 20, true);
         JSONObject statusObject = waitMonkey(jobId, Set.of("accepted", "running"), "running");
         assertEquals(11, statusObject.getInt("progress")); // 11% because WPS accounts for encoding time
 

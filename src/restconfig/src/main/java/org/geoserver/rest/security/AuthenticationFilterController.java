@@ -30,7 +30,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,8 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-@RestController("authenticationFilterChainController")
-@ControllerAdvice(assignableTypes = {AuthenticationFilterController.class})
+@RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/authFilters")
 public class AuthenticationFilterController extends RestBaseController {
     private static final Logger LOGGER = Logger.getLogger(AuthenticationFilterController.class.getName());

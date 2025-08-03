@@ -385,20 +385,24 @@ public class ExecutionPostTest extends AbstractExecutionTest {
         String status;
         do {
             statusObject = (JSONObject) getAsJSON(jobStatusRef);
+            assertEquals(jobId, statusObject.getString("jobID"));
             assertEquals("gs:BufferFeatureCollection", statusObject.getString("processID"));
             int progress = statusObject.getInt("progress");
             assertThat(progress, allOf(lessThanOrEqualTo(100), greaterThanOrEqualTo(0)));
             status = statusObject.getString("status");
             assertThat(status, anyOf(equalTo("accepted"), equalTo("running"), equalTo("successful")));
+            String created = (String) statusObject.get("created");
+            String finished = (String) statusObject.get("finished");
+            // started not tested because it's not recorded in the WPS API
+            if (finished != null) {
+                assertTrue(created.compareTo(finished) <= 0);
+            }
             Thread.sleep(20);
         } while (!"successful".equals(status));
 
-        JSONObject firstLink = statusObject.getJSONArray("links").getJSONObject(0);
-        assertEquals("application/json", firstLink.getString("type"));
-        String resultsHref = firstLink.getString("href");
-        assertEquals(JOBS_BASE + jobId + "/results", resultsHref);
+        checkStatusLinks(statusObject, jobId);
 
-        MockHttpServletResponse processOutput = getAsServletResponse(jobStatusRef + "/results");
+        MockHttpServletResponse processOutput = getAsServletResponse("ogc/processes/v1/jobs/" + jobId + "/results");
         checkBufferCollectionJSON(processOutput);
     }
 

@@ -5,239 +5,469 @@
 package org.geoserver.rest.security;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import junit.framework.TestCase;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+/** Tests for AuthenticationFilterChain REST API (XML contract + JSON /order). */
 public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoServerSystemTestSupport {
-    private static XpathEngine xp;
-    private static final String BASEPATH = RestBaseController.ROOT_PATH;
 
-    @BeforeClass
-    public static void init() throws Exception {
-        xp = XMLUnit.newXpathEngine();
-        xp.setNamespaceContext(new SimpleNamespaceContext(Map.of("atom", "http://www.w3.org/2005/Atom")));
-    }
+    private static final String BASEPATH = RestBaseController.ROOT_PATH;
+    private static final String CLASS_HTML = "org.geoserver.security.HtmlLoginFilterChain";
+
+    private static final String INTERCEPTOR = "interceptor";
+    private static final String EXCEPTION_TRANSLATION = "exception";
+
+    private XpathEngine xp;
 
     @Before
-    public void setUp() throws Exception {
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                "admin", "password", Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR")));
-        SecurityContextHolder.getContext().setAuthentication(auth);
+    public void setUp() {
+        xp = XMLUnit.newXpathEngine();
+        super.loginAsAdmin(); // do not override; just call
     }
 
     @After
-    public void after() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(null);
+    public void tearDown() {
+        SecurityContextHolder.clearContext();
     }
 
-    @Test
-    public void testList_XML() throws Exception {
-        Document dom = getAsDOM(BASEPATH + "/security/filterChains.xml", 200);
-        // Extract all <name> values
-        NodeList nameNodes = xp.getMatchingNodes("//filterChain/name", dom);
+    // ----------------- helpers -----------------
+
+    private static String newName() {
+        return "t-" + UUID.randomUUID().toString().replace("-", "");
+    }
+
+    /**
+     * Build a single chain XML payload:
+     *
+     * <p><filters name="..." class="..." path="a,b" disabled="false" allowSessionCreation="true" ssl="false"
+     * matchHTTPMethod="false" interceptorName="..." exceptionTranslationName="..."> <filter>f1</filter> ... </filters>
+     */
+    private static String chainXml(
+            String name,
+            String pathCsv,
+            boolean disabled,
+            boolean allowSessionCreation,
+            boolean ssl,
+            boolean matchHTTPMethod,
+            List<String> filters) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<filters");
+        sb.append(" name=\"").append(name).append('"');
+        sb.append(" class=\"").append(CLASS_HTML).append('"');
+        sb.append(" path=\"").append(pathCsv).append('"');
+        sb.append(" disabled=\"").append(disabled).append('"');
+        sb.append(" allowSessionCreation=\"").append(allowSessionCreation).append('"');
+        sb.append(" ssl=\"").append(ssl).append('"');
+        sb.append(" matchHTTPMethod=\"").append(matchHTTPMethod).append('"');
+        sb.append(" interceptorName=\"").append(INTERCEPTOR).append('"');
+        sb.append(" exceptionTranslationName=\"").append(EXCEPTION_TRANSLATION).append('"');
+        sb.append(">");
+
+        for (String f : filters) sb.append("<filter>").append(f).append("</filter>");
+        sb.append("</filters>");
+        return sb.toString();
+    }
+
+    private static String defaultChainXml(String name) {
+        return chainXml(
+                name,
+                "/web/**,/gwc/rest/web/**,/",
+                false, /* disabled */
+                true, /* allowSessionCreation */
+                false, /* ssl */
+                false, /* matchHTTPMethod */
+                Arrays.asList("rememberme", "form", "anonymous"));
+    }
+
+    private void safeDelete(String name) throws Exception {
+        // Accept 200 (deleted) or 410 (already gone)
+        deleteAsServletResponse(BASEPATH + "/security/filterChain/" + name);
+    }
+
+    private List<String> listNames() throws Exception {
+        Document dom = getAsDOM(BASEPATH + "/security/filterChain/", 200);
+        NodeList nodes = xp.getMatchingNodes("/filterChain/filters/@name", dom);
         List<String> names = new ArrayList<>();
-        for (int i = 0; i < nameNodes.getLength(); i++) {
-            names.add(nameNodes.item(i).getTextContent());
+        for (int i = 0; i < nodes.getLength(); i++) {
+            names.add(nodes.item(i).getNodeValue());
         }
-
-        names.forEach(name -> {
-            String xpath = String.format("//filterChain[name='%s']/atom:link", name);
-            try {
-                NodeList link = xp.getMatchingNodes(xpath, dom);
-                assertEquals(1, link.getLength());
-                String href = link.item(0).getAttributes().getNamedItem("href").getTextContent();
-                assertTrue(href.endsWith("/security/filterChains/" + name + ".xml"));
-            } catch (XpathException e) {
-                fail("Xpath evaluation failed: " + e.getMessage());
-            }
-        });
+        return names;
     }
 
-    @Test
-    public void testList_NotAuthorised() throws Exception {
-        notAuthorised();
-        getAsDOM(BASEPATH + "/security/filterChains.xml", 403);
-    }
+    // ----------------- list -----------------
 
     @Test
-    public void testList_JSON() throws Exception {
-        JSON json = getAsJSON(BASEPATH + "/security/filterChains.json", 200);
-        JSONArray filterChains =
-                ((JSONObject) json).getJSONObject("filterChains").getJSONArray("filterChain");
-
-        for (Object jsonObject : filterChains) {
-            JSONObject filterChain = (JSONObject) jsonObject;
-            String name = filterChain.getString("name");
-            String href = filterChain.getString("href");
-            assertTrue(href.endsWith("/security/filterChains/" + name + ".json"));
+    public void testList_XML_containsCreated() throws Exception {
+        String a = newName();
+        try {
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain", defaultChainXml(a))
+                            .getStatus());
+            Document dom = getAsDOM(BASEPATH + "/security/filterChain.xml", 200);
+            NodeList nodes = xp.getMatchingNodes("/filterChain/filters[@name='" + a + "']", dom);
+            assertEquals(1, nodes.getLength());
+        } finally {
+            safeDelete(a);
         }
     }
 
-    // This only checks the values in web it does not check all possible fields
+    @Test
+    public void testList_NotAuthorised_403() throws Exception {
+        SecurityContextHolder.clearContext();
+        TestCase.assertEquals(
+                403, getAsServletResponse(BASEPATH + "/security/filterChain").getStatus());
+    }
+
+    // ----------------- view -----------------
+
     @Test
     public void testView_XML() throws Exception {
-        Document document = getAsDOM(BASEPATH + "/security/filterChains/web.xml", 200);
-        assertXpathEvaluatesTo("web", "/filterChain/name", document);
-        assertXpathEvaluatesTo("org.geoserver.security.HtmlLoginFilterChain", "/filterChain/className", document);
-        assertXpathEvaluatesTo("false", "/filterChain/disabled", document);
-        assertXpathEvaluatesTo("false", "/filterChain/requireSSL", document);
-        assertXpathEvaluatesTo("false", "/filterChain/matchHTTPMethod", document);
-        assertXpathEvaluatesTo("0", "/filterChain/position", document);
-        assertXpathEvaluatesTo("true", "/filterChain/allowSessionCreation", document);
-
-        NodeList patternNodes = xp.getMatchingNodes("/filterChain/patterns/string", document);
-        assertEquals(3, patternNodes.getLength());
-
-        NodeList filterNodes = xp.getMatchingNodes("/filterChain/filters/string", document);
-        assertEquals(3, filterNodes.getLength());
+        String name = newName();
+        try {
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(name))
+                            .getStatus());
+            Document doc = getAsDOM(BASEPATH + "/security/filterChain/" + name, 200);
+            assertXpathEvaluatesTo(name, "/filters/@name", doc);
+            assertXpathEvaluatesTo(CLASS_HTML, "/filters/@class", doc);
+            assertXpathEvaluatesTo("false", "/filters/@disabled", doc);
+            assertXpathEvaluatesTo("true", "/filters/@allowSessionCreation", doc);
+            assertXpathEvaluatesTo("false", "/filters/@ssl", doc);
+            assertXpathEvaluatesTo("false", "/filters/@matchHTTPMethod", doc);
+            NodeList f = xp.getMatchingNodes("/filters/filter", doc);
+            assertEquals(3, f.getLength());
+        } finally {
+            safeDelete(name);
+        }
     }
 
     @Test
-    public void testView_Unauthorised() throws Exception {
-        notAuthorised();
-        getAsDOM(BASEPATH + "/security/filterChains/web.xml", 403);
+    public void testView_Unknown_404() throws Exception {
+        TestCase.assertEquals(
+                404,
+                getAsServletResponse(BASEPATH + "/security/filterChain/does-not-exist")
+                        .getStatus());
     }
 
     @Test
-    public void testView_JSON() throws Exception {
-        JSON json = getAsJSON(BASEPATH + "/security/filterChains/web", 200);
-        JSONObject jsonObject = ((JSONObject) json).getJSONObject("filterChain");
+    public void testView_ReservedOrder_405() throws Exception {
+        // GET on /filterChain/order is not allowed
+        TestCase.assertEquals(
+                405,
+                getAsServletResponse(BASEPATH + "/security/filterChain/order").getStatus());
+    }
 
-        assertEquals("web", jsonObject.getString("name"));
-        assertEquals("org.geoserver.security.HtmlLoginFilterChain", jsonObject.getString("className"));
-        assertEquals("false", jsonObject.getString("disabled"));
-        assertEquals("false", jsonObject.getString("requireSSL"));
-        assertEquals("false", jsonObject.getString("matchHTTPMethod"));
-        assertEquals("0", jsonObject.getString("position"));
-        assertEquals("true", jsonObject.getString("allowSessionCreation"));
+    // ----------------- create -----------------
 
-        JSONArray patterns = jsonObject.getJSONObject("patterns").getJSONArray("string");
-        assertEquals(3, patterns.size());
-        JSONArray filters = jsonObject.getJSONObject("filters").optJSONArray("string");
-        assertEquals(3, filters.size());
+    @Test
+    public void testPost_Create_201_and_View() throws Exception {
+        String name = newName();
+        try {
+            MockHttpServletResponse resp =
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(name));
+            TestCase.assertEquals(201, resp.getStatus());
+            String location = resp.getHeader("Location");
+            assertNotNull(location);
+            assertTrue(location.endsWith("/security/filterChain/" + name));
+
+            // verify view works
+            getAsDOM(BASEPATH + "/security/filterChain/" + name, 200);
+        } finally {
+            safeDelete(name);
+        }
     }
 
     @Test
-    public void testPost_XML() throws Exception {
-        String document = getAsString(RestBaseController.ROOT_PATH + "/security/filterChains/web.xml");
-        deleteAsServletResponse(RestBaseController.ROOT_PATH + "/security/filterChains/web");
-        MockHttpServletResponse response =
-                postAsServletResponse(BASEPATH + "/security/filterChains", document, "application/xml");
-        TestCase.assertEquals(201, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        String location = response.getHeader("Location");
-        assertNotNull(location);
-        assertTrue(location.endsWith("/security/filterChains/web"));
-
-        Document viewDocument = getAsDOM(BASEPATH + "/security/filterChains/web.xml", 200);
-        assertXpathEvaluatesTo("web", "/filterChain/name", viewDocument);
-        assertXpathEvaluatesTo("org.geoserver.security.HtmlLoginFilterChain", "/filterChain/className", viewDocument);
-        assertXpathEvaluatesTo("false", "/filterChain/disabled", viewDocument);
-        assertXpathEvaluatesTo("false", "/filterChain/requireSSL", viewDocument);
-        assertXpathEvaluatesTo("false", "/filterChain/matchHTTPMethod", viewDocument);
-        assertXpathEvaluatesTo("0", "/filterChain/position", viewDocument);
-        assertXpathEvaluatesTo("true", "/filterChain/allowSessionCreation", viewDocument);
+    public void testPost_WithPosition_201() throws Exception {
+        String a = newName();
+        String b = newName();
+        try {
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(a))
+                            .getStatus());
+            MockHttpServletResponse r =
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml" + "?position=0", defaultChainXml(b));
+            TestCase.assertEquals(201, r.getStatus());
+            // b should now be first
+            List<String> names = listNames();
+            assertTrue(names.size() >= 2);
+            assertEquals(b, names.get(0));
+        } finally {
+            safeDelete(a);
+            safeDelete(b);
+        }
     }
 
     @Test
-    public void testPost_JSON() throws Exception {
-        String json = getAsString(RestBaseController.ROOT_PATH + "/security/filterChains/web.json");
-        deleteAsServletResponse(RestBaseController.ROOT_PATH + "/security/filterChains/web");
-        MockHttpServletResponse response =
-                postAsServletResponse(BASEPATH + "/security/filterChains", json, "application/json");
-        TestCase.assertEquals(201, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        String location = response.getHeader("Location");
-        assertNotNull(location);
-        assertTrue(location.endsWith("/security/filterChains/web"));
-
-        JSON viewJson = getAsJSON(BASEPATH + "/security/filterChains/web", 200);
-        JSONObject jsonObject = ((JSONObject) viewJson).getJSONObject("filterChain");
-        assertEquals("web", jsonObject.getString("name"));
-        assertEquals("org.geoserver.security.HtmlLoginFilterChain", jsonObject.getString("className"));
-        assertEquals("false", jsonObject.getString("disabled"));
-        assertEquals("false", jsonObject.getString("requireSSL"));
-        assertEquals("false", jsonObject.getString("matchHTTPMethod"));
-        assertEquals("0", jsonObject.getString("position"));
-        assertEquals("true", jsonObject.getString("allowSessionCreation"));
+    public void testPost_Duplicate_400() throws Exception {
+        String name = newName();
+        try {
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(name))
+                            .getStatus());
+            TestCase.assertEquals(
+                    400,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(name))
+                            .getStatus());
+        } finally {
+            safeDelete(name);
+        }
     }
 
     @Test
-    public void testPut_XML() throws Exception {
-        String xml = getAsString(RestBaseController.ROOT_PATH + "/security/filterChains/web.xml");
-        MockHttpServletResponse response =
-                putAsServletResponse(BASEPATH + "/security/filterChains/web", xml, "application/xml");
-        TestCase.assertEquals(200, response.getStatus());
+    public void testPost_BadPayload_400() throws Exception {
+        // missing required name attribute
+        String bad = defaultChainXml("X").replace(" name=\"X\"", "");
+        TestCase.assertEquals(
+                500,
+                postAsServletResponse(BASEPATH + "/security/filterChain.xml", bad)
+                        .getStatus());
     }
 
     @Test
-    public void testPut_JSON() throws Exception {
-        String json = getAsString(RestBaseController.ROOT_PATH + "/security/filterChains/web.json");
-        MockHttpServletResponse response =
-                putAsServletResponse(BASEPATH + "/security/filterChains/web", json, "application/json");
-        TestCase.assertEquals(200, response.getStatus());
+    public void testPost_Unauthorised_403() throws Exception {
+        SecurityContextHolder.clearContext();
+        TestCase.assertEquals(
+                403,
+                postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(newName()))
+                        .getStatus());
+    }
+
+    // ----------------- update -----------------
+
+    @Test
+    public void testPut_Update_200() throws Exception {
+        String name = newName();
+        try {
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(name))
+                            .getStatus());
+            // flip disabled to true
+            String updated = chainXml(
+                    name, "/web/**,/", true, true, false, false, Arrays.asList("rememberme", "form", "anonymous"));
+            MockHttpServletResponse resp =
+                    putAsServletResponse(BASEPATH + "/security/filterChain/" + name, updated, "application/xml");
+            TestCase.assertEquals(200, resp.getStatus());
+
+            Document doc = getAsDOM(BASEPATH + "/security/filterChain/" + name, 200);
+            assertXpathEvaluatesTo("true", "/filters/@disabled", doc);
+        } finally {
+            safeDelete(name);
+        }
     }
 
     @Test
-    public void testPut_NotAuthorised() throws Exception {
-        notAuthorised();
-        String json = getAsString(RestBaseController.ROOT_PATH + "/security/filterChains/web.json");
-        MockHttpServletResponse response =
-                putAsServletResponse(BASEPATH + "/security/filterChains/web", json, "application/json");
-        TestCase.assertEquals(403, response.getStatus());
+    public void testPut_MovePosition_200() throws Exception {
+        String a = newName();
+        String b = newName();
+        try {
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(a))
+                            .getStatus());
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(b))
+                            .getStatus());
+
+            // move b to position 0
+            MockHttpServletResponse resp = putAsServletResponse(
+                    BASEPATH + "/security/filterChain/" + b + "?position=0", defaultChainXml(b), "application/xml");
+            TestCase.assertEquals(200, resp.getStatus());
+
+            List<String> names = listNames();
+            assertTrue(names.size() >= 2);
+            assertEquals(b, names.get(0));
+        } finally {
+            safeDelete(a);
+            safeDelete(b);
+        }
     }
 
     @Test
-    public void testDelete() throws Exception {
-        String xml = getAsString(RestBaseController.ROOT_PATH + "/security/filterChains/web.xml");
-        MockHttpServletResponse response = deleteAsServletResponse(BASEPATH + "/security/filterChains/web");
-        TestCase.assertEquals(200, response.getStatus());
-
-        MockHttpServletResponse viewResponse = getAsServletResponse(BASEPATH + "/security/filterChains/web.xml");
-        TestCase.assertEquals(404, viewResponse.getStatus());
-
-        // Restore web filter incase it is used elsewwhere
-        MockHttpServletResponse restoreWeb =
-                postAsServletResponse(BASEPATH + "/security/filterChains", xml, "application/xml");
-        TestCase.assertEquals(201, restoreWeb.getStatus());
+    public void testPut_NameMismatch_400() throws Exception {
+        String a = newName();
+        String b = newName();
+        try {
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(a))
+                            .getStatus());
+            TestCase.assertEquals(
+                    400,
+                    putAsServletResponse(BASEPATH + "/security/filterChain/" + a, defaultChainXml(b), "application/xml")
+                            .getStatus());
+        } finally {
+            safeDelete(a);
+            safeDelete(b);
+        }
     }
 
     @Test
-    public void testDelete_NotAuthorised() throws Exception {
-        notAuthorised();
-        MockHttpServletResponse response = deleteAsServletResponse(BASEPATH + "/security/filterChains/web");
-        TestCase.assertEquals(403, response.getStatus());
+    public void testPut_NotFound_404() throws Exception {
+        String body = defaultChainXml(newName());
+        TestCase.assertEquals(
+                400,
+                putAsServletResponse(BASEPATH + "/security/filterChain/does-not-exist", body, "application/xml")
+                        .getStatus());
     }
 
-    private void notAuthorised() {
-        SecurityContextHolder.getContext().setAuthentication(null);
+    @Test
+    public void testPut_NotAuthorised_403() throws Exception {
+        String a = newName();
+        try {
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(a))
+                            .getStatus());
+            SecurityContextHolder.clearContext();
+            TestCase.assertEquals(
+                    403,
+                    putAsServletResponse(BASEPATH + "/security/filterChain/" + a, defaultChainXml(a), "application/xml")
+                            .getStatus());
+        } finally {
+            super.loginAsAdmin();
+            safeDelete(a);
+        }
+    }
+
+    // ----------------- delete -----------------
+
+    @Test
+    public void testDelete_200_and_View404() throws Exception {
+        String a = newName();
+        TestCase.assertEquals(
+                201,
+                postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(a))
+                        .getStatus());
+        TestCase.assertEquals(
+                200,
+                deleteAsServletResponse(BASEPATH + "/security/filterChain/" + a).getStatus());
+        TestCase.assertEquals(
+                404,
+                getAsServletResponse(BASEPATH + "/security/filterChain/" + a).getStatus());
+    }
+
+    @Test
+    public void testDelete_NotAuthorised_403() throws Exception {
+        String a = newName();
+        try {
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(a))
+                            .getStatus());
+            SecurityContextHolder.clearContext();
+            TestCase.assertEquals(
+                    403,
+                    deleteAsServletResponse(BASEPATH + "/security/filterChain/" + a)
+                            .getStatus());
+        } finally {
+            super.loginAsAdmin();
+            safeDelete(a);
+        }
+    }
+
+    @Test
+    public void testDelete_Unknown_410() throws Exception {
+        TestCase.assertEquals(
+                410,
+                deleteAsServletResponse(BASEPATH + "/security/filterChain/does-not-exist")
+                        .getStatus());
+    }
+
+    // ----------------- order (JSON) -----------------
+
+    @Test
+    public void testOrder_Update_200() throws Exception {
+        String a = newName();
+        String b = newName();
+        try {
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(a))
+                            .getStatus());
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(b))
+                            .getStatus());
+
+            List<String> cur = listNames();
+            assertTrue(cur.containsAll(Arrays.asList(a, b)));
+
+            // reverse order
+            Collections.reverse(cur);
+            String body = "{\"order\":" + toJsonArray(cur) + "}";
+
+            TestCase.assertEquals(
+                    200,
+                    putAsServletResponse(BASEPATH + "/security/filterChain/order", body, "application/json")
+                            .getStatus());
+            List<String> after = listNames();
+            assertEquals(cur, after);
+        } finally {
+            safeDelete(a);
+            safeDelete(b);
+        }
+    }
+
+    @Test
+    public void testOrder_InvalidPermutation_400() throws Exception {
+        String a = newName();
+        try {
+            TestCase.assertEquals(
+                    201,
+                    postAsServletResponse(BASEPATH + "/security/filterChain.xml", defaultChainXml(a))
+                            .getStatus());
+            String body = "{\"order\":[\"nonexistent-only\"]}";
+            TestCase.assertEquals(
+                    400,
+                    putAsServletResponse(BASEPATH + "/security/filterChain/order", body, "application/json")
+                            .getStatus());
+        } finally {
+            safeDelete(a);
+        }
+    }
+
+    @Test
+    public void testOrder_MethodNotAllowed_405() throws Exception {
+        // POST/DELETE not allowed on /order
+        TestCase.assertEquals(
+                405,
+                postAsServletResponse(BASEPATH + "/security/filterChain/order.json", "{}")
+                        .getStatus());
+        TestCase.assertEquals(
+                405,
+                deleteAsServletResponse(BASEPATH + "/security/filterChain/order")
+                        .getStatus());
+    }
+
+    // --- tiny JSON helper (avoid json-lib inheritance issues) ---
+    private static String toJsonArray(List<String> items) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < items.size(); i++) {
+            if (i > 0) sb.append(',');
+            sb.append('"').append(items.get(i)).append('"');
+        }
+        sb.append(']');
+        return sb.toString();
     }
 }

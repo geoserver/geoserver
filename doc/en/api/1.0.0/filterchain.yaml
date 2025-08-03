@@ -2,271 +2,321 @@
 swagger: '2.0'
 info:
   version: 1.0.0
-  title: Filter Chain Rest endpoints
-  description: Management of filter chain endpoints
+  title: GeoServer Filter Chain REST API
+  description: Manage the filter chain configuration (whole block and per-chain operations).
   contact:
     name: GeoServer
-    email: 'geoserver-users@osgeo.org'
-    url: 'https://geoserver.org/comm/'
-securityDefinitions:
-  basicAuth: # <-- arbitrary name for the security scheme
-    type: basic
-    description: The user name and password of a admin user.
-
-schemes:
-  - https
-  - http
-host: "localhost:8080"
+    email: geoserver-users@osgeo.org
+    url: https://geoserver.org/comm/
+host: localhost:8080
 basePath: /geoserver/rest/security
+schemes: [http, https]
+
+securityDefinitions:
+  basicAuth:
+    type: basic
+    description: Admin user credentials.
+
+tags:
+  - name: FilterChain
+    description: Filter chain configuration endpoints
 
 paths:
-  /filterChains:
+  /filterChain:
     get:
+      tags: [FilterChain]
       security:
         - basicAuth: []
-      operationId: listFilterChains
-      tags:
-        - "FilterChains"
-      summary: List all the filter chains available in the system.
-      description: List all the filter chain available in the system.
-      produces:
-        - application/xml
-        - application/json
+      summary: Get the entire filterChain block.
+      produces: [application/xml]
       responses:
         200:
           description: OK
           schema:
-            type: array
+            $ref: '#/definitions/FilterChainList'
           examples:
             application/xml: |
-              <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-              <filterChains>
-                <filterChain>
-                  <name>web-test-2</name>
-                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/security/filterChains/web-test-2.xml" type="application/atom+xml"/>
-                </filterChain>
-                <filterChain>
-                  <name>web-test-5</name>
-                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/security/filterChains/web-test-5.xml" type="application/atom+xml"/>
-                </filterChain>
-              </filterChains>
-            application/json: |
-              {
-                "filterChains": {
-                  "filterChain": [
-                    {
-                      "name": "web-test-2",
-                      "href": "http://localhost:8080/geoserver/rest/security/filterChains/web-test-2.json"
-                    },
-                    {
-                      "name": "web-test-5",
-                      "href": "http://localhost:8080/geoserver/rest/security/filterChains/web-test-5.json"
-                    }
-                  ]
-                }
-              }
+              <filterChain>
+                <filters name="web" class="org.geoserver.security.HtmlLoginFilterChain"
+                         interceptorName="interceptor" exceptionTranslationName="exception"
+                         path="/web/**,/gwc/rest/web/**,/" disabled="false"
+                         allowSessionCreation="true" ssl="false" matchHTTPMethod="false">
+                  <filter>rememberme</filter>
+                  <filter>form</filter>
+                  <filter>anonymous</filter>
+                </filters>
+                <filters name="rest" class="org.geoserver.security.ServiceLoginFilterChain"
+                         interceptorName="restInterceptor" exceptionTranslationName="exception"
+                         path="/rest.*,/rest/**" disabled="false"
+                         allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
+                  <filter>basic</filter>
+                  <filter>anonymous</filter>
+                </filters>
+              </filterChain>
+        403:
+          description: Forbidden
         500:
-          description: INTERNAL_SERVER_ERROR
-    post:
+          description: Internal Server Error
+    put:
+      tags: [FilterChain]
       security:
         - basicAuth: []
-      operationId: createFilterChain
-      description: |
-        This method will create a new filterChain on the server
-      tags:
-        - "FilterChains"
-      summary: Create a new filter chain
-      consumes:
-        - application/xml
-        - application/json
-      produces:
-        - application/text
+      summary: Replace the entire filterChain block atomically.
+      consumes: [application/xml]
+      produces: [application/xml]
       parameters:
-        - name: filterChain
-          in: body
+        - in: body
+          name: body
           required: true
-          description: The filter chain configuration to create
+          description: Entire `<filterChain>` document.
           schema:
-            $ref: "#/definitions/FilterChain"
+            $ref: '#/definitions/FilterChainList'
+      responses:
+        200:
+          description: Updated filterChain.
+          schema:
+            $ref: '#/definitions/FilterChainList'
+        400:
+          description: 'Malformed request (duplicates, invalid values)'
+        403:
+          description: Forbidden
+        500:
+          description: Internal Server Error
+    post:
+      tags: [FilterChain]
+      security:
+        - basicAuth: []
+      summary: Create a new filter chain (optionally at a specific position).
+      consumes: [application/xml]
+      produces: [application/xml]
+      parameters:
+        - in: query
+          name: position
+          type: integer
+          required: false
+          description: Zero-based index to insert the new chain at (defaults to append).
+        - in: body
+          name: body
+          required: true
+          description: Single `<filters ...>` element with child `<filter>` items.
+          schema:
+            $ref: '#/definitions/FilterChainItem'
       responses:
         201:
-          description: |
-            The filter configuration has been saved on the server
-        400:
-          description: |
-            The data supplied by the client was invalid. Typically check that the name 
-            is unqiue.
-  /authFilters/{chainName}:
-    get:
-      parameters:
-        - name: chainName
-          in: path
-          required: true
-          type: string
-          description: The name of the filter chain to retrieve
-      security:
-        - basicAuth: []
-      operationId: viewFilterChain
-      tags:
-        - "FilterChains"
-      summary: Views the details of a single filter.
-      description: |
-        Displays the contents of the configuration object on the server.
-      produces:
-        - application/xml
-        - application/json
-      responses:
-        200:
-          description: |
-            The request completed successfully and the name filter configuration 
-            has been returned.
+          description: Created. The Location header points to the new resource.
+          headers:
+            Location:
+              type: string
+              description: URL of the created chain.
           schema:
-            $ref: "#/definitions/FilterChain"
-          examples:
-            application/xml:
-              <filterChain>
-                <name>web</name>
-                <className>org.geoserver.security.HtmlLoginFilterChain</className>
-                <patterns>
-                  <string>/web/**</string>
-                  <string>/gwc/rest/web/**</string>
-                  <string>/</string>
-                </patterns>
-                <filters>
-                  <string>rememberme</string>
-                  <string>form</string>
-                  <string>anonymous</string>
-                </filters>
-                <disabled>false</disabled>
-                <allowSessionCreation>true</allowSessionCreation>
-                <requireSSL>false</requireSSL>
-                <matchHTTPMethod>false</matchHTTPMethod>
-                <position>4</position>
-              </filterChain>
-        404:
-          description: |
-            The named configuration does not exist on the server
-        500:
-          description: |
-            A problem occurred within the server, this cannot be fixed by changing the data
-            in the request contact you administrator
-    put:
-      parameters:
-        - name: chainName
-          in: path
-          required: true
-          type: string
-          description: The name of the filter chain to updated
-        - name: filterChain
-          in: body
-          required: true
-          description: The filter chain configuration to create
-          schema:
-            $ref: "#/definitions/FilterChain"
-      security:
-        - basicAuth: []
-      operationId: updateFilterChain
-      tags:
-        - "FilterChains"
-      summary: Update the named filter configuration.
-      description: |
-        Update the named filter configuration.
-      consumes:
-        - application/xml
-        - application/json
-      responses:
-        200:
-          description: |
-            The configuration has been updated
+            $ref: '#/definitions/FilterChainItem'
         400:
-          description: |
-            The filter configuration cannot be updated. Check that the supplied name matches
-            the name in the body of the request. Check that the Id matches the Id of the 
-            configuration in memory. Check all required fields the type of authentication
-            filter have been supplied.
+          description: 'Malformed request or duplicate name'
+        403:
+          description: Forbidden
         500:
-          description: |
-            The server is experiencing some issue. If this persists contact your administrator.
-    delete:
-      parameters:
-        - name: chainName
-          in: path
-          required: true
-          type: string
-          description: The name of the filter chain to deleted
-      security:
-        - basicAuth: []
-      operationId: deleteFilterChain
-      tags:
-        - "FilterChains"
-      summary: Deletes the named filter.
-      description: |
-        Removes the authentication configuration from the server.
-      responses:
-        200:
-          description: |
-            The authentication filter was successfully removed
-        410:
-          description: |
-            The authentication filter does not exist or has already been removed
-        500:
-          description: |
-            The server is experiencing some issue. If this persists contact your administrator.
+          description: Internal Server Error
 
+  /filterChain/order:
+    put:
+      tags: [FilterChain]
+      security:
+        - basicAuth: []
+      summary: Reorder existing chains by name (must be an exact permutation).
+      consumes: [application/json]
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChainOrderRequest'
+      responses:
+        200:
+          description: Order updated
+        400:
+          description: The order is not an exact permutation of current names
+        403:
+          description: Forbidden
+        500:
+          description: Internal Server Error
+
+  /filterChain/{chainName}:
+    get:
+      tags: [FilterChain]
+      security:
+        - basicAuth: []
+      summary: View a single filter chain.
+      produces: [application/xml]
+      parameters:
+        - in: path
+          name: chainName
+          type: string
+          required: true
+          description: Name of the chain to retrieve (literal "order" is reserved).
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/FilterChainItem'
+          examples:
+            application/xml: |
+              <filters name="web" class="org.geoserver.security.HtmlLoginFilterChain"
+                       interceptorName="interceptor" exceptionTranslationName="exception"
+                       path="/web/**,/gwc/rest/web/**,/" disabled="false"
+                       allowSessionCreation="true" ssl="false" matchHTTPMethod="false">
+                <filter>rememberme</filter>
+                <filter>form</filter>
+                <filter>anonymous</filter>
+              </filters>
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        500:
+          description: Internal Server Error
+    put:
+      tags: [FilterChain]
+      security:
+        - basicAuth: []
+      summary: Update a single filter chain (optionally move position).
+      consumes: [application/xml]
+      produces: [application/xml]
+      parameters:
+        - in: path
+          name: chainName
+          type: string
+          required: true
+          description: Name of the chain to update (must match the payload name).
+        - in: query
+          name: position
+          type: integer
+          required: false
+          description: Zero-based index to move this chain to.
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/FilterChainItem'
+      responses:
+        200:
+          description: Updated chain.
+          schema:
+            $ref: '#/definitions/FilterChainItem'
+        400:
+          description: Malformed request or name mismatch
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        500:
+          description: Internal Server Error
+    delete:
+      tags: [FilterChain]
+      security:
+        - basicAuth: []
+      summary: Delete a single filter chain.
+      parameters:
+        - in: path
+          name: chainName
+          type: string
+          required: true
+          description: Name of the chain to delete.
+      responses:
+        200:
+          description: Deleted
+        403:
+          description: Forbidden
+        410:
+          description: Gone (did not exist or already removed)
+        500:
+          description: Internal Server Error
 
 definitions:
-  FilterChain:
-    title: Filter Chain
+  FilterChainList:
     type: object
+    xml:
+      name: filterChain
+    properties:
+      filters:
+        type: array
+        xml:
+          name: filters
+          wrapped: false
+        items:
+          $ref: '#/definitions/FilterChainItem'
+
+  FilterChainItem:
+    type: object
+    xml:
+      name: filters
     properties:
       name:
         type: string
-        description: |
-          The unique name assigned to the configuration by client
-      className:
+        xml:
+          attribute: true
+      class:
         type: string
-        description: |
-          The fully qualified className of the filter chain type
-      patterns:
-        type: array
-        description: |
-          List of URL patterns for that will be used to determine if this chain will be applied
-        items:
-          type: string
-      filters:
-        type: array
-        description: |
-          List of names of filters in this filter chain
-        items:
-          type: string
+        description: Fully qualified chain class
+        xml:
+          attribute: true
+      path:
+        type: string
+        description: Comma-separated list of URL patterns
+        example: "/web/**,/gwc/rest/web/**,/"
+        xml:
+          attribute: true
       disabled:
         type: boolean
-        description: |
-          The filter chain is disabled
+        xml:
+          attribute: true
       allowSessionCreation:
         type: boolean
-      requireSSL:
+        xml:
+          attribute: true
+      ssl:
         type: boolean
+        description: Require SSL (maps to internal requireSSL flag)
+        xml:
+          attribute: true
       matchHTTPMethod:
         type: boolean
-        description: |
-          A flag that determine if the filter chains must match the list of Http Methods
-      methods:
+        xml:
+          attribute: true
+      interceptorName:
+        type: string
+        xml:
+          attribute: true
+      exceptionTranslationName:
+        type: string
+        xml:
+          attribute: true
+      roleFilterName:
+        type: string
+        xml:
+          attribute: true
+      filter:
+        type: array
+        description: Repeated filter names (applied in order)
+        xml:
+          name: filter
+          wrapped: false
+        items:
+          type: string
+    required:
+      - name
+      - class
+      - path
+      - disabled
+      - allowSessionCreation
+      - ssl
+      - matchHTTPMethod
+      - filter
+
+  ChainOrderRequest:
+    type: object
+    properties:
+      order:
         type: array
         items:
           type: string
-        description: |
-          List of Http method types
-      roleFilterName:
-        type: string
-    required:
-      - name
-      - className
-      - disabled
-      - allowSessionCreation
-      - requireSSL
-      - matchHTTPMethod
-      - methods
-      - patterns
-      - filters
-      - roleFilterName
+    required: [order]

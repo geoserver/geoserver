@@ -77,6 +77,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @APIService(service = "Processes", version = "1.0.0", landingPage = "ogc/processes/v1", serviceClass = WPSInfo.class)
@@ -162,8 +163,10 @@ public class ProcessesService {
     @GetMapping(path = "processes", name = "getProcessList")
     @ResponseBody
     @HTMLResponseBody(templateName = "processes.ftl", fileName = "processes.html")
-    public ProcessListDocument processes() {
-        return new ProcessListDocument();
+    public ProcessListDocument processes(
+            @RequestParam(name = "limit", required = false) Integer limit,
+            @RequestParam(name = "offset", required = false) Integer offset) {
+        return new ProcessListDocument(offset, limit);
     }
 
     @GetMapping(path = "processes/{processId}", name = "getProcessDescription")

@@ -118,6 +118,7 @@ public class FreemarkerTemplateSupport {
             templateConfig.setObjectWrapper(new AutoCloseableTrackingWrapper(innerWrapper));
 
             templateConfig.setOutputFormat(HTMLOutputFormat.INSTANCE);
+            templateConfig.setAPIBuiltinEnabled(true);
             return templateConfig;
         });
     }

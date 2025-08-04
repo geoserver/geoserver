@@ -109,6 +109,7 @@ public class FreemarkerTemplateSupport {
             Configuration templateConfig =
                     TemplateUtils.getSafeConfiguration(new FeatureWrapper(FC_FACTORY), policy, null);
             templateConfig.setOutputFormat(HTMLOutputFormat.INSTANCE);
+            templateConfig.setAPIBuiltinEnabled(true);
             return templateConfig;
         });
     }

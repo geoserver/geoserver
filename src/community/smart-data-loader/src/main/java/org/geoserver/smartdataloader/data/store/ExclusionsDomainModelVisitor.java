@@ -33,7 +33,7 @@ public class ExclusionsDomainModelVisitor extends DomainModelVisitorImpl {
      * @param excludedObjects List of domain objects to exclude (entities, attributes and relations).
      * @return Cloned and reduced domainmodel
      */
-    public static DomainModel buildDomainModel(DomainModel model, List<String> excludedObjects) {
+    public static DomainModel buildDomainModel(DomainModel model, DomainModelConfig dmc, List<String> excludedObjects) {
         String rootEntityName = model.getRootEntity().getName();
         // if root node was excluded, then domainmodel is not build, and will return null
         if (excludedObjects.contains(rootEntityName)) {
@@ -41,6 +41,10 @@ public class ExclusionsDomainModelVisitor extends DomainModelVisitorImpl {
         }
         DomainModelConfig domainModelConfig = new DomainModelConfig();
         domainModelConfig.setRootEntityName(rootEntityName);
+        if (dmc != null) {
+            domainModelConfig.setOverrideExpressions(dmc.getOverrideExpressions());
+            domainModelConfig.setEntitiesPrefix(dmc.getEntitiesPrefix());
+        }
         DomainModelBuilder dmb = new DomainModelBuilder(model.getDataStoreMetadata(), domainModelConfig);
         DomainModel clonedDomainModel = dmb.buildDomainModel();
         ExclusionsDomainModelVisitor dmv = new ExclusionsDomainModelVisitor(excludedObjects);

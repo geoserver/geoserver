@@ -3,7 +3,7 @@
 Usage of the Monitor Micrometer Extension
 =========================================
 
-After enabling the Monitor Micrometer extension in the ``monitor.properties`` file by setting ``micrometer.enable`` to ``true``,
+After enabling the Monitor Micrometer extension in the ``monitor.properties`` file by setting ``micrometer.enabled`` to ``true``,
 HTTP requests made to GeoServer will be processed by the extension and recorded in Micrometer’s internal registry.
 
 The collected metrics are exposed through `geoserver/rest/monitor/requests/metrics`,

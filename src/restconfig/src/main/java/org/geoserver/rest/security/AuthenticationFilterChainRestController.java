@@ -6,12 +6,12 @@ package org.geoserver.rest.security;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.xstream.XStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,9 +28,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.security.xml.AuthFilterChainCollection;
 import org.geoserver.rest.security.xml.AuthFilterChainFilters;
 import org.geoserver.rest.security.xml.AuthFilterChainOrder;
+import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
@@ -55,13 +57,29 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/filterChain")
 public class AuthenticationFilterChainRestController extends RestBaseController {
 
+    private static final Set<String> RESERVED = Set.of("order");
+
+    // --- JSON/XML parsing ----------------------------------------------------
+    private static final com.fasterxml.jackson.databind.ObjectMapper MAPPER =
+            new com.fasterxml.jackson.databind.ObjectMapper();
+
+    private static final String CHAIN_PATH = "/{chainName:^(?!order(?:\\.(?:json|xml))?$).+}";
+
     private final GeoServerSecurityManager securityManager;
 
     public AuthenticationFilterChainRestController(GeoServerSecurityManager securityManager) {
         this.securityManager = securityManager;
     }
 
-    // ---------- XStream wiring ----------
+    // ---------------------------------------------------------------------
+    // RestBaseController integration: let RestWrapper/XStream know our aliases
+    // ---------------------------------------------------------------------
+    @Override
+    public void configurePersister(XStreamPersister xp, XStreamMessageConverter converter) {
+        super.configurePersister(xp, converter);
+        configureAliases(xp);
+    }
+
     private static void configureAliases(XStreamPersister persister) {
         XStream xs = persister.getXStream();
 
@@ -77,9 +95,10 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         xs.alias("filters", AuthFilterChainFilters.class);
         xs.aliasField("class", AuthFilterChainFilters.class, "clazz");
         xs.aliasAttribute(AuthFilterChainFilters.class, "requireSSL", "ssl");
+
         // Disable XStream's special meaning for the "class" attribute
         xs.aliasSystemAttribute(null, "class");
-        xs.aliasSystemAttribute(null, "resolves-to"); // (optional, belts & braces)
+        xs.aliasSystemAttribute(null, "resolves-to"); // optional
 
         xs.useAttributeFor(AuthFilterChainFilters.class, "name");
         xs.useAttributeFor(AuthFilterChainFilters.class, "clazz");
@@ -93,14 +112,17 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         xs.useAttributeFor(AuthFilterChainFilters.class, "roleFilterName");
 
         xs.addImplicitCollection(AuthFilterChainFilters.class, "filters", "filter", String.class);
+
+        xs.alias("order", AuthFilterChainOrder.class);
+        xs.addImplicitCollection(AuthFilterChainOrder.class, "order", "order", String.class);
     }
 
-    // ---------- Endpoints ----------
+    // ---------------------------------------------------------------------
+    // Endpoints
+    // ---------------------------------------------------------------------
 
-    @GetMapping(
-            path = "",
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> getAllXml() {
+    @GetMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public RestWrapper<AuthFilterChainCollection> list() {
         checkAuthorised();
         try {
             SecurityManagerConfig cfg = securityManager.loadSecurityConfig();
@@ -109,15 +131,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             AuthFilterChainCollection col = new AuthFilterChainCollection();
             col.setChains(chains.stream().map(this::toDTO).collect(Collectors.toList()));
 
-            XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
-            configureAliases(xp);
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            xp.save(col, baos);
-            String xml = baos.toString(StandardCharsets.UTF_8);
-
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(xml);
-
+            return wrapObject(col, AuthFilterChainCollection.class);
         } catch (IOException e) {
             throw new CannotReadConfig(e);
         } catch (Exception e) {
@@ -126,18 +140,12 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
     }
 
     @PutMapping(
-            path = "",
-            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE},
-            produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> replaceAllXml(HttpServletRequest request) {
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public RestWrapper<AuthFilterChainCollection> replaceAll(HttpServletRequest request) {
         checkAuthorised();
         try {
-            byte[] body = request.getInputStream().readAllBytes();
-            XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
-            configureAliases(xp);
-
-            AuthFilterChainCollection incoming =
-                    xp.load(new ByteArrayInputStream(body), AuthFilterChainCollection.class);
+            AuthFilterChainCollection incoming = parseCollection(request);
 
             List<AuthFilterChainFilters> dtos =
                     Optional.ofNullable(incoming.getChains()).orElse(Collections.emptyList());
@@ -160,12 +168,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
             AuthFilterChainCollection out = new AuthFilterChainCollection();
             out.setChains(rewritten.stream().map(this::toDTO).collect(Collectors.toList()));
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            xp.save(out, baos);
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_XML)
-                    .body(baos.toString(StandardCharsets.UTF_8));
+            return wrapObject(out, AuthFilterChainCollection.class);
 
         } catch (IllegalArgumentException ex) {
             throw new BadRequest(ex.getMessage());
@@ -176,16 +179,15 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         }
     }
 
-    // ---------- Per-chain: XML-only, manual marshalling ----------
+    // ---- Order -----------------------------------------------------------
 
     @PutMapping(
-            path = "/order",
+            path = {"/order", "/order.{ext}"},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<Void> reorder(HttpServletRequest request) {
+    public ResponseEntity<Void> reorder(javax.servlet.http.HttpServletRequest request) {
         checkAuthorised();
         try {
-            AuthFilterChainOrder order = parseOrder(request);
-            List<String> wanted = Optional.ofNullable(order.getOrder()).orElse(Collections.emptyList());
+            List<String> wanted = parseOrderFromRequest(request);
             checkArgument(!wanted.isEmpty(), "`order` list required");
 
             SecurityManagerConfig cfg = securityManager.loadSecurityConfig();
@@ -200,14 +202,15 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             Map<String, RequestFilterChain> byName =
                     current.stream().collect(Collectors.toMap(RequestFilterChain::getName, c -> c));
             List<RequestFilterChain> reordered =
-                    wanted.stream().map(byName::get).collect(Collectors.toList());
+                    wanted.stream().map(byName::get).toList();
 
-            cfg.setFilterChain(new GeoServerSecurityFilterChain(reordered));
+            // IMPORTANT: persist in engine order (appears reversed when listed).
+            List<RequestFilterChain> engineOrder = new ArrayList<>(reordered);
+            cfg.setFilterChain(new GeoServerSecurityFilterChain(engineOrder));
             securityManager.saveSecurityConfig(cfg);
             securityManager.reload();
 
             return ResponseEntity.ok().build();
-
         } catch (IllegalArgumentException ex) {
             throw new BadRequest(ex.getMessage());
         } catch (IOException ex) {
@@ -217,71 +220,60 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         }
     }
 
-    @GetMapping(path = "/order")
+    @GetMapping(path = {"/order", "/order.{ext}"})
     public ResponseEntity<Void> orderGetNotAllowed() {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
 
-    @PostMapping(path = "/order")
+    @PostMapping(path = {"/order", "/order.{ext}"})
     public ResponseEntity<Void> orderPostNotAllowed() {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
 
-    @DeleteMapping(path = "/order")
+    @DeleteMapping(path = {"/order", "/order.{ext}"})
     public ResponseEntity<Void> orderDeleteNotAllowed() {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
 
+    // ---- Per-chain -------------------------------------------------------
+
     @GetMapping(
             path = "/{chainName:^(?!order$).+}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> getOneXml(@PathVariable String chainName) {
+    public RestWrapper<AuthFilterChainFilters> getOneXml(@PathVariable String chainName) {
         String finalChainName = normalizeChainName(chainName);
         checkAuthorised();
         try {
             SecurityManagerConfig cfg = securityManager.loadSecurityConfig();
-            RequestFilterChain chain = Optional.ofNullable(cfg.getFilterChain().getRequestChainByName(chainName))
+            RequestFilterChain chain = Optional.ofNullable(cfg.getFilterChain().getRequestChainByName(finalChainName))
                     .orElseThrow(() -> new FilterChainNotFound(finalChainName));
 
             AuthFilterChainFilters dto = toDTO(chain);
-
-            XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
-            configureAliases(xp); // already defines alias "filters" -> AuthFilterChainFilters as element
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            xp.save(dto, baos); // root element will be <filters ...>
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_XML)
-                    .body(baos.toString(StandardCharsets.UTF_8));
+            return wrapObject(dto, AuthFilterChainFilters.class);
         } catch (IOException e) {
             throw new CannotReadConfig(e);
         }
     }
 
     @PostMapping(
-            path = "",
-            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE},
-            produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> createOneXml(
-            HttpServletRequest request,
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<RestWrapper<AuthFilterChainFilters>> create(
+            javax.servlet.http.HttpServletRequest request,
             @RequestParam(name = "position", required = false) Integer position,
             UriComponentsBuilder builder) {
+
         checkAuthorised();
         try {
-            byte[] body = request.getInputStream().readAllBytes();
-            XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
-            configureAliases(xp);
-
-            AuthFilterChainFilters dto = xp.load(new ByteArrayInputStream(body), AuthFilterChainFilters.class);
+            AuthFilterChainFilters dto = parseFiltersFromRequest(request);
             ensureNotReserved(dto.getName());
             RequestFilterChain model = toModel(dto);
 
             SecurityManagerConfig cfg = securityManager.loadSecurityConfig();
             List<RequestFilterChain> chains =
                     new ArrayList<>(cfg.getFilterChain().getRequestChains());
-
-            if (chains.stream().anyMatch(c -> Objects.equals(c.getName(), model.getName()))) {
+            if (chains.stream().anyMatch(c -> Objects.equals(c.getName(), model.getName())))
                 throw new DuplicateChainName(model.getName());
-            }
 
             int pos = (position != null) ? position : chains.size();
             checkArgument(pos >= 0 && pos <= chains.size(), "position out of range");
@@ -291,78 +283,52 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             securityManager.saveSecurityConfig(cfg);
             securityManager.reload();
 
-            // echo created resource as XML
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            xp.save(dto, baos);
-
-            UriComponentsBuilder ub = (builder != null ? builder : UriComponentsBuilder.newInstance());
             HttpHeaders headers = new HttpHeaders();
+            UriComponentsBuilder ub = (builder != null ? builder : UriComponentsBuilder.newInstance());
             headers.setLocation(ub.path("/security/filterChain/{name}")
                     .buildAndExpand(model.getName())
                     .toUri());
-            headers.setContentType(MediaType.APPLICATION_XML);
-            return new ResponseEntity<>(baos.toString(StandardCharsets.UTF_8), headers, HttpStatus.CREATED);
-        } catch (com.thoughtworks.xstream.converters.ConversionException | ClassCastException ex) {
-            // bad/mismatched XML => 400
-            throw new BadRequest("Malformed XML: " + ex.getMessage());
+
+            return new ResponseEntity<>(wrapObject(dto, AuthFilterChainFilters.class), headers, HttpStatus.CREATED);
+
         } catch (IllegalArgumentException ex) {
-            // validation (duplicate name, bad position, mismatch name, etc.) => 400
             throw new BadRequest(ex.getMessage());
         } catch (IOException ex) {
-            // persistence issues reading current config
             throw new CannotReadConfig(ex);
         } catch (ReflectiveOperationException ex) {
-            // building chain from class name failed
             throw new CannotMakeChain("dto.getClazz()", ex);
         } catch (Exception e) {
-            // 1) keep the specific exceptions visible to tests/clients
             rethrowIfDomain(e);
-
-            // 2) map parse/marshalling problems to 400
-            if (e instanceof com.thoughtworks.xstream.converters.ConversionException
-                    || e instanceof ClassCastException
-                    || causedBy(e, com.thoughtworks.xstream.converters.ConversionException.class)
-                    || causedBy(e, ClassCastException.class)) {
-                throw new BadRequest("Malformed request: " + e.getMessage());
-            }
-
-            // 3) IO/persistence -> 500 CannotSaveConfig (or CannotUpdateConfig in PUT)
-            if (e instanceof java.io.IOException || causedBy(e, java.io.IOException.class)) {
-                throw new CannotSaveConfig(e);
-            }
-
-            // 4) last resort
+            if (e instanceof IOException || causedBy(e, IOException.class)) throw new CannotSaveConfig(e);
             throw new CannotSaveConfig(e);
         }
     }
 
     @PutMapping(
-            path = "/{chainName:^(?!order$).+}",
-            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE},
-            produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> updateOneXml(
+            path = CHAIN_PATH,
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public RestWrapper<AuthFilterChainFilters> update(
             @PathVariable String chainName,
-            HttpServletRequest request,
+            javax.servlet.http.HttpServletRequest request,
             @RequestParam(name = "position", required = false) Integer position) {
 
         chainName = normalizeChainName(chainName);
         checkAuthorised();
         try {
-            byte[] body = request.getInputStream().readAllBytes();
-            XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
-            configureAliases(xp);
-
-            AuthFilterChainFilters dto = xp.load(new ByteArrayInputStream(body), AuthFilterChainFilters.class);
+            AuthFilterChainFilters dto = parseFiltersFromRequest(request);
             ensureNotReserved(dto.getName());
             RequestFilterChain incoming = toModel(dto);
 
-            checkArgument(Objects.equals(chainName, incoming.getName()), "chainName must match payload name");
+            if (!Objects.equals(chainName, incoming.getName()))
+                throw new BadRequest("chainName must match payload name");
 
             SecurityManagerConfig cfg = securityManager.loadSecurityConfig();
             List<RequestFilterChain> chains =
                     new ArrayList<>(cfg.getFilterChain().getRequestChains());
+
             int existingIdx = indexOf(chains, chainName);
-            checkArgument(existingIdx >= 0, "Filter chain %s not found", chainName);
+            if (existingIdx < 0) throw new FilterChainNotFound(chainName);
 
             chains.set(existingIdx, incoming);
             if (position != null && position >= 0 && position < chains.size() && position != existingIdx) {
@@ -374,14 +340,8 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             securityManager.saveSecurityConfig(cfg);
             securityManager.reload();
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            xp.save(dto, baos);
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_XML)
-                    .body(baos.toString(StandardCharsets.UTF_8));
+            return wrapObject(dto, AuthFilterChainFilters.class);
 
-        } catch (com.thoughtworks.xstream.converters.ConversionException | ClassCastException ex) {
-            throw new BadRequest("Malformed XML: " + ex.getMessage());
         } catch (IllegalArgumentException ex) {
             throw new BadRequest(ex.getMessage());
         } catch (IOException ex) {
@@ -417,15 +377,14 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             securityManager.reload();
         } catch (Exception e) {
             rethrowIfDomain(e); // lets NothingToDelete/BadRequest/etc. bubble out
-
-            // optional: classify common infrastructural errors
-            if (e instanceof java.io.IOException || causedBy(e, java.io.IOException.class)) {
-                throw new CannotSaveConfig(e);
-            }
-            // fallback
+            if (e instanceof IOException || causedBy(e, IOException.class)) throw new CannotSaveConfig(e);
             throw new CannotSaveConfig(e);
         }
     }
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
 
     private static int indexOf(List<RequestFilterChain> chains, String name) {
         for (int i = 0; i < chains.size(); i++) {
@@ -434,35 +393,19 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         return -1;
     }
 
-    // ---------- Mapping helpers ----------
-
-    private static final Set<String> RESERVED = Set.of("order");
-
     private static String normalizeChainName(String n) {
-        return n == null ? null : n.replaceFirst("\\.xml$", "");
+        return n == null ? null : n.replaceFirst("\\.(xml|json)$", "");
     }
 
     private static void ensureNotReserved(String name) {
+        checkArgument(name != null && !name.isEmpty(), "name is required");
         checkArgument(!RESERVED.contains(name.toLowerCase()), "'%s' is reserved", name);
-    }
-
-    private AuthFilterChainOrder parseOrder(HttpServletRequest req) throws IOException {
-        byte[] body = req.getInputStream().readAllBytes();
-        String ct = Optional.ofNullable(req.getContentType()).orElse("");
-        if (ct.contains(MediaType.APPLICATION_XML_VALUE) || ct.contains(MediaType.TEXT_XML_VALUE)) {
-            XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
-            configureAliases(xp);
-            return xp.load(new ByteArrayInputStream(body), AuthFilterChainOrder.class);
-        } else {
-            return new com.fasterxml.jackson.databind.ObjectMapper().readValue(body, AuthFilterChainOrder.class);
-        }
     }
 
     private AuthFilterChainFilters toDTO(RequestFilterChain c) {
         AuthFilterChainFilters dto = new AuthFilterChainFilters();
         dto.setName(c.getName());
         dto.setClazz(c.getClass().getName());
-        // path is a CSV in XML — join patterns
         List<String> patterns = Optional.ofNullable(c.getPatterns()).orElse(Collections.emptyList());
         dto.setPath(String.join(",", patterns));
         dto.setDisabled(c.isDisabled());
@@ -471,8 +414,6 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         dto.setMatchHTTPMethod(c.isMatchHTTPMethod());
         dto.setRoleFilterName(c.getRoleFilterName());
         dto.setFilters(new ArrayList<>(Optional.ofNullable(c.getFilterNames()).orElse(Collections.emptyList())));
-
-        // optional subclass fields via reflection (if present)
         dto.setInterceptorName(invokeStringGetter(c, "getInterceptorName"));
         dto.setExceptionTranslationName(invokeStringGetter(c, "getExceptionTranslationName"));
         return dto;
@@ -485,8 +426,9 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                     RequestFilterChain.class.isAssignableFrom(raw),
                     "Class %s is not a RequestFilterChain",
                     dto.getClazz());
-            Class<?> chainClass = Class.forName(dto.getClazz());
-            RequestFilterChain chain = instantiateChain(chainClass.asSubclass(RequestFilterChain.class), dto);
+            @SuppressWarnings("unchecked")
+            Class<? extends RequestFilterChain> chainClass = (Class<? extends RequestFilterChain>) raw;
+            RequestFilterChain chain = instantiateChain(chainClass, dto);
 
             chain.setName(dto.getName());
             chain.setPatterns(splitCSV(dto.getPath()));
@@ -496,15 +438,12 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             if (dto.getMatchHTTPMethod() != null) chain.setMatchHTTPMethod(dto.getMatchHTTPMethod());
             if (dto.getRoleFilterName() != null) chain.setRoleFilterName(dto.getRoleFilterName());
             chain.setFilterNames(Optional.ofNullable(dto.getFilters()).orElse(Collections.emptyList()));
-
-            // optional subclass setters if present
             invokeStringSetter(chain, "setInterceptorName", dto.getInterceptorName());
             invokeStringSetter(chain, "setExceptionTranslationName", dto.getExceptionTranslationName());
-
             return chain;
 
         } catch (IllegalArgumentException e) {
-            throw e; // let controller wrap as BadRequest
+            throw e;
         } catch (Exception e) {
             throw new CannotMakeChain(dto.getClazz(), e);
         }
@@ -605,6 +544,308 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         }
     }
 
+    // ---------- Body parsing helpers (minimal, robust to wrapped/bare JSON) ----------
+
+    private AuthFilterChainFilters parseFiltersFromRequest(javax.servlet.http.HttpServletRequest request) {
+        String ct = Optional.ofNullable(request.getContentType()).orElse("");
+        try (var in = request.getInputStream()) {
+            if (ct.contains("json")) {
+                com.fasterxml.jackson.databind.JsonNode root = MAPPER.readTree(in);
+                // Accept any of these shapes:
+                //   { "filters": { "@name": ... } }
+                //   { "@name": ... }                      (bare)
+                //   { "filterChain": { "filters":[{...}] } }  (collection with one element)
+                com.fasterxml.jackson.databind.JsonNode node = root;
+                if (node.has("filters") && node.get("filters").isObject()) {
+                    node = node.get("filters");
+                } else if (node.has("filterChain")) {
+                    var fc = node.get("filterChain");
+                    if (fc != null
+                            && fc.has("filters")
+                            && fc.get("filters").isArray()
+                            && fc.get("filters").size() == 1) {
+                        node = fc.get("filters").get(0);
+                    }
+                }
+                // Expect single chain object now
+                if (!node.isObject()) throw new BadRequest("Malformed payload: expected a single filter chain object");
+
+                // Map JSON shape (attributes use '@' and 'class' -> 'clazz', 'filter' -> 'filters')
+                AuthFilterChainFilters dto = new AuthFilterChainFilters();
+                dto.setName(getText(node, "@name", "name"));
+                dto.setClazz(getText(node, "@class", "class", "clazz"));
+                dto.setPath(getText(node, "@path", "path"));
+
+                if (node.has("@disabled")) dto.setDisabled(node.get("@disabled").asBoolean());
+                if (node.has("@allowSessionCreation"))
+                    dto.setAllowSessionCreation(
+                            node.get("@allowSessionCreation").asBoolean());
+                if (node.has("@ssl")) dto.setRequireSSL(node.get("@ssl").asBoolean());
+                if (node.has("@matchHTTPMethod"))
+                    dto.setMatchHTTPMethod(node.get("@matchHTTPMethod").asBoolean());
+                dto.setRoleFilterName(getText(node, "@roleFilterName", "roleFilterName"));
+                dto.setInterceptorName(getText(node, "@interceptorName", "interceptorName"));
+                dto.setExceptionTranslationName(getText(node, "@exceptionTranslationName", "exceptionTranslationName"));
+
+                List<String> filters = new ArrayList<>();
+                var f = node.get("filter");
+                if (f != null) {
+                    if (f.isArray()) f.forEach(n -> filters.add(n.asText()));
+                    else filters.add(f.asText());
+                }
+                dto.setFilters(filters);
+                return dto;
+            } else {
+                // XML via XStreamPersister with your aliases
+                var xp = new org.geoserver.config.util.XStreamPersisterFactory().createXMLPersister();
+                configureAliases(xp);
+                // Accept either <filters> ... or <filterChain><filters>...</filters></filterChain> with one item
+                Object o = xp.load(in, Object.class);
+                if (o instanceof AuthFilterChainFilters) return (AuthFilterChainFilters) o;
+                if (o instanceof AuthFilterChainCollection) {
+                    var col = (AuthFilterChainCollection) o;
+                    List<AuthFilterChainFilters> list =
+                            Optional.ofNullable(col.getChains()).orElse(List.of());
+                    if (list.size() == 1) return list.get(0);
+                }
+                throw new BadRequest("Malformed payload: expected a single <filters> element");
+            }
+        } catch (BadRequest e) {
+            throw e;
+        } catch (com.fasterxml.jackson.core.JsonParseException
+                | com.fasterxml.jackson.databind.JsonMappingException e) {
+            throw new BadRequest("Malformed payload: " + e.getOriginalMessage());
+        } catch (IOException e) {
+            throw new CannotReadConfig(e);
+        }
+    }
+
+    private List<String> parseOrderFromRequest(javax.servlet.http.HttpServletRequest request) {
+        String ct = Optional.ofNullable(request.getContentType()).orElse("");
+        try (var in = request.getInputStream()) {
+            if (ct.contains("json")) {
+                var root = MAPPER.readTree(in);
+                // Accept:
+                //   { "order":[ ... ] }
+                //   { "filterChain": { "order":[ ... ] } }
+                com.fasterxml.jackson.databind.JsonNode n = root.has("order")
+                        ? root.get("order")
+                        : (root.has("filterChain") ? root.get("filterChain").get("order") : null);
+                if (n == null || !n.isArray()) throw new BadRequest("`order` array required");
+                List<String> out = new ArrayList<>();
+                n.forEach(x -> out.add(x.asText()));
+                return out;
+            } else {
+                // XML: <order><order>name</order>...</order>  OR  <filterChain><order>...</order></filterChain>
+                var xp = new org.geoserver.config.util.XStreamPersisterFactory().createXMLPersister();
+                configureAliases(xp);
+                Object o = xp.load(in, Object.class);
+                if (o instanceof AuthFilterChainOrder) {
+                    List<String> list = ((AuthFilterChainOrder) o).getOrder();
+                    if (list == null || list.isEmpty()) throw new BadRequest("`order` array required");
+                    return list;
+                }
+                throw new BadRequest("`order` array required");
+            }
+        } catch (BadRequest e) {
+            throw e;
+        } catch (IOException e) {
+            throw new CannotReadConfig(e);
+        }
+    }
+
+    private static String getText(com.fasterxml.jackson.databind.JsonNode node, String... keys) {
+        for (String k : keys) {
+            var v = node.get(k);
+            if (v != null && !v.isNull()) return v.asText();
+        }
+        return null;
+    }
+
+    private static byte[] readBody(HttpServletRequest req) throws IOException {
+        try (javax.servlet.ServletInputStream in = req.getInputStream()) {
+            return in.readAllBytes();
+        }
+    }
+
+    private static boolean isXmlContent(HttpServletRequest req) {
+        String ct = java.util.Optional.ofNullable(req.getContentType()).orElse("");
+        return ct.contains(org.springframework.http.MediaType.APPLICATION_XML_VALUE)
+                || ct.contains(org.springframework.http.MediaType.TEXT_XML_VALUE);
+    }
+
+    private boolean looksLikeChainObject(com.fasterxml.jackson.databind.JsonNode n) {
+        if (n == null || !n.isObject()) return false;
+        // presence of any of these is a strong signal we’re already at the chain object
+        return n.has("name") || n.has("@name") || n.has("clazz") || n.has("class") || n.has("@class");
+    }
+
+    private com.fasterxml.jackson.databind.JsonNode normalizeChainJson(com.fasterxml.jackson.databind.JsonNode n) {
+        if (!(n instanceof com.fasterxml.jackson.databind.node.ObjectNode)) return n;
+        com.fasterxml.jackson.databind.node.ObjectNode o = (com.fasterxml.jackson.databind.node.ObjectNode) n;
+
+        // Allow "class" / "@class" -> "clazz"
+        if (o.has("class") && !o.has("clazz")) {
+            o.set("clazz", o.get("class"));
+        } else if (o.has("@class") && !o.has("clazz")) {
+            o.set("clazz", o.get("@class"));
+        }
+
+        // Allow "ssl" -> "requireSSL"
+        if (o.has("ssl") && !o.has("requireSSL")) {
+            o.set("requireSSL", o.get("ssl"));
+        }
+
+        // Allow "@name" -> "name"
+        if (o.has("@name") && !o.has("name")) {
+            o.set("name", o.get("@name"));
+        }
+
+        return o;
+    }
+
+    private AuthFilterChainFilters parseFilters(HttpServletRequest req) throws IOException {
+        byte[] body = readBody(req);
+        if (isXmlContent(req)) {
+            XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
+            configureAliases(xp);
+            return xp.load(new ByteArrayInputStream(body), AuthFilterChainFilters.class);
+        } else {
+            com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.JsonNode root = om.readTree(body);
+
+            com.fasterxml.jackson.databind.JsonNode node = root;
+
+            // Unwrap common top-level wrapper
+            if (node.has("filterChain")) {
+                node = node.get("filterChain");
+            }
+
+            // If node already looks like a chain object, keep it.
+            if (!looksLikeChainObject(node)) {
+                // Consider "filters" as a wrapper ONLY if it contains an object or an array of objects.
+                if (node.has("filters")) {
+                    com.fasterxml.jackson.databind.JsonNode f = node.get("filters");
+                    if (f.isObject()) {
+                        node = f;
+                    } else if (f.isArray() && f.size() > 0 && f.get(0).isObject()) {
+                        node = f.get(0);
+                    }
+                    // if array of strings -> that is the filter names on the chain; don't unwrap
+                }
+            }
+
+            // Root array? Take the first object
+            if (!node.isObject()
+                    && node.isArray()
+                    && node.size() > 0
+                    && node.get(0).isObject()) {
+                node = node.get(0);
+            }
+
+            // Single-field wrapper object? Unwrap it.
+            if (!node.isObject() && root.isObject() && root.size() == 1) {
+                java.util.Iterator<com.fasterxml.jackson.databind.JsonNode> it = root.elements();
+                if (it.hasNext()) {
+                    com.fasterxml.jackson.databind.JsonNode only = it.next();
+                    if (only.isObject()) node = only;
+                }
+            }
+
+            if (!node.isObject()) {
+                throw new BadRequest("Malformed payload: expected a single filter chain object");
+            }
+
+            // Normalize a few field names to match the DTO
+            node = normalizeChainJson(node);
+
+            return om.treeToValue(node, AuthFilterChainFilters.class);
+        }
+    }
+
+    private AuthFilterChainCollection parseCollection(HttpServletRequest req) throws IOException {
+        byte[] body = readBody(req);
+        if (isXmlContent(req)) {
+            XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
+            configureAliases(xp);
+            return xp.load(new ByteArrayInputStream(body), AuthFilterChainCollection.class);
+        } else {
+            ObjectMapper om = new ObjectMapper();
+            JsonNode root = om.readTree(body);
+
+            // Unwrap { "filterChain": { ... } } if present
+            if (root.has("filterChain")) {
+                root = root.get("filterChain");
+            }
+
+            // Accept either "filters": [ ... ]  OR "chains": [ ... ]  OR bare [ ... ]
+            JsonNode array = null;
+            if (root.isArray()) {
+                array = root;
+            } else if (root.has("filters") && root.get("filters").isArray()) {
+                array = root.get("filters");
+            } else if (root.has("chains") && root.get("chains").isArray()) {
+                array = root.get("chains");
+            } else if (root.has("filters") && root.get("filters").isObject()) {
+                // Single object wrapped under "filters": turn it into a singleton array
+                array = om.createArrayNode().add(root.get("filters"));
+            } else if (root.isObject()) {
+                // Possibly a single object: accept it as collection of size 1
+                array = om.createArrayNode().add(root);
+            }
+
+            if (array == null || !array.isArray() || array.isEmpty()) {
+                throw new BadRequest("Malformed payload: expected a non-empty array of filter chains");
+            }
+
+            List<AuthFilterChainFilters> chains = new ArrayList<>();
+            for (JsonNode n : array) {
+                chains.add(om.treeToValue(n, AuthFilterChainFilters.class));
+            }
+
+            AuthFilterChainCollection col = new AuthFilterChainCollection();
+            col.setChains(chains);
+            return col;
+        }
+    }
+
+    private AuthFilterChainOrder extractOrder(
+            RestWrapper<AuthFilterChainOrder> body, javax.servlet.http.HttpServletRequest request) throws IOException {
+        if (body != null && body.getObject() != null) {
+            return (AuthFilterChainOrder) body.getObject();
+        }
+
+        byte[] bytes = request.getInputStream().readAllBytes();
+        String ct = Optional.ofNullable(request.getContentType()).orElse("");
+
+        // XML path via XStream
+        if (ct.contains(MediaType.APPLICATION_XML_VALUE) || ct.contains(MediaType.TEXT_XML_VALUE)) {
+            XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
+            configureAliases(xp);
+            return xp.load(new java.io.ByteArrayInputStream(bytes), AuthFilterChainOrder.class);
+        }
+
+        // JSON path via Jackson - accept both wrapped and bare bodies
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(bytes);
+
+        if (root == null) {
+            throw new BadRequest("Malformed payload: empty body");
+        }
+        // bare: {"order":[...]}
+        if (root.has("order")) {
+            return mapper.treeToValue(root, AuthFilterChainOrder.class);
+        }
+        // wrapped: {"filterChainOrder":{"order":[...]}} or any single-property wrapper
+        if (root.size() == 1) {
+            com.fasterxml.jackson.databind.JsonNode only = root.elements().next();
+            if (only != null && only.has("order")) {
+                return mapper.treeToValue(only, AuthFilterChainOrder.class);
+            }
+        }
+        throw new BadRequest("Malformed payload: expected {\"order\":[...]} or a single wrapper with \"order\"");
+    }
+
     // ---------- Auth & errors ----------
 
     private void checkAuthorised() {
@@ -649,96 +890,53 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
     }
 
     // ///////////////////////////////////////////////////////////////////////
-    // Exception handlers
-    // Only create handlers for Exceptions from inner classes as the @ControllerAdvice annotation
-    // makes these handlers leak
+    // Exception handlers (scoped here; avoid leaking via @ControllerAdvice)
 
     @ExceptionHandler(CannotMakeChain.class)
-    public ResponseEntity<ErrorResponse> handleRestException(CannotMakeChain exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse =
-                new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
-
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorResponse> handle(CannotMakeChain ex) {
+        return new ResponseEntity<>(new ErrorResponse(500, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(CannotSaveConfig.class)
-    public ResponseEntity<ErrorResponse> handleRestException(CannotSaveConfig exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse =
-                new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
-
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorResponse> handle(CannotSaveConfig ex) {
+        return new ResponseEntity<>(new ErrorResponse(500, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(CannotUpdateConfig.class)
-    public ResponseEntity<ErrorResponse> handleRestException(CannotUpdateConfig exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse =
-                new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
-
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorResponse> handle(CannotUpdateConfig ex) {
+        return new ResponseEntity<>(new ErrorResponse(500, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(CannotReadConfig.class)
-    public ResponseEntity<ErrorResponse> handleRestException(CannotReadConfig exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse =
-                new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
-
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorResponse> handle(CannotReadConfig ex) {
+        return new ResponseEntity<>(new ErrorResponse(500, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(BadRequest.class)
-    public ResponseEntity<ErrorResponse> handleRestException(BadRequest exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
-
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> handle(BadRequest ex) {
+        return new ResponseEntity<>(new ErrorResponse(400, ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NothingToDelete.class)
-    public ResponseEntity<ErrorResponse> handleRestException(NothingToDelete exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.GONE.value(), exception.getMessage());
-
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.GONE);
+    public ResponseEntity<ErrorResponse> handle(NothingToDelete ex) {
+        return new ResponseEntity<>(new ErrorResponse(410, ex.getMessage()), HttpStatus.GONE);
     }
 
     @ExceptionHandler(DuplicateChainName.class)
-    public ResponseEntity<ErrorResponse> handleRestException(DuplicateChainName exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
-
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> handle(DuplicateChainName ex) {
+        return new ResponseEntity<>(new ErrorResponse(400, ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(FilterChainNotFound.class)
-    public ResponseEntity<ErrorResponse> handleRestException(FilterChainNotFound exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
-
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponse> handle(FilterChainNotFound ex) {
+        return new ResponseEntity<>(new ErrorResponse(404, ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NotAuthorised.class)
-    public ResponseEntity<ErrorResponse> handleRestException(NotAuthorised exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.getMessage());
-
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    public ResponseEntity<ErrorResponse> handle(NotAuthorised ex) {
+        return new ResponseEntity<>(new ErrorResponse(403, ex.getMessage()), HttpStatus.FORBIDDEN);
     }
 
-    // Inner class to model the error response
     public static class ErrorResponse {
         private int status;
         private String message;
@@ -748,7 +946,6 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             this.message = message;
         }
 
-        // Getters and setters for JSON serialization
         public int getStatus() {
             return status;
         }
@@ -766,8 +963,6 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         }
     }
 
-    // ///////////////////////////////////////////////////////////////////////
-    // Helper methods
     private static boolean causedBy(Throwable t, Class<? extends Throwable> type) {
         while (t != null) {
             if (type.isInstance(t)) return true;
@@ -787,7 +982,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
     }
 
     // ///////////////////////////////////////////////////////////////////////
-    // Exceptions
+    // Domain exceptions
 
     public static class CannotUpdateConfig extends RuntimeException {
         public CannotUpdateConfig(Exception ex) {

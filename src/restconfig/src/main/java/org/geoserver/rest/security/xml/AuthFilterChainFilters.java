@@ -4,6 +4,9 @@
  */
 package org.geoserver.rest.security.xml;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -11,44 +14,58 @@ import java.util.ArrayList;
 import java.util.List;
 
 @XStreamAlias("filters")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthFilterChainFilters {
 
     @XStreamAsAttribute
+    @JsonAlias({"@name", "name"})
     private String name;
 
     // map Java field "clazz" to XML attribute "class"
     @XStreamAsAttribute
     @XStreamAlias("class")
+    @JsonProperty("class")
+    @JsonAlias({"@class", "clazz"})
     private String clazz;
 
     @XStreamAsAttribute
+    @JsonAlias({"@path", "path"})
     private String path; // comma-separated patterns in XML
 
     @XStreamAsAttribute
+    @JsonAlias({"@disabled", "disabled"})
     private Boolean disabled;
 
     @XStreamAsAttribute
+    @JsonAlias({"@allowSessionCreation", "allowSessionCreation"})
     private Boolean allowSessionCreation;
 
     @XStreamAsAttribute
     @XStreamAlias("ssl")
+    @JsonProperty("ssl")
+    @JsonAlias({"requireSSL"})
     private Boolean requireSSL; // XML "ssl" ↔ model requireSSL
 
     @XStreamAsAttribute
+    @JsonAlias({"@matchHTTPMethod", "matchHTTPMethod"})
     private Boolean matchHTTPMethod;
 
     // present only on certain subclasses; keep in DTO as optional attrs
     @XStreamAsAttribute
+    @JsonAlias({"@interceptorName", "interceptorName"})
     private String interceptorName;
 
     @XStreamAsAttribute
+    @JsonAlias({"@exceptionTranslationName", "exceptionTranslationName"})
     private String exceptionTranslationName;
 
     // optional role filter name (present on base)
     @XStreamAsAttribute
+    @JsonAlias({"@roleFilterName", "roleFilterName"})
     private String roleFilterName;
 
     @XStreamImplicit(itemFieldName = "filter")
+    @JsonProperty("filter")
     private List<String> filters = new ArrayList<>();
 
     // getters/setters

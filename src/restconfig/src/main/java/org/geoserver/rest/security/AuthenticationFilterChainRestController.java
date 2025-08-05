@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -548,7 +549,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
     private AuthFilterChainFilters parseFiltersFromRequest(javax.servlet.http.HttpServletRequest request) {
         String ct = Optional.ofNullable(request.getContentType()).orElse("");
-        try (var in = request.getInputStream()) {
+        try (ServletInputStream in = request.getInputStream()) {
             if (ct.contains("json")) {
                 com.fasterxml.jackson.databind.JsonNode root = MAPPER.readTree(in);
                 // Accept any of these shapes:
@@ -559,7 +560,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 if (node.has("filters") && node.get("filters").isObject()) {
                     node = node.get("filters");
                 } else if (node.has("filterChain")) {
-                    var fc = node.get("filterChain");
+                    JsonNode fc = node.get("filterChain");
                     if (fc != null
                             && fc.has("filters")
                             && fc.get("filters").isArray()
@@ -588,7 +589,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 dto.setExceptionTranslationName(getText(node, "@exceptionTranslationName", "exceptionTranslationName"));
 
                 List<String> filters = new ArrayList<>();
-                var f = node.get("filter");
+                JsonNode f = node.get("filter");
                 if (f != null) {
                     if (f.isArray()) f.forEach(n -> filters.add(n.asText()));
                     else filters.add(f.asText());
@@ -597,13 +598,13 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 return dto;
             } else {
                 // XML via XStreamPersister with your aliases
-                var xp = new org.geoserver.config.util.XStreamPersisterFactory().createXMLPersister();
+                XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
                 configureAliases(xp);
                 // Accept either <filters> ... or <filterChain><filters>...</filters></filterChain> with one item
                 Object o = xp.load(in, Object.class);
                 if (o instanceof AuthFilterChainFilters) return (AuthFilterChainFilters) o;
                 if (o instanceof AuthFilterChainCollection) {
-                    var col = (AuthFilterChainCollection) o;
+                    AuthFilterChainCollection col = (AuthFilterChainCollection) o;
                     List<AuthFilterChainFilters> list =
                             Optional.ofNullable(col.getChains()).orElse(List.of());
                     if (list.size() == 1) return list.get(0);
@@ -622,9 +623,9 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
     private List<String> parseOrderFromRequest(javax.servlet.http.HttpServletRequest request) {
         String ct = Optional.ofNullable(request.getContentType()).orElse("");
-        try (var in = request.getInputStream()) {
+        try (ServletInputStream in = request.getInputStream()) {
             if (ct.contains("json")) {
-                var root = MAPPER.readTree(in);
+                JsonNode root = MAPPER.readTree(in);
                 // Accept:
                 //   { "order":[ ... ] }
                 //   { "filterChain": { "order":[ ... ] } }
@@ -637,7 +638,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 return out;
             } else {
                 // XML: <order><order>name</order>...</order>  OR  <filterChain><order>...</order></filterChain>
-                var xp = new org.geoserver.config.util.XStreamPersisterFactory().createXMLPersister();
+                XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
                 configureAliases(xp);
                 Object o = xp.load(in, Object.class);
                 if (o instanceof AuthFilterChainOrder) {
@@ -656,7 +657,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
     private static String getText(com.fasterxml.jackson.databind.JsonNode node, String... keys) {
         for (String k : keys) {
-            var v = node.get(k);
+            JsonNode v = node.get(k);
             if (v != null && !v.isNull()) return v.asText();
         }
         return null;
@@ -672,95 +673,6 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         String ct = java.util.Optional.ofNullable(req.getContentType()).orElse("");
         return ct.contains(org.springframework.http.MediaType.APPLICATION_XML_VALUE)
                 || ct.contains(org.springframework.http.MediaType.TEXT_XML_VALUE);
-    }
-
-    private boolean looksLikeChainObject(com.fasterxml.jackson.databind.JsonNode n) {
-        if (n == null || !n.isObject()) return false;
-        // presence of any of these is a strong signal we’re already at the chain object
-        return n.has("name") || n.has("@name") || n.has("clazz") || n.has("class") || n.has("@class");
-    }
-
-    private com.fasterxml.jackson.databind.JsonNode normalizeChainJson(com.fasterxml.jackson.databind.JsonNode n) {
-        if (!(n instanceof com.fasterxml.jackson.databind.node.ObjectNode)) return n;
-        com.fasterxml.jackson.databind.node.ObjectNode o = (com.fasterxml.jackson.databind.node.ObjectNode) n;
-
-        // Allow "class" / "@class" -> "clazz"
-        if (o.has("class") && !o.has("clazz")) {
-            o.set("clazz", o.get("class"));
-        } else if (o.has("@class") && !o.has("clazz")) {
-            o.set("clazz", o.get("@class"));
-        }
-
-        // Allow "ssl" -> "requireSSL"
-        if (o.has("ssl") && !o.has("requireSSL")) {
-            o.set("requireSSL", o.get("ssl"));
-        }
-
-        // Allow "@name" -> "name"
-        if (o.has("@name") && !o.has("name")) {
-            o.set("name", o.get("@name"));
-        }
-
-        return o;
-    }
-
-    private AuthFilterChainFilters parseFilters(HttpServletRequest req) throws IOException {
-        byte[] body = readBody(req);
-        if (isXmlContent(req)) {
-            XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
-            configureAliases(xp);
-            return xp.load(new ByteArrayInputStream(body), AuthFilterChainFilters.class);
-        } else {
-            com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
-            com.fasterxml.jackson.databind.JsonNode root = om.readTree(body);
-
-            com.fasterxml.jackson.databind.JsonNode node = root;
-
-            // Unwrap common top-level wrapper
-            if (node.has("filterChain")) {
-                node = node.get("filterChain");
-            }
-
-            // If node already looks like a chain object, keep it.
-            if (!looksLikeChainObject(node)) {
-                // Consider "filters" as a wrapper ONLY if it contains an object or an array of objects.
-                if (node.has("filters")) {
-                    com.fasterxml.jackson.databind.JsonNode f = node.get("filters");
-                    if (f.isObject()) {
-                        node = f;
-                    } else if (f.isArray() && f.size() > 0 && f.get(0).isObject()) {
-                        node = f.get(0);
-                    }
-                    // if array of strings -> that is the filter names on the chain; don't unwrap
-                }
-            }
-
-            // Root array? Take the first object
-            if (!node.isObject()
-                    && node.isArray()
-                    && node.size() > 0
-                    && node.get(0).isObject()) {
-                node = node.get(0);
-            }
-
-            // Single-field wrapper object? Unwrap it.
-            if (!node.isObject() && root.isObject() && root.size() == 1) {
-                java.util.Iterator<com.fasterxml.jackson.databind.JsonNode> it = root.elements();
-                if (it.hasNext()) {
-                    com.fasterxml.jackson.databind.JsonNode only = it.next();
-                    if (only.isObject()) node = only;
-                }
-            }
-
-            if (!node.isObject()) {
-                throw new BadRequest("Malformed payload: expected a single filter chain object");
-            }
-
-            // Normalize a few field names to match the DTO
-            node = normalizeChainJson(node);
-
-            return om.treeToValue(node, AuthFilterChainFilters.class);
-        }
     }
 
     private AuthFilterChainCollection parseCollection(HttpServletRequest req) throws IOException {
@@ -807,43 +719,6 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             col.setChains(chains);
             return col;
         }
-    }
-
-    private AuthFilterChainOrder extractOrder(
-            RestWrapper<AuthFilterChainOrder> body, javax.servlet.http.HttpServletRequest request) throws IOException {
-        if (body != null && body.getObject() != null) {
-            return (AuthFilterChainOrder) body.getObject();
-        }
-
-        byte[] bytes = request.getInputStream().readAllBytes();
-        String ct = Optional.ofNullable(request.getContentType()).orElse("");
-
-        // XML path via XStream
-        if (ct.contains(MediaType.APPLICATION_XML_VALUE) || ct.contains(MediaType.TEXT_XML_VALUE)) {
-            XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
-            configureAliases(xp);
-            return xp.load(new java.io.ByteArrayInputStream(bytes), AuthFilterChainOrder.class);
-        }
-
-        // JSON path via Jackson - accept both wrapped and bare bodies
-        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-        com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(bytes);
-
-        if (root == null) {
-            throw new BadRequest("Malformed payload: empty body");
-        }
-        // bare: {"order":[...]}
-        if (root.has("order")) {
-            return mapper.treeToValue(root, AuthFilterChainOrder.class);
-        }
-        // wrapped: {"filterChainOrder":{"order":[...]}} or any single-property wrapper
-        if (root.size() == 1) {
-            com.fasterxml.jackson.databind.JsonNode only = root.elements().next();
-            if (only != null && only.has("order")) {
-                return mapper.treeToValue(only, AuthFilterChainOrder.class);
-            }
-        }
-        throw new BadRequest("Malformed payload: expected {\"order\":[...]} or a single wrapper with \"order\"");
     }
 
     // ---------- Auth & errors ----------

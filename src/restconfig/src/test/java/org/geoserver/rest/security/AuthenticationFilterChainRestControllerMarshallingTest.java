@@ -237,14 +237,6 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
 
     // ---------- JSON helpers for XStream-style (@-prefixed) -------------
 
-    /** Support @-prefixed attribute names produced by RestWrapper/XStream. */
-    private static JsonNode attr(JsonNode n, String key) {
-        if (n == null || !n.isObject()) return null;
-        if (n.has(key)) return n.get(key);
-        String at = "@" + key;
-        return n.has(at) ? n.get(at) : null;
-    }
-
     // --- helpers for JSON attribute-style payloads ---
     private static JsonNode getAttr(JsonNode n, String key) {
         if (n == null || !n.isObject()) return null;
@@ -259,7 +251,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
         // or { "name": "...", "class":"...", "filters":[...] } // plain
         // and returns a normalized object with plain keys and "filters" array
         ObjectNode out = MAPPER.createObjectNode();
-        String[] scalarKeys = new String[] {
+        String[] scalarKeys = {
             "name",
             "class",
             "path",
@@ -323,7 +315,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
                 // Fallback: any object carrying a name attribute
                 if (getAttr(n, "name") != null) return normalizeChain(n);
 
-                n.fields().forEachRemaining(e -> dq.addLast(e.getValue()));
+                n.properties().iterator().forEachRemaining(e -> dq.addLast(e.getValue()));
             } else if (n.isArray()) {
                 n.forEach(dq::addLast);
             }

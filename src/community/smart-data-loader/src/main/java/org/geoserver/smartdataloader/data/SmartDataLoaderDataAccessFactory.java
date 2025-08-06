@@ -89,6 +89,13 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
             new Param("excluded objects", String.class, "Excluded comma separated domainmodel object list", false);
     public static final Param SMART_OVERRIDE_PARAM =
             new Param("smart-override", String.class, "Smart override rules", false);
+    public static final Param ENTITIES_PREFIX = new Param(
+            "entities-prefix",
+            String.class,
+            "Prefix to be used for entities in the mapping files",
+            false,
+            "",
+            Collections.emptyMap());
 
     @Override
     public String getDisplayName() {
@@ -140,6 +147,7 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
         parameters.put(ROOT_ENTITY.key, ROOT_ENTITY);
         parameters.put(DOMAIN_MODEL_EXCLUSIONS.key, DOMAIN_MODEL_EXCLUSIONS);
         parameters.put(SMART_OVERRIDE_PARAM.key, SMART_OVERRIDE_PARAM);
+        parameters.put(ENTITIES_PREFIX.key, ENTITIES_PREFIX);
     }
 
     private String getFilenamePrefix(Map<String, Serializable> params) throws IOException {
@@ -254,10 +262,11 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
         // add the override expressions from connection parameters map
         dmc.setOverrideExpressions(getOverrideExpressionsMap(params));
         dmc.setRootEntityName(rootEntity);
+        dmc.setEntitiesPrefix(lookup(ENTITIES_PREFIX, params, String.class));
         DomainModelBuilder dmb = new DomainModelBuilder(dsm, dmc);
         DomainModel dm = dmb.buildDomainModel();
         // apply exclusions to original model
-        DomainModel newDomainModel = ExclusionsDomainModelVisitor.buildDomainModel(dm, exclusions);
+        DomainModel newDomainModel = ExclusionsDomainModelVisitor.buildDomainModel(dm, dmc, exclusions);
         // apply the expressions override to current model
         ExpressionOverridesDomainModelVisitor expressionOverridesDomainModelVisitor =
                 new ExpressionOverridesDomainModelVisitor(getOverrideExpressionsMap(params));

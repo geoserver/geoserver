@@ -3,12 +3,14 @@
 <wicket:panel>
 	<fieldset>
 	  <legend><span><wicket:message key="connectionParameters">PostGIS Connection Parameters</wicket:message></span></legend>
-		<label><span wicket:id="dataStoreName">bar</span></label>
-		<select class="select" wicket:id="postgisdatastore" id="postgisdatastore"></select>
+	  <label><span wicket:id="dataStoreName">bar</span></label>
+	  <select class="select" wicket:id="postgisdatastore" id="postgisdatastore"></select>
 	  <div wicket:id="rootentities"></div>
 	  <br/>
 	  <div wicket:id="domainmodel"></div>
 	  <br/>
+      <div wicket:id="entities-prefix"></div>
+      <br/>
 	  <div wicket:id="exclusions"></div>
 	  <div wicket:id="datastorename"></div>
 	  <div wicket:id="overridesContainer" class="qos-panel">

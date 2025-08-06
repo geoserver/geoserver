@@ -87,6 +87,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
     private String selectedPostgisDataStoreId = "";
     private String selectedRootEntityName = "";
     private String excludedObjectCodesList = "";
+    private String entitiesPrefix = "";
 
     @SuppressWarnings("unused")
     private String selectedWorkspaceName = "";
@@ -100,6 +101,8 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         selectedPostgisDataStoreId = getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.DATASTORE_METADATA.key);
         selectedRootEntityName = getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.ROOT_ENTITY.key);
         excludedObjectCodesList = getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.DOMAIN_MODEL_EXCLUSIONS.key);
+        entitiesPrefix = getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.ENTITIES_PREFIX.key);
+        buildEntitiesPrefixTextbox();
         // build connection parameters panel
         buildPostgisDropDownPanel();
         // build rootentity selector panel
@@ -443,6 +446,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         nodes.add(aNode);
     }
 
+    @SuppressWarnings({"unchecked"})
     private void buildOverridesView() {
         WebMarkupContainer container = new WebMarkupContainer("overridesContainer");
         container.setOutputMarkupId(true);
@@ -453,6 +457,28 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         OverrideAddPanel addOverridePanel =
                 new OverrideAddPanel("addOverridePanel", new SmartOverridesModel(dsiModel), overridesView);
         container.add(addOverridePanel);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void buildEntitiesPrefixTextbox() {
+        IModel iModel = new PropertyModel(model, "connectionParameters");
+        TextParamPanel entitiesPrefixPanel = new TextParamPanel(
+                "entities-prefix",
+                new MapModel(iModel, SmartDataLoaderDataAccessFactory.ENTITIES_PREFIX.key),
+                new ParamResourceModel("PostGisSmartAppSchemaStoreEditPanel.entitiesPrefix", this),
+                false);
+        entitiesPrefixPanel.setOutputMarkupId(true);
+        entitiesPrefixPanel.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                entitiesPrefix = (String) entitiesPrefixPanel.getFormComponent().getModelObject();
+                smartAppSchemaDataStoreInfo
+                        .getConnectionParameters()
+                        .put(SmartDataLoaderDataAccessFactory.ENTITIES_PREFIX.key, entitiesPrefix);
+                target.add(entitiesPrefixPanel);
+            }
+        });
+        add(entitiesPrefixPanel);
     }
 
     public static class DataStoreSummmary implements Serializable {

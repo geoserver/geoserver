@@ -80,6 +80,5 @@
     <globalServices>true</globalServices>
     <useHeadersProxyURL>true</useHeadersProxyURL>
     <xmlPostRequestLogBufferSize>1024</xmlPostRequestLogBufferSize>
-    <xmlExternalEntitiesEnabled>false</xmlExternalEntitiesEnabled>
     <webUIMode>DEFAULT</webUIMode>
 </global>

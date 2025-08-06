@@ -13,7 +13,6 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.AllowListEntityResolver;
@@ -23,7 +22,7 @@ import org.geotools.api.filter.Id;
 import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.api.filter.spatial.Intersects;
 import org.geotools.util.PreventLocalEntityResolver;
-import org.junit.Assert;
+import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -136,9 +135,13 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             + "        </wfs:Query>\r\n"
             + "</wfs:GetFeature>";
 
+    @After
+    public void clearProperty() {
+        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+    }
+
     @Test
     public void testAllowListFilter() throws Exception {
-        GeoServerInfo cfg = getGeoServer().getGlobal();
         try {
             EntityResolverProvider.setEntityResolver(
                     new AllowListEntityResolver(getGeoServer(), "http://localhost:8080/"));
@@ -182,110 +185,71 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             filters = (List) kvpParser.parse(LOCALHOST);
             assertTrue(filters.isEmpty());
         } finally {
-            cfg.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(cfg);
             EntityResolverProvider.setEntityResolver(GeoServerSystemTestSupport.RESOLVE_DISABLED_PROVIDER_DEVMODE);
         }
     }
 
     @Test
     public void testWfs1_0() throws Exception {
-        GeoServerInfo cfg = getGeoServer().getGlobal();
-        try {
-            // enable entity parsing
-            cfg.setXmlExternalEntitiesEnabled(true);
-            getGeoServer().save(cfg);
+        // enable entity parsing
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
+        String output = string(post("wfs", WFS_1_0_0_REQUEST));
+        // the server tried to read a file on local file system
+        assertTrue(
+                "FileNotFoundException",
+                output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
 
-            String output = string(post("wfs", WFS_1_0_0_REQUEST));
-            // the server tried to read a file on local file system
-            Assert.assertTrue(
-                    "FileNotFoundException",
-                    output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+        // disable entity parsing
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+        output = string(post("wfs", WFS_1_0_0_REQUEST));
+        assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
 
-            // disable entity parsing
-            cfg.setXmlExternalEntitiesEnabled(false);
-            getGeoServer().save(cfg);
-
-            output = string(post("wfs", WFS_1_0_0_REQUEST));
-            Assert.assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
-
-            // set default (entity parsing disabled);
-            cfg.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(cfg);
-
-            output = string(post("wfs", WFS_1_0_0_REQUEST));
-            Assert.assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
-        } finally {
-            cfg.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(cfg);
-        }
+        // set default (entity parsing disabled);
+        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        output = string(post("wfs", WFS_1_0_0_REQUEST));
+        assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
     }
 
     @Test
     public void testWfs1_1() throws Exception {
-        GeoServerInfo cfg = getGeoServer().getGlobal();
-        try {
-            // enable entity parsing
-            cfg.setXmlExternalEntitiesEnabled(true);
-            getGeoServer().save(cfg);
+        // enable entity parsing
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
+        String output = string(post("wfs", WFS_1_1_0_REQUEST));
+        // the server tried to read a file on local file system
+        assertTrue(
+                "FileNotFoundException",
+                output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
 
-            String output = string(post("wfs", WFS_1_1_0_REQUEST));
-            // the server tried to read a file on local file system
-            Assert.assertTrue(
-                    "FileNotFoundException",
-                    output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+        // disable entity parsing
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+        output = string(post("wfs", WFS_1_1_0_REQUEST));
+        assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
 
-            // disable entity parsing
-            cfg.setXmlExternalEntitiesEnabled(false);
-            getGeoServer().save(cfg);
-
-            output = string(post("wfs", WFS_1_1_0_REQUEST));
-            Assert.assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
-
-            // set default (entity parsing disabled);
-            cfg.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(cfg);
-
-            output = string(post("wfs", WFS_1_1_0_REQUEST));
-            Assert.assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
-        } finally {
-            cfg.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(cfg);
-        }
+        // set default (entity parsing disabled);
+        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        output = string(post("wfs", WFS_1_1_0_REQUEST));
+        assertTrue("disallowed", output.indexOf("Entity resolution disallowed") > -1);
     }
 
     @Test
     public void testWfs2_0() throws Exception {
-        GeoServerInfo cfg = getGeoServer().getGlobal();
-        try {
-            // enable entity parsing
-            cfg.setXmlExternalEntitiesEnabled(true);
-            getGeoServer().save(cfg);
+        // enable entity parsing
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
+        String output = string(post("wfs", WFS_2_0_0_REQUEST));
+        // the server tried to read a file on local file system
+        assertTrue(output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
 
-            String output = string(post("wfs", WFS_2_0_0_REQUEST));
-            // the server tried to read a file on local file system
-            Assert.assertTrue(output.indexOf("xml request is most probably not compliant to GetFeature element") > -1);
+        // disable entity parsing
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+        output = string(post("wfs", WFS_2_0_0_REQUEST));
+        assertTrue(output.indexOf("Request parsing failed") > -1);
+        assertTrue(output.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
 
-            // disable entity parsing
-            cfg.setXmlExternalEntitiesEnabled(false);
-            getGeoServer().save(cfg);
-
-            output = string(post("wfs", WFS_2_0_0_REQUEST));
-            // System.out.println(output);
-            Assert.assertTrue(output.indexOf("Request parsing failed") > -1);
-            Assert.assertTrue(output.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
-
-            // set default (entity parsing disabled);
-            cfg.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(cfg);
-
-            output = string(post("wfs", WFS_2_0_0_REQUEST));
-            Assert.assertTrue(output.indexOf("Request parsing failed") > -1);
-            Assert.assertTrue(output.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
-        } finally {
-            cfg.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(cfg);
-        }
+        // set default (entity parsing disabled);
+        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        output = string(post("wfs", WFS_2_0_0_REQUEST));
+        assertTrue(output.indexOf("Request parsing failed") > -1);
+        assertTrue(output.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
     }
 
     @Test

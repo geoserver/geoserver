@@ -95,9 +95,11 @@ By default, the keystore password is generated and stored in a file named ``secu
 
 Refer to :ref:`security_webadmin_masterpasswordprovider` for information on how to change the keystore password.
 
-.. note:: By default login to the Admin GUI and REST APIs using the Keystore Password is disabled. In order to enable it you will need to manually change the Keystore Password Provider config.xml, usually located in ``security/masterpw/default/config.xml``, by adding the following statement::
+.. note:: By default login to the Admin GUI and REST APIs using the Keystore Password is disabled. In order to enable it you will need to manually change the Keystore Password Provider :file:`config.xml`, default location is  :file:`security/masterpw/default/config.xml`, by adding the following statement:
+   
+   .. code-block:: xml
 
-    ``<loginEnabled>true</loginEnabled>``
+      <loginEnabled>true</loginEnabled>
 
 .. _security_passwd_policy:
 

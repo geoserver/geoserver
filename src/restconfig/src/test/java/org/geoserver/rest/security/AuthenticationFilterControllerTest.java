@@ -4,12 +4,10 @@
  */
 package org.geoserver.rest.security;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.springframework.http.MediaType.TEXT_PLAIN;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -18,7 +16,6 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.UUID;
 import java.util.logging.Level;
-import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.security.AuthenticationFilterController.NotAuthorised;
 import org.geoserver.rest.security.xml.AuthFilter;
 import org.geoserver.rest.wrapper.RestWrapper;
@@ -30,7 +27,6 @@ import org.geoserver.test.GeoServerTestSupport;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -161,13 +157,9 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
                     securityConfigFilterHelper.createBasciAuthFilterConfig(name, false);
             BasicAuthenticationFilterConfig actualConfig;
 
-            ResponseEntity<?> postResult = controller.post(newConfig, UriComponentsBuilder.newInstance());
-            assertEquals(TEXT_PLAIN, postResult.getHeaders().getContentType());
-            String location = Objects.requireNonNull(postResult.getHeaders().getLocation())
-                    .toString();
-            assertTrue(location.endsWith(RestBaseController.ROOT_PATH + "/security/authFilters/" + name));
-            RestWrapper<SecurityFilterConfig> getResult = controller.view(newConfig.getName());
-            SecurityFilterConfig getFilter = (SecurityFilterConfig) Objects.requireNonNull(getResult.getObject());
+            RestWrapper<SecurityFilterConfig> postResult =
+                    controller.post(newConfig, UriComponentsBuilder.newInstance());
+            SecurityFilterConfig getFilter = (SecurityFilterConfig) Objects.requireNonNull(postResult.getObject());
             actualConfig = (BasicAuthenticationFilterConfig) getFilter;
             assertFalse("Remember me should be false", actualConfig.isUseRememberMe());
         } finally {

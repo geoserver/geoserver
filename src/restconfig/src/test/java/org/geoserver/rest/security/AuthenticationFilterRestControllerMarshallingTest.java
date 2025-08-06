@@ -114,7 +114,7 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
     public void testView_XML() throws Exception {
         MockHttpServletResponse response =
                 postAsServletResponse(BASEPATH + "/security/authFilters", testViewXML, "application/xml");
-        TestCase.assertEquals(201, response.getStatus());
+        TestCase.assertEquals(200, response.getStatus());
 
         Document document = getAsDOM(BASEPATH + "/security/authFilters/viewXml.xml", 200);
         assertXpathEvaluatesTo(
@@ -141,8 +141,8 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
     @Test
     public void testView_JSON() throws Exception {
         MockHttpServletResponse response =
-                postAsServletResponse(BASEPATH + "/security/authFilters", testViewJSON, "application/json");
-        TestCase.assertEquals(201, response.getStatus());
+                postAsServletResponse(BASEPATH + "/security/authFilters.json", testViewJSON, "application/json");
+        TestCase.assertEquals(200, response.getStatus());
 
         JSON json = getAsJSON(BASEPATH + "/security/authFilters/viewJson.json", 200);
         JSONObject jsonObject =
@@ -162,12 +162,8 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
     public void testPost_XML() throws Exception {
         MockHttpServletResponse response =
                 postAsServletResponse(BASEPATH + "/security/authFilters", testPostXML, "application/xml");
-        TestCase.assertEquals(201, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        String location = response.getHeader("Location");
-        assertNotNull(location);
-        assertTrue(location.endsWith("/security/authFilters/postXml"));
-
+        TestCase.assertEquals(200, response.getStatus());
+        assertEquals("application/xml", response.getContentType());
         Document viewDocument = getAsDOM(BASEPATH + "/security/authFilters/postXml.xml", 200);
         assertXpathEvaluatesTo(
                 "postXml", "/org.geoserver.security.config.SecurityInterceptorFilterConfig/name", viewDocument);
@@ -186,13 +182,9 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
     @Test
     public void testPost_JSON() throws Exception {
         MockHttpServletResponse response =
-                postAsServletResponse(BASEPATH + "/security/authFilters", testPostJSON, "application/json");
-        TestCase.assertEquals(201, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        String location = response.getHeader("Location");
-        assertNotNull(location);
-        assertTrue(location.endsWith("/security/authFilters/postJson"));
-
+                postAsServletResponse(BASEPATH + "/security/authFilters.json", testPostJSON, "application/json");
+        TestCase.assertEquals(200, response.getStatus());
+        assertEquals("application/json", response.getContentType());
         Document viewDocument = getAsDOM(BASEPATH + "/security/authFilters/postJson.xml", 200);
         assertXpathEvaluatesTo(
                 "postJson", "/org.geoserver.security.config.SecurityInterceptorFilterConfig/name", viewDocument);
@@ -217,7 +209,7 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
     public void testPut_XML() throws Exception {
         MockHttpServletResponse setupResponse =
                 postAsServletResponse(BASEPATH + "/security/authFilters", testSetupPutXml, "application/xml");
-        TestCase.assertEquals(201, setupResponse.getStatus());
+        TestCase.assertEquals(200, setupResponse.getStatus());
 
         MockHttpServletResponse response =
                 putAsServletResponse(BASEPATH + "/security/authFilters/putXml.xml", testPutXml, "application/xml");
@@ -251,7 +243,7 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
     public void testDelete() throws Exception {
         MockHttpServletResponse restoreWeb =
                 postAsServletResponse(BASEPATH + "/security/authFilters", testSetupDeleteXml, "application/xml");
-        TestCase.assertEquals(201, restoreWeb.getStatus());
+        TestCase.assertEquals(200, restoreWeb.getStatus());
 
         MockHttpServletResponse response = deleteAsServletResponse(BASEPATH + "/security/authFilters/deleteXml");
         TestCase.assertEquals(200, response.getStatus());

@@ -25,7 +25,6 @@ import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.security.validation.FilterConfigValidator;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,11 +39,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH + "/security/authFilters")
+@RequestMapping(
+        path = RestBaseController.ROOT_PATH + "/security/authFilters",
+        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
 public class AuthenticationFilterController extends RestBaseController {
     private static final Logger LOGGER = Logger.getLogger(AuthenticationFilterController.class.getName());
 
@@ -63,7 +63,7 @@ public class AuthenticationFilterController extends RestBaseController {
 
     // 200
     // 403
-    @GetMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping
     public RestWrapper<AuthFilter> list() {
         checkAuthorisation();
         List<AuthFilter> result = loadAuthFilters();
@@ -73,9 +73,7 @@ public class AuthenticationFilterController extends RestBaseController {
     // 200
     // 403
     // 404
-    @GetMapping(
-            value = "/{filterName}",
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{filterName}")
     public RestWrapper<SecurityFilterConfig> view(@PathVariable("filterName") String filterName) {
         checkAuthorisation();
         SecurityFilterConfig authFilter = null;
@@ -92,15 +90,11 @@ public class AuthenticationFilterController extends RestBaseController {
     // 400
     // 403
     @PostMapping(consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> post(
+    public RestWrapper<SecurityFilterConfig> post(
             @RequestBody SecurityFilterConfig authFilterRequest, UriComponentsBuilder uriComponentsBuilder) {
         checkAuthorisation();
         SecurityFilterConfig authFilterResponse = saveAuthFilter(authFilterRequest);
-        UriComponents uriComponents = getUriComponents(authFilterResponse.getName(), uriComponentsBuilder);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(uriComponents.toUri());
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity<>(authFilterResponse.getName(), headers, HttpStatus.CREATED);
+        return wrapObject(authFilterResponse, SecurityFilterConfig.class);
     }
 
     // 200
@@ -157,11 +151,6 @@ public class AuthenticationFilterController extends RestBaseController {
 
     /// ///////////////////////////////////////////////////////////////////////
     /// Internal logic
-
-    private UriComponents getUriComponents(String name, UriComponentsBuilder builder) {
-        return builder.path(RestBaseController.ROOT_PATH + "/security/authFilters/{authFilter}")
-                .buildAndExpand(name);
-    }
 
     protected List<AuthFilter> loadAuthFilters() {
         try {

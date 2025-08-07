@@ -7,6 +7,7 @@ package org.geoserver.web.data.layer;
 
 import static org.geoserver.web.data.layer.LayerProvider.CREATED_TIMESTAMP;
 import static org.geoserver.web.data.layer.LayerProvider.ENABLED;
+import static org.geoserver.web.data.layer.LayerProvider.MODIFIED_BY;
 import static org.geoserver.web.data.layer.LayerProvider.MODIFIED_TIMESTAMP;
 import static org.geoserver.web.data.layer.LayerProvider.NAME;
 import static org.geoserver.web.data.layer.LayerProvider.SRS;
@@ -86,6 +87,8 @@ public class LayerPage extends GeoServerSecuredPage {
                     return new DateTimeLabel(id, MODIFIED_TIMESTAMP.getModel(itemModel));
                 } else if (property == CREATED_TIMESTAMP) {
                     return new DateTimeLabel(id, CREATED_TIMESTAMP.getModel(itemModel));
+                } else if (property == MODIFIED_BY) {
+                    return new Label(id, MODIFIED_BY.getModel(itemModel));
                 }
                 throw new IllegalArgumentException("Don't know a property named " + property.getName());
             }

@@ -58,4 +58,25 @@ public class WorkspacePageTest extends GeoServerWicketTestSupport {
         assertTrue(provider.getProperties().contains(WorkspaceProvider.CREATED_TIMESTAMP));
         assertTrue(provider.getProperties().contains(WorkspaceProvider.MODIFIED_TIMESTAMP));
     }
+
+    @Test
+    public void testUserModifiedColumnsToggle() {
+        GeoServerInfo info = getGeoServerApplication().getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServerApplication().getGeoServer().save(info);
+        login();
+
+        tester.assertRenderedPage(WorkspacePage.class);
+        tester.assertNoErrorMessage();
+
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        // Ensure the data provider is an instance of WorkspaceProvider
+        assertTrue(dv.getDataProvider() instanceof WorkspaceProvider);
+
+        // Cast to WorkspaceProvider
+        WorkspaceProvider provider = (WorkspaceProvider) dv.getDataProvider();
+
+        // should show both columns
+        assertTrue(provider.getProperties().contains(WorkspaceProvider.MODIFIED_BY));
+    }
 }

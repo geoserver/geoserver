@@ -44,6 +44,8 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:showModifiedTimeCols", info.getSettings().isShowModifiedTimeColumnsInAdminList());
         tester.assertComponent("form:trailingSlashMatch", CheckBox.class);
         tester.assertModelValue("form:trailingSlashMatch", info.isTrailingSlashMatch());
+        tester.assertComponent("form:showModifiedByCols", CheckBox.class);
+        tester.assertModelValue("form:showModifiedByCols", info.getSettings().isShowModifiedUserInAdminList());
     }
 
     @Test

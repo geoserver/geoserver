@@ -273,8 +273,8 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         icon.setViewBoundScale(0.75);
 
         LatLonBox gobox = go.createAndSetLatLonBox();
-        gobox.setEast(bbox.getMinX());
-        gobox.setWest(bbox.getMaxX());
+        gobox.setWest(bbox.getMinX());
+        gobox.setEast(bbox.getMaxX());
         gobox.setNorth(bbox.getMaxY());
         gobox.setSouth(bbox.getMinY());
 

@@ -159,8 +159,11 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
             Document dom = dom(new ByteArrayInputStream(data));
             // print(dom);
             assertXpathEvaluatesTo("1", "count(//kml:Folder/kml:GroundOverlay)", dom);
-            String href = XMLUnit.newXpathEngine().evaluate("//kml:Folder/kml:GroundOverlay/kml:Icon/kml:href", dom);
-            assertEquals("image.png", href);
+            assertXpathEvaluatesTo("image.png", "//kml:Folder/kml:GroundOverlay/kml:Icon/kml:href", dom);
+            // axis order check
+            assertXpathEvaluatesTo("-0.003", "//kml:Folder/kml:GroundOverlay/kml:LatLonBox/kml:west", dom);
+            assertXpathEvaluatesTo("0.003", "//kml:Folder/kml:GroundOverlay/kml:LatLonBox/kml:east", dom);
+
             zis.closeEntry();
 
             // the ground overlay for the raster layer

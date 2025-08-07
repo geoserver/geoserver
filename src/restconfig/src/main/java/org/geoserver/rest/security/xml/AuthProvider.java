@@ -9,18 +9,20 @@ import org.geoserver.security.config.SecurityAuthProviderConfig;
 
 @XStreamAlias("authProvider")
 public class AuthProvider {
+
     private String id;
     private String name;
     private String className;
     private String userGroupServiceName;
-    private int position;
+    private int position = -1;
     private SecurityAuthProviderConfig config;
-
-    // Available & Selected, disabled when available but not selected.
+    /** ‘Disabled’ means present in the catalogue but not selected in the active list */
     private boolean disabled;
 
+    /* JAXB / XStream constructor */
     public AuthProvider() {}
 
+    /* Domain-model constructor */
     public AuthProvider(SecurityAuthProviderConfig provider) {
         this.id = provider.getId();
         this.name = provider.getName();

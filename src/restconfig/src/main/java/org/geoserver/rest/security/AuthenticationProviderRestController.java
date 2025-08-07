@@ -14,162 +14,363 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.FileItemCleanupCallback;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.security.xml.AuthProvider;
+import org.geoserver.rest.security.xml.AuthProviderCollection;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.*;
 
 /**
- * Rest Controller for AuthenticationProvider provider resource Extends SequentialExecutionController as we do not want
- * parrallel updates to occur as this may jeopardise the integrity of the XML files
+ * REST controller for the <em>Authentication Providers</em> resource.
+ *
+ * <p>Extends SequentialExecutionController as we do not want
+ * parallel updates to occur as this may jeopardize the integrity of the XML files
  */
-@RestController(value = "authProvidersRestController")
-@RequestMapping(path = RestBaseController.ROOT_PATH + "/security/authProviders")
+@RestController
+@RequestMapping(RestBaseController.ROOT_PATH + "/security/authProviders")
 @ControllerAdvice(assignableTypes = {AuthenticationProviderRestController.class})
 public class AuthenticationProviderRestController extends RestBaseController {
+
+    /* ------------------------------------------------------------------ *
+     *  Constants & helpers
+     * ------------------------------------------------------------------ */
+
+    /** Path segments that can never be used as provider names (mirrors the chain endpoint). */
+    private static final Set<String> RESERVED_NAMES = Set.of("order");
+
     private final GeoServerSecurityManager securityManager;
 
-    /**
-     * An All fields Constructor to help spring wire up this class
-     *
-     * @param securityManager Security singleton used to manage security and resources
-     */
     public AuthenticationProviderRestController(
             GeoServerSecurityManager securityManager, FileItemCleanupCallback ignoredFileItemCleanupCallback) {
         this.securityManager = securityManager;
     }
 
-    // ** API ** //
-
-    /**
-     * List all the Providers that are available. Ie all the files that match "security/auth/<provider>/config.xml</>/"
-     *
-     * @return A list of providers
-     */
-    @GetMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public RestWrapper<AuthProvider> list() throws IOException {
-        checkAuthorisation();
-        return wrapList(listAuthProviders(), AuthProvider.class);
+    /** Small guard so we don’t expose a reserved keyword as a valid name. */
+    private static void ensureNotReserved(String name) {
+        if (RESERVED_NAMES.contains(name)) {
+            throw new DuplicateProviderName("The name \"" + name + "\" is reserved and cannot be used.");
+        }
     }
 
+    /* ------------------------------------------------------------------ *
+     *  API – list / get
+     * ------------------------------------------------------------------ */
+
+    /** GET /security/authProviders ➜ list of providers wrapped in <authProviders>. */
+    @GetMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public RestWrapper<AuthProviderCollection> list() throws IOException {
+        checkAuthorised();
+
+        List<AuthProvider> providers = listAuthProviders();
+        return wrapObject(new AuthProviderCollection(providers), AuthProviderCollection.class);
+    }
+
+    /** GET /security/authProviders/{providerName} (except “order”). */
     @GetMapping(
-            value = "{providerName}",
+            value = "/{providerName:^(?!order$).+}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public RestWrapper<AuthProvider> view(@PathVariable String providerName) {
-        checkAuthorisation();
+        checkAuthorised();
         AuthProvider authProvider = authProviderByName(providerName);
         return wrapObject(authProvider, AuthProvider.class);
     }
 
-    @PostMapping(consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> create(@RequestBody AuthProvider authProvider, UriComponentsBuilder builder) {
-        checkAuthorisation();
+    /* ------------------------------------------------------------------ *
+     *  API – create / update / delete
+     * ------------------------------------------------------------------ */
+
+    /** POST …/authProviders[?position=n] */
+    @PostMapping(
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<RestWrapper<AuthProvider>> create(
+            @RequestBody AuthProvider authProvider,
+            @RequestParam(name = "position", required = false) Integer position,
+            UriComponentsBuilder builder) {
+
+        checkAuthorised();
+        ensureNotReserved(authProvider.getName());
+
+        // honour ?position if given (preferred) – fallback to DTO field for legacy callers
+        if (position != null) authProvider.setPosition(position);
+
         createAuthProvider(authProvider);
 
+        // 201 Created + Location + wrapped body
         HttpHeaders headers = new HttpHeaders();
-        UriComponents uriComponents = builder.path(RestBaseController.ROOT_PATH + "/security/authProviders/{providerName}")
-                        .buildAndExpand(authProvider.getName());
-        headers.setLocation(uriComponents.toUri());
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity<>(authProvider.getName(), headers, HttpStatus.CREATED);
+        UriComponents uri = builder.path(ROOT_PATH + "/security/authProviders/{providerName}")
+                .buildAndExpand(authProvider.getName());
+        headers.setLocation(uri.toUri());
+
+        return new ResponseEntity<>(wrapObject(authProvider, AuthProvider.class), headers, HttpStatus.CREATED);
     }
 
+    /** PUT …/authProviders/{providerName} */
     @PutMapping(
-            value = "{providerName}",
+            value = "/{providerName:^(?!order$).+}",
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public @ResponseStatus(code = HttpStatus.OK) void update(
-            @PathVariable String providerName, @RequestBody AuthProvider authProvider) {
-        checkAuthorisation();
+    @ResponseStatus(HttpStatus.OK)
+    public void update(@PathVariable String providerName, @RequestBody AuthProvider authProvider) {
+        checkAuthorised();
         updateAuthProvider(providerName, authProvider);
     }
 
+    /** DELETE …/authProviders/{providerName} */
     @DeleteMapping(
-            value = "{providerName}",
+            value = "/{providerName:^(?!order$).+}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public @ResponseStatus(code = HttpStatus.OK) void delete(@PathVariable String providerName) {
-        checkAuthorisation();
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable String providerName) {
+        checkAuthorised();
         deleteAuthProvider(providerName);
     }
 
-    @ExceptionHandler(CannotSaveProvider.class)
-    public ResponseEntity<ErrorResponse> handleRestException(CannotSaveProvider exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse =
-                new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
+    /* ------------------------------------------------------------------ *
+     *  Error handling
+     * ------------------------------------------------------------------ */
 
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler({
+        CannotSaveProvider.class,
+        CannotReadConfiguration.class,
+        DuplicateProviderName.class,
+        ProviderNotFound.class,
+        BadRequest.class,
+        NotAuthorised.class
+    })
+    public ResponseEntity<ErrorResponse> handleRestException(RuntimeException ex) {
+        HttpStatus status;
+        if (ex instanceof BadRequest) status = HttpStatus.BAD_REQUEST;
+        else if (ex instanceof NotAuthorised) status = HttpStatus.FORBIDDEN;
+        else if (ex instanceof ProviderNotFound) status = HttpStatus.NOT_FOUND;
+        else status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        return new ResponseEntity<>(new ErrorResponse(status.value(), ex.getMessage()), status);
     }
 
-    @ExceptionHandler(InvalidData.class)
-    public ResponseEntity<ErrorResponse> handleRestException(InvalidData exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+    /* ------------------------------------------------------------------ *
+     *  Controller-advice overrides
+     * ------------------------------------------------------------------ */
 
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    @Override
+    public boolean supports(
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        if (AuthProvider.class.isAssignableFrom((Class<?>) targetType)
+                || AuthProviderCollection.class.isAssignableFrom((Class<?>) targetType)) {
+            return true;
+        }
+        return super.supports(methodParameter, targetType, converterType);
     }
 
-    @ExceptionHandler(CannotReadConfiguration.class)
-    public ResponseEntity<ErrorResponse> handleRestException(CannotReadConfiguration exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse =
-                new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
-
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    @SuppressWarnings("rawtypes")
+    @Override
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
+        persister.getXStream().alias("authProvider", AuthProvider.class);
+        persister.getXStream().alias("authProviders", AuthProviderCollection.class);
+        persister.getXStream().processAnnotations(new Class[] {AuthProvider.class, AuthProviderCollection.class});
     }
 
-    @ExceptionHandler(UnknownProvider.class)
-    public ResponseEntity<ErrorResponse> handleRestException(UnknownProvider exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+    /* ------------------------------------------------------------------ *
+     *  Implementation helpers
+     * ------------------------------------------------------------------ */
 
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    private List<AuthProvider> listAuthProviders() {
+        try {
+            ArrayList<String> providerNames = new ArrayList<>(securityManager.listAuthenticationProviders());
+            return providerNames.stream()
+                    .map(this::loadProviderOrError)
+                    .peek(p -> {
+                        int index = providerNames.indexOf(p.getName());
+                        p.setPosition(index);
+                        p.setDisabled(index == -1);
+                    })
+                    .collect(toList());
+        } catch (IOException ex) {
+            throw new CannotReadConfiguration("all", ex);
+        }
     }
 
-    @ExceptionHandler(InvalidState.class)
-    public ResponseEntity<ErrorResponse> handleRestException(InvalidState exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse =
-                new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
+    private AuthProvider authProviderByName(String providerName) {
+        try {
+            checkArgument(!Strings.isNullOrEmpty(providerName), "Provider name cannot be null or empty");
+            ensureNotReserved(providerName);
 
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            SecurityAuthProviderConfig provider = securityManager.loadAuthenticationProviderConfig(providerName);
+            if (provider == null) throw new ProviderNotFound(providerName);
+
+            AuthProvider authProvider = new AuthProvider(provider);
+            ArrayList<String> names = new ArrayList<>(securityManager.listAuthenticationProviders());
+            int index = names.indexOf(providerName);
+            authProvider.setPosition(index);
+            authProvider.setDisabled(index == -1);
+            return authProvider;
+        } catch (IOException e) {
+            throw new CannotReadConfiguration(providerName, e);
+        }
     }
 
-    @ExceptionHandler(RequiresAdministrator.class)
-    public ResponseEntity<ErrorResponse> handleRestException(RequiresAdministrator exception) {
-        // Prepare an error response object
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.getMessage());
+    private void createAuthProvider(AuthProvider authProvider) {
+        try {
+            checkArgument(authProvider != null, "AuthProvider cannot be null");
+            ensureNotReserved(authProvider.getName());
 
-        // Return as ResponseEntity with status and body
-        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+            if (authProvider.getPosition() == -1 && !authProvider.isDisabled()) {
+                throw new IllegalPosition(authProvider.getPosition(), authProvider.isDisabled());
+            }
+            if (Objects.nonNull(authProvider.getId())
+                    || Objects.nonNull(authProvider.getConfig().getId())) {
+                throw new IllegalArgumentException("Cannot create a new AuthProvider with an id");
+            }
+
+            // Ensure name & class are mirrored on the config before save
+            authProvider.getConfig().setName(authProvider.getName());
+            authProvider.getConfig().setClassName(authProvider.getClassName());
+
+            securityManager.saveAuthenticationProvider(authProvider.getConfig());
+            securityManager.reload();
+
+            SecurityAuthProviderConfig created =
+                    securityManager.loadAuthenticationProviderConfig(authProvider.getName());
+            checkState(created.getId() != null, "Provider id was not set by security manager");
+
+        } catch (IOException | SecurityConfigException e) {
+            throw new CannotSaveProvider(authProvider.getName(), e);
+        } catch (IllegalArgumentException ex) {
+            throw new BadRequest(ex);
+        } catch (IllegalStateException ex) {
+            throw new InvalidState(ex);
+        }
+    }
+
+    private void updateAuthProvider(String providerName, AuthProvider authProvider) {
+        try {
+            checkArgument(!Strings.isNullOrEmpty(providerName), "Provider name cannot be null or empty");
+            checkArgument(authProvider != null, "AuthProvider cannot be null");
+
+            if (!providerName.equals(authProvider.getName())) throw new BadRequest("Path name and payload name differ");
+
+            SecurityAuthProviderConfig config = securityManager.loadAuthenticationProviderConfig(providerName);
+            if (config == null) throw new ProviderNotFound(providerName);
+
+            // Immutable properties
+            if (!Objects.equals(config.getId(), authProvider.getId()))
+                throw new BadRequest("AuthProvider id cannot be modified");
+            if (!Objects.equals(config.getClassName(), authProvider.getClassName()))
+                throw new BadRequest("AuthProvider className cannot be modified");
+
+            authProvider.getConfig().setName(authProvider.getName());
+            authProvider.getConfig().setClassName(authProvider.getClassName());
+            authProvider.getConfig().setId(authProvider.getId());
+
+            securityManager.saveAuthenticationProvider(authProvider.getConfig());
+            securityManager.reload();
+        } catch (IOException | SecurityConfigException e) {
+            throw new CannotSaveProvider(providerName, e);
+        } catch (IllegalArgumentException ex) {
+            throw new BadRequest(ex);
+        }
+    }
+
+    private void deleteAuthProvider(String providerName) {
+        try {
+            checkArgument(!Strings.isNullOrEmpty(providerName), "Provider name cannot be null or empty");
+            SecurityAuthProviderConfig cfg = securityManager.loadAuthenticationProviderConfig(providerName);
+            if (cfg == null) throw new ProviderNotFound(providerName);
+
+            securityManager.removeAuthenticationProvider(cfg);
+            securityManager.reload();
+        } catch (IOException | SecurityConfigException e) {
+            throw new CannotSaveProvider(providerName, e);
+        } catch (IllegalArgumentException ex) {
+            throw new BadRequest(ex);
+        }
+    }
+
+    private AuthProvider loadProviderOrError(String name) {
+        checkArgument(!Strings.isNullOrEmpty(name), "Provider name cannot be null or empty");
+        try {
+            SecurityAuthProviderConfig provider = securityManager.loadAuthenticationProviderConfig(name);
+            if (provider == null) throw new ProviderNotFound(name);
+            return new AuthProvider(provider);
+        } catch (IOException e) {
+            throw new CannotReadConfiguration(name, e);
+        }
+    }
+
+    /* ------------------------------------------------------------------ *
+     *  Authorisation guard
+     * ------------------------------------------------------------------ */
+
+    private void checkAuthorised() {
+        if (!securityManager.checkAuthenticationForAdminRole()) {
+            throw new NotAuthorised();
+        }
+    }
+
+    /* ------------------------------------------------------------------ *
+     *  Exceptions – aligned with filter-chain endpoint
+     * ------------------------------------------------------------------ */
+
+    public static class CannotReadConfiguration extends RuntimeException {
+        public CannotReadConfiguration(String name, Exception ex) {
+            super("Cannot read configuration for provider \"" + name + "\"", ex);
+        }
+    }
+
+    public static class ProviderNotFound extends RuntimeException {
+        public ProviderNotFound(String name) {
+            super("No provider named \"" + name + "\" exists");
+        }
+    }
+
+    public static class IllegalPosition extends RuntimeException {
+        public IllegalPosition(int position, boolean disabled) {
+            super("Cannot set position " + position + " when disabled = " + disabled);
+        }
+    }
+
+    public static class DuplicateProviderName extends RuntimeException {
+        public DuplicateProviderName(String message) {
+            super(message);
+        }
+    }
+
+    public static class CannotSaveProvider extends RuntimeException {
+        public CannotSaveProvider(String name, Throwable ex) {
+            super("Cannot save provider \"" + name + "\": " + ex.getMessage(), ex);
+        }
+    }
+
+    public static class BadRequest extends RuntimeException {
+        public BadRequest(Throwable ex) {
+            super(ex);
+        }
+
+        public BadRequest(String message) {
+            super(message);
+        }
+    }
+
+    public static class InvalidState extends RuntimeException {
+        public InvalidState(Throwable ex) {
+            super(ex);
+        }
+    }
+
+    public static class NotAuthorised extends RuntimeException {
+        public NotAuthorised() {
+            super("Administrator role required");
+        }
     }
 
     // Inner class to model the error response
@@ -197,229 +398,6 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
         public void setMessage(String message) {
             this.message = message;
-        }
-    }
-
-    /// ///////////////////////////////////////////////////////////////////////
-    /// ControllerAdvice overrides
-
-    @Override
-    public boolean supports(
-            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
-        if (AuthProvider.class.isAssignableFrom((Class<?>) targetType)) {
-            return true;
-        }
-        return super.supports(methodParameter, targetType, converterType);
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.getXStream().alias("authProvider", AuthProvider.class);
-
-        persister.getXStream().processAnnotations(new Class[] {AuthProvider.class});
-    }
-
-    /// ///////////////////////////////////////////////////////////////////////
-    /// Implementation
-
-    private List<AuthProvider> listAuthProviders() {
-        try {
-            checkAuthorisation();
-            ArrayList<String> providerNames = new ArrayList<>(securityManager.listAuthenticationProviders());
-            return providerNames.stream()
-                    .map(this::loadProviderOrError)
-                    .peek(p -> {
-                        int index = providerNames.indexOf(p.getName());
-                        p.setPosition(index);
-                        p.setDisabled(index == -1);
-                    })
-                    .collect(toList());
-        } catch (IOException ex) {
-            throw new CannotReadConfiguration("All", ex);
-        }
-    }
-
-    private AuthProvider authProviderByName(String providerName) {
-        try {
-            checkArgument(!Strings.isNullOrEmpty(providerName), "Provider name cannot be null or empty");
-
-            SecurityAuthProviderConfig provider = securityManager.loadAuthenticationProviderConfig(providerName);
-            if (provider == null) {
-                throw new UnknownProvider(providerName);
-            }
-
-            AuthProvider authProvider = new AuthProvider(provider);
-            ArrayList<String> names = new ArrayList<>(securityManager.listAuthenticationProviders());
-            int index = names.indexOf(providerName);
-            authProvider.setPosition(index);
-            authProvider.setDisabled(index == -1);
-
-            return authProvider;
-        } catch (IOException e) {
-            throw new CannotReadConfiguration(providerName, e);
-        }
-    }
-
-    private void createAuthProvider(AuthProvider authProvider) {
-
-        try {
-            checkArgument(authProvider != null, "AuthProvider cannot be null");
-        } catch (IllegalArgumentException ex) {
-            throw new InvalidData(ex);
-        }
-
-        try {
-            if (authProvider.getPosition() == -1 && !authProvider.isDisabled()) {
-                throw new IllegalPosition(authProvider.getPosition(), authProvider.isDisabled());
-            }
-
-            if (Objects.nonNull(authProvider.getId())
-                    || Objects.nonNull(authProvider.getConfig().getId())) {
-                throw new IllegalArgumentException("Cannot create a new AuthProvider with an id");
-            }
-
-            if (Strings.isNullOrEmpty(authProvider.getName())) {
-                throw new IllegalArgumentException("Cannot create a new AuthProvider with without a name");
-            }
-
-            if (Strings.isNullOrEmpty(authProvider.getClassName())) {
-                throw new IllegalArgumentException("Cannot create a new AuthProvider with without a className");
-            }
-
-            // Ensure name
-            authProvider.getConfig().setName(authProvider.getName());
-            authProvider.getConfig().setClassName(authProvider.getClassName());
-
-            securityManager.saveAuthenticationProvider(authProvider.getConfig());
-            securityManager.reload();
-
-            SecurityAuthProviderConfig createdAuthProvider =
-                    securityManager.loadAuthenticationProviderConfig(authProvider.getName());
-            checkState(Objects.nonNull(createdAuthProvider.getId()), "Provider id was not created");
-        } catch (IOException | SecurityConfigException e) {
-            throw new CannotSaveProvider(authProvider.getName(), e);
-        } catch (IllegalArgumentException ex) {
-            throw new InvalidData(ex);
-        } catch (IllegalStateException ex) {
-            throw new InvalidState(ex);
-        }
-    }
-
-    private void updateAuthProvider(String providerName, AuthProvider authProvider) {
-        checkAuthorisation();
-
-        try {
-            checkArgument(!Strings.isNullOrEmpty(providerName), "Provider name cannot be null or empty");
-            checkArgument(authProvider != null, "AuthProvider cannot be null");
-        } catch (IllegalArgumentException ex) {
-            throw new InvalidData(ex);
-        }
-
-        try {
-            checkArgument(authProvider.getName() != null, "AuthProvider name cannot be null");
-            checkArgument(
-                    authProvider.getName().equals(providerName), "AuthProvider name does not match the one provided");
-            checkArgument(authProvider.getId() != null, "AuthProvider id cannot be null");
-
-            SecurityAuthProviderConfig config = securityManager.loadAuthenticationProviderConfig(providerName);
-
-            checkArgument(
-                    config.getId().equals(authProvider.getId()), "AuthProvider id does not match the one provided");
-            checkArgument(
-                    config.getClassName().equals(authProvider.getClassName()),
-                    "AuthProvider class name does not match the one provided");
-
-            authProvider.getConfig().setName(authProvider.getName());
-            authProvider.getConfig().setClassName(authProvider.getClassName());
-            authProvider.getConfig().setId(authProvider.getId());
-
-            securityManager.saveAuthenticationProvider(authProvider.getConfig());
-            securityManager.reload();
-        } catch (IOException | SecurityConfigException e) {
-            throw new CannotSaveProvider(authProvider.getConfig().getName(), e);
-        } catch (IllegalArgumentException ex) {
-            throw new InvalidData(ex);
-        } catch (IllegalStateException ex) {
-            throw new InvalidState(ex);
-        }
-    }
-
-    private void deleteAuthProvider(String providerName) {
-        try {
-            checkArgument(!Strings.isNullOrEmpty(providerName), "Provider name cannot be null or empty");
-            AuthProvider authProvider = authProviderByName(providerName);
-            SecurityAuthProviderConfig config = authProvider.getConfig();
-            securityManager.removeAuthenticationProvider(config);
-            securityManager.reload();
-        } catch (IOException | SecurityConfigException e) {
-            throw new CannotSaveProvider(providerName, e);
-        } catch (IllegalArgumentException ex) {
-            throw new InvalidData(ex);
-        } catch (IllegalStateException ex) {
-            throw new InvalidState(ex);
-        }
-    }
-
-    private AuthProvider loadProviderOrError(String name) {
-        checkArgument(!Strings.isNullOrEmpty(name), "Provider name cannot be null or empty");
-        try {
-            SecurityAuthProviderConfig provider = securityManager.loadAuthenticationProviderConfig(name);
-            return new AuthProvider(provider);
-        } catch (IOException e) {
-            throw new CannotReadConfiguration(name, e);
-        }
-    }
-
-    // Breaking other tests will restore
-    private void checkAuthorisation() {
-        if (!securityManager.checkAuthenticationForAdminRole()) {
-            throw new RequiresAdministrator();
-        }
-    }
-
-    /// ///////////////////////////////////////////////////////////////////////
-    /// Exceptions
-
-    public static class CannotReadConfiguration extends RuntimeException {
-        public CannotReadConfiguration(String provider, Exception ex) {
-            super("Cannot load provider " + provider, ex);
-        }
-    }
-
-    public static class UnknownProvider extends RuntimeException {
-        public UnknownProvider(String name) {
-            super("No provider configuration for the name  " + name);
-        }
-    }
-
-    public static class IllegalPosition extends RuntimeException {
-        public IllegalPosition(int position, boolean disabled) {
-            super("Cannot set position " + position + " when disabled is " + disabled);
-        }
-    }
-
-    public static class CannotSaveProvider extends RuntimeException {
-        public CannotSaveProvider(String name, Throwable ex) {
-            super("Cannot save provider " + name + " " + ex.getMessage(), ex);
-        }
-    }
-
-    public static class InvalidData extends RuntimeException {
-        public InvalidData(Throwable ex) {
-            super(ex);
-        }
-    }
-
-    public static class InvalidState extends RuntimeException {
-        public InvalidState(Throwable ex) {
-            super(ex);
-        }
-    }
-
-    public static class RequiresAdministrator extends RuntimeException {
-        public RequiresAdministrator() {
-            super("Secure Endpoint Administrator only");
         }
     }
 }

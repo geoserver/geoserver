@@ -15,6 +15,7 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.WebUtils;
@@ -175,7 +176,7 @@ public final class JMSConfiguration {
     public void storeConfig() throws IOException {
         Resource config = configPathDir.get(CONFIG_FILE_NAME);
         try (OutputStream fos = config.out()) {
-            this.configuration.store(fos, "");
+            SortedPropertiesWriter.storeSorted(this.configuration, fos, "");
         }
     }
 

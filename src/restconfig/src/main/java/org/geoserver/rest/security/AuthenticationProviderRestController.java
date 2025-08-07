@@ -56,6 +56,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping(RestBaseController.ROOT_PATH + "/security/authProviders")
 public class AuthenticationProviderRestController extends RestBaseController {
 
+    /** Accept provider names with optional “.xml” / “.json” extension, but block “order(.ext)”. */
+    private static final String PROVIDER_PATH = "/{providerName:^(?!order(?:\\.(?:json|xml))?$).+}";
+
     private static final Set<String> RESERVED = Set.of("order");
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private final GeoServerSecurityManager securityManager;
@@ -80,7 +83,9 @@ public class AuthenticationProviderRestController extends RestBaseController {
     }
 
     // --------------------------------------------------------------------- LIST + ITEM
-    @GetMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(
+            path = {"", ".{ext:xml|json}"},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public RestWrapper<AuthProviderCollection> list() {
         checkAuthorised();
         try {
@@ -93,9 +98,10 @@ public class AuthenticationProviderRestController extends RestBaseController {
     }
 
     @GetMapping(
-            path = "/{providerName:^(?!order$).+}",
+            path = PROVIDER_PATH,
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public RestWrapper<SecurityAuthProviderConfig> one(@PathVariable String providerName) {
+        providerName = normalizeName(providerName); // strip .xml|json if present
         checkAuthorised();
         return wrapObject(loadConfigOrError(providerName), SecurityAuthProviderConfig.class);
     }
@@ -142,7 +148,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
     // --------------------------------------------------------------------- UPDATE
     @PutMapping(
-            path = "/{providerName:^(?!order$).+}",
+            path = PROVIDER_PATH,
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public RestWrapper<SecurityAuthProviderConfig> update(
@@ -152,6 +158,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
         checkAuthorised();
         try {
+            providerName = normalizeName(providerName);
             SecurityAuthProviderConfig incoming = parseConfig(request);
             ensureNotReserved(incoming.getName());
             if (!Objects.equals(providerName, incoming.getName()))
@@ -181,11 +188,12 @@ public class AuthenticationProviderRestController extends RestBaseController {
     }
 
     // --------------------------------------------------------------------- DELETE
-    @DeleteMapping(path = "/{providerName:^(?!order$).+}")
+    @DeleteMapping(path = PROVIDER_PATH)
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable String providerName) {
         checkAuthorised();
         try {
+            providerName = normalizeName(providerName);
             List<String> order = new ArrayList<>(getConfigOrder());
             if (!order.remove(providerName)) throw new NothingToDelete(providerName);
 
@@ -201,7 +209,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
     // ===================================================================== /order API
     // -- PUT /order or /order.{ext} ---------------------------------------
     @PutMapping(
-            path = {"/order", "/order.{ext}"},
+            path = {"/order", "/order.{ext:xml|json}"},
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> reorder(HttpServletRequest request) {
         checkAuthorised();
@@ -228,7 +236,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
     }
 
     // -- GET/POST/DELETE /order respond 405 --------------------------------
-    @GetMapping(path = {"/order", "/order.{ext}"})
+    @GetMapping(path = {"/order", "/order.{ext:xml|json}"})
     public ResponseEntity<Void> orderGetNotAllowed() {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
@@ -244,6 +252,11 @@ public class AuthenticationProviderRestController extends RestBaseController {
     }
 
     // --------------------------------------------------------------------- helpers
+    /** Strip a trailing “.xml” or “.json” (case-insensitive) from a provider name. */
+    private static String normalizeName(String n) {
+        return n == null ? null : n.replaceFirst("\\.(?i)(xml|json)$", "");
+    }
+
     private SecurityAuthProviderConfig parseConfig(HttpServletRequest req) throws IOException {
         byte[] body = read(req);
         if (isXml(req)) {

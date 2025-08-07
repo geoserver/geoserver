@@ -1,345 +1,282 @@
-
-swagger: '2.0'
+openapi: 3.0.3
 info:
+  title: Authentication-provider REST API
   version: 1.0.0
-  title: Provider Rest endpoints
-  description: Management of Provider Configuration data
-  contact:
-    name: GeoServer
-    email: 'geoserver-users@osgeo.org'
-    url: 'https://geoserver.org/comm/'
+  description: |
+    Manage, order, enable and disable GeoServer authentication providers.
 
-securityDefinitions:
-  basicAuth: # <-- arbitrary name for the security scheme
-    type: basic
-    description: The user name and password of a admin user.
+    Each provider is marshalled inside an element / property whose **key
+    is its concrete class name**.
 
-schemes:
-  - https
-  - http
-host: localhost:8080
-basePath: /geoserver/rest
+servers:
+  - url: http://localhost:8080/geoserver/rest
+    description: Local GeoServer
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: GeoServer administrator credentials
+
+  schemas:
+
+    # ---- Inner object with actual fields ----------------------------------
+    authProviderCore:
+      type: object
+      required: [id, name, className]
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+          description: Server-generated identifier (omit on POST)
+        name:
+          type: string
+        className:
+          type: string
+        userGroupServiceName:
+          type: string
+
+    # ---- Wrapper keyed by FQCN -------------------------------------------
+    authProvider:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/authProviderCore'
+      example:
+        org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig:
+          id: 52857278:13c7ffd66a8:-7ff0
+          name: default
+          className: org.geoserver.security.auth.UsernamePasswordAuthenticationProvider
+          userGroupServiceName: default
+
+    # ---- Collection -------------------------------------------------------
+    authProviders:
+      type: object
+      properties:
+        authProviders:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/authProvider'
+      example:
+        authProviders:
+          org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig:
+            id: 52857278:13c7ffd66a8:-7ff0
+            name: default
+            className: org.geoserver.security.auth.UsernamePasswordAuthenticationProvider
+            userGroupServiceName: default
+          org.geoserver.security.config.LdapAuthenticationProviderConfig:
+            id: 9abcc9d4:e30aef012cf:-7fe0
+            name: corporateLdap
+            className: org.geoserver.security.auth.LdapAuthenticationProvider
+            userGroupServiceName: ldapUsers
+
+    # ---- Order payload ----------------------------------------------------
+    authProviderOrder:
+      type: object
+      required: [order]
+      properties:
+        order:
+          type: array
+          items:
+            type: string
+      example:
+        order: [default, corporateLdap]
+
+security:
+  - basicAuth: []
+
 paths:
+
   /security/authProviders:
     get:
-      security:
-        - basicAuth: []
-      operationId: listAuthProviders
-      tags:
-        - "AuthProviders"
-      summary: List all the auth providers available in the system.
-      description: List all the auth providers available in the system.
-      produces:
-        - application/xml
-        - application/json
+      summary: List providers (active order)
+      tags: [authProviders]
       responses:
-        200:
-          description: Successful response containing the list of authProviders.
-          schema:
-            type: object
-            properties:
-              authProviders:
-                type: object
-                properties:
-                  authProvider:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                          description: The Name
-                        link:
-                          type: string
-                          description: The URL
-          examples:
-            application/xml: |
-              <authProviders>
-                  <authProvider>
-                      <name>Test_Provider10</name>
-                      <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:9002/geoserver/rest/security/authProviders/Test_Provider10.xml" type="application/atom+xml"/>
-                  </authProvider>
-              </authProviders>
-            application/json: |
-              {
-                "authProviders": {
-                  "authProvider": [
-                    {
-                      "name": "Test_Provider10",
-                      "href": "http://localhost:9002/geoserver/rest/security/authProviders/Test_Provider10.json"
-                    },
-                    {
-                      "name": "default",
-                      "href": "http://localhost:9002/geoserver/rest/security/authProviders/default.json"
-                    }
-                  ]
-                }
-              }
-        403:
-          description: Only people with a Admin role can use this endpoint
-        500:
-          description: Geoserver failure try again later or report issue
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/authProviders' }
+              example:
+                authProviders:
+                  org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig:
+                    id: 52857278:13c7ffd66a8:-7ff0
+                    name: default
+                    className: org.geoserver.security.auth.UsernamePasswordAuthenticationProvider
+                    userGroupServiceName: default
+            application/xml:
+              schema: { $ref: '#/components/schemas/authProviders' }
+              example: |
+                <authProviders>
+                  <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+                    <id>52857278:13c7ffd66a8:-7ff0</id>
+                    <name>default</name>
+                    <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+                    <userGroupServiceName>default</userGroupServiceName>
+                  </org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+                </authProviders>
+        '403': {description: Forbidden}
+        '500': {description: Server error}
+
     post:
-      security:
-        - basicAuth: []
-      operationId: createAuthProvider
-      description: |
-        This method will create the specified authentication provider on the server. 
-        The name of the provider must be unique. It expects the id field to be
-        omitted as the server will generate this value.
-      tags:
-        - "AuthProviders"
-      summary: Create a new auth provider
+      summary: Create a provider
+      tags: [authProviders]
       parameters:
-        - name: provider
-          in: body
-          required: true
-          description: Auth provider details
+        - in: query
+          name: position
           schema:
-            $ref: '#/definitions/AuthProvider'
-      consumes:
-        - application/xml
-        - application/json
+            type: integer
+            minimum: 0
+          description: Optional insert position (0-based). Omit to append.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/authProvider' }
+            example:
+              org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig:
+                name: corporateLdap
+                className: org.geoserver.security.auth.LdapAuthenticationProvider
+                userGroupServiceName: ldapUsers
+          application/xml:
+            schema: { $ref: '#/components/schemas/authProvider' }
+            example: |
+              <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+                <name>corporateLdap</name>
+                <className>org.geoserver.security.auth.LdapAuthenticationProvider</className>
+                <userGroupServiceName>ldapUsers</userGroupServiceName>
+              </org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
       responses:
-        201:
-          description: |
-            The provider configuration has been saved on the server
-          schema:
-            type: string
+        '201':
+          description: Created
           headers:
             Location:
-              description: The URI of the resource created
-              type: string
-        400:
-          description: |
-            The data supplied by the client was invalid. Typically check that the name 
-            is unique and that no id is supplied.
-        403:
-          description: Only people with a Admin role can use this endpoint
-        500:
-          description: Geoserver failure try again later or report issue
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json: {schema: {$ref: '#/components/schemas/authProvider'}}
+            application/xml:  {schema: {$ref: '#/components/schemas/authProvider'}}
+        '400': {description: Validation error}
+        '403': {description: Forbidden}
+        '500': {description: Server error}
+
   /security/authProviders/{providerName}:
+    parameters:
+      - name: providerName
+        in: path
+        required: true
+        schema:
+          type: string
+
     get:
-      security:
-        - basicAuth: []
-      operationId: viewAuthProvider
-      tags:
-        - "AuthProviders"
-      summary: Views the details of a single provider.
-      parameters:
-        - name: providerName
-          in: path
-          required: true
-          description: Name of the authentication provider
-          schema:
-            type: string
-      description: |
-        Displays the contents of the configuration object on the server.
-      produces:
-        - application/xml
-        - application/json
+      summary: Get provider
+      tags: [authProviders]
       responses:
-        200:
-          description: |
-            The request completed successfully and the name provider configuration 
-            has been returned.
-          examples:
-            application/xml: |
-              <authProvider>
-                  <id>7787843a:196d38d0a14:-7fcc</id>
-                  <name>7787843a:196d38d0a14:-7fcc</name>
-                  <className>org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig</className>
-                  <userGroupServiceName>default</userGroupServiceName>
-                  <position>0</position>
-                  <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
-                      <id>7787843a:196d38d0a14:-7fcc</id>
-                      <name>default</name>
-                      <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
-                      <userGroupServiceName>default</userGroupServiceName>
-                  </config>
-                  <disabled>false</disabled>
-              </authProvider>
-            application/json: |
-              {
-                "authProvider": {
-                  "id": "7787843a:196d38d0a14:-7fcc",
-                  "name": "7787843a:196d38d0a14:-7fcc",
-                  "className": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
-                  "userGroupServiceName": "default",
-                  "position": 0,
-                  "config": {
-                    "@class": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
-                    "id": "7787843a:196d38d0a14:-7fcc",
-                    "name": "default",
-                    "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
-                    "userGroupServiceName": "default"
-                  },
-                  "disabled": false
-                }
-              }
-          schema:
-            $ref: "#/definitions/AuthProvider"
-        403:
-          description: Only people with a Admin role can use this endpoint
-        404:
-          description: |
-            The named configuration does not exist on the server
-        500:
-          description: |
-            A problem occurred within the server, this cannot be fixed by changing the data
-            in the request contact you administrator
-    put:
-      security:
-        - basicAuth: []
-      operationId: updateAuthProvider
-      tags:
-        - "AuthProviders"
-      summary: Update the named provider configuration.
-      description: |
-        Update the named provider configuration.
-      parameters:
-        - name: provider
-          in: body
-          required: true
-          description: Auth provider details
-          schema:
-            $ref: '#/definitions/AuthProvider'
-      consumes:
-        - application/xml
-        - application/json
-      responses:
-        200:
-          description: |
-            The configuration has been updated
-        400:
-          description: |
-            The provider configuration cannot be updated. Check that the supplied name matches
-            the name in the body of the request. Check that the Id matches the Id of the 
-            configuration in memory. Check all required fields the type of authentication
-            provider have been supplied.
-          examples:
-            application/xml: |
-              <ErrorResponse>
-                  <status>400</status>
-                  <message>java.lang.IllegalArgumentException: AuthProvider name does not match the one provided</message>
-              </ErrorResponse>
-        403:
-          description: Only people with a Admin role can use this endpoint
-        404:
-          description: The provider does not exist
-        500:
-          description: |
-            The server is experiencing some issue. If this persists contact your administrator.
-    delete:
-      security:
-        - basicAuth: []
-      operationId: deleteAuthProvider
-      tags:
-        - "AuthProviders"
-      summary: Deletes the named provider.
-      parameters:
-        - name: providerName
-          in: path
-          required: true
-          description: Name of the authentication provider
-          schema:
-            type: string
-      description: |
-        Removes the authentication configuration from the server.
-      responses:
-        200:
-          description: |
-            The authentication provider was successfully removed
-          schema:
-            $ref: "#/definitions/AuthProvider"
-          examples:
-            application/xml: |
-              <authProvider>
-                  <id>2373abe0:1973f07017d:-8000</id>
-                  <name>Test_Provider13</name>
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/authProvider' }
+              example:
+                org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig:
+                  id: 52857278:13c7ffd66a8:-7ff0
+                  name: default
+                  className: org.geoserver.security.auth.UsernamePasswordAuthenticationProvider
+                  userGroupServiceName: default
+            application/xml:
+              schema: { $ref: '#/components/schemas/authProvider' }
+              example: |
+                <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+                  <id>52857278:13c7ffd66a8:-7ff0</id>
+                  <name>default</name>
                   <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
                   <userGroupServiceName>default</userGroupServiceName>
-                  <position>3</position>
-                  <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
-                      <id>2373abe0:1973f07017d:-8000</id>
-                      <name>Test_Provider13</name>
-                      <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
-                      <userGroupServiceName>default</userGroupServiceName>
-                  </config>
-                  <disabled>false</disabled>
-              </authProvider>
-            application/json: |
-              {
-                "authProvider": {
-                  "id": "521a99b9:1973eb9aa52:-8000",
-                  "name": "Test_Provider12",
-                  "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
-                  "userGroupServiceName": "default",
-                  "position": 2,
-                  "config": {
-                    "@class": "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig",
-                    "id": "521a99b9:1973eb9aa52:-8000",
-                    "name": "Test_Provider12",
-                    "className": "org.geoserver.security.auth.UsernamePasswordAuthenticationProvider",
-                    "userGroupServiceName": "default"
-                  },
-                "disabled": false
-                }
-              }
-        404:
-          description: |
-            The authentication provider does not exist or has already been removed
-          examples:
-            application/xml:
-              <ErrorResponse>
-                <status>404</status>
-                <message>No provider configuration for the name  Test_Provider13</message>
-              </ErrorResponse>
-            application/json:
-              {
-                "status": 404,
-                "message": "No provider configuration for the name  Test_Provider12"
-              }
-        403:
-          description: Only people with a Admin role can use this endpoint
-        500:
-          description: |
-            The server is experiencing some issue. If this persists contact your administrator.
-definitions:
-  AuthProvider:
-    title: Auth Provider
-    type: object
-    properties:
-      id:
-        type: string
-        description: |
-          The unique id assigned to the configuration by geoserver
-      name:
-        type: string
-        description: |
-          The unique name assigned to the configuration by client
-      className:
-        type: string
-        description: |
-          The className of the actual provider class used in geoserver
-      position:
-        type: string
-        description: |
-          The index of the provider, -1 if disabled
-      disabled:
-        type: boolean
-        description: |
-          True when the provider is disabled
-      config:
-        type: object
-        description: |
-          Bespoke configuration fields required by the specific type
-          of authentication provider
-        properties:
-          AnyValue: {}
-        required:
-    required:
-      - id
-      - name
-      - className
-      - config
+                </org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+        '403': {description: Forbidden}
+        '404': {description: Not found}
+        '500': {description: Server error}
+
+    put:
+      summary: Update provider
+      tags: [authProviders]
+      parameters:
+        - in: query
+          name: position
+          schema:
+            type: integer
+            minimum: 0
+          description: Move provider to this position
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/authProvider' }
+            example:
+              org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig:
+                id: 52857278:13c7ffd66a8:-7ff0
+                name: default
+                className: org.geoserver.security.auth.UsernamePasswordAuthenticationProvider
+                userGroupServiceName: default
+          application/xml:
+            schema: { $ref: '#/components/schemas/authProvider' }
+            example: |
+              <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+                <id>52857278:13c7ffd66a8:-7ff0</id>
+                <name>default</name>
+                <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+                <userGroupServiceName>default</userGroupServiceName>
+              </org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json: {schema: {$ref: '#/components/schemas/authProvider'}}
+            application/xml:  {schema: {$ref: '#/components/schemas/authProvider'}}
+        '400': {description: Validation error}
+        '403': {description: Forbidden}
+        '404': {description: Not found}
+        '500': {description: Server error}
+
+    delete:
+      summary: Delete provider
+      tags: [authProviders]
+      responses:
+        '200': {description: Deleted}
+        '403': {description: Forbidden}
+        '404': {description: Not found}
+        '500': {description: Server error}
+
+  /security/authProviders/order:
+    put:
+      summary: Replace active order (enables / disables providers)
+      tags: [authProviders]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/authProviderOrder'}
+          application/xml:
+            schema: {$ref: '#/components/schemas/authProviderOrder'}
+            example: |
+              <order>
+                <order>default</order>
+                <order>corporateLdap</order>
+              </order>
+      responses:
+        '200': {description: Order updated}
+        '400': {description: Validation error}
+        '403': {description: Forbidden}
+        '500': {description: Server error}
+
+    get:
+      summary: Method not allowed
+      responses: {'405': {description: Use PUT}}
+
+    post:
+      summary: Method not allowed
+      responses: {'405': {description: Use PUT}}
+
+    delete:
+      summary: Method not allowed
+      responses: {'405': {description: Use PUT}}

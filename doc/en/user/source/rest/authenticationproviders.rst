@@ -1,138 +1,200 @@
+
 Auth Providers
 ==============
 
-The REST API allows you to list, create, upload, update, and delete authProviders in GeoServer.
+The Security REST service lets administrators **list, create, update and
+delete** authentication‑provider configurations.
 
-.. note:: Read the :api:`API reference for security/authProviders <authenticationfilters.yaml>`.
+Each provider is represented as a single element/property whose name is
+the *fully‑qualified class name* of the configuration, e.g.
 
-View an Authentication Provider
--------------------------------
+*XML*
+
+.. code-block:: xml
+
+   <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig> … </…>
+
+*JSON*
+
+.. code-block:: json
+
+   {
+     "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig": { … }
+   }
+
+For the full parameter list see the :api:`OpenAPI reference
+<authenticationproviders.yaml>`.
+
+------------------------------------------------------------------------
+View an authentication provider
+------------------------------------------------------------------------
 
 *Request*
 
 .. admonition:: curl
 
-    curl --request GET --location 'http://localhost:8080/geoserver/rest/security/authProviders/default' \
-    --header 'Accept: application/xml' \
-    --header 'Authorization: Basic XXXXXXX'
+   curl -u admin:•••••• \
+        -H "Accept: application/xml" \
+        http://localhost:8080/geoserver/rest/security/authProviders/default
 
-*Response*
-Status: 200
-Content-type: application/xml
+*Response (200 OK — XML)*
 
 .. code-block:: xml
 
-    <authProvider>
-        <id>7787843a:196d38d0a14:-7fcc</id>
-        <name>7787843a:196d38d0a14:-7fcc</name>
-        <className>org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig</className>
-        <userGroupServiceName>default</userGroupServiceName>
-        <position>0</position>
-        <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
-            <id>7787843a:196d38d0a14:-7fcc</id>
-            <name>default</name>
-            <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
-            <userGroupServiceName>default</userGroupServiceName>
-        </config>
-        <disabled>false</disabled>
-    </authProvider>
+   <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+     <id>52857278:13c7ffd66a8:-7ff0</id>
+     <name>default</name>
+     <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+     <userGroupServiceName>default</userGroupServiceName>
+   </org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
 
-200 OK
+------------------------------------------------------------------------
+Create an authentication provider
+------------------------------------------------------------------------
 
-
-Update an Authentication Provider
----------------------------------
+*Request*
 
 .. admonition:: curl
 
-    curl --request PUT --location  'http://localhost:9002/geoserver/rest/security/authProviders/Test_Provider2' \
-    --header 'Accept: application/xml' \
-    --header 'Content-Type: application/xml' \
-    --header 'Authorization: ••••••' \
-    --data '<authProvider>
-    <name>Test_Provider2</name>
-    <className>org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig</className>
-    <userGroupServiceName>default</userGroupServiceName>
-    <position>1</position>
-    <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
-    <name>default</name>
-    <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
-    <userGroupServiceName>default</userGroupServiceName>
-    </config>
-    <disabled>false</disabled>
-    </authProvider>'
+   curl -u admin:•••••• \
+        -X POST \
+        -H "Content-Type: application/xml" \
+        -H "Accept: application/xml" \
+        --data-binary @- \
+        http://localhost:8080/geoserver/rest/security/authProviders <<'EOF'
+   <org.geoserver.security.config.LdapAuthenticationProviderConfig>
+     <name>corporateLdap</name>                  <!-- id omitted on POST -->
+     <className>org.geoserver.security.auth.LdapAuthenticationProvider</className>
+     <userGroupServiceName>ldapUsers</userGroupServiceName>
+   </org.geoserver.security.config.LdapAuthenticationProviderConfig>
+   EOF
 
-*Response*
+*Response (201 Created)*
 
-200 OK
-
-
-Delete an Authentication Provider
----------------------------------
-
-*Response*
-
-.. admonition:: curl
-
-    curl --request DELETE --location  'http://localhost:9002/geoserver/rest/security/authProviders/Test_Provider13' \
-    --header 'Accept: application/xml' \
-    --header 'Authorization: ••••••'
-
-*Response*
-
-200 OK
-
-<HttpStatus>OK</HttpStatus>
-
-Create an Authentication Provider
----------------------------------
-
-*Response*
-
-.. admonition:: curl
-
-    curl --location 'http://localhost:9002/geoserver/rest/security/authProviders' \
-    --header 'Content-type: application/xml' \
-    --header 'Accept: application/xml' \
-    --header 'Authorization: ••••••' \
-    --data '
-    <authProvider>
-    <name>Test_Provider13</name>
-    <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
-    <userGroupServiceName>default</userGroupServiceName>
-    <position>1</position>
-    <config class="org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig">
-    <userGroupServiceName>default</userGroupServiceName>
-    </config>
-    <disabled>false</disabled>
-    </authProvider>'
-
-
-@Response*
-Status: 201 Created
-Location: http://localhost:9002/geoserver/rest/security/authProvider/Test_Provider13
+```
+Location: /geoserver/rest/security/authProviders/corporateLdap
 Content-Type: application/xml
-
-List all Authentication Providers
----------------------------------
-
-.. admonition:: curl
-
-    curl --location 'http://localhost:9002/geoserver/rest/security/authProviders' \
-    --header 'Accept: application/xml' \
-    --header 'Authorization: ••••••'
-
-200 OK
+```
 
 .. code-block:: xml
 
-    <authProviders>
-        <authProvider>
-            <name>Test_Provider10</name>
-            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:9002/geoserver/rest/security/authProviders/Test_Provider10.xml" type="application/atom+xml"/>
-        </authProvider>
-        <authProvider>
-            <name>Test_Provider11</name>
-            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:9002/geoserver/rest/security/authProviders/Test_Provider11.xml" type="application/atom+xml"/>
-        </authProvider>
-    </authProviders>
+   <org.geoserver.security.config.LdapAuthenticationProviderConfig>
+     <id>9abcc9d4:e30aef012cf:-7fe0</id>
+     <name>corporateLdap</name>
+     <className>org.geoserver.security.auth.LdapAuthenticationProvider</className>
+     <userGroupServiceName>ldapUsers</userGroupServiceName>
+   </org.geoserver.security.config.LdapAuthenticationProviderConfig>
+
+------------------------------------------------------------------------
+Update an authentication provider
+------------------------------------------------------------------------
+
+.. admonition:: curl
+
+   curl -u admin:•••••• \
+        -X PUT \
+        -H "Content-Type: application/xml" \
+        -H "Accept: application/xml" \
+        --data-binary @- \
+        http://localhost:8080/geoserver/rest/security/authProviders/default <<'EOF'
+   <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+     <id>52857278:13c7ffd66a8:-7ff0</id>         <!-- id *required* on PUT -->
+     <name>default</name>
+     <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+     <userGroupServiceName>default</userGroupServiceName>
+   </org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+   EOF
+
+*Response (200 OK — updated provider echoed)*
+
+------------------------------------------------------------------------
+Delete an authentication provider
+------------------------------------------------------------------------
+
+.. admonition:: curl
+
+   curl -u admin:•••••• \
+        -X DELETE \
+        http://localhost:8080/geoserver/rest/security/authProviders/corporateLdap
+
+*Response (200 OK — empty body)*
+
+------------------------------------------------------------------------
+List all authentication providers
+------------------------------------------------------------------------
+
+.. admonition:: curl
+
+   curl -u admin:•••••• \
+        -H "Accept: application/xml" \
+        http://localhost:8080/geoserver/rest/security/authProviders
+
+*Response (200 OK — XML)*
+
+.. code-block:: xml
+
+   <authProviders>
+     <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+       <id>52857278:13c7ffd66a8:-7ff0</id>
+       <name>default</name>
+       <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
+       <userGroupServiceName>default</userGroupServiceName>
+     </org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
+
+     <org.geoserver.security.config.LdapAuthenticationProviderConfig>
+       <id>9abcc9d4:e30aef012cf:-7fe0</id>
+       <name>corporateLdap</name>
+       <className>org.geoserver.security.auth.LdapAuthenticationProvider</className>
+       <userGroupServiceName>ldapUsers</userGroupServiceName>
+     </org.geoserver.security.config.LdapAuthenticationProviderConfig>
+   </authProviders>
+
+
+------------------------------------------------------------------------
+Re‑order / enable / disable providers
+------------------------------------------------------------------------
+
+The special ``/security/authProviders/order`` endpoint takes a *single*
+list of provider **names**.  
+The order of the list becomes the **execution order**; any providers
+*missing* from the list are **disabled** (but kept on disk).
+
+Only **PUT** is allowed.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Status codes
+     - Formats
+   * - **PUT**
+     - Replace active order (enable / disable)
+     - 200, 400, 403, 500
+     - XML, JSON
+
+Enable *corporateLdap* and make it first:
+
+.. admonition:: curl (JSON body)
+
+   curl -u admin:•••••• \
+        -X PUT \
+        -H "Content-Type: application/json" \
+        http://localhost:8080/geoserver/rest/security/authProviders/order <<'EOF'
+   { "order": ["corporateLdap", "default"] }
+   EOF
+
+Same request in XML:
+
+.. code-block:: xml
+
+   <order>
+     <order>corporateLdap</order>
+     <order>default</order>
+   </order>
+
+Disable *corporateLdap* again:
+
+.. code-block:: json
+
+   { "order": ["default"] }

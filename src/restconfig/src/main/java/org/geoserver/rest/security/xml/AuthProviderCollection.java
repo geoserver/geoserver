@@ -7,23 +7,28 @@ package org.geoserver.rest.security.xml;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import java.util.ArrayList;
 import java.util.List;
+import org.geoserver.security.config.SecurityAuthProviderConfig;
 
 @XStreamAlias("authProviders")
 public class AuthProviderCollection {
 
-    private List<AuthProvider> authProviders = new ArrayList<>();
+    private List<SecurityAuthProviderConfig> providers = new ArrayList<>();
 
     public AuthProviderCollection() {}
 
-    public AuthProviderCollection(List<AuthProvider> providers) {
-        this.authProviders = providers;
+    public AuthProviderCollection(List<SecurityAuthProviderConfig> p) {
+        providers = p;
     }
 
-    public List<AuthProvider> getAuthProviders() {
-        return authProviders;
+    public List<SecurityAuthProviderConfig> getProviders() {
+        return providers;
     }
 
-    public void setAuthProviders(List<AuthProvider> authProviders) {
-        this.authProviders = authProviders;
+    public void setProviders(List<SecurityAuthProviderConfig> p) {
+        providers = p;
+    }
+
+    public SecurityAuthProviderConfig first() {
+        return providers == null || providers.isEmpty() ? null : providers.get(0);
     }
 }

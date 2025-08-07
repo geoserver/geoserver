@@ -1,0 +1,432 @@
+openapi: 3.0.3
+info:
+  title: GeoServer Security Filter Chains API
+  version: "1.0.0"
+  description: |
+    Manage authentication filter chains.
+    This spec models **JSON** and **XML** separately where structure differs:
+    - JSON uses attribute-like keys (e.g., `@name`, `@class`).
+    - XML uses attributes on the `<filters>` element.
+
+servers:
+  - url: /
+
+security:
+  - basicAuth: []
+
+paths:
+  /security/filterChain:
+    get:
+      summary: List filter chains
+      responses:
+        "200":
+          description: Successful list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterChainListJson'
+              examples:
+                example:
+                  value:
+                    filterChain:
+                      filters:
+                        - "@name": "web"
+                          "@class": "org.geoserver.security.HtmlLoginFilterChain"
+                          "@path": "/web/**,/gwc/rest/web/**,/"
+                          "@disabled": false
+                          "@allowSessionCreation": true
+                          "@ssl": false
+                          "@matchHTTPMethod": false
+                          "@interceptorName": "interceptor"
+                          "@exceptionTranslationName": "exception"
+                          filter: ["rememberme","form","oidc-test","anonymous"]
+                        - "@name": "webLogin"
+                          "@class": "org.geoserver.security.ConstantFilterChain"
+                          "@path": "/j_spring_security_check,/j_spring_security_check/"
+                          "@disabled": false
+                          "@allowSessionCreation": true
+                          "@ssl": false
+                          "@matchHTTPMethod": false
+                          filter: "form"
+                        - "@name": "webLogout"
+                          "@class": "org.geoserver.security.LogoutFilterChain"
+                          "@path": "/j_spring_security_logout,/j_spring_security_logout/"
+                          "@disabled": false
+                          "@allowSessionCreation": false
+                          "@ssl": false
+                          "@matchHTTPMethod": false
+                          filter: "formLogout"
+                        - "@name": "rest"
+                          "@class": "org.geoserver.security.ServiceLoginFilterChain"
+                          "@path": "/rest.*,/rest/**"
+                          "@disabled": false
+                          "@allowSessionCreation": false
+                          "@ssl": false
+                          "@matchHTTPMethod": false
+                          "@interceptorName": "restInterceptor"
+                          "@exceptionTranslationName": "exception"
+                          filter: ["basic","anonymous"]
+                        - "@name": "gwc"
+                          "@class": "org.geoserver.security.ServiceLoginFilterChain"
+                          "@path": "/gwc/rest.*,/gwc/rest/**"
+                          "@disabled": false
+                          "@allowSessionCreation": false
+                          "@ssl": false
+                          "@matchHTTPMethod": false
+                          "@interceptorName": "restInterceptor"
+                          "@exceptionTranslationName": "exception"
+                          filter: "basic"
+                        - "@name": "default"
+                          "@class": "org.geoserver.security.ServiceLoginFilterChain"
+                          "@path": "/**"
+                          "@disabled": false
+                          "@allowSessionCreation": false
+                          "@ssl": false
+                          "@matchHTTPMethod": false
+                          "@interceptorName": "interceptor"
+                          "@exceptionTranslationName": "exception"
+                          filter: ["basic","oidc-test","anonymous"]
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/FilterChainListXml'
+              examples:
+                example:
+                  value: |
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <filterChain>
+                      <filters name="web" class="org.geoserver.security.HtmlLoginFilterChain"
+                               path="/web/**,/gwc/rest/web/**,/" disabled="false"
+                               allowSessionCreation="true" ssl="false" matchHTTPMethod="false"
+                               interceptorName="interceptor" exceptionTranslationName="exception">
+                        <filter>rememberme</filter>
+                        <filter>form</filter>
+                        <filter>oidc-test</filter>
+                        <filter>anonymous</filter>
+                      </filters>
+                      <filters name="webLogin" class="org.geoserver.security.ConstantFilterChain"
+                               path="/j_spring_security_check,/j_spring_security_check/"
+                               disabled="false" allowSessionCreation="true" ssl="false"
+                               matchHTTPMethod="false">
+                        <filter>form</filter>
+                      </filters>
+                      <!-- more <filters> ... -->
+                    </filterChain>
+    post:
+      summary: Create a filter chain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilterChainSingleJson'
+            examples:
+              example:
+                value:
+                  filters:
+                    "@name": "t-new"
+                    "@class": "org.geoserver.security.HtmlLoginFilterChain"
+                    "@path": "/web/**,/gwc/rest/web/**,/"
+                    "@disabled": false
+                    "@allowSessionCreation": true
+                    "@ssl": false
+                    "@matchHTTPMethod": false
+                    "@interceptorName": "interceptor"
+                    "@exceptionTranslationName": "exception"
+                    filter: ["rememberme","form","anonymous"]
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/FilterChainItemXml'   # root <filters/>
+            examples:
+              example:
+                value: |
+                  <?xml version="1.0" encoding="UTF-8"?>
+                  <filters name="t-new" class="org.geoserver.security.HtmlLoginFilterChain"
+                           path="/web/**,/gwc/rest/web/**,/" disabled="false"
+                           allowSessionCreation="true" ssl="false" matchHTTPMethod="false"
+                           interceptorName="interceptor" exceptionTranslationName="exception">
+                    <filter>rememberme</filter>
+                    <filter>form</filter>
+                    <filter>anonymous</filter>
+                  </filters>
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad request (e.g., duplicate)
+        "403":
+          description: Forbidden
+        "500":
+          description: Server error
+
+  /security/filterChain/{chain_name}:
+    parameters:
+      - name: chain_name
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get a filter chain by name
+      responses:
+        "200":
+          description: Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterChainSingleJson'
+              examples:
+                example:
+                  value:
+                    filters:
+                      "@name": "web"
+                      "@class": "org.geoserver.security.HtmlLoginFilterChain"
+                      "@path": "/web/**,/gwc/rest/web/**,/"
+                      "@disabled": false
+                      "@allowSessionCreation": true
+                      "@ssl": false
+                      "@matchHTTPMethod": false
+                      "@interceptorName": "interceptor"
+                      "@exceptionTranslationName": "exception"
+                      filter: ["rememberme","form","oidc-test","anonymous"]
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/FilterChainItemXml'  # root <filters/>
+              examples:
+                example:
+                  value: |
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <filters name="web" class="org.geoserver.security.HtmlLoginFilterChain"
+                             path="/web/**,/gwc/rest/web/**,/" disabled="false"
+                             allowSessionCreation="true" ssl="false" matchHTTPMethod="false"
+                             interceptorName="interceptor" exceptionTranslationName="exception">
+                      <filter>rememberme</filter>
+                      <filter>form</filter>
+                      <filter>oidc-test</filter>
+                      <filter>anonymous</filter>
+                    </filters>
+        "404":
+          description: Not found
+    put:
+      summary: Update a filter chain
+      parameters:
+        - name: position
+          in: query
+          required: false
+          description: If provided, moves the chain to this index in the ordering.
+          schema:
+            type: integer
+            minimum: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilterChainSingleJson'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/FilterChainItemXml'   # root <filters/>
+      responses:
+        "200":
+          description: Updated
+        "400":
+          description: Bad request (e.g., name mismatch)
+        "404":
+          description: Not found
+        "500":
+          description: Server error
+    delete:
+      summary: Delete a filter chain
+      responses:
+        "200":
+          description: Deleted
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+
+  /security/filterChain/order:
+    put:
+      summary: Reorder filter chains
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderBodyJson'
+            examples:
+              example:
+                value:
+                  order: ["web","webLogin","webLogout","rest","gwc","default"]
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/OrderBodyXml'
+            examples:
+              example:
+                value: |
+                  <?xml version="1.0" encoding="UTF-8"?>
+                  <order>
+                    <order>web</order>
+                    <order>webLogin</order>
+                    <order>webLogout</order>
+                    <order>rest</order>
+                    <order>gwc</order>
+                    <order>default</order>
+                  </order>
+      responses:
+        "200":
+          description: Reordered
+        "400":
+          description: Invalid permutation
+        "403":
+          description: Forbidden
+        "500":
+          description: Server error
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    # ---------- JSON SHAPES ----------
+    FilterChainItemJson:
+      type: object
+      properties:
+        "@name":
+          type: string
+        "@class":
+          type: string
+        "@path":
+          type: string
+        "@disabled":
+          type: boolean
+        "@allowSessionCreation":
+          type: boolean
+        "@ssl":
+          type: boolean
+          description: Equivalent of requireSSL
+        "@matchHTTPMethod":
+          type: boolean
+        "@interceptorName":
+          type: string
+        "@exceptionTranslationName":
+          type: string
+        filter:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+      required: ["@name","@class","@path"]
+      additionalProperties: false
+
+    FilterChainSingleJson:
+      type: object
+      properties:
+        filters:
+          $ref: '#/components/schemas/FilterChainItemJson'
+      required: ["filters"]
+      additionalProperties: false
+
+    FilterChainListJson:
+      type: object
+      properties:
+        filterChain:
+          type: object
+          properties:
+            filters:
+              type: array
+              items:
+                $ref: '#/components/schemas/FilterChainItemJson'
+          required: ["filters"]
+      required: ["filterChain"]
+      additionalProperties: false
+
+    OrderBodyJson:
+      type: object
+      required: [order]
+      properties:
+        order:
+          type: array
+          items:
+            type: string
+      additionalProperties: false
+
+    # ---------- XML SHAPES ----------
+    FilterChainItemXml:
+      type: object
+      xml:
+        name: filters      # Root element is <filters/>
+      properties:
+        name:
+          type: string
+          xml:
+            attribute: true
+        class:
+          type: string
+          xml:
+            attribute: true
+        path:
+          type: string
+          xml:
+            attribute: true
+        disabled:
+          type: boolean
+          xml:
+            attribute: true
+        allowSessionCreation:
+          type: boolean
+          xml:
+            attribute: true
+        ssl:
+          type: boolean
+          description: Equivalent of requireSSL
+          xml:
+            attribute: true
+        matchHTTPMethod:
+          type: boolean
+          xml:
+            attribute: true
+        interceptorName:
+          type: string
+          xml:
+            attribute: true
+        exceptionTranslationName:
+          type: string
+          xml:
+            attribute: true
+        filter:
+          type: array
+          xml:
+            name: filter
+            wrapped: false
+          items:
+            type: string
+      required: [name, class, path]
+
+    FilterChainListXml:
+      type: object
+      xml:
+        name: filterChain     # Root element is <filterChain/>
+      properties:
+        filters:
+          type: array
+          xml:
+            name: filters
+            wrapped: false
+          items:
+            $ref: '#/components/schemas/FilterChainItemXml'
+
+    OrderBodyXml:
+      type: object
+      xml:
+        name: order          # Root element is <order/>
+      properties:
+        order:
+          type: array
+          xml:
+            name: order
+            wrapped: false
+          items:
+            type: string

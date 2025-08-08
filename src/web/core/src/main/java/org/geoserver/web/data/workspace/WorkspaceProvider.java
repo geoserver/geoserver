@@ -6,6 +6,7 @@
 package org.geoserver.web.data.workspace;
 
 import static org.geoserver.catalog.Predicates.sortBy;
+import static org.geoserver.config.CatalogModificationUserUpdater.TRACK_USER;
 
 import com.google.common.collect.Streams;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.api.filter.Filter;
@@ -73,6 +75,8 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
     public static final Property<WorkspaceInfo> MODIFIED_TIMESTAMP = new BeanProperty<>("datemodfied", "dateModified");
 
     public static final Property<WorkspaceInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
+
+    static final Property<WorkspaceInfo> MODIFIED_BY = new BeanProperty<>("modifiedby", "modifiedBy");
 
     public WorkspaceProvider() {
         setSort(NAME.getName(), SortOrder.ASCENDING);
@@ -155,6 +159,13 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
         SettingsInfo settings = getSettings();
         if (settings.isShowCreatedTimeColumnsInAdminList()) modifiedPropertiesList.add(CREATED_TIMESTAMP);
         if (settings.isShowModifiedTimeColumnsInAdminList()) modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        String trackUser = GeoServerExtensions.getProperty(TRACK_USER);
+        if (trackUser == null
+                        && GeoServerApplication.get()
+                                .getGeoServer()
+                                .getSettings()
+                                .isShowModifiedUserInAdminList()
+                || Boolean.parseBoolean(trackUser)) modifiedPropertiesList.add(MODIFIED_BY);
         return modifiedPropertiesList;
     }
 

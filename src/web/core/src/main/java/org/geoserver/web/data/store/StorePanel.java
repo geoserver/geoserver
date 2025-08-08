@@ -11,6 +11,7 @@ import static org.geoserver.web.data.store.StoreProvider.WORKSPACE;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -95,6 +96,8 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
             return new DateTimeLabel(id, StoreProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
         } else if (property == StoreProvider.CREATED_TIMESTAMP) {
             return new DateTimeLabel(id, StoreProvider.CREATED_TIMESTAMP.getModel(itemModel));
+        } else if (property == StoreProvider.MODIFIED_BY) {
+            return new Label(id, StoreProvider.MODIFIED_BY.getModel(itemModel));
         }
         return null;
     }

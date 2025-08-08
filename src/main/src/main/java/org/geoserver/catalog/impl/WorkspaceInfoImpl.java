@@ -25,6 +25,8 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
 
     protected Date dateModified;
 
+    protected String modifiedBy;
+
     @Override
     public String getId() {
         return id;
@@ -128,5 +130,15 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
     @Override
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    @Override
+    public void setModifiedBy(String userModified) {
+        this.modifiedBy = userModified;
     }
 }

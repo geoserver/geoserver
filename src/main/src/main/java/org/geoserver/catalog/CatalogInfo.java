@@ -38,4 +38,12 @@ public interface CatalogInfo extends Info {
     default void setDateModified(Date dateModified) {
         // do nothing
     }
+
+    default String getModifiedBy() {
+        return null;
+    }
+
+    default void setModifiedBy(String userName) {
+        // do nothing
+    }
 }

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Authentication-provider REST API
-  version: "1.0.0"
+  version: 1.0.0
   description: |
     Manage, order, enable and disable GeoServer authentication providers.
 
@@ -11,9 +11,6 @@ info:
 servers:
   - url: http://localhost:8080/geoserver/rest
     description: Local GeoServer
-
-security:
-  - basicAuth: []
 
 components:
   securitySchemes:
@@ -84,6 +81,9 @@ components:
             type: string
       example:
         order: [default, corporateLdap]
+
+security:
+  - basicAuth: []
 
 paths:
 

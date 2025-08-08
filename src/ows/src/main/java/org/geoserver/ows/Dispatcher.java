@@ -51,6 +51,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.ows.util.CachedBodyHttpServletRequest;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
@@ -88,7 +89,7 @@ import org.xml.sax.SAXException;
  *   <li>The version of the service ( optional )
  * </ol>
  *
- * <p>Additional, an OWS request can contain an arbitray number of additional parameters.
+ * <p>Additionally, an OWS request can contain an arbitrary number of additional parameters.
  *
  * <p>An OWS request can be specified in two forms. The first form is known as "KVP" in which all the parameters come in
  * the form of a set of key-value pairs. Commonly this type of request is made in an http "GET" request, the parameters
@@ -140,6 +141,15 @@ public class Dispatcher extends AbstractController {
 
     /** The amount of bytes to be read to determine the proper xml reader in POST request */
     static int XML_LOOKAHEAD = 8192;
+
+    /** Whether to wrap POST requests in a re-readable buffered wrapper */
+    static boolean BUFFER_POST = true;
+
+    /** Warn if cumulative header bytes exceed this threshold */
+    static int HEADER_WARN_BYTES = 32768;
+
+    /** Max bytes to copy into the request re-buffer (protection) */
+    static long MAX_REBUFFER_BYTES = 2L * 1024 * 1024; // 2 MB
 
     /** list of callbacks */
     List<DispatcherCallback> callbacks = Collections.emptyList();
@@ -227,11 +237,19 @@ public class Dispatcher extends AbstractController {
             throws Exception {
         preprocessRequest(httpRequest);
 
+        // Optionally wrap POST so the input can be safely re-read.
+        HttpServletRequest effective = httpRequest;
+        if (BUFFER_POST
+                && !"GET".equalsIgnoreCase(httpRequest.getMethod())
+                && !(httpRequest instanceof CachedBodyHttpServletRequest)) {
+            effective = CachedBodyHttpServletRequest.wrap(httpRequest, MAX_REBUFFER_BYTES);
+        }
+
         // create a new request instance
         Request request = new Request();
 
         // set request / response
-        request.setHttpRequest(httpRequest);
+        request.setHttpRequest(effective);
         request.setHttpResponse(httpResponse);
 
         Service service = null;

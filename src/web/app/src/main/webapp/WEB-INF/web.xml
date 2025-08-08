@@ -72,6 +72,11 @@
     </filter>
 
     <filter>
+        <filter-name>earlyBodyCachingFilter</filter-name>
+        <filter-class>org.geoserver.ows.util.EarlyBodyCachingFilter</filter-class>
+    </filter>
+
+    <filter>
         <filter-name>Set Character Encoding</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
         <init-param>
@@ -182,6 +187,12 @@
     </filter>
     -->
 
+    <filter-mapping>
+        <filter-name>earlyBodyCachingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+
     <!--
       THIS FILTER MAPPING MUST BE THE FIRST ONE, otherwise we end up with ruined chars in the input from the GUI
       See the "Note" in the Tomcat character encoding guide:
@@ -243,7 +254,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- general initializer, should be first thing to execute -->
+    <!-- general initializer should be the first thing to execute -->
     <listener>
         <listener-class>org.geoserver.GeoserverInitStartupListener</listener-class>
     </listener>

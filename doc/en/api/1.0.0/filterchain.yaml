@@ -9,7 +9,8 @@ info:
     - XML uses attributes on the `<filters>` element.
 
 servers:
-  - url: /
+  - url: http://localhost:8080/geoserver/rest
+    description: Local GeoServer
 
 security:
   - basicAuth: []
@@ -287,6 +288,7 @@ components:
     basicAuth:
       type: http
       scheme: basic
+      description: GeoServer administrator credentialss
 
   schemas:
     # ---------- JSON SHAPES ----------

@@ -46,7 +46,6 @@ The following links provide direct access to the GeoServer REST API documentatio
 * :api:`/urlchecks <urlchecks.yaml>`
 * :api:`/usergroup <usergroup.yaml>`
 * :api:`/roles <roles.yaml>`
-
 * :api:`/authProviders <authenticationproviders.yaml>`
 
 * GeoWebCache:
@@ -101,7 +100,6 @@ This section contains a number of examples which illustrate some of the most com
    imagemosaic
    appschema
    urlchecks
-
    authenticationproviders
    
 

@@ -1,7 +1,7 @@
-.. _rest_api_authproviders_reference:
+.. _rest_api_authproviders:
 
 Auth Providers (Endpoint Reference)
-==================================
+===================================
 
 This page summarizes the REST endpoints for managing authentication providers.
 For request/response shapes and full examples, see :ref:`rest_api_authproviders`.

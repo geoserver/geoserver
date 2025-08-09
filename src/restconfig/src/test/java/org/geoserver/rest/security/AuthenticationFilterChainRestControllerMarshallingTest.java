@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import junit.framework.TestCase;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.rest.RestBaseController;
@@ -36,9 +37,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 /**
- * End-to-end marshaling tests for AuthenticationFilterChain REST API.
- *
- * <p>All requests use header-based content negotiation (no .xml/.json suffixes).
+ * End-to-end marshalling tests for AuthenticationFilterChain REST API. Uses header-based content negotiation (no
+ * .xml/.json suffixes).
  */
 public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoServerSystemTestSupport {
 
@@ -198,6 +198,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     }
 
     private void safeDeleteXml(String name) throws Exception {
+        // Accept is mostly irrelevant for DELETE, but send XML to be explicit
         doDelete(BASE + "/" + name, CT_XML);
     }
 
@@ -216,10 +217,14 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     }
 
     private List<String> listNamesJson() throws Exception {
-        MockHttpServletResponse r = doGet(BASE, CT_JSON);
-        assertEquals(200, r.getStatus());
-        JsonNode root = MAPPER.readTree(r.getContentAsString());
-        JsonNode filters = root.has("filterChain") ? root.get("filterChain").get("filters") : root.get("filters");
+        String body = getAsString(BASE + ".json");
+        JsonNode root = MAPPER.readTree(body);
+        JsonNode filters = null;
+        if (root.has("filterChain")) {
+            filters = root.get("filterChain").get("filters");
+        } else {
+            filters = root.get("filters");
+        }
         List<String> names = new ArrayList<>();
         if (filters != null && filters.isArray()) {
             for (JsonNode n : filters) {
@@ -232,6 +237,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
 
     // ---------- JSON helpers for XStream-style (@-prefixed) -------------
 
+    // --- helpers for JSON attribute-style payloads ---
     private static JsonNode getAttr(JsonNode n, String key) {
         if (n == null || !n.isObject()) return null;
         if (n.has(key)) return n.get(key);
@@ -240,7 +246,10 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     }
 
     private ObjectNode normalizeChain(JsonNode raw) {
-        // Accepts either XStream-style ("@name") or plain keys and normalizes to plain keys.
+        // Takes either:
+        //   { "@name": "...", "@class":"...", "filter":[...] }  // XStream style
+        // or { "name": "...", "class":"...", "filters":[...] } // plain
+        // and returns a normalized object with plain keys and "filters" array
         ObjectNode out = MAPPER.createObjectNode();
         String[] scalarKeys = {
             "name",
@@ -263,10 +272,11 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
         JsonNode filters = raw.get("filters");
         if (filters == null) filters = raw.get("filter");
         if (filters == null) {
-            out.putArray("filters");
+            out.putArray("filters"); // empty
         } else if (filters.isArray()) {
             out.set("filters", filters);
         } else {
+            // single string into array
             ArrayNode arr = MAPPER.createArrayNode();
             arr.add(filters);
             out.set("filters", arr);
@@ -284,6 +294,8 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
             JsonNode n = dq.removeFirst();
 
             if (n.isObject()) {
+                // Common shapes:
+                // { "filters": { ... } } or { "filters": [ {...}, ... ] }
                 if (n.has("filters")) {
                     JsonNode f = n.get("filters");
                     if (f.isObject() && getAttr(f, "name") != null) {
@@ -297,8 +309,10 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
                     }
                 }
 
+                // Other wrapper: { "filterChain": { "filters": [...] } }
                 if (n.has("filterChain")) dq.addLast(n.get("filterChain"));
 
+                // Fallback: any object carrying a name attribute
                 if (getAttr(n, "name") != null) return normalizeChain(n);
 
                 n.properties().iterator().forEachRemaining(e -> dq.addLast(e.getValue()));
@@ -315,7 +329,8 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     public void testList_XML_containsCreated() throws Exception {
         String a = newName();
         try {
-            assertEquals(201, doPost(BASE, defaultChainXml(a), CT_XML, CT_XML).getStatus());
+            TestCase.assertEquals(
+                    201, doPost(BASE, defaultChainXml(a), CT_XML, CT_XML).getStatus());
             Document dom = getAsDOMWithAccept(BASE, 200, CT_XML);
             NodeList nodes = xp.getMatchingNodes("/filterChain/filters[@name='" + a + "']", dom);
             assertEquals(1, nodes.getLength());
@@ -328,7 +343,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     public void testList_JSON_containsCreated() throws Exception {
         String a = newName();
         try {
-            assertEquals(
+            TestCase.assertEquals(
                     201, doPost(BASE, defaultChainJson(a), CT_JSON, CT_JSON).getStatus());
             List<String> names = listNamesJson();
             assertTrue("New name should appear in JSON list", names.contains(a));
@@ -343,7 +358,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     public void testView_XML() throws Exception {
         String name = newName();
         try {
-            assertEquals(
+            TestCase.assertEquals(
                     201, doPost(BASE, defaultChainXml(name), CT_XML, CT_XML).getStatus());
             Document doc = getAsDOMWithAccept(BASE + "/" + name, 200, CT_XML);
             assertXpathEvaluatesTo(name, "/filters/@name", doc);
@@ -363,7 +378,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     public void testView_JSON() throws Exception {
         String name = newName();
         try {
-            assertEquals(
+            TestCase.assertEquals(
                     201, doPost(BASE, defaultChainJson(name), CT_JSON, CT_JSON).getStatus());
             MockHttpServletResponse r = doGet(BASE + "/" + name, CT_JSON);
             assertEquals(200, r.getStatus());
@@ -375,8 +390,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
             assertFalse(target.get("disabled").asBoolean());
             assertTrue(target.get("allowSessionCreation").asBoolean());
             assertFalse(target.get("ssl").asBoolean());
-            assertFalse(target.get("matchHTTPMethod").isMissingNode()
-                    && target.get("matchHTTPMethod").asBoolean());
+            assertFalse(target.get("matchHTTPMethod").asBoolean());
             assertTrue(target.get("filters").isArray());
             assertEquals(3, target.get("filters").size());
         } finally {
@@ -386,14 +400,14 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
 
     @Test
     public void testView_Unknown_404_XML_and_JSON() throws Exception {
-        assertEquals(404, doGet(BASE + "/does-not-exist", CT_XML).getStatus());
-        assertEquals(404, doGet(BASE + "/does-not-exist", CT_JSON).getStatus());
+        TestCase.assertEquals(404, doGet(BASE + "/does-not-exist", CT_XML).getStatus());
+        TestCase.assertEquals(404, doGet(BASE + "/does-not-exist", CT_JSON).getStatus());
     }
 
     @Test
     public void testView_ReservedOrder_405() throws Exception {
-        assertEquals(405, doGet(BASE + "/order", CT_XML).getStatus());
-        assertEquals(405, doGet(BASE + "/order", CT_JSON).getStatus());
+        TestCase.assertEquals(405, doGet(BASE + "/order", CT_XML).getStatus());
+        TestCase.assertEquals(405, doGet(BASE + "/order", CT_JSON).getStatus());
     }
 
     // ----------------- create -----------------
@@ -403,10 +417,11 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
         String name = newName();
         try {
             MockHttpServletResponse resp = doPost(BASE, defaultChainXml(name), CT_XML, CT_XML);
-            assertEquals(201, resp.getStatus());
+            TestCase.assertEquals(201, resp.getStatus());
             String location = resp.getHeader("Location");
             assertNotNull(location);
             assertTrue(location.endsWith("/security/filterChain/" + name));
+            // verify view
             getAsDOMWithAccept(BASE + "/" + name, 200, CT_XML);
         } finally {
             safeDeleteXml(name);
@@ -418,7 +433,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
         String name = newName();
         try {
             MockHttpServletResponse resp = doPost(BASE, defaultChainJson(name), CT_JSON, CT_JSON);
-            assertEquals(201, resp.getStatus());
+            TestCase.assertEquals(201, resp.getStatus());
             MockHttpServletResponse view = doGet(BASE + "/" + name, CT_JSON);
             JsonNode target = findFirstChain(MAPPER.readTree(view.getContentAsByteArray()));
             assertNotNull(target);
@@ -432,9 +447,9 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     public void testPost_Duplicate_400_XML_and_JSON() throws Exception {
         String name = newName();
         try {
-            assertEquals(
+            TestCase.assertEquals(
                     201, doPost(BASE, defaultChainXml(name), CT_XML, CT_XML).getStatus());
-            assertEquals(
+            TestCase.assertEquals(
                     400, doPost(BASE, defaultChainXml(name), CT_XML, CT_XML).getStatus());
         } finally {
             safeDeleteXml(name);
@@ -442,9 +457,9 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
 
         String j = newName();
         try {
-            assertEquals(
+            TestCase.assertEquals(
                     201, doPost(BASE, defaultChainJson(j), CT_JSON, CT_JSON).getStatus());
-            assertEquals(
+            TestCase.assertEquals(
                     400, doPost(BASE, defaultChainJson(j), CT_JSON, CT_JSON).getStatus());
         } finally {
             safeDeleteJson(j);
@@ -455,11 +470,11 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     public void testPost_BadPayload_400_XML_and_JSON() throws Exception {
         // XML: missing required name
         String badXml = defaultChainXml("X").replace(" name=\"X\"", "");
-        assertEquals(400, doPost(BASE, badXml, CT_XML, CT_XML).getStatus());
+        TestCase.assertEquals(400, doPost(BASE, badXml, CT_XML, CT_XML).getStatus());
 
         // JSON: remove name field
         String badJson = defaultChainJson("Y").replace("\"@name\":\"Y\",", "");
-        assertEquals(400, doPost(BASE, badJson, CT_JSON, CT_JSON).getStatus());
+        TestCase.assertEquals(400, doPost(BASE, badJson, CT_JSON, CT_JSON).getStatus());
     }
 
     // ----------------- update -----------------
@@ -468,21 +483,21 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     public void testPut_Update_200_XML_and_JSON() throws Exception {
         String name = newName();
         try {
-            assertEquals(
+            TestCase.assertEquals(
                     201, doPost(BASE, defaultChainXml(name), CT_XML, CT_XML).getStatus());
 
             // XML update: flip disabled -> true
             String updatedXml = chainXml(
                     name, "/web/**,/", true, true, false, false, Arrays.asList("rememberme", "form", "anonymous"));
             MockHttpServletResponse r1 = doPut(BASE + "/" + name, updatedXml, CT_XML, CT_XML);
-            assertEquals(200, r1.getStatus());
+            TestCase.assertEquals(200, r1.getStatus());
             Document doc = getAsDOMWithAccept(BASE + "/" + name, 200, CT_XML);
             assertXpathEvaluatesTo("true", "/filters/@disabled", doc);
 
             // JSON update: move position and verify disabled becomes false again
             String updatedJson = defaultChainJson(name); // disabled=false
             MockHttpServletResponse r2 = doPut(BASE + "/" + name + "?position=0", updatedJson, CT_JSON, CT_JSON);
-            assertEquals(200, r2.getStatus());
+            TestCase.assertEquals(200, r2.getStatus());
             JsonNode target = findFirstChain(
                     MAPPER.readTree(doGet(BASE + "/" + name, CT_JSON).getContentAsByteArray()));
             assertNotNull(target);
@@ -497,12 +512,13 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
         String a = newName();
         String b = newName();
         try {
-            assertEquals(201, doPost(BASE, defaultChainXml(a), CT_XML, CT_XML).getStatus());
+            TestCase.assertEquals(
+                    201, doPost(BASE, defaultChainXml(a), CT_XML, CT_XML).getStatus());
 
-            assertEquals(
+            TestCase.assertEquals(
                     400,
                     doPut(BASE + "/" + a, defaultChainXml(b), CT_XML, CT_XML).getStatus());
-            assertEquals(
+            TestCase.assertEquals(
                     400,
                     doPut(BASE + "/" + a, defaultChainJson(b), CT_JSON, CT_JSON).getStatus());
         } finally {
@@ -512,13 +528,13 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     }
 
     @Test
-    public void testPut_NotFound_400_XML_and_JSON() throws Exception {
+    public void testPut_NotFound_404_XML_and_JSON() throws Exception {
         String x = newName();
-        assertEquals(
+        TestCase.assertEquals(
                 400,
                 doPut(BASE + "/does-not-exist", defaultChainXml(x), CT_XML, CT_XML)
                         .getStatus());
-        assertEquals(
+        TestCase.assertEquals(
                 400,
                 doPut(BASE + "/does-not-exist", defaultChainJson(x), CT_JSON, CT_JSON)
                         .getStatus());
@@ -529,20 +545,22 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     @Test
     public void testDelete_200_and_View404_XML_and_JSON() throws Exception {
         String a = newName();
-        assertEquals(201, doPost(BASE, defaultChainXml(a), CT_XML, CT_XML).getStatus());
-        assertEquals(200, doDelete(BASE + "/" + a, CT_XML).getStatus());
-        assertEquals(404, doGet(BASE + "/" + a, CT_XML).getStatus());
+        TestCase.assertEquals(
+                201, doPost(BASE, defaultChainXml(a), CT_XML, CT_XML).getStatus());
+        TestCase.assertEquals(200, doDelete(BASE + "/" + a, CT_XML).getStatus());
+        TestCase.assertEquals(404, doGet(BASE + "/" + a, CT_XML).getStatus());
 
         String b = newName();
-        assertEquals(201, doPost(BASE, defaultChainJson(b), CT_JSON, CT_JSON).getStatus());
-        assertEquals(200, doDelete(BASE + "/" + b, CT_JSON).getStatus());
-        assertEquals(404, doGet(BASE + "/" + b, CT_JSON).getStatus());
+        TestCase.assertEquals(
+                201, doPost(BASE, defaultChainJson(b), CT_JSON, CT_JSON).getStatus());
+        TestCase.assertEquals(200, doDelete(BASE + "/" + b, CT_JSON).getStatus());
+        TestCase.assertEquals(404, doGet(BASE + "/" + b, CT_JSON).getStatus());
     }
 
     @Test
     public void testDelete_Unknown_410_XML_and_JSON() throws Exception {
-        assertEquals(410, doDelete(BASE + "/does-not-exist", CT_XML).getStatus());
-        assertEquals(410, doDelete(BASE + "/does-not-exist", CT_JSON).getStatus());
+        TestCase.assertEquals(410, doDelete(BASE + "/does-not-exist", CT_XML).getStatus());
+        TestCase.assertEquals(410, doDelete(BASE + "/does-not-exist", CT_JSON).getStatus());
     }
 
     // ----------------- order -----------------
@@ -552,15 +570,18 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
         String a = newName();
         String b = newName();
         try {
-            assertEquals(201, doPost(BASE, defaultChainXml(a), CT_XML, CT_XML).getStatus());
-            assertEquals(201, doPost(BASE, defaultChainXml(b), CT_XML, CT_XML).getStatus());
+            TestCase.assertEquals(
+                    201, doPost(BASE, defaultChainXml(a), CT_XML, CT_XML).getStatus());
+            TestCase.assertEquals(
+                    201, doPost(BASE, defaultChainXml(b), CT_XML, CT_XML).getStatus());
 
             List<String> cur = listNamesXml();
             assertTrue(cur.containsAll(Arrays.asList(a, b)));
             Collections.reverse(cur);
 
             String jsonBody = "{\"order\":" + toJsonArray(cur) + "}";
-            assertEquals(200, doPut(BASE + "/order", jsonBody, CT_JSON, CT_JSON).getStatus());
+            TestCase.assertEquals(
+                    200, doPut(BASE + "/order", jsonBody, CT_JSON, CT_JSON).getStatus());
 
             List<String> afterJson = listNamesXml(); // order applies to both, check via XML
             assertEquals(cur, afterJson);
@@ -568,9 +589,11 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
             // Also test XML order payload
             Collections.reverse(cur); // swap back
             String xmlBody = "<order>" + toXmlList("order", cur) + "</order>";
-            assertEquals(200, doPut(BASE + "/order", xmlBody, CT_XML, CT_XML).getStatus());
+            TestCase.assertEquals(
+                    200, doPut(BASE + "/order", xmlBody, CT_XML, CT_XML).getStatus());
             List<String> afterXml = listNamesXml();
             assertEquals(cur, afterXml);
+
         } finally {
             safeDeleteXml(a);
             safeDeleteXml(b);
@@ -581,10 +604,11 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
     public void testOrder_InvalidPermutation_400_JSON() throws Exception {
         String a = newName();
         try {
-            assertEquals(
+            TestCase.assertEquals(
                     201, doPost(BASE, defaultChainJson(a), CT_JSON, CT_JSON).getStatus());
             String body = "{\"order\":[\"nonexistent-only\"]}";
-            assertEquals(400, doPut(BASE + "/order", body, CT_JSON, CT_JSON).getStatus());
+            TestCase.assertEquals(
+                    400, doPut(BASE + "/order", body, CT_JSON, CT_JSON).getStatus());
         } finally {
             safeDeleteJson(a);
         }

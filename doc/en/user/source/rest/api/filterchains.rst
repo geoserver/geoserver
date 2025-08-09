@@ -1,437 +1,321 @@
 .. _rest_api_filterchains:
 
 Filter Chains
-==============
+=============
 
-.. _security_filterchains:
+This section documents the REST endpoints for managing **authentication filter chains**.
 
-``/security/filterChains``
-----------------------------------
+**Base path:** ``/rest/security/filterChain``
 
-Adds or Lists the filter chains in the geoserver systems
+The API supports both XML and JSON. When sending JSON requests, fields use
+regular property names (for example ``name``, ``clazz``, ``path``).
+**Responses**, however, encode filter-chain attributes with an ``@`` prefix
+(for example ``@name``, ``@class``, ``@path``) to match the XML attribute
+representation.
+
+----------------------------
+List or create filter chains
+----------------------------
+
+**Endpoint:** ``/security/filterChain``
 
 .. list-table::
    :header-rows: 1
 
    * - Method
-     - Action
-     - Status code
-     - Formats
-     - Default Format
-   * - GET
-     - List all filter chains in the system
-     - 200,403,500
-     - XML, JSON
-     -
-   * - POST
+     - Description
+     - Request ``Content-Type``
+     - Response ``Content-Type``
+     - Success
+   * - ``GET``
+     - List all configured filter chains
+     - –
+     - ``application/json`` or ``application/xml``
+     - ``200 OK``
+   * - ``POST``
      - Create a new filter chain
-     - 200,400,403,500
-     - XML, JSON
-     -
+     - ``application/json`` or ``application/xml``
+     - ``application/json`` or ``application/xml``
+     - ``201 Created`` (with ``Location`` header)
 
-Formats:
+**Response (JSON) – GET list**
 
-**XML**
+.. code-block:: json
 
-For Get (List - Response)
+   {
+     "filterChain": {
+       "filters": [
+         {
+           "@name": "web",
+           "@class": "org.geoserver.security.HtmlLoginFilterChain",
+           "@path": "/web/**,/gwc/rest/web/**,/",
+           "@disabled": false,
+           "@allowSessionCreation": true,
+           "@ssl": false,
+           "@matchHTTPMethod": false,
+           "@interceptorName": "interceptor",
+           "@exceptionTranslationName": "exception",
+           "filter": ["rememberme", "form", "oidc-test", "anonymous"]
+         },
+         {
+           "@name": "webLogin",
+           "@class": "org.geoserver.security.ConstantFilterChain",
+           "@path": "/j_spring_security_check,/j_spring_security_check/",
+           "@disabled": false,
+           "@allowSessionCreation": true,
+           "@ssl": false,
+           "@matchHTTPMethod": false,
+           "filter": "form"
+         },
+         {
+           "@name": "webLogout",
+           "@class": "org.geoserver.security.LogoutFilterChain",
+           "@path": "/j_spring_security_logout,/j_spring_security_logout/",
+           "@disabled": false,
+           "@allowSessionCreation": false,
+           "@ssl": false,
+           "@matchHTTPMethod": false,
+           "filter": "formLogout"
+         },
+         {
+           "@name": "rest",
+           "@class": "org.geoserver.security.ServiceLoginFilterChain",
+           "@path": "/rest.*,/rest/**",
+           "@disabled": false,
+           "@allowSessionCreation": false,
+           "@ssl": false,
+           "@matchHTTPMethod": false,
+           "@interceptorName": "restInterceptor",
+           "@exceptionTranslationName": "exception",
+           "filter": ["basic", "anonymous"]
+         },
+         {
+           "@name": "gwc",
+           "@class": "org.geoserver.security.ServiceLoginFilterChain",
+           "@path": "/gwc/rest.*,/gwc/rest/**",
+           "@disabled": false,
+           "@allowSessionCreation": false,
+           "@ssl": false,
+           "@matchHTTPMethod": false,
+           "@interceptorName": "restInterceptor",
+           "@exceptionTranslationName": "exception",
+           "filter": "basic"
+         },
+         {
+           "@name": "default",
+           "@class": "org.geoserver.security.ServiceLoginFilterChain",
+           "@path": "/**",
+           "@disabled": false,
+           "@allowSessionCreation": false,
+           "@ssl": false,
+           "@matchHTTPMethod": false,
+           "@interceptorName": "interceptor",
+           "@exceptionTranslationName": "exception",
+           "filter": ["basic", "oidc-test", "anonymous"]
+         }
+       ]
+     }
+   }
+
+**Response (XML) – GET list**
 
 .. code-block:: xml
 
-    <filterChains>
-        <filterChain>
-            <name>web-test-2</name>
-            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/security/filterChains/web-test-2.xml" type="application/atom+xml"/>
-        </filterChain>
-        <filterChain>
-            <name>web-test-5</name>
-            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/security/filterChains/web-test-5.xml" type="application/atom+xml"/>
-        </filterChain>
-    </fiterChains>
+   <filterChain>
+     <filters name="web" class="org.geoserver.security.HtmlLoginFilterChain"
+              path="/web/**,/gwc/rest/web/**,/"
+              disabled="false" allowSessionCreation="true"
+              ssl="false" matchHTTPMethod="false"
+              interceptorName="interceptor" exceptionTranslationName="exception">
+       <filter>rememberme</filter>
+       <filter>form</filter>
+       <filter>oidc-test</filter>
+       <filter>anonymous</filter>
+     </filters>
+     <!-- more <filters> ... -->
+   </filterChain>
 
+**Request (JSON) – POST create**
 
+.. code-block:: json
 
-For Post (Create - Request)
+   {
+     "filters": {
+       "name": "custom-web",
+       "clazz": "org.geoserver.security.HtmlLoginFilterChain",
+       "path": "/web/**,/gwc/rest/web/**,/",
+       "disabled": false,
+       "allowSessionCreation": true,
+       "requireSSL": false,
+       "matchHTTPMethod": false,
+       "interceptorName": "interceptor",
+       "exceptionTranslationName": "exception",
+       "filters": ["rememberme", "form", "anonymous"]
+     }
+   }
 
-Content-Type: application/xml
-Authentication: XXXXXX
+**Request (XML) – POST create**
 
 .. code-block:: xml
 
-    <filterChain>
-        <name>web-test-2</name>
-        <className>org.geoserver.security.HtmlLoginFilterChain</className>
-        <patterns>
-            <string>/web/**</string>
-            <string>/gwc/rest/web/**</string>
-            <string>/</string>
-        </patterns>
-        <filters>
-            <string>rememberme</string>
-            <string>form</string>\
-            <string>anonymous</string>
-        </filters>
-        <disabled>false</disabled>
-        <allowSessionCreation>true</allowSessionCreation>
-        <requireSSL>false</requireSSL>
-        <matchHTTPMethod>false</matchHTTPMethod>
-        <position>0</position>
-    </filterChain>
+   <filters name="custom-web" class="org.geoserver.security.HtmlLoginFilterChain"
+            path="/web/**,/gwc/rest/web/**,/"
+            disabled="false" allowSessionCreation="true"
+            ssl="false" matchHTTPMethod="false"
+            interceptorName="interceptor" exceptionTranslationName="exception">
+     <filter>rememberme</filter>
+     <filter>form</filter>
+     <filter>anonymous</filter>
+   </filters>
 
-For Post (Create - Response)
+-----------------------------
+Get, update or delete a chain
+-----------------------------
 
-201 Created
-Content-Type: text/plain
-Location: "http://localhost:9002/geoserver/rest/security/filterChains/web-test-2"
-
-**JSON**
-
-For Get (list)
-
-.. code-block:: json
-
-    {
-        "filterChains": {
-            "filterChain": [
-                {
-                    "name": "web-test-2",
-                    "href": "http://localhost:8080/geoserver/rest/security/filterChains/web-test-2.json"
-                },
-                {
-                    "name": "web-test-5",
-                    "href": "http://localhost:8080/geoserver/rest/security/filterChains/web-test-5.json"
-                }
-            ]
-        }
-    }
-
-
-For Post (create - request)
-
-.. code-block:: json
-
-    {
-        "filterChain": {
-            "name": "rest",
-            "className": "org.geoserver.security.ServiceLoginFilterChain",
-            "patterns": {
-                "string": [
-                    "/rest.*",
-                    "/rest/**"
-                ]
-            },
-            "filters": {
-                "string": [
-                    "basic",
-                    "anonymous"
-                ]
-            },
-            "disabled": false,
-            "allowSessionCreation": false,
-            "requireSSL": false,
-            "matchHTTPMethod": false,
-            "position": 6
-        }
-    }
-
-For Post (create - response)
-
-.. code-block:: json
-
-201 Created
-Content-Type: text/plain
-Location: "http://localhost:9002/geoserver/rest/security/filterChains/rest"
-
-
-Exceptions
-~~~~~~~~~~
-
-.. list-table::
-   :header-rows: 1
-
-   * - Exception
-     - Status code
-   * - Malformed request
-     - 400
-   * - No administrative privileges
-     - 403
-   * - Internal Server Error
-     - 500
-
-
-.. _security_authfilters_authfilter:
-
-``/security/filterChains/{filterChain}``
------------------------------------------
-
-View, Update or Delete an existing auth filter
-
+**Endpoint:** ``/security/filterChain/{chain_name}``
 
 .. list-table::
    :header-rows: 1
 
    * - Method
-     - Action
-     - Status code
-     - Formats
-     - Default Format
-   * - GET
-     - View the details of a filter chain on the geoserver
-     - 200,403,404,500
-     - XML, JSON
-     -
-   * - PUT
-     - Update the details of a filter chain on the geoserver
-     - 200,400,403,404,500
-     - XML, JSON
-     -
-   * - DELETE
-     - Delete a filter chain on the geoserver
-     - 200,403,410,500
-     -
-     -
+     - Description
+     - Request ``Content-Type``
+     - Response ``Content-Type``
+     - Success
+   * - ``GET``
+     - Retrieve a filter chain
+     - –
+     - ``application/json`` or ``application/xml``
+     - ``200 OK``
+   * - ``PUT``
+     - Update a filter chain (optionally move with ``?position=<n>``)
+     - ``application/json`` or ``application/xml``
+     - ``application/json`` or ``application/xml``
+     - ``200 OK``
+   * - ``DELETE``
+     - Delete a filter chain
+     - –
+     - –
+     - ``200 OK`` (``410 Gone`` if already deleted)
 
-
-Formats:
-
-**XML**
-
-Request GET: http://localhost:9002/geoserver/rest/security/filterChains/web-test-1
-Header Accept: application/xml
-
-.. code-block:: xml
-
-    <filterChain>
-        <name>web-test-1</name>
-        <className>org.geoserver.security.HtmlLoginFilterChain</className>
-        <patterns>
-            <string>/web/**</string>
-            <string>/gwc/rest/web/**</string>
-            <string>/</string>
-        </patterns>
-        <filters>
-            <string>rememberme</string>
-            <string>form</string>
-            <string>anonymous</string>
-        </filters>
-        <disabled>false</disabled>
-        <allowSessionCreation>true</allowSessionCreation>
-        <requireSSL>false</requireSSL>
-        <matchHTTPMethod>false</matchHTTPMethod>
-        <position>1</position>
-    </filterChain>
-
-Request PUT: http://localhost:9002/geoserver/rest/security/filterChains/web-test-1
-Header Content-Type: application/xml
-Header Accept: application/xml
-
-.. code-block:: xml
-
-    <filterChain>
-        <name>web-test-1</name>
-        <className>org.geoserver.security.HtmlLoginFilterChain</className>
-        <patterns>
-            <string>/web/**</string>
-            <string>/gwc/rest/web/**</string>
-            <string>/</string>
-        </patterns>
-        <filters>
-            <string>rememberme</string>
-            <string>form</string>
-            <string>anonymous</string>
-        </filters>
-        <disabled>false</disabled>
-        <allowSessionCreation>true</allowSessionCreation>
-        <requireSSL>false</requireSSL>
-        <matchHTTPMethod>false</matchHTTPMethod>
-        <position>1</position>
-    </filterChain>
-
-Response
-Status: 200
-
-.. code-block:: xml
-
-    <filterChain>
-        <name>web-test-1</name>
-        <className>org.geoserver.security.HtmlLoginFilterChain</className>
-        <patterns>
-            <string>/web/**</string>
-            <string>/gwc/rest/web/**</string>
-            <string>/</string>
-        </patterns>
-        <filters>
-            <string>rememberme</string>
-            <string>form</string>
-            <string>anonymous</string>
-        </filters>
-        <disabled>false</disabled>
-        <allowSessionCreation>true</allowSessionCreation>
-        <requireSSL>false</requireSSL>
-        <matchHTTPMethod>false</matchHTTPMethod>
-        <position>1</position>
-    </filterChain>
-
-Request DELETE: http://localhost:9002/geoserver/rest/security/filterChains/web-test-1
-
-Response:
-Status: 200
-
-.. code-block:: xml
-
-    <filterChain>
-        <name>web-test-1</name>
-        <className>org.geoserver.security.HtmlLoginFilterChain</className>
-        <patterns>
-            <string>/web/**</string>
-            <string>/gwc/rest/web/**</string>
-            <string>/</string>
-        </patterns>
-        <filters>
-            <string>rememberme</string>
-            <string>form</string>
-            <string>anonymous</string>
-        </filters>
-        <disabled>false</disabled>
-        <allowSessionCreation>true</allowSessionCreation>
-        <requireSSL>false</requireSSL>
-        <matchHTTPMethod>false</matchHTTPMethod>
-        <position>1</position>
-    </filterChain>
-
-**JSON**
-
-Request GET: http://localhost:9002/geoserver/rest/security/filterChains/web-test-2
-Header Accept: application/json
-
-Response
-Status: 200
+**Response (JSON) – GET single**
 
 .. code-block:: json
 
-    {
-        "filterChain": {
-            "name": "web-test-2",
-            "className": "org.geoserver.security.HtmlLoginFilterChain",
-            "patterns": {
-                "string": [
-                    "/web/**",
-                    "/gwc/rest/web/**",
-                    "/"
-                ]
-            },
-            "filters": {
-                "string": [
-                    "rememberme",
-                    "form",
-                    "anonymous"
-                ]
-            },
-            "disabled": false,
-            "allowSessionCreation": true,
-            "requireSSL": false,
-            "matchHTTPMethod": false,
-            "position": 0
-        }
-    }
+   {
+     "filters": {
+       "@name": "web",
+       "@class": "org.geoserver.security.HtmlLoginFilterChain",
+       "@path": "/web/**,/gwc/rest/web/**,/",
+       "@disabled": false,
+       "@allowSessionCreation": true,
+       "@ssl": false,
+       "@matchHTTPMethod": false,
+       "@interceptorName": "interceptor",
+       "@exceptionTranslationName": "exception",
+       "filter": ["rememberme", "form", "oidc-test", "anonymous"]
+     }
+   }
 
-Request PUT: http://localhost:9002/geoserver/rest/security/filterChains/web-test-2
-Header Content-Type: application/json
-Header Accept: application/json
+**Response (XML) – GET single**
 
-.. code-block:: json
+.. code-block:: xml
 
-    {
-        "filterChain": {
-            "name": "web-test-2",
-            "className": "org.geoserver.security.HtmlLoginFilterChain",
-            "patterns": {
-                "string": [
-                    "/web/**",
-                    "/gwc/rest/web/**",
-                    "/"
-                ]
-            },
-            "filters": {
-                "string": [
-                    "rememberme",
-                    "form",
-                    "anonymous"
-                ]
-            },
-            "disabled": false,
-            "allowSessionCreation": true,
-            "requireSSL": false,
-            "matchHTTPMethod": false,
-            "position": 0
-        }
-    }
+   <filters name="web" class="org.geoserver.security.HtmlLoginFilterChain"
+            path="/web/**,/gwc/rest/web/**,/"
+            disabled="false" allowSessionCreation="true"
+            ssl="false" matchHTTPMethod="false"
+            interceptorName="interceptor" exceptionTranslationName="exception">
+     <filter>rememberme</filter>
+     <filter>form</filter>
+     <filter>oidc-test</filter>
+     <filter>anonymous</filter>
+   </filters>
 
-Response
-Status: 200
+**Request (JSON) – PUT update**
+
+The JSON request body uses the same shape as **POST create**:
 
 .. code-block:: json
 
-    {
-        "filterChain": {
-            "name": "web-test-2",
-            "className": "org.geoserver.security.HtmlLoginFilterChain",
-            "patterns": {
-                "string": [
-                    "/web/**",
-                    "/gwc/rest/web/**",
-                    "/"
-                ]
-            },
-            "filters": {
-                "string": [
-                    "rememberme",
-                    "form",
-                    "anonymous"
-                ]
-            },
-            "disabled": false,
-            "allowSessionCreation": true,
-            "requireSSL": false,
-            "matchHTTPMethod": false,
-            "position": 0
-        }
-    }
+   {
+     "filters": {
+       "name": "web",
+       "clazz": "org.geoserver.security.HtmlLoginFilterChain",
+       "path": "/web/**,/gwc/rest/web/**,/",
+       "disabled": true,
+       "allowSessionCreation": true,
+       "requireSSL": false,
+       "matchHTTPMethod": false,
+       "interceptorName": "interceptor",
+       "exceptionTranslationName": "exception",
+       "filters": ["rememberme", "form"]
+     }
+   }
 
-Request DELETE: http://localhost:9002/geoserver/rest/security/filterChains/web-test-2
+**Request (XML) – PUT update**
 
-Response:
-Status: 200
+.. code-block:: xml
+
+   <filters name="web" class="org.geoserver.security.HtmlLoginFilterChain"
+            path="/web/**,/gwc/rest/web/**,/"
+            disabled="true" allowSessionCreation="true"
+            ssl="false" matchHTTPMethod="false"
+            interceptorName="interceptor" exceptionTranslationName="exception">
+     <filter>rememberme</filter>
+     <filter>form</filter>
+   </filters>
+
+------------------
+Reorder the chains
+------------------
+
+**Endpoint:** ``/security/filterChain/order``
+
+**Method:** ``PUT``
+
+Replaces the global filter-chain execution order.
+
+**Request (JSON)**
 
 .. code-block:: json
 
-    {
-        "filterChain": {
-            "name": "web-test-2",
-            "className": "org.geoserver.security.HtmlLoginFilterChain",
-            "patterns": {
-                "string": [
-                    "/web/**",
-                    "/gwc/rest/web/**",
-                    "/"
-                ]
-            },
-            "filters": {
-                "string": [
-                    "rememberme",
-                    "form",
-                    "anonymous"
-                ]
-            },
-            "disabled": false,
-            "allowSessionCreation": true,
-            "requireSSL": false,
-            "matchHTTPMethod": false,
-            "position": 0
-        }
-    }
+   { "order": ["web", "webLogin", "webLogout", "rest", "gwc", "default"] }
 
-Exceptions
-~~~~~~~~~~
+**Request (XML)**
+
+.. code-block:: xml
+
+   <order>
+     <order>web</order>
+     <order>webLogin</order>
+     <order>webLogout</order>
+     <order>rest</order>
+     <order>gwc</order>
+     <order>default</order>
+   </order>
+
+**Responses**
+
+* ``200 OK`` on success
+* ``400 Bad Request`` if the provided names are not a valid permutation
+* ``403 Forbidden`` if not authenticated as an administrator
+
+-------
+Remarks
+-------
+
+* In **JSON responses**, filter-chain attributes are rendered with an ``@`` prefix to
+  mirror XML attributes. In **JSON requests**, use the plain field names (no ``@``).
+* The ``filter`` property in JSON **responses** can be either a single string (for a
+  single filter) or an array of strings. In XML, filters are always repeated
+  ``<filter>`` elements.
+* When updating, you may move a chain to a specific position by supplying the
+  ``position`` query parameter, e.g. ``PUT /security/filterChain/myChain?position=0``.
+
+-----------
+Error codes
+-----------
 
 .. list-table::
    :header-rows: 1
@@ -442,9 +326,9 @@ Exceptions
      - 400
    * - No administrative privileges
      - 403
-   * - Authentication filter not found
+   * - Authentication filter or chain not found
      - 404
-   * - Gone - On Delete Only
+   * - Gone – on delete only
      - 410
    * - Internal Server Error
      - 500

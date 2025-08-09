@@ -419,7 +419,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
                 String simple = provider.getSimpleName() + "Config";
                 String pkg = provider.getPackage().getName();
 
-                String[] candidates = new String[] {
+                String[] candidates = {
                     pkg.replace(".auth", ".config") + "." + simple, // typical
                     "org.geoserver.security.config." + simple, // fallback
                     pkg + "." + simple // same package (defensive)

@@ -10,14 +10,23 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.rest.security.AuthenticationProviderRestController.*;
@@ -29,6 +38,7 @@ import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
 import org.geoserver.test.GeoServerTestSupport;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -61,6 +71,9 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     private AuthenticationProviderRestController controller;
     private AuthenticationProviderHelper authenticationProviderHelper;
 
+    /** Track providers created by each test so we can remove them in @After. */
+    private final Set<String> created = new LinkedHashSet<>();
+
     private final ObjectMapper MAPPER = new ObjectMapper();
 
     @Override
@@ -73,19 +86,19 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     }
 
     /**
-     * Remove any TEST-* auth providers from disk and from the enabled order so each test starts clean. We do this at
-     * the manager level (no controller) and keep the admin context out of it.
+     * Hard reset before each test: - remove TEST-* providers from the active order and from disk - reload security -
+     * clear auth
      */
     @Before
     public void resetProviders() throws Exception {
         GeoServerSecurityManager secMgr = getSecurityManager();
 
-        // remove from enabled list
+        // 1) Remove any test providers from enabled order
         SecurityManagerConfig smc = secMgr.loadSecurityConfig();
         smc.getAuthProviderNames().removeIf(name -> name != null && name.startsWith(TEST_PROVIDER_PREFIX));
         secMgr.saveSecurityConfig(smc);
 
-        // remove saved provider configs
+        // 2) Remove saved provider configs
         for (String name : new ArrayList<>(secMgr.listAuthenticationProviders())) {
             if (name != null && name.startsWith(TEST_PROVIDER_PREFIX)) {
                 try {
@@ -100,13 +113,44 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         }
 
         secMgr.reload();
+        created.clear();
         SecurityContextHolder.clearContext();
     }
 
-    // ----------------------------- helpers
+    /** Safe teardown: restore order to ["default"], delete created providers, clear auth. */
+    @Override
+    @After
+    public void tearDownInternal() throws Exception {
+        try {
+            setUser(); // ensure admin for cleanup
+
+            // Restore order to ["default"] (ignore if "default" is unknown)
+            try {
+                controller.reorder(jsonRequest(Collections.singletonMap("order", List.of("default"))));
+            } catch (RuntimeException e) {
+                // not fatal for cleanup; tests may have removed "default"
+            }
+
+            // Delete any providers created by the test
+            for (String name : created) {
+                try {
+                    controller.delete(name);
+                } catch (RuntimeException ignore) {
+                    // already gone or never persisted; fine
+                }
+            }
+        } finally {
+            created.clear();
+            SecurityContextHolder.clearContext();
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // helpers
+    // ---------------------------------------------------------------------
 
     private String generateName(String suffix) {
-        return TEST_PROVIDER_PREFIX + System.currentTimeMillis() + "-" + suffix;
+        return TEST_PROVIDER_PREFIX + System.nanoTime() + "-" + suffix;
     }
 
     private void setUser() {
@@ -149,7 +193,9 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         return Collections.singletonMap("authProvider", inner);
     }
 
-    // ----------------------------- list / one
+    // ---------------------------------------------------------------------
+    // list / one
+    // ---------------------------------------------------------------------
 
     /** list(): returns providers in enabled order; XML wrapper shape is correct. */
     @Test
@@ -160,14 +206,15 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             String n2 = generateName("list2");
             authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(n1, true);
             authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(n2, true);
+            created.add(n1);
+            created.add(n2);
 
             RestWrapper<AuthProviderCollection> result = controller.list();
             assertNotNull(result);
             AuthProviderCollection col = (AuthProviderCollection) result.getObject();
             assertNotNull(col);
 
-            SecurityManagerConfig cfg = getSecurityManager().loadSecurityConfig();
-            List<String> names = cfg.getAuthProviderNames();
+            List<String> names = getSecurityManager().loadSecurityConfig().getAuthProviderNames();
             assertThat(names, hasItems(n1, n2));
 
             String xml = toXml(col);
@@ -188,6 +235,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             String name = generateName("view");
             UsernamePasswordAuthenticationProviderConfig provider =
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, true);
+            created.add(name);
 
             RestWrapper<SecurityAuthProviderConfig> wrap = controller.one(provider.getName());
             SecurityAuthProviderConfig cfg = (SecurityAuthProviderConfig) wrap.getObject();
@@ -211,7 +259,9 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         }
     }
 
-    // ----------------------------- create
+    // ---------------------------------------------------------------------
+    // create
+    // ---------------------------------------------------------------------
 
     /** create(JSON): 201 + Location header + persisted object. */
     @Test
@@ -233,10 +283,11 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             assertNotNull(headers.getLocation());
             assertThat(headers.getLocation().getPath(), is("/security/authProviders/" + name));
 
-            SecurityAuthProviderConfig created =
+            SecurityAuthProviderConfig createdCfg =
                     (SecurityAuthProviderConfig) resp.getBody().getObject();
-            assertEquals(name, created.getName());
-            assertNotNull(created.getId());
+            assertEquals(name, createdCfg.getName());
+            assertNotNull(createdCfg.getId());
+            created.add(name);
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -254,6 +305,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             ResponseEntity<RestWrapper<SecurityAuthProviderConfig>> resp =
                     controller.create(xmlRequest(provider), 0, UriComponentsBuilder.newInstance());
             assertEquals(201, resp.getStatusCodeValue());
+            created.add(name);
 
             List<String> names = getSecurityManager().loadSecurityConfig().getAuthProviderNames();
             assertThat(names.get(0), is(name));
@@ -289,8 +341,11 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         String name = generateName("dup");
         UsernamePasswordAuthenticationProviderConfig p =
                 authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, false);
+
         controller.create(
                 jsonRequest(Collections.singletonMap("authProvider", p)), null, UriComponentsBuilder.newInstance());
+        created.add(name); // first create succeeded; track it
+
         controller.create(
                 jsonRequest(Collections.singletonMap("authProvider", p)), null, UriComponentsBuilder.newInstance());
     }
@@ -316,7 +371,9 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
                 jsonRequest(Collections.singletonMap("authProvider", p)), 9999, UriComponentsBuilder.newInstance());
     }
 
-    // ----------------------------- update
+    // ---------------------------------------------------------------------
+    // update
+    // ---------------------------------------------------------------------
 
     /** update(..., position=1): reorders and persists &lt;authProviderNames&gt; without touching IDs/classes. */
     @Test
@@ -328,6 +385,8 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
 
             authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(a, true);
             authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(b, true);
+            created.add(a);
+            created.add(b);
 
             // initial order contains "default"
             List<String> before = getSecurityManager().loadSecurityConfig().getAuthProviderNames();
@@ -350,18 +409,15 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             Set<String> enabled = new LinkedHashSet<>(after);
             Set<String> saved = getSecurityManager().listAuthenticationProviders();
             assertThat(enabled, is(new LinkedHashSet<>(Arrays.asList(b, a))));
-            assertThat(saved.contains(a), is(true));
-            assertThat(saved.contains(b), is(true));
-            assertThat(enabled.contains("default"), is(false));
+            assertTrue(saved.contains(a));
+            assertTrue(saved.contains(b));
+            assertFalse(enabled.contains("default"));
 
             // disable 'a' by ordering to [b]
             controller.reorder(jsonRequest(Collections.singletonMap("order", List.of(b))));
             List<String> onlyB = getSecurityManager().loadSecurityConfig().getAuthProviderNames();
             assertThat(onlyB, is(List.of(b)));
-            assertThat(getSecurityManager().listAuthenticationProviders().contains(a), is(true));
-
-            // cleanup
-            controller.reorder(jsonRequest(Collections.singletonMap("order", List.of("default"))));
+            assertTrue(getSecurityManager().listAuthenticationProviders().contains(a));
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -374,6 +430,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             setUser();
             String a = generateName("mismatch");
             authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(a, true);
+            created.add(a);
 
             UsernamePasswordAuthenticationProviderConfig wrong =
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(
@@ -390,6 +447,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         setUser();
         String a = generateName("a");
         authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(a, true);
+        created.add(a);
 
         UsernamePasswordAuthenticationProviderConfig payload =
                 authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(a, false);
@@ -397,19 +455,22 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         controller.update(a, jsonRequest(Collections.singletonMap("authProvider", payload)), null);
     }
 
-    /** update: out-of-range position -> clamped or rejected; here we expect 400. */
+    /** update: out-of-range position -> 400 BadRequest (controller validates/clamps per implementation). */
     @Test(expected = BadRequest.class)
     public void testUpdate_positionOutOfRange_isBadRequest() throws Exception {
         setUser();
         String a = generateName("a");
         authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(a, true);
+        created.add(a);
 
         UsernamePasswordAuthenticationProviderConfig payload =
                 authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(a, false);
         controller.update(a, jsonRequest(Collections.singletonMap("authProvider", payload)), 9999);
     }
 
-    // ----------------------------- delete
+    // ---------------------------------------------------------------------
+    // delete
+    // ---------------------------------------------------------------------
 
     /** delete(name): removed from config and from disk. */
     @Test
@@ -418,7 +479,11 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             setUser();
             String name = generateName("delete");
             authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, true);
+            // track then remove
+            created.add(name);
             controller.delete(name);
+            created.remove(name);
+
             try {
                 controller.one(name);
                 fail("Expected ProviderNotFound");
@@ -430,7 +495,9 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         }
     }
 
-    // ----------------------------- reorder
+    // ---------------------------------------------------------------------
+    // reorder
+    // ---------------------------------------------------------------------
 
     /** reorder(XML): sets enabled list exactly as provided. */
     @Test
@@ -440,6 +507,8 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         String b = generateName("b");
         authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(a, true);
         authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(b, true);
+        created.add(a);
+        created.add(b);
 
         AuthProviderOrder ord = new AuthProviderOrder();
         ord.setOrder(Arrays.asList(a, b));
@@ -456,7 +525,9 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         controller.reorder(jsonRequest(Collections.singletonMap("order", List.of("does-not-exist"))));
     }
 
-    // ----------------------------- security / method constraints
+    // ---------------------------------------------------------------------
+    // security / method constraints
+    // ---------------------------------------------------------------------
 
     /** list(): requires admin role. */
     @Test(expected = NotAuthorised.class)

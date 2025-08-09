@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import junit.framework.TestCase;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.rest.RestBaseController;
@@ -120,9 +119,8 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
                 + requireSSL + ",\n" + "    \"@matchHTTPMethod\": "
                 + matchHTTPMethod + ",\n" + "    \"@interceptorName\": "
                 + q(INTERCEPTOR) + ",\n" + "    \"@exceptionTranslationName\": "
-                + q(EXCEPTION_TRANSLATION) + ",\n" +
-                // IMPORTANT: singular "filter"
-                "    \"filter\": "
+                + q(EXCEPTION_TRANSLATION) + ",\n"
+                + "    \"filter\": "
                 + toJsonArray(filters) + "\n" + "  }\n"
                 + "}";
     }
@@ -168,9 +166,8 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
 
     private List<String> listNamesJSON() throws Exception {
         MockHttpServletResponse r = getAsServletResponse(BASE + ".json");
-        TestCase.assertEquals(200, r.getStatus());
+        assertEquals(200, r.getStatus());
         JsonNode root = om.readTree(r.getContentAsByteArray());
-        // Expect shape: { "filterChain": { "filters": [ { "name": ... }, ... ] } }
         JsonNode arr = root.path("filterChain").path("filters");
         List<String> names = new ArrayList<>();
         if (arr.isArray()) {
@@ -191,7 +188,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
     @Test
     public void testList_JSON_containsDefault() throws Exception {
         MockHttpServletResponse r = getAsServletResponse(BASE + ".json");
-        TestCase.assertEquals(200, r.getStatus());
+        assertEquals(200, r.getStatus());
         JsonNode root = om.readTree(r.getContentAsByteArray());
         JsonNode arr = root.path("filterChain").path("filters");
         boolean found = false;
@@ -205,10 +202,9 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
 
     @Test
     public void testView_XML() throws Exception {
-        // ensure one exists
         String name = newName();
         try {
-            TestCase.assertEquals(
+            assertEquals(
                     201, postAsServletResponse(BASE, defaultChainXml(name), XML).getStatus());
             Document doc = getAsDOM(BASE + "/" + name, 200);
             assertXpathEvaluatesTo(name, "/filters/@name", doc);
@@ -239,7 +235,6 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
             JsonNode obj = w.path("filters");
 
             assertEquals(name, obj.path("@name").asText());
-            // class can appear as "@class" or "class" depending on serializer
             String clazz = obj.has("@class")
                     ? obj.path("@class").asText()
                     : obj.path("class").asText();
@@ -249,9 +244,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
             assertTrue(obj.path("@allowSessionCreation").asBoolean());
             assertFalse(obj.path("@ssl").asBoolean());
             assertFalse(obj.path("@matchHTTPMethod").asBoolean());
-
-            // IMPORTANT: singular "filter"
-            assertEquals(3, obj.path("filter").size());
+            assertEquals(3, obj.path("filter").size()); // singular "filter"
         } finally {
             safeDelete(name);
         }
@@ -259,8 +252,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
 
     @Test
     public void testView_Unknown_404() throws Exception {
-        TestCase.assertEquals(
-                404, getAsServletResponse(BASE + "/does-not-exist").getStatus());
+        assertEquals(404, getAsServletResponse(BASE + "/does-not-exist").getStatus());
     }
 
     // ----------------- create -----------------
@@ -270,16 +262,14 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
         String name = newName();
         try {
             MockHttpServletResponse resp = postAsServletResponse(BASE, defaultChainXml(name), XML);
-            TestCase.assertEquals(201, resp.getStatus());
+            assertEquals(201, resp.getStatus());
             String location = resp.getHeader("Location");
             assertNotNull(location);
             assertTrue(location.endsWith("/security/filterChain/" + name));
 
-            // view as XML
             getAsDOM(BASE + "/" + name, 200);
-            // view as JSON
             MockHttpServletResponse r = getAsServletResponse(BASE + "/" + name + ".json");
-            TestCase.assertEquals(200, r.getStatus());
+            assertEquals(200, r.getStatus());
             JsonNode obj = om.readTree(r.getContentAsByteArray()).path("filters");
             assertEquals(name, obj.path("@name").asText());
         } finally {
@@ -291,14 +281,12 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
     public void testCreate_JSON_and_View_Both() throws Exception {
         String name = newName();
         try {
-            TestCase.assertEquals(
+            assertEquals(
                     201,
                     postAsServletResponse(BASE, defaultChainJson(name), JSON).getStatus());
-            // view as XML
             getAsDOM(BASE + "/" + name, 200);
-            // view as JSON
             MockHttpServletResponse r = getAsServletResponse(BASE + "/" + name + ".json");
-            TestCase.assertEquals(200, r.getStatus());
+            assertEquals(200, r.getStatus());
             assertEquals(
                     name,
                     om.readTree(r.getContentAsByteArray())
@@ -314,9 +302,9 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
     public void testCreate_Duplicate_400() throws Exception {
         String name = newName();
         try {
-            TestCase.assertEquals(
+            assertEquals(
                     201, postAsServletResponse(BASE, defaultChainXml(name), XML).getStatus());
-            TestCase.assertEquals(
+            assertEquals(
                     400, postAsServletResponse(BASE, defaultChainXml(name), XML).getStatus());
         } finally {
             safeDelete(name);
@@ -326,7 +314,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
     @Test
     public void testCreate_Unauthorised_403() throws Exception {
         SecurityContextHolder.clearContext();
-        TestCase.assertEquals(
+        assertEquals(
                 403,
                 postAsServletResponse(BASE, defaultChainXml(newName()), XML).getStatus());
         super.loginAsAdmin(); // restore
@@ -339,17 +327,15 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
         String a = newName();
         String b = newName();
         try {
-            TestCase.assertEquals(
+            assertEquals(
                     201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
-            TestCase.assertEquals(
+            assertEquals(
                     201, postAsServletResponse(BASE, defaultChainXml(b), XML).getStatus());
 
-            // move b to position 0 via PUT XML
             MockHttpServletResponse resp =
                     putAsServletResponse(BASE + "/" + b + "?position=0", defaultChainXml(b), XML);
-            TestCase.assertEquals(200, resp.getStatus());
+            assertEquals(200, resp.getStatus());
 
-            // verify order via XML list
             List<String> names = listNamesXML();
             assertTrue(names.size() >= 2);
             assertEquals(b, names.get(0));
@@ -363,17 +349,15 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
     public void testUpdate_JSON_200() throws Exception {
         String name = newName();
         try {
-            TestCase.assertEquals(
+            assertEquals(
                     201,
                     postAsServletResponse(BASE, defaultChainJson(name), JSON).getStatus());
 
-            // flip disabled to true, cut path list
             String updated = chainJson(
                     name, "/web/**,/", true, true, false, false, Arrays.asList("rememberme", "form", "anonymous"));
             MockHttpServletResponse resp = putAsServletResponse(BASE + "/" + name, updated, JSON);
-            TestCase.assertEquals(200, resp.getStatus());
+            assertEquals(200, resp.getStatus());
 
-            // verify JSON view reflects change
             MockHttpServletResponse r = getAsServletResponse(BASE + "/" + name + ".json");
             JsonNode obj = om.readTree(r.getContentAsByteArray()).path("filters");
             assertTrue(obj.path("@disabled").asBoolean());
@@ -388,10 +372,9 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
         String a = newName();
         String b = newName();
         try {
-            TestCase.assertEquals(
+            assertEquals(
                     201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
-            // PUT body contains different name than path variable
-            TestCase.assertEquals(
+            assertEquals(
                     400,
                     putAsServletResponse(BASE + "/" + a, defaultChainJson(b), JSON)
                             .getStatus());
@@ -406,20 +389,19 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
     @Test
     public void testDelete_200_and_View404() throws Exception {
         String a = newName();
-        TestCase.assertEquals(
-                201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
-        TestCase.assertEquals(200, deleteAsServletResponse(BASE + "/" + a).getStatus());
-        TestCase.assertEquals(404, getAsServletResponse(BASE + "/" + a).getStatus());
+        assertEquals(201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
+        assertEquals(200, deleteAsServletResponse(BASE + "/" + a).getStatus());
+        assertEquals(404, getAsServletResponse(BASE + "/" + a).getStatus());
     }
 
     @Test
     public void testDelete_NotAuthorised_403() throws Exception {
         String a = newName();
         try {
-            TestCase.assertEquals(
+            assertEquals(
                     201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
             SecurityContextHolder.clearContext();
-            TestCase.assertEquals(403, deleteAsServletResponse(BASE + "/" + a).getStatus());
+            assertEquals(403, deleteAsServletResponse(BASE + "/" + a).getStatus());
         } finally {
             super.loginAsAdmin();
             safeDelete(a);
@@ -433,20 +415,17 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
         String a = newName();
         String b = newName();
         try {
-            TestCase.assertEquals(
+            assertEquals(
                     201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
-            TestCase.assertEquals(
+            assertEquals(
                     201, postAsServletResponse(BASE, defaultChainXml(b), XML).getStatus());
 
             List<String> cur = listNamesJSON();
             assertTrue(cur.containsAll(Arrays.asList(a, b)));
             Collections.reverse(cur);
 
-            // With xs.alias("order", AuthFilterChainOrder.class) in controller:
             String body = "{ \"order\": " + toJsonArray(cur) + " }";
-
-            TestCase.assertEquals(
-                    200, putAsServletResponse(BASE + "/order", body, JSON).getStatus());
+            assertEquals(200, putAsServletResponse(BASE + "/order", body, JSON).getStatus());
 
             List<String> after = listNamesJSON();
             assertEquals(cur, after);
@@ -460,11 +439,10 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
     public void testOrder_InvalidPermutation_400() throws Exception {
         String a = newName();
         try {
-            TestCase.assertEquals(
+            assertEquals(
                     201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
             String body = "{ \"order\": [\"nonexistent-only\"] }";
-            TestCase.assertEquals(
-                    400, putAsServletResponse(BASE + "/order", body, JSON).getStatus());
+            assertEquals(400, putAsServletResponse(BASE + "/order", body, JSON).getStatus());
         } finally {
             safeDelete(a);
         }

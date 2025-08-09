@@ -243,16 +243,16 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
         // Accepts either XStream-style ("@name") or plain keys and normalizes to plain keys.
         ObjectNode out = MAPPER.createObjectNode();
         String[] scalarKeys = {
-                "name",
-                "class",
-                "path",
-                "disabled",
-                "allowSessionCreation",
-                "ssl",
-                "matchHTTPMethod",
-                "interceptorName",
-                "exceptionTranslationName",
-                "roleFilterName"
+            "name",
+            "class",
+            "path",
+            "disabled",
+            "allowSessionCreation",
+            "ssl",
+            "matchHTTPMethod",
+            "interceptorName",
+            "exceptionTranslationName",
+            "roleFilterName"
         };
         for (String k : scalarKeys) {
             JsonNode v = getAttr(raw, k);

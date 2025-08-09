@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.geoserver.rest.security.AuthenticationFilterController.NotAuthorised;
 import org.geoserver.rest.security.xml.AuthFilter;
 import org.geoserver.rest.wrapper.RestWrapper;
@@ -125,7 +126,7 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
             RestWrapper<AuthFilter> result = controller.list();
 
             List<AuthFilter> list = (List<AuthFilter>) Objects.requireNonNull(result.getObject());
-            List<String> names = list.stream().map(AuthFilter::getName).toList();
+            List<String> names = list.stream().map(AuthFilter::getName).collect(Collectors.toUnmodifiableList());
             SortedSet<String> filters = getSecurityManager().listFilters(GeoServerAuthenticationFilter.class);
             assertEquals("Expected all the filters to be returned", filters.size(), names.size());
             filters.stream()

@@ -47,7 +47,7 @@ The following links provide direct access to the GeoServer REST API documentatio
 * :api:`/usergroup <usergroup.yaml>`
 * :api:`/roles <roles.yaml>`
 * :api:`/filterChains <filterchains.yaml>`
-* :api:`/authFilters <securityfilterconfiguration.yaml>`
+* :api:`/authFilters <authenticationfilterconfiguration.yaml>`
 
 * GeoWebCache:
 

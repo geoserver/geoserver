@@ -1,176 +1,173 @@
+.. _rest_api_authproviders_reference:
 
-.. _rest_api_authproviders:
+Auth Providers (Endpoint Reference)
+==================================
 
-Auth Providers
-==============
+This page summarizes the REST endpoints for managing authentication providers.
+For request/response shapes and full examples, see :ref:`rest_api_authproviders`.
 
-The Security REST service lets administrators **list, create, update, delete,
-enable, disable and re‑order** authentication‑provider configurations.
+Base path: ``/geoserver/rest``
 
-Each provider is represented as a *single* XML element / JSON property whose
-**name equals the fully‑qualified class name**:
+Security
+--------
 
-*XML*
+- HTTP Basic auth
+- Requires ``ROLE_ADMINISTRATOR``
 
-.. code-block:: xml
+Content types
+-------------
 
-   <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig> … </…>
+- ``application/xml`` — uses the concrete config class name as the element
+- ``application/json`` — plain objects; request envelopes supported:
+  - ``{ "authProvider": { … } }`` for single
+  - ``{ "authProviders": [ { … }, … ] }`` for lists
 
-*JSON*
+Status codes
+------------
+
+- ``200`` OK, ``201`` Created
+- ``400`` Bad Request (malformed/validation/duplicate/reserved/position)
+- ``403`` Forbidden (not an administrator)
+- ``404`` Not Found
+- ``410`` Gone (already deleted)
+- ``500`` Internal Server Error
+
+Error body
+----------
 
 .. code-block:: json
 
-   {
-     "org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig": { … }
-   }
+   { "status": 400, "message": "Reason here" }
 
-For the full parameter list see the :api:`OpenAPI reference
-<authenticationproviders.yaml>`.
+Endpoints
+---------
 
+``GET /security/authProviders``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
---------------------------------------------------------------------
-``/security/authProviders``
---------------------------------------------------------------------
+List providers in **active order**.
 
-Adds or lists providers.
+- Produces: XML, JSON
+- Returns: object with ``authProviders`` array; each entry is a provider
 
-.. list-table::
-   :header-rows: 1
+``POST /security/authProviders``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   * - Method
-     - Action
-     - Status codes
-     - Formats
-   * - **GET**
-     - List providers (current *engine* order)
-     - 200, 403, 500
-     - XML, JSON
-   * - **POST**
-     - Create provider (optional ``?position=N``)
-     - 201, 400, 403, 500
-     - XML, JSON
+Create a provider; optionally **insert at position** via ``?position=N`` (0-based).
 
-*(existing examples unchanged, see above)*
+- Consumes/Produces: XML, JSON
+- Body (JSON, bare example):
 
+  .. code-block:: json
 
---------------------------------------------------------------------
-``/security/authProviders/{providerName}``
---------------------------------------------------------------------
+     {
+       "name": "corporateLdap",
+       "className": "org.geoserver.security.auth.LdapAuthenticationProvider",
+       "userGroupServiceName": "ldapUsers"
+     }
 
-View, update or delete a provider.
+- Body (XML):
 
-.. list-table::
-   :header-rows: 1
+  .. code-block:: xml
 
-   * - Method
-     - Action
-     - Status codes
-     - Formats
-   * - **GET**
-     - Retrieve provider
-     - 200, 403, 404, 500
-     - XML, JSON
-   * - **PUT**
-     - Update provider (body must include ``id``)
-     - 200, 400, 403, 404, 500
-     - XML, JSON
-   * - **DELETE**
-     - Remove provider
-     - 200, 403, 410, 500
-     - –
-
-*(existing examples unchanged, see above)*
-
-
---------------------------------------------------------------------
-``/security/authProviders/order``
---------------------------------------------------------------------
-**Enable, disable or re‑order providers** in a *single* request.
-
-Sending a new ``order`` list:
-
-* makes the **first name** the first to be consulted by GeoServer;
-* any providers **omitted** from the list are **disabled** (they remain
-  configured on disk but are not used until re‑added).
-
-Only **PUT** is allowed.
-
-.. list-table::
-   :header-rows: 1
-
-   * - Method
-     - Action
-     - Status codes
-     - Formats
-   * - **PUT**
-     - Replace active order (enable / disable)
-     - 200, 400, 403, 500
-     - XML, JSON
-
-Example — enable *corporateLdap* and make it first:
-
-.. admonition:: curl (JSON body)
-
-   curl -u admin:•••••• \
-        -X PUT \
-        -H "Content-Type: application/json" \
-        http://localhost:8080/geoserver/rest/security/authProviders/order <<'EOF'
-   {
-     "order": ["corporateLdap", "default"]
-   }
-   EOF
-
-*200 OK* – new order persisted.
-
-.. admonition:: curl (XML body)
-
-   curl -u admin:•••••• \
-        -X PUT \
-        -H "Content-Type: application/xml" \
-        http://localhost:8080/geoserver/rest/security/authProviders/order <<'EOF'
-   <order>
-     <order>corporateLdap</order>
-     <order>default</order>
-   </order>
-   EOF
-
-Resulting state when listed:
-
-.. code-block:: xml
-
-   <authProviders>
      <org.geoserver.security.config.LdapAuthenticationProviderConfig>
-       <!-- enabled (first) -->
+       <name>corporateLdap</name>
+       <className>org.geoserver.security.auth.LdapAuthenticationProvider</className>
+       <userGroupServiceName>ldapUsers</userGroupServiceName>
      </org.geoserver.security.config.LdapAuthenticationProviderConfig>
 
-     <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
-       <!-- enabled (second) -->
-     </org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
-   </authProviders>
+- Response: ``201`` with ``Location`` header and created provider in body
 
-If we later *disable* ``corporateLdap`` we simply omit it:
+Rules:
+- ``className`` required
+- Name ``order`` is reserved
+- Duplicate names rejected
+- ``position`` must be within ``[0..size]``
 
-.. code-block:: json
+``GET /security/authProviders/{providerName}``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   { "order": ["default"] }
+Retrieve a provider by name (``.xml``/``.json`` suffix in the name is accepted and normalized).
 
-After that call ``corporateLdap`` remains on disk but is **inactive**.
+- Produces: XML, JSON
+- Response: provider object
 
-Exceptions
-~~~~~~~~~~
+``PUT /security/authProviders/{providerName}``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. list-table::
-   :header-rows: 1
+Update a provider and/or **move** it via ``?position=N``.
 
-   * - Condition
-     - Status code
-   * - Malformed request / validation failure
-     - 400
-   * - No administrative privileges
-     - 403
-   * - Provider not found
-     - 404
-   * - Gone (already deleted)
-     - 410
-   * - Internal server error
-     - 500
+- Consumes/Produces: XML, JSON
+- Body (JSON, bare example):
+
+  .. code-block:: json
+
+     {
+       "name": "corporateLdap",
+       "className": "org.geoserver.security.auth.LdapAuthenticationProvider",
+       "userGroupServiceName": "ldapUsers"
+     }
+
+- Body (XML):
+
+  .. code-block:: xml
+
+     <org.geoserver.security.config.LdapAuthenticationProviderConfig>
+       <name>corporateLdap</name>
+       <className>org.geoserver.security.auth.LdapAuthenticationProvider</className>
+       <userGroupServiceName>ldapUsers</userGroupServiceName>
+     </org.geoserver.security.config.LdapAuthenticationProviderConfig>
+
+Rules:
+- Path name must equal payload ``name``
+- ``className`` cannot change (omit to keep)
+- ``position`` clamped to list bounds; if omitted, order unchanged
+
+``DELETE /security/authProviders/{providerName}``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Delete a provider and remove it from the active order.
+
+- Produces: XML, JSON
+- Response: ``200`` (empty body)
+
+``PUT /security/authProviders/order``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Replace the **active order**.
+
+- Consumes/Produces: XML, JSON
+- Body (JSON):
+
+  .. code-block:: json
+
+     { "order": ["corporateLdap", "default"] }
+
+- Body (XML):
+
+  .. code-block:: xml
+
+     <order>
+       <order>corporateLdap</order>
+       <order>default</order>
+     </order>
+
+Semantics:
+- Names **listed** → **enabled** (in order)
+- Names **omitted** → **disabled** (config remains on disk)
+
+Validation:
+- The list must be non-empty
+- All names must correspond to known provider configs
+
+Operational notes
+-----------------
+
+- All write operations persist to the security XML and **reload** the security manager.
+- Writes are serialized to avoid concurrent update issues.
+
+OpenAPI
+-------
+
+See the :api:`Authentication-provider OpenAPI spec <authenticationproviders.yaml>`
+for schemas and machine-readable definitions.

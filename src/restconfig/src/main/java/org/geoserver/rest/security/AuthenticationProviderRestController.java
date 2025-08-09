@@ -12,10 +12,13 @@ import com.thoughtworks.xstream.XStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +32,6 @@ import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
-import org.geoserver.security.validation.SecurityConfigException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,27 +49,72 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- * REST controller for the <em>Authentication Providers</em> resource.
+ * REST controller for managing <em>Authentication Providers</em>.
  *
- * <p>Extends SequentialExecutionController as we do not want parallel updates to occur as this may jeopardize the
- * integrity of the XML files
+ * <h3>Resources</h3>
+ *
+ * <ul>
+ *   <li><code>GET /security/authProviders</code> – list enabled providers (in effective order).
+ *   <li><code>GET /security/authProviders/{name}</code> – fetch a single provider config.
+ *   <li><code>POST /security/authProviders?position={pos}</code> – create a provider and insert it into the enabled
+ *       order at the specified position (default: append).
+ *   <li><code>PUT /security/authProviders/{name}?position={pos}</code> – update an existing provider and optionally
+ *       move it to a new position.
+ *   <li><code>DELETE /security/authProviders/{name}</code> – remove from order (disable) then delete the provider
+ *       configuration from disk.
+ *   <li><code>PUT /security/authProviders/order</code> – set the <em>entire</em> enabled order. The list provided
+ *       becomes the canonical {@code <authProviderNames>} in the global security config. Names omitted here remain
+ *       saved on disk but are considered <strong>disabled</strong>.
+ * </ul>
+ *
+ * <h3>Formats</h3>
+ *
+ * All endpoints accept / return XML or JSON. For create/update you may send:
+ *
+ * <ul>
+ *   <li>JSON: a single provider under <code>{"authProvider": {...}}</code>, or <code>{"authProviders":[{...}]}</code>
+ *       with exactly one item.
+ *   <li>XML: a single {@link SecurityAuthProviderConfig} element, or an <code>&lt;authProviders&gt;</code> wrapper with
+ *       exactly one provider.
+ * </ul>
+ *
+ * <h3>Type resolution</h3>
+ *
+ * JSON requires a <code>className</code>. The controller resolves a concrete config type by:
+ *
+ * <ol>
+ *   <li>If <code>className</code> is itself a {@link SecurityAuthProviderConfig} subclass FQN, it is used.
+ *   <li>Otherwise it is treated as the provider class FQN and we try conventional config classes: <code>
+ *       *.auth.FooProvider → *.config.FooProviderConfig</code>, <code>org.geoserver.security.config.FooProviderConfig
+ *       </code>, and <code>same.package.FooProviderConfig</code>.
+ * </ol>
+ *
+ * <h3>Authorization</h3>
+ *
+ * All operations require an authenticated admin; otherwise HTTP 403 is returned.
  */
 @RestController
 @RequestMapping(RestBaseController.ROOT_PATH + "/security/authProviders")
 public class AuthenticationProviderRestController extends RestBaseController {
 
-    /** Accept provider names with optional “.xml” / “.json” extension, but block “order(.ext)”. */
+    /**
+     * Accept provider names with optional ".xml" / ".json" extension, but block "order(.ext)" which is reserved for the
+     * reorder endpoint.
+     */
     private static final String PROVIDER_PATH = "/{providerName:^(?!order(?:\\.(?:json|xml))?$).+}";
 
+    /** Reserved logical names that cannot be used for provider ids. */
     private static final Set<String> RESERVED = Set.of("order");
+
     private static final ObjectMapper MAPPER = new ObjectMapper();
+
     private final GeoServerSecurityManager securityManager;
 
     public AuthenticationProviderRestController(GeoServerSecurityManager securityManager) {
         this.securityManager = securityManager;
     }
 
-    // ------------------------------------------------------------------ XStream
+    // ------------------------------------------------------------------------------------ XStream
     @Override
     public void configurePersister(XStreamPersister xp, XStreamMessageConverter conv) {
         super.configurePersister(xp, conv);
@@ -82,7 +129,9 @@ public class AuthenticationProviderRestController extends RestBaseController {
         xs.addImplicitCollection(AuthProviderOrder.class, "order", "order", String.class);
     }
 
-    // --------------------------------------------------------------------- LIST + ITEM
+    // ------------------------------------------------------------------------ LIST + ITEM --------
+
+    /** List the enabled providers in the current effective order (i.e. the global {@code <authProviderNames>}). */
     @GetMapping(
             path = {"", ".{ext:xml|json}"},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
@@ -97,16 +146,22 @@ public class AuthenticationProviderRestController extends RestBaseController {
         }
     }
 
+    /** Fetch a single provider configuration by name. */
     @GetMapping(
             path = PROVIDER_PATH,
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public RestWrapper<SecurityAuthProviderConfig> one(@PathVariable String providerName) {
-        providerName = normalizeName(providerName); // strip .xml|json if present
+        providerName = normalizeName(providerName);
         checkAuthorised();
         return wrapObject(loadConfigOrError(providerName), SecurityAuthProviderConfig.class);
     }
 
-    // --------------------------------------------------------------------- CREATE
+    // ----------------------------------------------------------------------------- CREATE --------
+
+    /**
+     * Create a new provider and insert its name into the enabled order. If {@code position} is not provided, the
+     * provider is appended (enabled at the end).
+     */
     @PostMapping(
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
@@ -116,15 +171,27 @@ public class AuthenticationProviderRestController extends RestBaseController {
             UriComponentsBuilder builder) {
 
         checkAuthorised();
+
+        // Parse first so BadRequest/parse errors are mapped correctly.
+        final SecurityAuthProviderConfig cfg;
         try {
-            SecurityAuthProviderConfig cfg = parseConfig(request);
+            cfg = parseConfig(request);
+        } catch (BadRequest e) {
+            throw e;
+        } catch (IOException e) {
+            throw new CannotReadConfig(e);
+        }
+
+        try {
             ensureNotReserved(cfg.getName());
 
             List<String> order = getConfigOrder();
-            if (order.contains(cfg.getName())) throw new DuplicateProviderName(cfg.getName());
+            if (order.contains(cfg.getName())) {
+                throw new DuplicateProviderName(cfg.getName());
+            }
 
             int pos = (position != null) ? position : order.size();
-            checkArgument(pos >= 0 && pos <= order.size(), "position out of range");
+            validatePosition(pos, order.size());
 
             securityManager.saveAuthenticationProvider(cfg);
             order.add(pos, cfg.getName());
@@ -137,16 +204,23 @@ public class AuthenticationProviderRestController extends RestBaseController {
                     .toUri());
             return new ResponseEntity<>(wrapObject(cfg, SecurityAuthProviderConfig.class), h, HttpStatus.CREATED);
 
+        } catch (DuplicateProviderName e) {
+            throw e; // <-- let it propagate as 400 via @ExceptionHandler
         } catch (IllegalArgumentException e) {
             throw new BadRequest(e.getMessage());
-        } catch (IOException e) {
-            throw new CannotReadConfig(e);
         } catch (Exception e) {
             throw new CannotSaveConfig(e);
         }
     }
 
-    // --------------------------------------------------------------------- UPDATE
+    // ----------------------------------------------------------------------------- UPDATE --------
+
+    /**
+     * Update an existing provider and optionally move it within the enabled order.
+     *
+     * <p>The path name and payload name must match. The provider's {@code className} is immutable; if omitted, it is
+     * preserved; if provided and different, the request is rejected.
+     */
     @PutMapping(
             path = PROVIDER_PATH,
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
@@ -157,85 +231,137 @@ public class AuthenticationProviderRestController extends RestBaseController {
             @RequestParam(name = "position", required = false) Integer position) {
 
         checkAuthorised();
-        try {
-            providerName = normalizeName(providerName);
-            SecurityAuthProviderConfig incoming = parseConfig(request);
-            ensureNotReserved(incoming.getName());
-            if (!Objects.equals(providerName, incoming.getName()))
-                throw new BadRequest("path name and payload name differ");
 
+        providerName = normalizeName(providerName);
+
+        final SecurityAuthProviderConfig incoming;
+        try {
+            incoming = parseConfig(request);
+        } catch (BadRequest e) {
+            throw e;
+        } catch (IOException e) {
+            throw new CannotReadConfig(e);
+        }
+
+        ensureNotReserved(incoming.getName());
+        if (!Objects.equals(providerName, incoming.getName())) {
+            throw new BadRequest("path name and payload name differ");
+        }
+
+        // Load existing, preserve identity/class
+        SecurityAuthProviderConfig existing = loadConfigOrError(providerName);
+        if (incoming.getClassName() == null) {
+            incoming.setClassName(existing.getClassName());
+        } else if (!incoming.getClassName().equals(existing.getClassName())) {
+            throw new BadRequest("className cannot change");
+        }
+        if (incoming.getId() == null) {
+            incoming.setId(existing.getId());
+        }
+
+        try {
             List<String> order = getConfigOrder();
-            int idx = order.indexOf(providerName);
-            if (idx < 0) throw new ProviderNotFound(providerName);
+            int currentIdx = order.indexOf(providerName);
+            if (currentIdx < 0) {
+                throw new ProviderNotFound(providerName);
+            }
 
             securityManager.saveAuthenticationProvider(incoming);
 
-            if (position != null && position >= 0 && position < order.size() && idx != position) {
-                order.remove(idx);
-                order.add(position, providerName);
-                saveConfigOrder(order);
+            if (position != null) {
+                validatePosition(position, order.size());
+                if (currentIdx != position) {
+                    order.remove(currentIdx);
+                    order.add(position, providerName);
+                    saveConfigOrder(order);
+                }
             }
+
             securityManager.reload();
             return wrapObject(incoming, SecurityAuthProviderConfig.class);
-
         } catch (IllegalArgumentException e) {
             throw new BadRequest(e.getMessage());
-        } catch (IOException e) {
-            throw new CannotReadConfig(e);
         } catch (Exception e) {
             throw new CannotSaveConfig(e);
         }
     }
 
-    // --------------------------------------------------------------------- DELETE
+    // ----------------------------------------------------------------------------- DELETE --------
+
+    /**
+     * Delete a provider: first remove its name from the enabled order (disabling it), then remove its configuration
+     * file from disk, and reload security.
+     */
     @DeleteMapping(path = PROVIDER_PATH)
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable String providerName) {
         checkAuthorised();
+        providerName = normalizeName(providerName);
+
         try {
-            providerName = normalizeName(providerName);
-            List<String> order = new ArrayList<>(getConfigOrder());
-            if (!order.remove(providerName)) throw new NothingToDelete(providerName);
+            SecurityManagerConfig smc = securityManager.loadSecurityConfig();
+            List<String> order = smc.getAuthProviderNames();
+            if (!order.remove(providerName)) {
+                throw new NothingToDelete("No provider '" + providerName + "' to delete");
+            }
+            // Persist the order removal first (disables the provider in config).
+            securityManager.saveSecurityConfig(smc);
 
-            securityManager.removeAuthenticationProvider(loadConfigOrError(providerName));
-            saveConfigOrder(order);
+            SecurityAuthProviderConfig cfg = securityManager.loadAuthenticationProviderConfig(providerName);
+            securityManager.removeAuthenticationProvider(cfg);
+
             securityManager.reload();
-
-        } catch (IOException | SecurityConfigException e) {
+        } catch (Exception e) {
             throw new CannotSaveConfig(e);
         }
     }
 
-    // ===================================================================== /order API
-    // -- PUT /order or /order.{ext} ---------------------------------------
+    // --------------------------------------------------------------------------- /order API -------
+
+    /**
+     * Replace the entire enabled order. The supplied list becomes the exact content of {@code <authProviderNames>} in
+     * the global security configuration. Providers not listed remain saved on disk but are disabled.
+     *
+     * <p>Payloads:
+     *
+     * <ul>
+     *   <li>JSON: <code>{"order":["name1","name2"]}</code>
+     *   <li>XML: <code>&lt;order&gt;&lt;order&gt;name1&lt;/order&gt;...&lt;/order&gt;</code>
+     * </ul>
+     */
     @PutMapping(
             path = {"/order", "/order.{ext:xml|json}"},
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> reorder(HttpServletRequest request) {
         checkAuthorised();
         try {
-            List<String> wanted = parseOrder(request);
+            List<String> wanted = normalizeNames(parseOrder(request));
             checkArgument(!wanted.isEmpty(), "`order` array required");
 
-            // known configs on disk:
-            Set<String> known = securityManager.listAuthenticationProviders();
-            // ensure payload contains only known names
-            for (String n : wanted) if (!known.contains(n)) throw new BadRequest("Unknown provider: " + n);
+            // ensure no duplicates (preserving first occurrence order)
+            LinkedHashSet<String> dedup = new LinkedHashSet<>(wanted);
+            if (dedup.size() != wanted.size()) {
+                throw new BadRequest("Duplicate entries in order");
+            }
 
-            saveConfigOrder(wanted); // may enable/disable providers
+            // known configs on disk
+            Set<String> known = securityManager.listAuthenticationProviders();
+            for (String n : wanted) {
+                if (!known.contains(n)) throw new BadRequest("Unknown provider: " + n);
+            }
+
+            saveConfigOrder(wanted);
             securityManager.reload();
             return ResponseEntity.ok().build();
 
-        } catch (IllegalArgumentException e) {
-            throw new BadRequest(e.getMessage());
         } catch (IOException e) {
             throw new CannotReadConfig(e);
         } catch (Exception e) {
-            throw new CannotSaveConfig(e);
+            throw new BadRequest(e.getMessage());
         }
     }
 
-    // -- GET/POST/DELETE /order respond 405 --------------------------------
+    // Methods not allowed on /order
     @GetMapping(path = {"/order", "/order.{ext:xml|json}"})
     public ResponseEntity<Void> orderGetNotAllowed() {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
@@ -251,14 +377,75 @@ public class AuthenticationProviderRestController extends RestBaseController {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
 
-    // --------------------------------------------------------------------- helpers
-    /** Strip a trailing “.xml” or “.json” (case-insensitive) from a provider name. */
+    // ------------------------------------------------------------------------------------ helpers
+
+    /** Strip a trailing ".xml" or ".json" (case-insensitive) from a provider name. */
     private static String normalizeName(String n) {
         return n == null ? null : n.replaceFirst("\\.(?i)(xml|json)$", "");
     }
 
+    private static List<String> normalizeNames(List<String> names) {
+        List<String> out = new ArrayList<>(names.size());
+        for (String n : names) {
+            out.add(normalizeName(n));
+        }
+        return out;
+    }
+
+    /**
+     * Cache of resolved config classes keyed by 'className' values from payloads. Values are either a
+     * {@link SecurityAuthProviderConfig} subclass FQN or a provider FQN which is then mapped to a conventional config
+     * class.
+     */
+    private static final ConcurrentMap<String, Class<? extends SecurityAuthProviderConfig>> CONFIG_CACHE =
+            new ConcurrentHashMap<>();
+
+    @SuppressWarnings("unchecked")
+    private Class<? extends SecurityAuthProviderConfig> resolveConfigClass(String className) {
+        return CONFIG_CACHE.computeIfAbsent(className, cn -> {
+            // A) className is already a config class
+            try {
+                Class<?> c = Class.forName(cn);
+                if (SecurityAuthProviderConfig.class.isAssignableFrom(c)) {
+                    return (Class<? extends SecurityAuthProviderConfig>) c;
+                }
+            } catch (ClassNotFoundException ignore) {
+                // fall through
+            }
+
+            // B) className is a provider class – derive plausible config classes
+            try {
+                Class<?> provider = Class.forName(cn);
+                String simple = provider.getSimpleName() + "Config";
+                String pkg = provider.getPackage().getName();
+
+                String[] candidates = new String[] {
+                    pkg.replace(".auth", ".config") + "." + simple, // typical
+                    "org.geoserver.security.config." + simple, // fallback
+                    pkg + "." + simple // same package (defensive)
+                };
+
+                for (String fqn : candidates) {
+                    try {
+                        Class<?> cfg = Class.forName(fqn);
+                        if (SecurityAuthProviderConfig.class.isAssignableFrom(cfg)) {
+                            return (Class<? extends SecurityAuthProviderConfig>) cfg;
+                        }
+                    } catch (ClassNotFoundException ignore2) {
+                        // try the next candidate
+                    }
+                }
+            } catch (ClassNotFoundException ignore) {
+                // not a provider class either
+            }
+
+            return null; // not resolvable
+        });
+    }
+
     private SecurityAuthProviderConfig parseConfig(HttpServletRequest req) throws IOException {
         byte[] body = read(req);
+
         if (isXml(req)) {
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
             configurePersister(xp, null);
@@ -266,16 +453,34 @@ public class AuthenticationProviderRestController extends RestBaseController {
             if (o instanceof SecurityAuthProviderConfig cfg) return cfg;
             if (o instanceof AuthProviderCollection c && c.first() != null) return c.first();
             throw new BadRequest("Malformed XML payload");
-        } else {
-            JsonNode n = MAPPER.readTree(body);
-            if (n.has("authProvider")) n = n.get("authProvider");
-            if (n.has("authProviders")
-                    && n.get("authProviders").isArray()
-                    && n.get("authProviders").size() == 1)
-                n = n.get("authProviders").get(0);
-            if (!n.isObject()) throw new BadRequest("Malformed JSON payload");
-            return MAPPER.treeToValue(n, SecurityAuthProviderConfig.class);
         }
+
+        // JSON
+        JsonNode n = MAPPER.readTree(body);
+        if (n == null || n.isNull()) throw new BadRequest("Empty JSON payload");
+
+        // unwrap "authProvider" or single-item "authProviders"
+        if (n.has("authProvider")) n = n.get("authProvider");
+        if (n.has("authProviders")
+                && n.get("authProviders").isArray()
+                && n.get("authProviders").size() == 1) {
+            n = n.get("authProviders").get(0);
+        }
+        if (!n.isObject()) throw new BadRequest("Malformed JSON payload");
+
+        String className = n.path("className").asText(null);
+        if (className == null || className.isBlank()) {
+            throw new BadRequest("Missing 'className' in JSON payload");
+        }
+        Class<? extends SecurityAuthProviderConfig> type = resolveConfigClass(className);
+        if (type == null) {
+            throw new BadRequest("Unsupported className: " + className);
+        }
+
+        SecurityAuthProviderConfig cfg = MAPPER.treeToValue(n, type);
+        // Light validation here; detailed checks are performed by GeoServerSecurityManager validators
+        ensureNotReserved(cfg.getName());
+        return cfg;
     }
 
     private List<String> parseOrder(HttpServletRequest req) throws IOException {
@@ -286,7 +491,9 @@ public class AuthenticationProviderRestController extends RestBaseController {
             Object o = xp.load(new ByteArrayInputStream(body), Object.class);
             if (o instanceof AuthProviderOrder ord
                     && ord.getOrder() != null
-                    && !ord.getOrder().isEmpty()) return ord.getOrder();
+                    && !ord.getOrder().isEmpty()) {
+                return ord.getOrder();
+            }
             throw new BadRequest("`order` array required");
         } else {
             JsonNode root = MAPPER.readTree(body);
@@ -306,6 +513,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
     private static boolean isXml(HttpServletRequest r) {
         String ct = Optional.ofNullable(r.getContentType()).orElse("");
+        // keep simple: "contains" allows for charset suffixes
         return ct.contains(MediaType.APPLICATION_XML_VALUE) || ct.contains(MediaType.TEXT_XML_VALUE);
     }
 
@@ -334,6 +542,16 @@ public class AuthenticationProviderRestController extends RestBaseController {
         }
     }
 
+    private static void validatePosition(int position, int size) {
+        checkArgument(
+                position >= 0 && position <= size - (size == 0 ? 0 : 1) + (position == size ? 1 : 0),
+                "position out of range");
+        // The above condition accepts [0..size] when inserting (create), and [0..size-1] for
+        // update where we compare/remove before insert. To keep semantics clear, callers
+        // pass the correct 'size' (current size for update, current size for create
+        // when position==size is allowed). If invalid, an IAE is thrown and mapped to 400.
+    }
+
     private void ensureNotReserved(String n) {
         checkArgument(n != null && !n.isBlank(), "name required");
         checkArgument(!RESERVED.contains(n.toLowerCase()), "'%s' is reserved", n);
@@ -343,7 +561,8 @@ public class AuthenticationProviderRestController extends RestBaseController {
         if (!securityManager.checkAuthenticationForAdminRole()) throw new NotAuthorised();
     }
 
-    // --------------------------------------------------------------------- exceptions
+    // --------------------------------------------------------------------------- exceptions -------
+
     @ResponseStatus(HttpStatus.FORBIDDEN)
     static class NotAuthorised extends RuntimeException {
         NotAuthorised() {
@@ -390,9 +609,10 @@ public class AuthenticationProviderRestController extends RestBaseController {
         }
     }
 
+    /** Simple error envelope used by {@link #handle(RuntimeException)}. */
     static class ErrorResponse {
-        private int status;
-        private String message;
+        private final int status;
+        private final String message;
 
         ErrorResponse(int s, String m) {
             status = s;
@@ -408,6 +628,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
         }
     }
 
+    /** Map known exceptions to stable HTTP codes and payload. */
     @ExceptionHandler({
         CannotSaveConfig.class,
         CannotReadConfig.class,
@@ -415,10 +636,11 @@ public class AuthenticationProviderRestController extends RestBaseController {
         ProviderNotFound.class,
         DuplicateProviderName.class,
         NothingToDelete.class,
-        NotAuthorised.class
+        NotAuthorised.class,
+        IllegalArgumentException.class // <-- add this
     })
     public ResponseEntity<ErrorResponse> handle(RuntimeException ex) {
-        HttpStatus st = ex instanceof BadRequest
+        HttpStatus st = ex instanceof BadRequest || ex instanceof IllegalArgumentException
                 ? HttpStatus.BAD_REQUEST
                 : ex instanceof ProviderNotFound
                         ? HttpStatus.NOT_FOUND

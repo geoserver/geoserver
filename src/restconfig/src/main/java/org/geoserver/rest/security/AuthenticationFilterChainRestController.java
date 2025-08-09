@@ -202,10 +202,11 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
             Map<String, RequestFilterChain> byName =
                     current.stream().collect(Collectors.toMap(RequestFilterChain::getName, c -> c));
-            List<RequestFilterChain> reordered = wanted.stream()
-                    .map(n -> Optional.ofNullable(byName.get(n))
-                            .orElseThrow(() -> new IllegalArgumentException("Unknown chain: " + n)))
-                    .collect(Collectors.toUnmodifiableList());
+            List<RequestFilterChain> reordered = new ArrayList<>();
+            for (String s : wanted) {
+                RequestFilterChain requestFilterChain = byName.get(s);
+                reordered.add(requestFilterChain);
+            }
 
             // IMPORTANT: persist in engine order (appears reversed when listed).
             List<RequestFilterChain> engineOrder = new ArrayList<>(reordered);

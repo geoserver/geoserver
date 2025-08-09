@@ -4,269 +4,447 @@
  */
 package org.geoserver.rest.security;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
-import org.geoserver.rest.security.AuthenticationFilterChainRestController.BadRequest;
-import org.geoserver.rest.security.AuthenticationFilterChainRestController.DuplicateChainName;
-import org.geoserver.rest.security.AuthenticationFilterChainRestController.FilterChainNotFound;
-import org.geoserver.rest.security.AuthenticationFilterChainRestController.NothingToDelete;
-import org.geoserver.rest.security.xml.AuthFilterChain;
-import org.geoserver.rest.wrapper.RestWrapper;
-import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.HtmlLoginFilterChain;
-import org.geoserver.test.GeoServerTestSupport;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.rest.RestBaseController;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
-public class AuthenticationFilterChainRestControllerTest extends GeoServerTestSupport {
-    private static final String DEFAULT_CHAIN_NAME = "default";
-    private static final String TEST_CHAIN_NAME_PREFIX = "TEST-";
-    public static final String ROLE_FILTER_NAME = null; // TODO find an actual role
-    private static final List<String> TEST_FILTERS = List.of("basic", "anonymous"); // TODO find an actual filter name
-    public static final boolean ALLOW_SESSION_CREATION_FLAG = true;
-    public static final boolean DISABLED_FLAG = true;
-    public static final boolean REQUIRE_SSL_FLAG = true;
-    public static final String CLASS_NAME = HtmlLoginFilterChain.class.getName();
-    public static final Set<String> HTTP_METHODS = Set.of("GET", "POST");
-    public static final Set<String> NEW_HTTP_METHODS = Set.of("GET");
-    public static final List<String> PATTERNS = List.of("/test/path1/*", "/test/path2/*");
-    public static final int POSITION = 1;
-    public static final int NEW_POSITION = 2;
-    public static final boolean MATCH_HTTP_METHOD_FLAG = true;
-    public static final String NEW_ROLE_FILTER_NAME = null; // TODO find an alternative
-    private static final List<String> NEW_TEST_FILTERS = List.of("basic"); // TODO find an actual filter name
-    private static final List<String> NEW_PATTERNS = List.of("/test/path1/*");
+/** System tests for AuthenticationFilterChainRestController using both XML and JSON. */
+public class AuthenticationFilterChainRestControllerTest extends GeoServerSystemTestSupport {
 
-    private AuthenticationFilterChainRestController controller;
+    private static final String BASE = RestBaseController.ROOT_PATH + "/security/filterChain";
+    private static final String CLASS_HTML = "org.geoserver.security.HtmlLoginFilterChain";
 
-    @Override
+    private static final String JSON = "application/json";
+    private static final String XML = "application/xml";
+
+    private static final String INTERCEPTOR = "interceptor";
+    private static final String EXCEPTION_TRANSLATION = "exception";
+
+    private final ObjectMapper om = new ObjectMapper();
+    private XpathEngine xp;
+
     @Before
-    public void oneTimeSetUp() throws Exception {
-        setValidating(true);
-        super.oneTimeSetUp();
-        GeoServerSecurityManager securityManager = applicationContext.getBean(GeoServerSecurityManager.class);
-        controller = new AuthenticationFilterChainRestController(securityManager);
+    public void setUp() {
+        xp = XMLUnit.newXpathEngine();
+        super.loginAsAdmin();
     }
 
-    public void setUser() {
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                "admin", "password", Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR")));
-        SecurityContextHolder.getContext().setAuthentication(auth);
-    }
-
-    private void clearUser() {
+    @After
+    public void tearDown() {
         SecurityContextHolder.clearContext();
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testListFilterChains() {
-        setUser();
+    // ----------------- helpers -----------------
 
-        try {
-            RestWrapper<AuthFilterChain> response = controller.list();
-            List<AuthFilterChain> authFilterChainList =
-                    (List<AuthFilterChain>) Objects.requireNonNull(response).getObject();
-            assertNotNull(authFilterChainList);
-            authFilterChainList.stream()
-                    .filter(chain -> chain.getName().equals(DEFAULT_CHAIN_NAME))
-                    .findFirst()
-                    .ifPresentOrElse(
-                            authFilterChain -> assertEquals(DEFAULT_CHAIN_NAME, authFilterChain.getName()),
-                            () -> fail("No default message"));
-        } finally {
-            clearUser();
-        }
+    private static String newName() {
+        return "t-" + UUID.randomUUID().toString().replace("-", "");
     }
 
-    @Test
-    public void testViewFilterChain() {
-        setUser();
-        try {
-            RestWrapper<AuthFilterChain> response = controller.view(DEFAULT_CHAIN_NAME);
-            AuthFilterChain authFilterChain = (AuthFilterChain) Objects.requireNonNull(response.getObject());
-            assertNotNull(authFilterChain);
-            assertEquals(DEFAULT_CHAIN_NAME, authFilterChain.getName());
-        } finally {
-            clearUser();
-        }
+    /** XML body for a single <filters ...> element (DTO: AuthFilterChainFilters). */
+    private static String chainXml(
+            String name,
+            String pathCsv,
+            boolean disabled,
+            boolean allowSessionCreation,
+            boolean ssl,
+            boolean matchHTTPMethod,
+            List<String> filters) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<filters");
+        sb.append(" name=\"").append(name).append('"');
+        sb.append(" class=\"").append(CLASS_HTML).append('"');
+        sb.append(" path=\"").append(pathCsv).append('"');
+        sb.append(" disabled=\"").append(disabled).append('"');
+        sb.append(" allowSessionCreation=\"").append(allowSessionCreation).append('"');
+        sb.append(" ssl=\"").append(ssl).append('"'); // alias of requireSSL
+        sb.append(" matchHTTPMethod=\"").append(matchHTTPMethod).append('"');
+        sb.append(" interceptorName=\"").append(INTERCEPTOR).append('"');
+        sb.append(" exceptionTranslationName=\"").append(EXCEPTION_TRANSLATION).append('"');
+        sb.append(">");
+        for (String f : filters) sb.append("<filter>").append(f).append("</filter>");
+        sb.append("</filters>");
+        return sb.toString();
     }
 
-    @Test(expected = FilterChainNotFound.class)
-    public void testViewFilterChain_Unknown() {
-        setUser();
-        try {
-            controller.view("UnknownName");
-        } finally {
-            clearUser();
-        }
+    private static String defaultChainXml(String name) {
+        return chainXml(
+                name,
+                "/web/**,/gwc/rest/web/**,/",
+                false, /* disabled */
+                true, /* allowSessionCreation */
+                false, /* ssl (requireSSL) */
+                false, /* matchHTTPMethod */
+                Arrays.asList("rememberme", "form", "anonymous"));
     }
 
-    @Test
-    public void testCreateFilterChain() {
-        setUser();
-        try {
-            UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
-            AuthFilterChain authFilterChain = createNewAuthFilterChain();
-            controller.create(authFilterChain, builder);
+    /** JSON body using RestWrapper with root "filters". */
+    private static String chainJson(
+            String name,
+            String pathCsv,
+            boolean disabled,
+            boolean allowSessionCreation,
+            boolean requireSSL,
+            boolean matchHTTPMethod,
+            List<String> filters) {
 
-            // Check it is accessible
-            RestWrapper<AuthFilterChain> viewResponse = controller.view(authFilterChain.getName());
-            AuthFilterChain viewFilterChain = (AuthFilterChain) Objects.requireNonNull(viewResponse.getObject());
-            assertNotNull(viewFilterChain);
-            assertEquals(authFilterChain.getName(), viewFilterChain.getName());
-            assertEquals(authFilterChain.getFilters(), viewFilterChain.getFilters());
-            assertEquals(authFilterChain.getRoleFilterName(), viewFilterChain.getRoleFilterName());
-            assertEquals(authFilterChain.getClassName(), viewFilterChain.getClassName());
-            assertEquals(authFilterChain.getHttpMethods(), viewFilterChain.getHttpMethods());
-            assertEquals(authFilterChain.getPatterns(), viewFilterChain.getPatterns());
-            assertEquals(authFilterChain.getPosition(), viewFilterChain.getPosition());
-            assertEquals(authFilterChain.isAllowSessionCreation(), viewFilterChain.isAllowSessionCreation());
-            assertEquals(authFilterChain.isDisabled(), viewFilterChain.isDisabled());
-            assertEquals(authFilterChain.isRequireSSL(), viewFilterChain.isRequireSSL());
-            assertEquals(authFilterChain.isMatchHTTPMethod(), viewFilterChain.isMatchHTTPMethod());
-        } finally {
-            clearUser();
-        }
+        return "{\n" + "  \"filters\": {\n"
+                + "    \"@name\": "
+                + q(name) + ",\n" + "    \"@class\": "
+                + q(CLASS_HTML) + ",\n" + "    \"@path\": "
+                + q(pathCsv) + ",\n" + "    \"@disabled\": "
+                + disabled + ",\n" + "    \"@allowSessionCreation\": "
+                + allowSessionCreation + ",\n" + "    \"@ssl\": "
+                + requireSSL + ",\n" + "    \"@matchHTTPMethod\": "
+                + matchHTTPMethod + ",\n" + "    \"@interceptorName\": "
+                + q(INTERCEPTOR) + ",\n" + "    \"@exceptionTranslationName\": "
+                + q(EXCEPTION_TRANSLATION) + ",\n"
+                + "    \"filter\": "
+                + toJsonArray(filters) + "\n" + "  }\n"
+                + "}";
     }
 
-    @Test(expected = DuplicateChainName.class)
-    public void testCreateFilterChain_duplicateName() {
-        setUser();
-        try {
-            UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
-            AuthFilterChain authFilterChain = createNewAuthFilterChain();
-            controller.create(authFilterChain, builder);
-            controller.create(authFilterChain, builder);
-        } finally {
-            clearUser();
-        }
+    private static String defaultChainJson(String name) {
+        return chainJson(
+                name,
+                "/web/**,/gwc/rest/web/**,/",
+                false, /* disabled */
+                true, /* allowSessionCreation */
+                false, /* requireSSL */
+                false, /* matchHTTPMethod */
+                Arrays.asList("rememberme", "form", "anonymous"));
     }
 
-    @Test
-    public void testUpdateFilterChain() {
-        setUser();
-        try {
-            UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
-            AuthFilterChain authFilterChain = createNewAuthFilterChain();
-            controller.create(authFilterChain, builder);
-
-            AuthFilterChain updatedAuthFilterChain = updateAuthFilterChain(authFilterChain);
-            controller.update(updatedAuthFilterChain.getName(), updatedAuthFilterChain);
-            RestWrapper<AuthFilterChain> responseFilterChainWrapper = controller.view(updatedAuthFilterChain.getName());
-            AuthFilterChain responseFilterChain =
-                    (AuthFilterChain) Objects.requireNonNull(responseFilterChainWrapper.getObject());
-            assertEquals(updatedAuthFilterChain.getName(), responseFilterChain.getName());
-            assertEquals(updatedAuthFilterChain.getFilters(), responseFilterChain.getFilters());
-            assertEquals(updatedAuthFilterChain.getRoleFilterName(), responseFilterChain.getRoleFilterName());
-            assertEquals(updatedAuthFilterChain.getClassName(), responseFilterChain.getClassName());
-            assertEquals(updatedAuthFilterChain.getHttpMethods(), responseFilterChain.getHttpMethods());
-            assertEquals(updatedAuthFilterChain.getPatterns(), responseFilterChain.getPatterns());
-            assertEquals(updatedAuthFilterChain.getPosition(), responseFilterChain.getPosition());
-            assertEquals(updatedAuthFilterChain.isAllowSessionCreation(), responseFilterChain.isAllowSessionCreation());
-            assertEquals(updatedAuthFilterChain.isDisabled(), responseFilterChain.isDisabled());
-            assertEquals(updatedAuthFilterChain.isRequireSSL(), responseFilterChain.isRequireSSL());
-            assertEquals(updatedAuthFilterChain.isMatchHTTPMethod(), responseFilterChain.isMatchHTTPMethod());
-        } finally {
-
-            clearUser();
-        }
+    private static String q(String s) {
+        return "\"" + s + "\"";
     }
 
-    @Test(expected = BadRequest.class)
-    public void testUpdateFilterChain_MismatchName() {
-        setUser();
-        try {
-            AuthFilterChain authFilterChain = createNewAuthFilterChain();
-            controller.update("unKnown", authFilterChain);
-        } finally {
-            clearUser();
+    private static String toJsonArray(List<String> items) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < items.size(); i++) {
+            if (i > 0) sb.append(',');
+            sb.append(q(items.get(i)));
         }
+        sb.append(']');
+        return sb.toString();
     }
+
+    private void safeDelete(String name) throws Exception {
+        deleteAsServletResponse(BASE + "/" + name); // 200 or 410 is fine
+    }
+
+    private List<String> listNamesXML() throws Exception {
+        Document dom = getAsDOM(BASE, 200);
+        NodeList nodes = xp.getMatchingNodes("/filterChain/filters/@name", dom);
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            names.add(nodes.item(i).getNodeValue());
+        }
+        return names;
+    }
+
+    private List<String> listNamesJSON() throws Exception {
+        MockHttpServletResponse r = getAsServletResponse(BASE + ".json");
+        assertEquals(200, r.getStatus());
+        JsonNode root = om.readTree(r.getContentAsByteArray());
+        JsonNode arr = root.path("filterChain").path("filters");
+        List<String> names = new ArrayList<>();
+        if (arr.isArray()) {
+            for (JsonNode n : arr) names.add(n.path("@name").asText());
+        }
+        return names;
+    }
+
+    // ----------------- list -----------------
 
     @Test
-    public void testDeleteFilterChain() {
-        setUser();
+    public void testList_XML_containsDefault() throws Exception {
+        Document dom = getAsDOM(BASE, 200);
+        NodeList nodes = xp.getMatchingNodes("/filterChain/filters[@name='default']", dom);
+        assertTrue(nodes.getLength() >= 1);
+    }
+
+    @Test
+    public void testList_JSON_containsDefault() throws Exception {
+        MockHttpServletResponse r = getAsServletResponse(BASE + ".json");
+        assertEquals(200, r.getStatus());
+        JsonNode root = om.readTree(r.getContentAsByteArray());
+        JsonNode arr = root.path("filterChain").path("filters");
+        boolean found = false;
+        if (arr.isArray()) {
+            for (JsonNode n : arr) if ("default".equals(n.path("@name").asText())) found = true;
+        }
+        assertTrue("default chain should be present", found);
+    }
+
+    // ----------------- view -----------------
+
+    @Test
+    public void testView_XML() throws Exception {
+        String name = newName();
         try {
-            UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
-
-            AuthFilterChain authFilterChain = createNewAuthFilterChain();
-            controller.create(authFilterChain, builder);
-
-            controller.delete(authFilterChain.getName());
-            try {
-                controller.view(authFilterChain.getName());
-                fail("Expected there to not exist");
-            } catch (FilterChainNotFound e) {
-                // expected
-            }
+            assertEquals(
+                    201, postAsServletResponse(BASE, defaultChainXml(name), XML).getStatus());
+            Document doc = getAsDOM(BASE + "/" + name, 200);
+            assertXpathEvaluatesTo(name, "/filters/@name", doc);
+            assertXpathEvaluatesTo(CLASS_HTML, "/filters/@class", doc);
+            assertXpathEvaluatesTo("false", "/filters/@disabled", doc);
+            assertXpathEvaluatesTo("true", "/filters/@allowSessionCreation", doc);
+            assertXpathEvaluatesTo("false", "/filters/@ssl", doc);
+            assertXpathEvaluatesTo("false", "/filters/@matchHTTPMethod", doc);
+            NodeList f = xp.getMatchingNodes("/filters/filter", doc);
+            assertEquals(3, f.getLength());
         } finally {
-            clearUser();
+            safeDelete(name);
         }
     }
 
-    @Test(expected = NothingToDelete.class)
-    public void testDeleteFilterChain_Unknown() {
-        setUser();
+    @Test
+    public void testView_JSON() throws Exception {
+        String name = newName();
         try {
-            controller.delete("UnknownName");
+            assertEquals(
+                    201,
+                    postAsServletResponse(BASE, defaultChainJson(name), JSON).getStatus());
+
+            MockHttpServletResponse r = getAsServletResponse(BASE + "/" + name + ".json");
+            assertEquals(200, r.getStatus());
+
+            JsonNode w = om.readTree(r.getContentAsByteArray());
+            JsonNode obj = w.path("filters");
+
+            assertEquals(name, obj.path("@name").asText());
+            String clazz = obj.has("@class")
+                    ? obj.path("@class").asText()
+                    : obj.path("class").asText();
+            assertEquals(CLASS_HTML, clazz);
+
+            assertFalse(obj.path("@disabled").asBoolean());
+            assertTrue(obj.path("@allowSessionCreation").asBoolean());
+            assertFalse(obj.path("@ssl").asBoolean());
+            assertFalse(obj.path("@matchHTTPMethod").asBoolean());
+            assertEquals(3, obj.path("filter").size()); // singular "filter"
         } finally {
-            clearUser();
+            safeDelete(name);
         }
     }
 
-    @Test(expected = BadRequest.class)
-    public void testDeleteFilterChain_cannotBeRemoved() {
-        setUser();
+    @Test
+    public void testView_Unknown_404() throws Exception {
+        assertEquals(404, getAsServletResponse(BASE + "/does-not-exist").getStatus());
+    }
+
+    // ----------------- create -----------------
+
+    @Test
+    public void testCreate_XML_and_View_Both() throws Exception {
+        String name = newName();
         try {
-            controller.delete("webLogout");
+            MockHttpServletResponse resp = postAsServletResponse(BASE, defaultChainXml(name), XML);
+            assertEquals(201, resp.getStatus());
+            String location = resp.getHeader("Location");
+            assertNotNull(location);
+            assertTrue(location.endsWith("/security/filterChain/" + name));
+
+            getAsDOM(BASE + "/" + name, 200);
+            MockHttpServletResponse r = getAsServletResponse(BASE + "/" + name + ".json");
+            assertEquals(200, r.getStatus());
+            JsonNode obj = om.readTree(r.getContentAsByteArray()).path("filters");
+            assertEquals(name, obj.path("@name").asText());
         } finally {
-            clearUser();
+            safeDelete(name);
         }
     }
 
-    public static AuthFilterChain createNewAuthFilterChain() {
-        AuthFilterChain authFilterChain = new AuthFilterChain();
-        authFilterChain.setName(TEST_CHAIN_NAME_PREFIX + UUID.randomUUID());
-
-        authFilterChain.setRoleFilterName(ROLE_FILTER_NAME);
-        authFilterChain.setFilters(TEST_FILTERS);
-        authFilterChain.setAllowSessionCreation(ALLOW_SESSION_CREATION_FLAG);
-        authFilterChain.setDisabled(DISABLED_FLAG);
-        authFilterChain.setRequireSSL(REQUIRE_SSL_FLAG);
-        authFilterChain.setClassName(CLASS_NAME);
-        authFilterChain.setHttpMethods(HTTP_METHODS);
-        authFilterChain.setPatterns(PATTERNS);
-        authFilterChain.setPosition(POSITION);
-        authFilterChain.setMatchHTTPMethod(MATCH_HTTP_METHOD_FLAG);
-
-        return authFilterChain;
+    @Test
+    public void testCreate_JSON_and_View_Both() throws Exception {
+        String name = newName();
+        try {
+            assertEquals(
+                    201,
+                    postAsServletResponse(BASE, defaultChainJson(name), JSON).getStatus());
+            getAsDOM(BASE + "/" + name, 200);
+            MockHttpServletResponse r = getAsServletResponse(BASE + "/" + name + ".json");
+            assertEquals(200, r.getStatus());
+            assertEquals(
+                    name,
+                    om.readTree(r.getContentAsByteArray())
+                            .path("filters")
+                            .path("@name")
+                            .asText());
+        } finally {
+            safeDelete(name);
+        }
     }
 
-    public static AuthFilterChain updateAuthFilterChain(AuthFilterChain authFilterChain) {
+    @Test
+    public void testCreate_Duplicate_400() throws Exception {
+        String name = newName();
+        try {
+            assertEquals(
+                    201, postAsServletResponse(BASE, defaultChainXml(name), XML).getStatus());
+            assertEquals(
+                    400, postAsServletResponse(BASE, defaultChainXml(name), XML).getStatus());
+        } finally {
+            safeDelete(name);
+        }
+    }
 
-        authFilterChain.setRoleFilterName(NEW_ROLE_FILTER_NAME);
-        authFilterChain.setFilters(NEW_TEST_FILTERS);
-        authFilterChain.setAllowSessionCreation(!ALLOW_SESSION_CREATION_FLAG);
-        authFilterChain.setDisabled(!DISABLED_FLAG);
-        authFilterChain.setRequireSSL(!REQUIRE_SSL_FLAG);
-        authFilterChain.setHttpMethods(NEW_HTTP_METHODS);
-        authFilterChain.setPatterns(NEW_PATTERNS);
-        authFilterChain.setPosition(NEW_POSITION);
-        authFilterChain.setMatchHTTPMethod(!MATCH_HTTP_METHOD_FLAG);
+    @Test
+    public void testCreate_Unauthorised_403() throws Exception {
+        SecurityContextHolder.clearContext();
+        assertEquals(
+                403,
+                postAsServletResponse(BASE, defaultChainXml(newName()), XML).getStatus());
+        super.loginAsAdmin(); // restore
+    }
 
-        return authFilterChain;
+    // ----------------- update -----------------
+
+    @Test
+    public void testUpdate_XML_200_and_MovePosition() throws Exception {
+        String a = newName();
+        String b = newName();
+        try {
+            assertEquals(
+                    201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
+            assertEquals(
+                    201, postAsServletResponse(BASE, defaultChainXml(b), XML).getStatus());
+
+            MockHttpServletResponse resp =
+                    putAsServletResponse(BASE + "/" + b + "?position=0", defaultChainXml(b), XML);
+            assertEquals(200, resp.getStatus());
+
+            List<String> names = listNamesXML();
+            assertTrue(names.size() >= 2);
+            assertEquals(b, names.get(0));
+        } finally {
+            safeDelete(a);
+            safeDelete(b);
+        }
+    }
+
+    @Test
+    public void testUpdate_JSON_200() throws Exception {
+        String name = newName();
+        try {
+            assertEquals(
+                    201,
+                    postAsServletResponse(BASE, defaultChainJson(name), JSON).getStatus());
+
+            String updated = chainJson(
+                    name, "/web/**,/", true, true, false, false, Arrays.asList("rememberme", "form", "anonymous"));
+            MockHttpServletResponse resp = putAsServletResponse(BASE + "/" + name, updated, JSON);
+            assertEquals(200, resp.getStatus());
+
+            MockHttpServletResponse r = getAsServletResponse(BASE + "/" + name + ".json");
+            JsonNode obj = om.readTree(r.getContentAsByteArray()).path("filters");
+            assertTrue(obj.path("@disabled").asBoolean());
+            assertEquals("/web/**,/", obj.path("@path").asText());
+        } finally {
+            safeDelete(name);
+        }
+    }
+
+    @Test
+    public void testUpdate_NameMismatch_400() throws Exception {
+        String a = newName();
+        String b = newName();
+        try {
+            assertEquals(
+                    201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
+            assertEquals(
+                    400,
+                    putAsServletResponse(BASE + "/" + a, defaultChainJson(b), JSON)
+                            .getStatus());
+        } finally {
+            safeDelete(a);
+            safeDelete(b);
+        }
+    }
+
+    // ----------------- delete -----------------
+
+    @Test
+    public void testDelete_200_and_View404() throws Exception {
+        String a = newName();
+        assertEquals(201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
+        assertEquals(200, deleteAsServletResponse(BASE + "/" + a).getStatus());
+        assertEquals(404, getAsServletResponse(BASE + "/" + a).getStatus());
+    }
+
+    @Test
+    public void testDelete_NotAuthorised_403() throws Exception {
+        String a = newName();
+        try {
+            assertEquals(
+                    201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
+            SecurityContextHolder.clearContext();
+            assertEquals(403, deleteAsServletResponse(BASE + "/" + a).getStatus());
+        } finally {
+            super.loginAsAdmin();
+            safeDelete(a);
+        }
+    }
+
+    // ----------------- order -----------------
+
+    @Test
+    public void testOrder_Update_JSON_200() throws Exception {
+        String a = newName();
+        String b = newName();
+        try {
+            assertEquals(
+                    201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
+            assertEquals(
+                    201, postAsServletResponse(BASE, defaultChainXml(b), XML).getStatus());
+
+            List<String> cur = listNamesJSON();
+            assertTrue(cur.containsAll(Arrays.asList(a, b)));
+            Collections.reverse(cur);
+
+            String body = "{ \"order\": " + toJsonArray(cur) + " }";
+            assertEquals(200, putAsServletResponse(BASE + "/order", body, JSON).getStatus());
+
+            List<String> after = listNamesJSON();
+            assertEquals(cur, after);
+        } finally {
+            safeDelete(a);
+            safeDelete(b);
+        }
+    }
+
+    @Test
+    public void testOrder_InvalidPermutation_400() throws Exception {
+        String a = newName();
+        try {
+            assertEquals(
+                    201, postAsServletResponse(BASE, defaultChainXml(a), XML).getStatus());
+            String body = "{ \"order\": [\"nonexistent-only\"] }";
+            assertEquals(400, putAsServletResponse(BASE + "/order", body, JSON).getStatus());
+        } finally {
+            safeDelete(a);
+        }
     }
 }

@@ -93,8 +93,7 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
             }
             for (String n : created) {
                 try {
-                    MockHttpServletResponse r = adminDELETE(BASE + "/security/authProviders/" + n);
-                    int s = r.getStatus();
+                    adminDELETE(BASE + "/security/authProviders/" + n);
                 } catch (Exception ignored) {
                     // ignore cleanup hiccups
                 }
@@ -234,20 +233,18 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
             throw new AssertionError("Server returned error: " + root);
         }
         Object ap = root.get("authProviders");
-        if (ap instanceof JSONArray) {
-            JSONArray arr = (JSONArray) ap;
+        if (ap instanceof JSONArray arr) {
             JSONArray out = new JSONArray();
             for (Object o : arr) out.add(unwrapSingle((JSONObject) o));
             return out;
         }
-        if (ap instanceof JSONObject) {
-            JSONObject obj = (JSONObject) ap;
+        if (ap instanceof JSONObject obj) {
             if (obj.size() == 1) {
                 String key = (String) obj.keySet().iterator().next();
                 Object val = obj.get(key);
                 if (val instanceof JSONArray) return (JSONArray) val;
                 JSONArray out = new JSONArray();
-                out.add((JSONObject) val);
+                out.add(val);
                 return out;
             }
         }
@@ -575,7 +572,7 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         MockHttpServletResponse r = dispatch(req);
         assertEquals(403, r.getStatus());
 
-        asAdmin(); // restore for rest of suite
+        asAdmin(); // restore for rest of the suite
     }
 
     // ---------------------------------------------------------------------

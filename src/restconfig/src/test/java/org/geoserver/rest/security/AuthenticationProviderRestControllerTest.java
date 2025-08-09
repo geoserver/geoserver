@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.rest.security.AuthenticationProviderRestController.*;
 import org.geoserver.rest.security.xml.AuthProviderCollection;
 import org.geoserver.rest.security.xml.AuthProviderOrder;
 import org.geoserver.rest.wrapper.RestWrapper;
@@ -335,7 +334,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     }
 
     /** create(JSON): duplicate provider name must be rejected with DuplicateProviderName (400). */
-    @Test(expected = DuplicateProviderName.class)
+    @Test(expected = AuthenticationProviderRestController.DuplicateProviderName.class)
     public void testCreate_duplicateNameRejected() throws Exception {
         setUser();
         String name = generateName("dup");
@@ -351,7 +350,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     }
 
     /** create(JSON): missing className -> 400 BadRequest. */
-    @Test(expected = BadRequest.class)
+    @Test(expected = AuthenticationProviderRestController.BadRequest.class)
     public void testCreate_JSON_missingClassName() throws Exception {
         setUser();
         Map<String, Object> inner = new LinkedHashMap<>();
@@ -361,7 +360,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     }
 
     /** create(JSON): position out of range -> 400 BadRequest. */
-    @Test(expected = BadRequest.class)
+    @Test(expected = AuthenticationProviderRestController.BadRequest.class)
     public void testCreate_positionOutOfRange_isBadRequest() throws Exception {
         setUser();
         String name = generateName("pos");
@@ -424,7 +423,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     }
 
     /** update: path/payload name mismatch -> 400 BadRequest. */
-    @Test(expected = BadRequest.class)
+    @Test(expected = AuthenticationProviderRestController.BadRequest.class)
     public void testUpdate_badPathPayloadMismatch() throws Exception {
         try {
             setUser();
@@ -442,7 +441,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     }
 
     /** update: changing className must be rejected with 400. */
-    @Test(expected = BadRequest.class)
+    @Test(expected = AuthenticationProviderRestController.BadRequest.class)
     public void testUpdate_rejectsClassNameChange() throws Exception {
         setUser();
         String a = generateName("a");
@@ -456,7 +455,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     }
 
     /** update: out-of-range position -> 400 BadRequest (controller validates/clamps per implementation). */
-    @Test(expected = BadRequest.class)
+    @Test(expected = AuthenticationProviderRestController.BadRequest.class)
     public void testUpdate_positionOutOfRange_isBadRequest() throws Exception {
         setUser();
         String a = generateName("a");
@@ -487,7 +486,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             try {
                 controller.one(name);
                 fail("Expected ProviderNotFound");
-            } catch (ProviderNotFound expected) {
+            } catch (AuthenticationProviderRestController.ProviderNotFound expected) {
                 // ok
             }
         } finally {
@@ -519,7 +518,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     }
 
     /** reorder(JSON): unknown name -> 400 BadRequest. */
-    @Test(expected = BadRequest.class)
+    @Test(expected = AuthenticationProviderRestController.BadRequest.class)
     public void testOrder_JSON_unknownName_isBadRequest() throws Exception {
         setUser();
         controller.reorder(jsonRequest(Collections.singletonMap("order", List.of("does-not-exist"))));
@@ -530,7 +529,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
     // ---------------------------------------------------------------------
 
     /** list(): requires admin role. */
-    @Test(expected = NotAuthorised.class)
+    @Test(expected = AuthenticationProviderRestController.NotAuthorised.class)
     public void testList_NoUser_unauthorized() throws Exception {
         try {
             SecurityContextHolder.clearContext();

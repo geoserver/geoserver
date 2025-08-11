@@ -104,7 +104,7 @@ This section contains a number of examples which illustrate some of the most com
    urlchecks
    filterchains
    authenticationfilters
-   authenticationproviders   
+   authenticationproviders
 
 .. toctree::
    :maxdepth: 1

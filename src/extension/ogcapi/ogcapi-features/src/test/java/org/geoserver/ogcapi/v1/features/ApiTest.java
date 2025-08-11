@@ -253,7 +253,7 @@ public class ApiTest extends FeaturesTestSupport {
         // filter languages
         Parameter langs = api.getComponents().getParameters().get("filter-lang");
         assertEquals(
-                Arrays.asList(APIFilterParser.ECQL_TEXT, APIFilterParser.CQL2_TEXT),
+                Arrays.asList(APIFilterParser.ECQL_TEXT, APIFilterParser.CQL2_TEXT, APIFilterParser.CQL2_JSON),
                 langs.getSchema().getEnum());
 
         // ... feature

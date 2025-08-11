@@ -36,4 +36,5 @@ This section describes the GeoServer REST configuration API.
    resources
    urlchecks
    filterchains
+   authenticationfilters
    authenticationproviders

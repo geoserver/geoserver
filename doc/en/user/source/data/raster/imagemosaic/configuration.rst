@@ -467,6 +467,8 @@ The parameters are as follows:
      - Controls the order in which the granules are passed to the mosaic operation. Only useful if MergeBehavior is set to ``FLAT``. Should be the name of an attribute in the index file, followed by a space, followed by `A` for ascending, or `D` for descending. For example: ``sortattr D``.
    * - SUGGESTED_TILE_SIZE
      - Controls the tile size of the input granules as well as the tile size of the output mosaic. It consists of two positive integers separated by a comma. Default is ``512,512``. If your data is properly tiled, you might want to set this parameter to blank to avoid unnecessarily reformatting when reading.
+   * - SKIP_DUPLICATES
+     - Determines whether duplicate granules should be skipped (defaults to false). If set to true, the reader will ignore any granule whose URL is the same as that of a previously added granule.
    * - USE_JAI_IMAGEREAD
      - Controls the low-level mechanism used to read the granules. If set to ``true``, GeoServer will use the JAI ImageRead operation and its deferred loading mechanism. If set to ``false``, GeoServer will perform direct ImageIO read calls, which will result in immediate loading.
    

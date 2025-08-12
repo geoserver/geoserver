@@ -1,7 +1,7 @@
 .. _rest_api_filterchains:
 
-Filter Chains
-=============
+Filter Chains API
+=================
 
 This section documents the REST endpoints for managing **authentication filter chains**.
 
@@ -13,7 +13,6 @@ regular property names (for example ``name``, ``clazz``, ``path``).
 (for example ``@name``, ``@class``, ``@path``) to match the XML attribute
 representation.
 
-----------------------------
 List or create filter chains
 ----------------------------
 
@@ -168,7 +167,6 @@ List or create filter chains
      <filter>anonymous</filter>
    </filters>
 
------------------------------
 Get, update or delete a chain
 -----------------------------
 
@@ -266,7 +264,6 @@ The JSON request body uses the same shape as **POST create**:
      <filter>form</filter>
    </filters>
 
-------------------
 Reorder the chains
 ------------------
 
@@ -301,7 +298,6 @@ Replaces the global filter-chain execution order.
 * ``400 Bad Request`` if the provided names are not a valid permutation
 * ``403 Forbidden`` if not authenticated as an administrator
 
--------
 Remarks
 -------
 

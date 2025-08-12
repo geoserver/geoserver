@@ -963,9 +963,6 @@ public class WMS implements ApplicationContextAware {
      */
     public static String toInternalSRS(String srs, Version version) {
         if (srs != null && VERSION_1_3_0.equals(version)) {
-            // do not transform the srs if it's from the web factory, GeoServer has an override to replace it
-            // with the EPSG code to leverage all the transformation capabilities of the EPSG database
-            if (srs.startsWith("CRS:")) return srs;
             try {
                 CoordinateReferenceSystem crs = CRS.decode(srs);
                 if (crs != null) {

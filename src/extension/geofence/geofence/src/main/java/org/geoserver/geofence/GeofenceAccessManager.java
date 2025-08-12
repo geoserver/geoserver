@@ -376,6 +376,14 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             }
         }
 
+        Request req = Dispatcher.REQUEST.get();
+
+        if (req == null) {
+            // We're missing some filtering info, so we can't tell anything about access
+            LOGGER.log(Level.WARNING, "Missing OWS info for request to {0}:{1}", new String[] {workspace, layer});
+            return null;
+        }
+
         String ipAddress = retrieveCallerIpAddress();
         String date = DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now());
         RuleFilter ruleFilter = buildRuleFilter(workspace, layer, user, ipAddress, date);
@@ -386,8 +394,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             LOGGER.log(Level.WARNING, "GeoFence returning null AccessInfo for filter {0}", ruleFilter);
         }
 
-        Request req = Dispatcher.REQUEST.get();
-        String service = req != null ? req.getService() : null;
+        String service = req.getService();
         boolean isWms = "WMS".equalsIgnoreCase(service);
         boolean noLayerGroups = CollectionUtils.isEmpty(containers);
 

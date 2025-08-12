@@ -78,9 +78,11 @@ public class ImportTaskTableTest extends GeoServerWicketTestSupport {
 
         // Check that the WKT links set
         tester.assertModelValue(
-                "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:wkt:wktLabel", "CRS:NAD27");
+                "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:wkt:wktLabel",
+                "NAD27 longitude-latitude");
         tester.assertModelValue(
-                "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:wkt:wktLabel", "CRS:NAD83");
+                "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:wkt:wktLabel",
+                "NAD83 longitude-latitude");
 
         // Apply the first
         tester.clickLink("taskTable:listContainer:items:1:itemProperties:2:component:form:apply", true);

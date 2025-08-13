@@ -345,3 +345,8 @@ This setting determine whether GeoServer matches URLs whether or not the request
 
 Note that trailing slash matches may be removed entirely in future versions of GeoServer due to introduced ambiguities that can lead to security vulnerabilities.  Discussion of the issue can be found in `this Spring issue <https://github.com/spring-projects/spring-framework/issues/28552>`_.
 
+Display the user who performed last modification
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+These check boxes can be used to toggle displaying user that performed last modification on Workspaces, Styles, Stores, Layers, Layer Groups administration list pages
+

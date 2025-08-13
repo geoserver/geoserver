@@ -48,6 +48,8 @@ public class StyleInfoImpl implements StyleInfo {
 
     protected Date dateModified;
 
+    protected String modifiedBy;
+
     protected StyleInfoImpl() {}
 
     public StyleInfoImpl(Catalog catalog) {
@@ -269,5 +271,15 @@ public class StyleInfoImpl implements StyleInfo {
     @Override
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        this.modifiedBy = userName;
     }
 }

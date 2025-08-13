@@ -42,8 +42,11 @@ import org.geoserver.catalog.PropertyStyleHandler;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.config.CatalogModificationUserUpdater;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -1306,6 +1309,71 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         // check the version has been updated to 1.0
         StyleInfo style10 = catalog.getStyleByName("foo");
         assertEquals(new Version("1.0.0"), style10.getFormatVersion());
+    }
+
+    @Test
+    public void testPostToWorkspaceWithModifiedUserTrue() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(false);
+        getGeoServer().save(info);
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("gs", "foo"));
+
+        String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
+        MockHttpServletResponse response =
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs/styles", xml);
+        assertEquals(201, response.getStatus());
+        assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
+        assertNotNull(cat.getStyleByName("gs", "foo").getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostToWorkspaceWithModifiedUserFalse() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "false");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("gs", "foo"));
+
+        String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
+        postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs/styles", xml);
+        assertNull(cat.getStyleByName("gs", "foo").getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostToWorkspaceWithoutModifiedUser() throws Exception {
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("gs", "foo"));
+
+        String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
+        postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs/styles", xml);
+        assertNotNull(cat.getStyleByName("gs", "foo").getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPutWithModifiedUser() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        StyleInfo style = catalog.getStyleByName("Ponds");
+        assertEquals("Ponds.sld", style.getFilename());
+
+        String xml = "<style>" + "<name>Ponds</name>" + "<filename>Forests.sld</filename>" + "</style>";
+
+        putAsServletResponse(RestBaseController.ROOT_PATH + "/styles/Ponds", xml.getBytes(), "text/xml");
+
+        style = catalog.getStyleByName("Ponds");
+        assertNotNull(style.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
     }
 
     /**

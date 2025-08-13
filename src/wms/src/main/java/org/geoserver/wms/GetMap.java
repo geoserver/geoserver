@@ -356,8 +356,6 @@ public class GetMap {
             throws IOException {
         WMSLayerInfo wmsLayer = (WMSLayerInfo) mapLayerInfo.getResource();
         if (!checkWMSLayerMinMaxScale(wmsLayer, mapContent.getScaleDenominator())) return;
-        WebMapServer wms = wmsLayer.getStore().getWebMapServer(null);
-        Layer gt2Layer = wmsLayer.getWMSLayer(null);
         if (wmsLayer.isMetadataBBoxRespected()) {
             boolean isInsideBounnds = checkEnvelopOverLapWithNativeBounds(
                     mapContent.getViewport().getBounds(), wmsLayer.getNativeBoundingBox());
@@ -370,6 +368,9 @@ public class GetMap {
                 return;
             }
         }
+
+        WebMapServer wms = wmsLayer.getStore().getWebMapServer(null);
+        Layer gt2Layer = wmsLayer.getWMSLayer(null);
 
         // see if we can merge this layer with the previous one
         boolean merged = false;

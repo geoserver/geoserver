@@ -180,6 +180,7 @@
         <module>geoparquet</module>
         <module>wps-download-netcdf</module>
         <module>singlestore</module>
+        <module>pmtiles-store</module>
       </modules>
     </profile>
     <profile>
@@ -578,6 +579,12 @@
       <id>singlestore</id>
       <modules>
         <module>singlestore</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>pmtiles-store</id>
+      <modules>
+        <module>pmtiles-store</module>
       </modules>
     </profile>
     <profile>

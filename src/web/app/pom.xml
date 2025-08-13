@@ -1997,5 +1997,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>pmtiles-store</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-pmtiles-store</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>

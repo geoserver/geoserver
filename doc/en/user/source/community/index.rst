@@ -61,6 +61,7 @@ officially part of the GeoServer releases. They are however built along with the
    ogr-store/index
    oidc/index
    opensearch-eo/index
+   pmtiles-store/index
    proxy-base-ext/index
    remote-wps/index
    s3-geotiff/index

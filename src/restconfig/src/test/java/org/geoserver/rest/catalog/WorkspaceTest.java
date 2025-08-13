@@ -6,6 +6,7 @@
 package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geoserver.config.CatalogModificationUserUpdater.TRACK_USER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -28,7 +29,9 @@ import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
 import org.junit.Test;
@@ -498,5 +501,53 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         namespace = getCatalog().getNamespaceByPrefix("isolated_workspace");
         assertThat(namespace, notNullValue());
         assertThat(namespace.isIsolated(), is(false));
+    }
+
+    @Test
+    public void testPostAsXMLWithModifiedUserTrue() throws Exception {
+        GeoServerExtensionsHelper.property(TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        String xml = "<workspace>" + "<name>foo</name>" + "</workspace>";
+        postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces", xml, "text/xml");
+
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
+        assertNotNull(ws.getModifiedBy());
+        // check corresponding namespace creation
+
+        removeWorkspace("foo");
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostAsXMLWithModifiedUserFalse() throws Exception {
+        GeoServerExtensionsHelper.property(TRACK_USER, "false");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        String xml = "<workspace>" + "<name>foo</name>" + "</workspace>";
+        postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces", xml, "text/xml");
+
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
+        assertNull(ws.getModifiedBy());
+
+        removeWorkspace("foo");
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostAsXMLWithoutModifiedUser() throws Exception {
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        String xml = "<workspace>" + "<name>foo</name>" + "</workspace>";
+        postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces", xml, "text/xml");
+
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
+        assertNotNull(ws.getModifiedBy());
+
+        removeWorkspace("foo");
+        GeoServerExtensionsHelper.clear();
     }
 }

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WMS_Capabilities version="1.3.0" updateSequence="1159"
+  xmlns="http://www.opengis.net/wms" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd">
+  <Service>
+    <Name>WMS</Name>
+    <Title>WMS</Title>
+    <Abstract>Minimal test caps document for a WMS 1.3 server</Abstract>
+    <KeywordList>
+      <Keyword>GEOSERVER</Keyword>
+    </KeywordList>
+    <OnlineResource xlink:type="simple" xlink:href="http://mock.test.geoserver.org.fail" />
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>text/xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple"
+                xlink:href="http://mock.test.geoserver.org.fail/wms13?SERVICE=WMS&amp;" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <GetMap>
+        <Format>image/png</Format>
+        <Format>image/jpeg</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple"
+                xlink:href="http://mock.test.geoserver.org.fail/wms13?SERVICE=WMS&amp;" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetMap>
+      <GetFeatureInfo>
+        <Format>text/plain</Format>
+        <Format>application/vnd.ogc.gml</Format>
+        <Format>application/vnd.ogc.gml/3.1.1</Format>
+        <Format>text/html</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple"
+                xlink:href="http://mock.test.geoserver.org.fail/wms13?SERVICE=WMS&amp;" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetFeatureInfo>
+    </Request>
+    <Exception>
+      <Format>XML</Format>
+      <Format>INIMAGE</Format>
+      <Format>BLANK</Format>
+    </Exception>
+    <Layer>
+      <Title>Root</Title>
+      <!--Limited list of EPSG projections: -->
+      <CRS>EPSG:4326</CRS>
+      <CRS>CRS:84</CRS>
+      <EX_GeographicBoundingBox>
+        <westBoundLongitude>-180</westBoundLongitude>
+        <eastBoundLongitude>180</eastBoundLongitude>
+        <southBoundLatitude>-90</southBoundLatitude>
+        <northBoundLatitude>90</northBoundLatitude>
+      </EX_GeographicBoundingBox>
+      <Layer queryable="1" opaque="0">
+        <Name>failing_group_lyr_13</Name>
+        <Title>failing_group_lyr_13</Title>
+        <Abstract/>
+        <KeywordList>
+          <Keyword>features</Keyword>
+          <Keyword>failing_group_lyr_13</Keyword>
+        </KeywordList>
+        <CRS>EPSG:4326</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-100.0</westBoundLongitude>
+          <eastBoundLongitude>-99.0</eastBoundLongitude>
+          <southBoundLatitude>-100.0</southBoundLatitude>
+          <northBoundLatitude>-99.0</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox minx="-100" miny="-100" maxx="-99" maxy="-99" CRS="EPSG:4326"/>
+        <Style>
+          <Name>failing_group_lyr_13</Name>
+          <Title>A boring default style</Title>
+          <Abstract>A sample style that just prints out a green line</Abstract>
+          <LegendURL height="20" width="20">
+            <Format>image/png</Format>
+            <OnlineResource xlink:type="simple" xlink:href="http://mock.test.geoserver.org.fail/ows?service=WMS&amp;amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMS_Capabilities>

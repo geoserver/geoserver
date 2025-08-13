@@ -18,6 +18,7 @@ import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.http.MockHttpClient;
@@ -36,8 +37,12 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
     protected static final String WORLD4326_110_NFI = "world4326_110_NFI";
     protected MockHttpClient wms13Client;
     protected URL wms13BaseURL;
+    protected MockHttpClient wms13FailingClient;
+    protected URL wms13FailingBaseURL;
     protected MockHttpClient wms11Client;
     protected URL wms11BaseURL;
+    protected MockHttpClient wms11FailingClient;
+    protected URL wms11FailingBaseURL;
     protected MockHttpClient wms11ClientNfi;
     protected URL wms11BaseNfiURL;
     protected XpathEngine xpath;
@@ -201,6 +206,8 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         group.setName("cascaded_group_130");
         group.getLayers().add(layer1);
         group.getLayers().add(layer2);
+        group.getLayers().add(createFailingWMS13Layer());
+
         try {
             cb.calculateLayerGroupBounds(group);
         } catch (Exception e) {
@@ -247,6 +254,51 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
                 + "?SERVICE=WMS&LAYERS=legacy_group_lyr_130&CRS=EPSG:4326&FORMAT=image/png&HEIGHT=90&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF&REQUEST=GetMap&BBOX=-90.0,-180.0,90.0,180.0&WIDTH=180&STYLES=&VERSION=1.3.0";
         // we dont care about response, URL content is important
         wms13Client.expectGet(new URL(mockURLWithLegacyLayers), new MockHttpResponse(pngRoadsImage, "image/png"));
+    }
+
+    /**
+     * Creates a failing remote WMS 1.3.0 layer for testing purposes. This method sets up a mock WMS store and layer
+     * with capabilities URLs that simulate a failure scenario, where the WMS server returns error responses.
+     *
+     * <p>The generated layer is configured with a store that intentionally simulates failure when interacting with the
+     * remote WMS capabilities.
+     *
+     * @return a {@link LayerInfo} instance representing the failing remote WFS layer
+     * @throws IOException if an input or output exception occurs during the layer creation process
+     */
+    private LayerInfo createFailingWMS13Layer() throws IOException {
+        // First part, add the failing WMS 1.3.0 remote layer into the catalog
+        wms13FailingBaseURL = new URL(TestHttpClientProvider.MOCKSERVER + ".fail/wms13");
+        wms13FailingClient = new MockHttpClient();
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        WMSStoreInfo store = cb.buildWMSStore("mock-wms-store-130-distant");
+        getCatalog().add(store);
+        cb.setStore(store);
+        String failingCaps = wms13FailingBaseURL + "?service=WMS&request=GetCapabilities&version=1.3.0";
+        store.setCapabilitiesURL(failingCaps);
+        URL capsDocumentFail = WMSTestSupport.class.getResource("caps130Fail.xml");
+        wms13FailingClient.expectGet(
+                new URL(wms13FailingBaseURL + "?service=WMS&request=GetCapabilities&version=1.3.0"),
+                new MockHttpResponse(capsDocumentFail, "text/xml"));
+        TestHttpClientProvider.bind(wms13FailingClient, failingCaps);
+
+        WMSLayerInfo failing_group_lyr = cb.buildWMSLayer("failing_group_lyr_13");
+        failing_group_lyr.setName("failing_group_lyr_13");
+        failing_group_lyr.reset();
+        failing_group_lyr.setMetadataBBoxRespected(true);
+        getCatalog().add(failing_group_lyr);
+        LayerInfo wMSFailingLayer = cb.buildLayer(failing_group_lyr);
+        getCatalog().add(wMSFailingLayer);
+
+        // Second part
+        // Simulate a cold start up of the geoserver, by setting the StoreInfo id to 0, geoserver will think it has not
+        // yet create the webMapServer associated to the store.
+        ((StoreInfoImpl) store).setId(null);
+        // Update MockHTTPCLient to simulate failing remote geoserver on getCapabilities request
+        wms13FailingClient.expectGet(
+                new URL(wms13FailingBaseURL + "?service=WMS&request=GetCapabilities&version=1.3.0"),
+                new MockHttpResponse("Internal Server Error".getBytes(), "text/plain"));
+        return wMSFailingLayer;
     }
 
     private void setupWMS110Layer() throws MalformedURLException, IOException {
@@ -408,6 +460,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         group.setName("cascaded_group");
         group.getLayers().add(layer1);
         group.getLayers().add(layer2);
+        group.getLayers().add(createFailingWMS11Layer());
         try {
             cb.calculateLayerGroupBounds(group);
         } catch (Exception e) {
@@ -455,6 +508,52 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
                 + "?SERVICE=WMS&LAYERS=legacy_group_lyr&FORMAT=image%2Fpng&HEIGHT=90&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF&REQUEST=GetMap&BBOX=-180.0,-90.0,180.0,90.0&WIDTH=180&STYLES=&SRS=EPSG:4326&VERSION=1.1.1";
         // we dont care about response, URL content is important
         wms11Client.expectGet(new URL(mockURLWithLegacyLayers), new MockHttpResponse(pngRoadsImage, "image/png"));
+    }
+
+    /**
+     * Creates a failing remote WMS 1.1.0 layer for testing purposes. This method sets up a mock WMS store and layer
+     * with capabilities URLs that simulate a failure scenario, where the WMS server returns error responses.
+     *
+     * <p>The generated layer is configured with a store that intentionally simulates failure when interacting with the
+     * remote WMS capabilities.
+     *
+     * @return a {@link LayerInfo} instance representing the failing remote WFS layer
+     * @throws IOException if an input or output exception occurs during the layer creation process
+     */
+    private LayerInfo createFailingWMS11Layer() throws IOException {
+        // First part, add the failing WMS 1.1.1 remote layer into the catalog
+        wms11FailingBaseURL = new URL(TestHttpClientProvider.MOCKSERVER + ".fail/wms11");
+        wms11FailingClient = new MockHttpClient();
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        WMSStoreInfo store = cb.buildWMSStore("mock-wms-store-111-distant");
+        getCatalog().add(store);
+        cb.setStore(store);
+        String failingCaps = wms11FailingBaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1";
+        store.setCapabilitiesURL(failingCaps);
+        URL capsDocumentFail = WMSTestSupport.class.getResource("caps111Fail.xml");
+        wms11FailingClient.expectGet(
+                new URL(wms11FailingBaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1"),
+                new MockHttpResponse(capsDocumentFail, "text/xml"));
+        TestHttpClientProvider.bind(wms11FailingClient, failingCaps);
+
+        WMSLayerInfo failing_group_lyr = cb.buildWMSLayer("failing_group_lyr_11");
+        failing_group_lyr.setName("failing_group_lyr_11");
+        failing_group_lyr.reset();
+        failing_group_lyr.setMetadataBBoxRespected(true);
+        getCatalog().add(failing_group_lyr);
+        LayerInfo wMSFailingLayer = cb.buildLayer(failing_group_lyr);
+        getCatalog().add(wMSFailingLayer);
+
+        // Second part
+        // Simulate a cold start up of the geoserver, by setting the StoreInfo id to 0, geoserver will think it has not
+        // yet create the webMapServer associated to the store.
+        ((StoreInfoImpl) store).setId(null);
+        // Update MockHTTPCLient to simulate failing remote geoserver on getCapabilities request
+        wms11FailingClient.expectGet(
+                new URL(wms11FailingBaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1"),
+                new MockHttpResponse("Internal Server Error".getBytes(), "text/plain"));
+
+        return wMSFailingLayer;
     }
 
     private void setupWMS110NfiLayer() throws MalformedURLException, IOException {

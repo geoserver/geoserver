@@ -1,0 +1,6 @@
+{
+  "inputs": {
+    "pause": 300,
+    "stringInput": "hithere"
+  }
+}

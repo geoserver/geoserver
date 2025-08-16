@@ -99,6 +99,8 @@ public class ProcessesService {
     // this one comes from the current DRAFT
     // https://docs.ogc.org/DRAFTS/18-062r3.html#_requirements_class_kvp_encoded_execute
     public static final String CONF_KVP_EXECUTE = "http://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/kvp-execute";
+    public static final String EXCEPTION_TYPE_RESULT_NOT_READY =
+            "http://www.opengis.net/def/exceptions/ogcapi-processes-1/1.0/result-not-ready";
 
     private final GeoServer geoServer;
     private final DefaultWebProcessingService wps;
@@ -569,6 +571,13 @@ public class ProcessesService {
             throw new APIException(
                     "NotFound",
                     "The job with id " + jobId + " does not exist, has expired or is being dismissed",
+                    HttpStatus.NOT_FOUND);
+        }
+        if (status.getPhase() != ProcessState.SUCCEEDED) {
+            throw new APIException(
+                    EXCEPTION_TYPE_RESULT_NOT_READY,
+                    "The job with id " + jobId + " is not in a state that allows retrieving results, it is: "
+                            + status.getPhase(),
                     HttpStatus.NOT_FOUND);
         }
 

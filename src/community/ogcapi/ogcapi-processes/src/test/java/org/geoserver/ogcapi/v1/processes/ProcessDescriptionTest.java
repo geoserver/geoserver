@@ -216,7 +216,7 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         assertEquals("Echoes back the input parameters provided to the process.", doc.read("description"));
         assertEquals(List.of("sync-execute", "async-execute"), doc.read("jobControlOptions"));
         // Check inputs
-        assertEquals(2, doc.read("inputs.size()", Integer.class).intValue());
+        assertEquals(3, doc.read("inputs.size()", Integer.class).intValue());
         // string input
         DocumentContext stringInput = readContext(doc, "inputs.stringInput");
         assertEquals("stringInput", stringInput.read("title"));
@@ -230,5 +230,11 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         assertEquals("double", doubleInput.read("schema.format"));
         assertEquals(0, doubleInput.read("minOccurs", Integer.class).intValue());
         assertEquals(1, doubleInput.read("maxOccurs", Integer.class).intValue());
+        // pause input
+        DocumentContext pauseInput = readContext(doc, "inputs.pause");
+        assertEquals("pause", pauseInput.read("title"));
+        assertEquals("integer", pauseInput.read("schema.type"));
+        assertEquals(0, pauseInput.read("minOccurs", Integer.class).intValue());
+        assertEquals(1, pauseInput.read("maxOccurs", Integer.class).intValue());
     }
 }

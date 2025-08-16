@@ -7,6 +7,7 @@ package org.geoserver.ogcapi.v1.processes.echo;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.geoserver.wps.gs.GeoServerProcess;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
@@ -39,7 +40,16 @@ public class EchoProcess implements GeoServerProcess {
                             minValue = 0,
                             maxValue = 10,
                             defaultValue = "5")
-                    Double doubleInput) {
+                    Double doubleInput,
+            @DescribeParameter(
+                            name = "pause",
+                            description = "Pause for a specified time in seconds",
+                            min = 0,
+                            defaultValue = "0",
+                            minValue = 0,
+                            maxValue = 10)
+                    Integer pause,
+            ProgressListener listener) {
 
         Map<String, Object> result = new LinkedHashMap<>();
         if (stringInput != null) result.put("stringOutput", stringInput);
@@ -47,6 +57,22 @@ public class EchoProcess implements GeoServerProcess {
             result.put("doubleOutput", doubleInput);
         }
 
+        // The OGC API processes ETS requires a pause to simulate processing time
+        if (pause != null && pause > 0) {
+            try {
+                long stepMilliseconds = pause * 100 / 10;
+                for (int i = 0; i < 10; i++) {
+
+                    Thread.sleep(stepMilliseconds);
+                    if (listener != null) {
+                        if (listener.isCanceled()) return Map.of();
+                        listener.progress(i / 10f);
+                    }
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return result;
     }
 }

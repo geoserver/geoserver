@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.v1.processes;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
+import static org.geoserver.ogcapi.v1.processes.ProcessesService.EXCEPTION_TYPE_RESULT_NOT_READY;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -21,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.jayway.jsonpath.DocumentContext;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +33,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.mail.BodyPart;
 import javax.mail.Multipart;
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
@@ -397,5 +400,57 @@ public class ExecutionPostTest extends AbstractExecutionTest {
 
         MockHttpServletResponse processOutput = getAsServletResponse(jobStatusRef + "/results");
         checkBufferCollectionJSON(processOutput);
+    }
+
+    @Test
+    public void testWaitAndDismiss() throws Exception {
+        // build a POST request with async execution, with a very long pause in Echo (5 minutes)
+        String body = getBody("ExecuteEchoLongPause.json");
+        MockHttpServletRequest request = createRequest("ogc/processes/v1/processes/gs:Echo/execution");
+        request.setMethod("POST");
+        request.setContentType("application/json");
+        request.setContent(body.getBytes(UTF_8));
+        request.addHeader("Prefer", "respond-async");
+        MockHttpServletResponse response = dispatch(request);
+
+        assertEquals(201, response.getStatus());
+        String location = response.getHeader(HttpHeaders.LOCATION);
+        assertThat(location, startsWith(JOBS_BASE));
+        String jobId = location.substring(location.lastIndexOf('/') + 1);
+        assertNotNull(jobId);
+
+        // wait until running
+        String jobStatusRef = "ogc/processes/v1/jobs/" + jobId;
+        JSONObject statusObject;
+        String status;
+        do {
+            statusObject = (JSONObject) getAsJSON(jobStatusRef);
+            assertEquals(jobId, statusObject.getString("jobID"));
+            assertEquals("gs:Echo", statusObject.getString("processID"));
+            int progress = statusObject.getInt("progress");
+            assertThat(progress, allOf(lessThanOrEqualTo(100), greaterThanOrEqualTo(0)));
+            status = statusObject.getString("status");
+            assertThat(status, anyOf(equalTo("accepted"), equalTo("running")));
+            String created = (String) statusObject.get("created");
+            String started = (String) statusObject.get("started");
+            String finished = (String) statusObject.get("started");
+            if (started != null) {
+                assertTrue(created.compareTo(started) <= 0);
+            }
+            if (finished != null) {
+                assertTrue(started.compareTo(finished) <= 0);
+            }
+            Thread.sleep(20);
+        } while (!"running".equals(status));
+
+        // check the results are not available yet and the error message is the correct one
+        DocumentContext exception = getAsJSONPath(jobStatusRef + "/results", 404);
+        assertEquals(EXCEPTION_TYPE_RESULT_NOT_READY, exception.read("$.type"));
+
+        // dismiss the job
+        response = deleteAsServletResponse(jobStatusRef);
+        assertEquals(200, response.getStatus());
+        JSON statusDismissed = json(response);
+        assertEquals("dismissed", ((JSONObject) statusDismissed).getString("status"));
     }
 }

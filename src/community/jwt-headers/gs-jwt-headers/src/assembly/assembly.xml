@@ -17,7 +17,7 @@
             <outputDirectory></outputDirectory>
             <includes>
                 <include>jwt-headers-util*</include>
-                <include>nimbus-jose-jwt-9.37.3*</include>
+                <include>nimbus-jose-jwt*</include>
                 <include>json-path*</include>
                 <include>guava*</include>
                 <include>json-smart*.jar</include>

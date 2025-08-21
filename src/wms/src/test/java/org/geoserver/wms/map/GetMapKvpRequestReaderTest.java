@@ -14,9 +14,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -39,6 +42,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -50,10 +55,13 @@ import javax.media.jai.InterpolationNearest;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.cache.HttpCacheContext;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.geoserver.catalog.CatalogBuilder;
+import org.apache.http.protocol.HttpContext;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -782,6 +790,61 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     }
 
     @Test
+    public void testSldRemoteHttpConcurrency() throws Exception {
+        GetMapRequest request = reader.createRequest();
+        GetMapRequest spyRequest = spy(request);
+
+        @SuppressWarnings("PMD.CloseResource")
+        CloseableHttpClient client = mock(CloseableHttpClient.class);
+
+        @SuppressWarnings("PMD.CloseResource")
+        CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+        HttpEntity entity = mock(HttpEntity.class);
+
+        when(response.getEntity()).thenReturn(entity);
+        when(client.execute(any(HttpGet.class), any(HttpCacheContext.class))).thenReturn(response);
+        when(entity.getContent())
+                .thenAnswer(invocation ->
+                        GetMapKvpRequestReader.class.getResourceAsStream("BasicPolygonsLibraryNoDefault.sld"));
+
+        @SuppressWarnings("PMD.CloseResource")
+        GetMapKvpRequestReader reqReader = new GetMapKvpRequestReader(wms, null) {
+            @Override
+            protected CloseableHttpClient createHttpClient(RequestConfig config, CacheConfiguration cacheConfig) {
+                return client;
+            }
+        };
+
+        int numberOfThreads = 10;
+        @SuppressWarnings("PMD.CloseResource")
+        ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
+        for (int i = 0; i < numberOfThreads; i++) {
+            service.submit(() -> {
+                try {
+                    URL url = new URL("http://localhost/geoserver/rest/sldurl/sample.sld");
+                    String urlDecoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+                    HashMap kvp = new HashMap<>();
+                    kvp.put("layers", getLayerId(BASIC_POLYGONS));
+                    kvp.put("sld", urlDecoded);
+
+                    reqReader.read(spyRequest, parseKvp(kvp), caseInsensitiveKvp(kvp));
+                } catch (Exception e) {
+                    fail();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        service.shutdownNow();
+
+        // Assert the same mock HTTP client instance was used by every thread
+        verify(client, times(numberOfThreads)).execute(any(HttpGet.class), any(HttpContext.class));
+    }
+
+    @Test
     public void testSldNotExist() throws Exception {
         // Specified external SLD does not exist
         HashMap kvp = new HashMap<>();
@@ -1435,6 +1498,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 "Creating a mock http server at port: {0}",
                 server.getAddress().getPort());
         server.createContext("/sld", createLongResponseHandler());
+
+        @SuppressWarnings("PMD.CloseResource")
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
         server.setExecutor(threadPoolExecutor);
 

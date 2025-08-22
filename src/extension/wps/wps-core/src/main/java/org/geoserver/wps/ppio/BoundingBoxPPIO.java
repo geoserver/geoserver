@@ -86,7 +86,7 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
      */
     public BoundingBoxType encode(Object object) throws WPSException {
         if (object == null) {
-            throw new IllegalArgumentException("Cannot encode a null bounding box");
+            return null;
         }
         return fromTargetType(object);
     }

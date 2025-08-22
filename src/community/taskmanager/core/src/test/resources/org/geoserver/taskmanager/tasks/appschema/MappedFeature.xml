@@ -22,7 +22,7 @@
                 <Parameter>
                     <name>directory</name>
                     <!-- path can be relative to this file if starts with "file: -->
-                    <value>file:../</value>
+                    <value>file:../../</value>
                 </Parameter>
             </parameters>
         </DataStore>

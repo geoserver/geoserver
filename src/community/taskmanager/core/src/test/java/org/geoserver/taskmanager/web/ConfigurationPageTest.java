@@ -167,11 +167,11 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
 
         // add task
         tester.clickLink("configurationForm:addNew");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", NewTaskPanel.class);
-        FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
+        tester.assertComponent("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel", NewTaskPanel.class);
+        FormTester formTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
         formTester.setValue("userPanel:name", "task3");
         formTester.submit("submit");
-        assertFeedback("dialog:dialog:content:form:userPanel:feedback", "required");
+        assertFeedback("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:feedback", "required");
         formTester.select("userPanel:type", 11);
         formTester.submit("submit");
         assertEquals(3, tasksPanel.getDataProvider().size());
@@ -184,12 +184,13 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         // edit task parameters
         tester.clickLink("configurationForm:tasksPanel:listContainer:items:1:itemProperties:2:component:link");
 
-        tester.assertComponent("dialog:dialog:content:form:userPanel", TaskParameterPanel.class);
+        tester.assertComponent(
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel", TaskParameterPanel.class);
 
         tester.assertModelValue(
-                "dialog:dialog:content:form:userPanel:parametersPanel:listContainer:items:4:itemProperties:1:component",
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:parametersPanel:listContainer:items:4:itemProperties:1:component",
                 "${target-table-name}");
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        formTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
 
         formTester.setValue(
                 "userPanel:parametersPanel:listContainer:items:4:itemProperties:1:component:textfield",
@@ -201,12 +202,12 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
 
         // edit task name
         tester.clickLink("configurationForm:tasksPanel:listContainer:items:1:itemProperties:0:component:link");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", NamePanel.class);
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        tester.assertComponent("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel", NamePanel.class);
+        formTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
 
         formTester.setValue("userPanel:textfield", "");
         formTester.submit("submit");
-        assertFeedback("dialog:dialog:content:form:userPanel:feedback", "required");
+        assertFeedback("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:feedback", "required");
         formTester.setValue("userPanel:textfield", "new_name_for_task");
         formTester.submit("submit");
 
@@ -232,11 +233,12 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
 
         // copy task
         tester.clickLink("configurationForm:addNew");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", NewTaskPanel.class);
-        FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
+        tester.assertComponent("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel", NewTaskPanel.class);
+        FormTester formTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
         formTester.select("userPanel:copy", 0);
-        tester.executeAjaxEvent("dialog:dialog:content:form:userPanel:copy", "change");
-        tester.assertModelValue("dialog:dialog:content:form:userPanel:type", CopyTableTaskTypeImpl.NAME);
+        tester.executeAjaxEvent("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:copy", "change");
+        tester.assertModelValue(
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:type", CopyTableTaskTypeImpl.NAME);
         formTester.setValue("userPanel:name", "task3");
         formTester.submit("submit");
         assertEquals(3, tasksPanel.getDataProvider().size());
@@ -272,7 +274,8 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         tester.executeAjaxEvent(
                 "configurationForm:tasksPanel:listContainer:items:2:selectItemContainer:selectItem", "click");
         formTester.submit("removeSelected");
-        tester.newFormTester("dialog:dialog:content:form").submit("submit");
+        tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form")
+                .submit("submit");
         GeoServerTablePanel<Task> tasksPanel =
                 (GeoServerTablePanel<Task>) tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
         assertEquals(0, tasksPanel.getDataProvider().size());
@@ -297,7 +300,8 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         tester.executeAjaxEvent(
                 "configurationForm:tasksPanel:listContainer:items:2:selectItemContainer:selectItem", "click");
         formTester.submit("removeSelected");
-        tester.newFormTester("dialog:dialog:content:form").submit("submit");
+        tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form")
+                .submit("submit");
         tasksPanel =
                 (GeoServerTablePanel<Task>) tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
         assertEquals(0, tasksPanel.getDataProvider().size());
@@ -424,16 +428,19 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         formTester.submit("attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button");
         tester.assertNoErrorMessage();
 
-        tester.assertComponent("dialog:dialog:content:form:userPanel", FileUploadPanel.class);
+        tester.assertComponent(
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel", FileUploadPanel.class);
 
-        FormTester dialogFormTester = tester.newFormTester("dialog:dialog:content:form");
+        FormTester dialogFormTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
         dialogFormTester.submit("submit");
         tester.assertErrorMessages("Field 'File folder' is required.", "Field 'File' is required.");
 
         dialogFormTester.select("userPanel:folderSelection", 0);
-        tester.assertComponent("dialog:dialog:content:form:userPanel:fileInput", FileUploadField.class);
-        tester.assertComponent("dialog:dialog:content:form:userPanel:prepare", CheckBox.class);
-        tester.assertModelValue("dialog:dialog:content:form:userPanel:prepare", true);
+        tester.assertComponent(
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:fileInput", FileUploadField.class);
+        tester.assertComponent(
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:prepare", CheckBox.class);
+        tester.assertModelValue("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:prepare", true);
 
         dialogFormTester.setFile(
                 "userPanel:fileInput", new File(tempDir.newFile().getAbsolutePath()), "");

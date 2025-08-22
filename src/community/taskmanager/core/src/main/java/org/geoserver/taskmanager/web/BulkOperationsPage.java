@@ -9,7 +9,6 @@ import java.util.List;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.taskmanager.web.panel.bulk.BulkImportPanel;
@@ -26,7 +25,6 @@ public class BulkOperationsPage extends GeoServerSecuredPage {
     public void onInitialize() {
         super.onInitialize();
 
-        Form<Object> form = new Form<Object>("form");
         List<ITab> tabs = new ArrayList<>();
         tabs.add(new AbstractTab(new ResourceModel("bulkRun")) {
             private static final long serialVersionUID = 4375160438369461475L;
@@ -52,9 +50,7 @@ public class BulkOperationsPage extends GeoServerSecuredPage {
                 return new BulkInitPanel(panelId);
             }
         });
-        form.add(new TabbedPanel<ITab>("tabs", tabs));
-
-        add(form);
+        add(new TabbedPanel<ITab>("tabs", tabs));
     }
 
     @Override

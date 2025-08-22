@@ -14,6 +14,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
@@ -41,19 +42,22 @@ public class BulkImportPanel extends Panel {
         add(dialog);
         dialog.setInitialHeight(100);
 
+        Form<?> form = new Form<Object>("form");
+        form.setMultiPart(true);
+        add(form);
         ArrayList<String> list = new ArrayList<String>();
         for (Configuration template : TaskManagerBeans.get().getDao().getConfigurations(true)) {
             list.add(template.getName());
         }
 
         DropDownChoice<String> ddTemplate = new DropDownChoice<String>("template", Model.of(), list);
-        add(ddTemplate.setRequired(true));
+        form.add(ddTemplate.setRequired(true));
 
         FileUploadField fileUpload = new FileUploadField("fileUpload");
-        add(fileUpload.setRequired(true));
+        form.add(fileUpload.setRequired(true));
 
         CheckBox cbValidated = new CheckBox("validate", Model.of(true));
-        add(cbValidated);
+        form.add(cbValidated);
 
         AjaxSubmitLink importButton = new AjaxSubmitLink("import") {
             private static final long serialVersionUID = -3288982013478650146L;
@@ -104,7 +108,7 @@ public class BulkImportPanel extends Panel {
                 ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
             }
         };
-        add(importButton);
+        form.add(importButton);
     }
 
     private static int numberOfLines(String data) {

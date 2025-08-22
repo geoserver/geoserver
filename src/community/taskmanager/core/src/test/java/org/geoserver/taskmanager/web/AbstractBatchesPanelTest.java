@@ -168,7 +168,8 @@ public abstract class AbstractBatchesPanelTest<T extends Page> extends AbstractW
         assertTrue(w.isShown());
 
         // confirm
-        tester.executeAjaxEvent(prefix() + "batchesPanel:dialog:dialog:content:form:submit", "click");
+        tester.executeAjaxEvent(
+                prefix() + "batchesPanel:dialog:dialog:modal:overlay:dialog:content:content:form:submit", "click");
 
         assertFalse(containsBatch(getBatches(), dummy1));
         assertTrue(containsBatch(getBatches(), dummy2));

@@ -13,6 +13,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -54,20 +55,23 @@ public class BulkInitPanel extends Panel {
         add(dialog);
         dialog.setInitialHeight(100);
 
+        Form<?> form = new Form<Object>("form");
+        add(form);
+
         TextField<String> workspace = new TextField<>("workspace", workspaceModel);
-        add(workspace);
+        form.add(workspace);
 
         TextField<String> configuration = new TextField<>("configuration", configurationModel);
-        add(configuration.setRequired(true));
+        form.add(configuration.setRequired(true));
 
         NumberTextField<Integer> startDelay = new NumberTextField<>("startDelay", new Model<Integer>(0), Integer.class);
         startDelay.setMinimum(0);
-        add(startDelay);
+        form.add(startDelay);
 
         NumberTextField<Integer> betweenDelay =
                 new NumberTextField<>("betweenDelay", new Model<Integer>(0), Integer.class);
         betweenDelay.setMinimum(0);
-        add(betweenDelay);
+        form.add(betweenDelay);
 
         Label configsFound =
                 new Label("configsFound", new ParamResourceModel("configsFound", this, new IModel<String>() {
@@ -84,7 +88,7 @@ public class BulkInitPanel extends Panel {
                     @Override
                     public void detach() {}
                 }));
-        add(configsFound.setOutputMarkupId(true));
+        form.add(configsFound.setOutputMarkupId(true));
 
         AjaxSubmitLink run = new AjaxSubmitLink("run") {
             private static final long serialVersionUID = -3288982013478650146L;
@@ -142,7 +146,7 @@ public class BulkInitPanel extends Panel {
                 ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
             }
         };
-        add(run);
+        form.add(run);
 
         workspace.add(new AjaxFormSubmitBehavior("change") {
             private static final long serialVersionUID = 3397757222203749030L;

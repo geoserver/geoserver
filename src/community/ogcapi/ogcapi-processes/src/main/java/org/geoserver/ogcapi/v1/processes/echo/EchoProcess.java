@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.api.util.ProgressListener;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
@@ -25,6 +26,10 @@ public class EchoProcess implements GeoServerProcess {
     @DescribeResults({
         @DescribeResult(name = "stringOutput", description = "Echoes stringInput", type = String.class),
         @DescribeResult(name = "doubleOutput", description = "Echoes doubleInput", type = Double.class),
+        @DescribeResult(
+                name = "boundingBoxOutput",
+                description = "Echoes boundingBoxInput",
+                type = ReferencedEnvelope.class)
     })
     public Map<String, Object> execute(
             @DescribeParameter(
@@ -42,6 +47,11 @@ public class EchoProcess implements GeoServerProcess {
                             defaultValue = "5")
                     Double doubleInput,
             @DescribeParameter(
+                            name = "boundingBoxInput",
+                            description = "This is an example of a bounding box input",
+                            min = 0)
+                    ReferencedEnvelope boundingBoxInput,
+            @DescribeParameter(
                             name = "pause",
                             description = "Pause for a specified time in seconds",
                             min = 0,
@@ -55,6 +65,9 @@ public class EchoProcess implements GeoServerProcess {
         if (stringInput != null) result.put("stringOutput", stringInput);
         if (doubleInput != null) {
             result.put("doubleOutput", doubleInput);
+        }
+        if (boundingBoxInput != null) {
+            result.put("boundingBoxOutput", boundingBoxInput);
         }
 
         // The OGC API processes ETS requires a pause to simulate processing time

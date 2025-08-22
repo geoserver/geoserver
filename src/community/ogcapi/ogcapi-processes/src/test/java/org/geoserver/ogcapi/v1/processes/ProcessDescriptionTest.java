@@ -216,7 +216,7 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         assertEquals("Echoes back the input parameters provided to the process.", doc.read("description"));
         assertEquals(List.of("sync-execute", "async-execute"), doc.read("jobControlOptions"));
         // Check inputs
-        assertEquals(3, doc.read("inputs.size()", Integer.class).intValue());
+        assertEquals(4, doc.read("inputs.size()", Integer.class).intValue());
         // string input
         DocumentContext stringInput = readContext(doc, "inputs.stringInput");
         assertEquals("stringInput", stringInput.read("title"));
@@ -230,6 +230,12 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         assertEquals("double", doubleInput.read("schema.format"));
         assertEquals(0, doubleInput.read("minOccurs", Integer.class).intValue());
         assertEquals(1, doubleInput.read("maxOccurs", Integer.class).intValue());
+        // bbox input
+        DocumentContext boundingBoxInput = readContext(doc, "inputs.boundingBoxInput");
+        assertEquals("boundingBoxInput", boundingBoxInput.read("title"));
+        assertEquals(AbstractProcessIO.FORMAT_OGC_BBOX, boundingBoxInput.read("schema.allOf[0].format"));
+        assertEquals(0, boundingBoxInput.read("minOccurs", Integer.class).intValue());
+        assertEquals(1, boundingBoxInput.read("maxOccurs", Integer.class).intValue());
         // pause input
         DocumentContext pauseInput = readContext(doc, "inputs.pause");
         assertEquals("pause", pauseInput.read("title"));

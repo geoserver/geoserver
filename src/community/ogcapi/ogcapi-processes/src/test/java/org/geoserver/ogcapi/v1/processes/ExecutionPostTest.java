@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -171,7 +172,7 @@ public class ExecutionPostTest extends AbstractExecutionTest {
         JSONObject bounds = json.getJSONObject("bounds");
         assertArrayEquals(
                 new Object[] {0d, 0d, 5d, 5d}, bounds.getJSONArray("bbox").toArray());
-        assertEquals("EPSG:4326", bounds.getString("crs"));
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/4326", bounds.getString("crs"));
     }
 
     @Test
@@ -404,6 +405,19 @@ public class ExecutionPostTest extends AbstractExecutionTest {
 
         MockHttpServletResponse processOutput = getAsServletResponse("ogc/processes/v1/jobs/" + jobId + "/results");
         checkBufferCollectionJSON(processOutput);
+    }
+
+    @Test
+    public void testEcho() throws Exception {
+        String body = getBody("ExecuteEcho.json");
+        JSONObject json =
+                (JSONObject) postAsJSON("ogc/processes/v1/processes/gs:Echo/execution", body, "application/json");
+        print(json);
+        assertEquals("hithere", json.getString("stringOutput"));
+        assertEquals(15, json.getDouble("doubleOutput"), 0);
+        JSONObject bboxOutput = json.getJSONObject("boundingBoxOutput");
+        assertEquals(List.of(0d, 0d, 1d, 1d), bboxOutput.getJSONArray("bbox"));
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/3857", bboxOutput.getString("crs"));
     }
 
     @Test

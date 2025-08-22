@@ -16,7 +16,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +65,12 @@ import org.geoserver.wps.executor.WPSExecutionManager;
 import org.geoserver.wps.ppio.WFSPPIO;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.api.data.Parameter;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.gml2.SrsSyntax;
+import org.geotools.gml2.bindings.GML2EncodingUtils;
+import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -280,6 +284,7 @@ public class ProcessesService {
             OutputDataType output = (OutputDataType) outputObj;
             LiteralDataType literal = output.getData().getLiteralData();
             BoundingBoxType bbox = output.getData().getBoundingBoxData();
+            ComplexDataType complexData = output.getData().getComplexData();
             String identifier = output.getIdentifier().getValue();
             if (literal != null) {
                 responseWriter.beginPart(TEXT_PLAIN_VALUE, identifier);
@@ -289,9 +294,10 @@ public class ProcessesService {
                 try (JsonGenerator generator = new JsonFactory().createGenerator(httpResponse.getOutputStream())) {
                     writeBoundingBox(generator, bbox);
                 }
-            } else {
+            } else if (complexData != null) {
                 writeComplex(responseWriter, output);
             }
+            // if none of the above match, the output was null and can be skipped
         }
         responseWriter.endResponse();
     }
@@ -311,24 +317,25 @@ public class ProcessesService {
 
             for (OutputDataType output : outputs) {
                 String outputId = output.getIdentifier().getValue();
-                generator.writeFieldName(outputId);
                 Parameter<?> parameter = process.getResultInfo().get(outputId);
                 DataType data = output.getData();
                 if (data != null) {
                     if (data.getLiteralData() != null) {
+                        generator.writeFieldName(outputId);
                         Object converted =
                                 Converters.convert(data.getLiteralData().getValue(), parameter.getType());
                         generator.writeObject(converted);
                     } else if (data.getBoundingBoxData() != null) {
-                        BoundingBoxType bbox = data.getBoundingBoxData();
-                        writeBoundingBox(generator, bbox);
+                        generator.writeFieldName(outputId);
+                        writeBoundingBox(generator, data.getBoundingBoxData());
                     } else if (data.getComplexData() != null) {
+                        generator.writeFieldName(outputId);
                         writeComplex(generator, data.getComplexData());
-                    } else {
-                        throw new UnsupportedEncodingException("Unsupported output type: " + data);
                     }
+                    // if reaching here, the data was null, won't encode the output
                 } else if (output.getReference() != null) {
                     OutputReferenceType reference = output.getReference();
+                    generator.writeFieldName(outputId);
                     generator.writeStartObject();
                     if (reference.getMimeType() != null)
                         generator.writeStringField("mediaType", reference.getMimeType());
@@ -445,7 +452,14 @@ public class ProcessesService {
         }
         generator.writeEndArray();
         if (bbox.getCrs() != null) {
-            generator.writeStringField("crs", bbox.getCrs());
+            try {
+                CoordinateReferenceSystem crs = CRS.decode(bbox.getCrs());
+                String uri = GML2EncodingUtils.toURI(crs, SrsSyntax.OGC_HTTP_URI, false);
+                generator.writeStringField("crs", uri);
+            } catch (FactoryException e) {
+                // should not happen, has been encoded previously
+                throw new RuntimeException("Failed to decode the bbox CRS: " + bbox.getCrs(), e);
+            }
         }
         generator.writeEndObject();
     }

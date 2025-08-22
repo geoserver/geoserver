@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Set;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -54,13 +55,28 @@ public class ExecutionGetTest extends AbstractExecutionTest {
 
     @Test
     public void testEchoProcess() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/processes/v1/processes/gs:Echo/execution?stringInput=Hello%20World&boundingBoxInput=0,0,1,1&boundingBoxInput[crs]=http://www.opengis.net/def/crs/EPSG/0/3857");
+        assertEquals("application/json", response.getContentType());
+        JSONObject json = (JSONObject) json(response);
+        // print(json);
+        assertEquals("Hello World", json.getString("stringOutput"));
+        assertEquals(5, json.getDouble("doubleOutput"), 0);
+        JSONObject bboxOutput = json.getJSONObject("boundingBoxOutput");
+        assertEquals(List.of(0d, 0d, 1d, 1d), bboxOutput.getJSONArray("bbox"));
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/3857", bboxOutput.getString("crs"));
+    }
+
+    @Test
+    public void testEchoProcessNoBoundingBox() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("ogc/processes/v1/processes/gs:Echo/execution?stringInput=Hello%20World");
         assertEquals("application/json", response.getContentType());
         JSONObject json = (JSONObject) json(response);
-        print(json);
+        // print(json);
         assertEquals("Hello World", json.getString("stringOutput"));
         assertEquals(5, json.getDouble("doubleOutput"), 0);
+        assertFalse(json.has("boundingBoxOutput"));
     }
 
     @Test
@@ -122,7 +138,7 @@ public class ExecutionGetTest extends AbstractExecutionTest {
         JSONObject json = (JSONObject) json(response);
         assertArrayEquals(
                 new Object[] {0d, 0d, 5d, 5d}, json.getJSONArray("bbox").toArray());
-        assertEquals("EPSG:4326", json.getString("crs"));
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/4326", json.getString("crs"));
     }
 
     /** A process with multiple raw outputs, should return a json document with the outputs */

@@ -5,8 +5,12 @@
 package org.geoserver.ogcapi.v1.processes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.ComposedSchema;
+import io.swagger.v3.oas.models.media.NumberSchema;
+import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +35,33 @@ import org.springframework.http.MediaType;
 public class AbstractProcessIO {
 
     private static final Logger LOGGER = Logging.getLogger(AbstractProcessIO.class);
+    private static final Schema BBOX_SCHEMA;
+
+    /** Declares the object to have the OGC bbox format, as per OGC API Processes spec */
+    public static final String FORMAT_OGC_BBOX = "ogc-bbox";
+
+    static {
+        ArraySchema fourCoords = new ArraySchema().items(new NumberSchema());
+        fourCoords.minItems(4);
+        fourCoords.maxItems(4);
+
+        ArraySchema sixCoords = new ArraySchema().items(new NumberSchema());
+        sixCoords.minItems(6);
+        sixCoords.maxItems(6);
+
+        ComposedSchema bboxSchema = new ComposedSchema().oneOf(List.of(fourCoords, sixCoords));
+
+        Schema<?> crsSchema = new StringSchema().format("uri");
+        crsSchema.setDefault("http://www.opengis.net/def/crs/OGC/1.3/CRS84");
+
+        @SuppressWarnings("unchecked")
+        Schema explicitSchema = new ObjectSchema()
+                .addProperties("bbox", bboxSchema)
+                .addProperties("crs", crsSchema)
+                .required(List.of("bbox"));
+        Schema<?> bboxFormat = new Schema<>().format(FORMAT_OGC_BBOX);
+        BBOX_SCHEMA = new ComposedSchema().allOf(List.of(bboxFormat, explicitSchema));
+    }
 
     String title;
     String description;
@@ -51,8 +82,7 @@ public class AbstractProcessIO {
         if (ppios.get(0) instanceof LiteralPPIO) {
             this.schema = QueryablesBuilder.getSchema(p.getType());
         } else if (ppios.get(0) instanceof BoundingBoxPPIO) {
-            // TODO: support bounding box inputs
-            throw new IllegalArgumentException("Bounding box inputs are not supported yet");
+            this.schema = BBOX_SCHEMA;
         } else {
             List<Schema> schemas = new ArrayList<>();
             for (ProcessParameterIO ppio : ppios) {

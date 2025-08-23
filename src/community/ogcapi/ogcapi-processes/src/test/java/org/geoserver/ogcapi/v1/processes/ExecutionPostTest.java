@@ -37,11 +37,11 @@ import javax.mail.Multipart;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.util.Base64;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -264,7 +264,7 @@ public class ExecutionPostTest extends AbstractExecutionTest {
         JSONObject result = json.getJSONObject("result");
         // GML cannot be directly encoded in the output, so mediatype and escaped string
         assertEquals("application/zip", result.getString("mediaType"));
-        byte[] bytes = Base64.decode(result.getString("value"));
+        byte[] bytes = Base64.decodeBase64(result.getString("value"));
 
         Set<String> actualNames = getZipFileNames(bytes);
         assertThat(actualNames, Matchers.hasItems("features.shp", "features.shx", "features.dbf"));
@@ -418,6 +418,90 @@ public class ExecutionPostTest extends AbstractExecutionTest {
         JSONObject bboxOutput = json.getJSONObject("boundingBoxOutput");
         assertEquals(List.of(0d, 0d, 1d, 1d), bboxOutput.getJSONArray("bbox"));
         assertEquals("http://www.opengis.net/def/crs/EPSG/0/3857", bboxOutput.getString("crs"));
+    }
+
+    @Test
+    public void testEchoImageMultipartValue() throws Exception {
+        byte[] pngBytes = readSamplePng();
+        String pngBase64 = new String(Base64.encodeBase64(pngBytes));
+        String body = getBody("ExecuteEchoImage.json");
+        body = body.replace("$IMAGE_VALUE", pngBase64);
+        body = body.replace("$IMAGE_TRANSMISSION_MODE", "value");
+        body = body.replace("$RESPONSE_TYPE", "raw");
+        MockHttpServletResponse response =
+                postAsServletResponse("ogc/processes/v1/processes/gs:Echo/execution", body, "application/json");
+        assertEquals(200, response.getStatus());
+        assertThat(response.getContentType(), Matchers.startsWith("multipart/related; boundary="));
+        Multipart multipart = getMultipart(response);
+        int count = multipart.getCount();
+        assertEquals(2, count);
+        for (int i = 0; i < count; i++) {
+            BodyPart bodyPart = multipart.getBodyPart(i);
+            String[] header = bodyPart.getHeader("Content-ID");
+            assertNotNull(header);
+            assertEquals(1, header.length);
+            String contentId = header[0];
+            if ("<stringOutput>".equals(contentId)) {
+                assertEquals("text/plain", bodyPart.getContentType());
+                String text = (String) bodyPart.getContent();
+                assertEquals("hello", text);
+            } else if ("<imageOutput>".equals(contentId)) {
+                assertEquals("image/png", bodyPart.getContentType());
+                byte[] imageBytes = IOUtils.toByteArray(bodyPart.getInputStream());
+                assertImagesIdentical(pngBytes, imageBytes);
+            } else {
+                fail("Unexpected content id: " + contentId);
+            }
+        }
+    }
+
+    @Test
+    public void testEchoImageDocumentValue() throws Exception {
+        byte[] pngBytes = readSamplePng();
+        String pngBase64 = new String(Base64.encodeBase64(pngBytes));
+        String body = getBody("ExecuteEchoImage.json");
+        body = body.replace("$IMAGE_VALUE", pngBase64);
+        body = body.replace("$IMAGE_TRANSMISSION_MODE", "value");
+        body = body.replace("$RESPONSE_TYPE", "document");
+        MockHttpServletResponse response =
+                postAsServletResponse("ogc/processes/v1/processes/gs:Echo/execution", body, "application/json");
+        assertEquals(200, response.getStatus());
+        assertEquals("application/json", response.getContentType());
+        DocumentContext json = getAsJSONPath(response);
+
+        assertEquals("hello", json.read("$.stringOutput"));
+        assertEquals("image/png", json.read("$.imageOutput.mediaType"));
+        String imageBase64 = json.read("$.imageOutput.value");
+        byte[] imageBytes = Base64.decodeBase64(imageBase64);
+        assertImagesIdentical(pngBytes, imageBytes);
+    }
+
+    @Test
+    public void testEchoImageDocumentReference() throws Exception {
+        byte[] pngBytes = readSamplePng();
+        String pngBase64 = new String(Base64.encodeBase64(pngBytes));
+        String body = getBody("ExecuteEchoImage.json");
+        body = body.replace("$IMAGE_VALUE", pngBase64);
+        body = body.replace("$IMAGE_TRANSMISSION_MODE", "reference");
+        body = body.replace("$RESPONSE_TYPE", "document");
+        MockHttpServletResponse response =
+                postAsServletResponse("ogc/processes/v1/processes/gs:Echo/execution", body, "application/json");
+        assertEquals(200, response.getStatus());
+        assertEquals("application/json", response.getContentType());
+        DocumentContext json = getAsJSONPath(response);
+
+        assertEquals("hello", json.read("$.stringOutput"));
+        assertEquals("image/png", json.read("$.imageOutput.mediaType"));
+        String imageReference = json.read("$.imageOutput.href");
+        String geoserverBase = "http://localhost:8080/geoserver";
+        assertThat(imageReference, startsWith(geoserverBase));
+
+        MockHttpServletResponse referenceResponse =
+                getAsServletResponse(imageReference.substring(geoserverBase.length() + 1));
+        assertEquals(200, referenceResponse.getStatus());
+        assertEquals("image/png", referenceResponse.getContentType());
+        byte[] imageBytes = getBinary(referenceResponse);
+        assertImagesIdentical(pngBytes, imageBytes);
     }
 
     @Test

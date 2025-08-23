@@ -216,7 +216,7 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         assertEquals("Echoes back the input parameters provided to the process.", doc.read("description"));
         assertEquals(List.of("sync-execute", "async-execute"), doc.read("jobControlOptions"));
         // Check inputs
-        assertEquals(4, doc.read("inputs.size()", Integer.class).intValue());
+        assertEquals(5, doc.read("inputs.size()", Integer.class).intValue());
         // string input
         DocumentContext stringInput = readContext(doc, "inputs.stringInput");
         assertEquals("stringInput", stringInput.read("title"));
@@ -236,6 +236,17 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         assertEquals(AbstractProcessIO.FORMAT_OGC_BBOX, boundingBoxInput.read("schema.allOf[0].format"));
         assertEquals(0, boundingBoxInput.read("minOccurs", Integer.class).intValue());
         assertEquals(1, boundingBoxInput.read("maxOccurs", Integer.class).intValue());
+        // image input
+        DocumentContext imageInput = readContext(doc, "inputs.imageInput");
+        assertEquals("imageInput", imageInput.read("title"));
+        DocumentContext imageSchemas = readContext(imageInput, "schema.oneOf");
+        for (int i = 0; i < 2; i++) {
+            DocumentContext schema = readContext(imageSchemas, String.format("[%d]", i));
+            assertEquals("string", schema.read("type"));
+            assertEquals("binary", schema.read("format"));
+            String format = schema.read("contentMediaType");
+            assertTrue(format.equals("image/png") || format.equals("image/jpeg"));
+        }
         // pause input
         DocumentContext pauseInput = readContext(doc, "inputs.pause");
         assertEquals("pause", pauseInput.read("title"));

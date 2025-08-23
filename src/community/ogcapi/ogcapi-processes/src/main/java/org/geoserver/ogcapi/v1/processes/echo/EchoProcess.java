@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi.v1.processes.echo;
 
+import java.awt.image.RenderedImage;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.geoserver.wps.gs.GeoServerProcess;
@@ -29,7 +30,8 @@ public class EchoProcess implements GeoServerProcess {
         @DescribeResult(
                 name = "boundingBoxOutput",
                 description = "Echoes boundingBoxInput",
-                type = ReferencedEnvelope.class)
+                type = ReferencedEnvelope.class),
+        @DescribeResult(name = "imageOutput", description = "Echoes imageInput", type = RenderedImage.class)
     })
     public Map<String, Object> execute(
             @DescribeParameter(
@@ -52,6 +54,11 @@ public class EchoProcess implements GeoServerProcess {
                             min = 0)
                     ReferencedEnvelope boundingBoxInput,
             @DescribeParameter(
+                            name = "imageInput",
+                            description = "This is an example of an image input, with multiple formats supported",
+                            min = 0)
+                    RenderedImage imageInput,
+            @DescribeParameter(
                             name = "pause",
                             description = "Pause for a specified time in seconds",
                             min = 0,
@@ -68,6 +75,9 @@ public class EchoProcess implements GeoServerProcess {
         }
         if (boundingBoxInput != null) {
             result.put("boundingBoxOutput", boundingBoxInput);
+        }
+        if (imageInput != null) {
+            result.put("imageOutput", imageInput);
         }
 
         // The OGC API processes ETS requires a pause to simulate processing time

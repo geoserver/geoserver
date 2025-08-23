@@ -286,7 +286,7 @@ public class ProcessesService {
             BoundingBoxType bbox = output.getData().getBoundingBoxData();
             ComplexDataType complexData = output.getData().getComplexData();
             String identifier = output.getIdentifier().getValue();
-            if (literal != null) {
+            if (literal != null && literal.getValue() != null) {
                 responseWriter.beginPart(TEXT_PLAIN_VALUE, identifier);
                 responseWriter.getServletOutputStream().print(literal.getValue());
             } else if (bbox != null) {
@@ -294,7 +294,7 @@ public class ProcessesService {
                 try (JsonGenerator generator = new JsonFactory().createGenerator(httpResponse.getOutputStream())) {
                     writeBoundingBox(generator, bbox);
                 }
-            } else if (complexData != null) {
+            } else if (complexData != null && complexData.getData().get(0) != null) {
                 writeComplex(responseWriter, output);
             }
             // if none of the above match, the output was null and can be skipped
@@ -320,7 +320,7 @@ public class ProcessesService {
                 Parameter<?> parameter = process.getResultInfo().get(outputId);
                 DataType data = output.getData();
                 if (data != null) {
-                    if (data.getLiteralData() != null) {
+                    if (data.getLiteralData() != null && data.getLiteralData().getValue() != null) {
                         generator.writeFieldName(outputId);
                         Object converted =
                                 Converters.convert(data.getLiteralData().getValue(), parameter.getType());
@@ -489,8 +489,7 @@ public class ProcessesService {
                 writer.beginPart(complexData.getMimeType(), identifier);
                 writer.getServletOutputStream().print(result);
             } else {
-                throw new IllegalArgumentException(
-                        "Cannot encode an object of class " + rawResult.getClass() + " in raw form");
+                throw new IllegalArgumentException("Cannot encode an object " + rawResult + " in raw form");
             }
         } catch (Exception e) {
             throw new APIException(

@@ -7,14 +7,20 @@ package org.geoserver.ogcapi.v1.processes;
 import static org.geoserver.ogcapi.v1.processes.JobStatus.RESULTS_REL;
 import static org.geoserver.ogcapi.v1.processes.JobStatus.STATUS_REL;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
+import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeMultipart;
@@ -145,5 +151,32 @@ public class AbstractExecutionTest extends OGCApiTestSupport {
         }
         assertTrue(selfLinkFound);
         assertTrue(resultsLinkFound);
+    }
+
+    protected void assertImagesIdentical(byte[] inputBytes, byte[] outputBytes) throws IOException {
+        RenderedImage inputImage = ImageIO.read(new ByteArrayInputStream(inputBytes));
+        RenderedImage outputImage = ImageIO.read(new ByteArrayInputStream(outputBytes));
+        assertEquals(inputImage.getColorModel(), outputImage.getColorModel());
+        assertEquals(inputImage.getSampleModel(), outputImage.getSampleModel());
+        assertEquals(inputImage.getWidth(), outputImage.getWidth());
+        assertEquals(inputImage.getHeight(), outputImage.getHeight());
+        int[] inputPixel = new int[1];
+        int[] outputPixel = new int[1];
+        Raster inputData = inputImage.getData();
+        Raster outputData = inputImage.getData();
+        for (int i = 0; i < inputImage.getHeight(); i++) {
+            for (int j = 0; j < inputImage.getWidth(); j++) {
+                inputData.getPixel(j, i, inputPixel);
+                outputData.getPixel(j, i, outputPixel);
+                assertArrayEquals(inputPixel, outputPixel);
+            }
+        }
+    }
+
+    protected byte[] readSamplePng() throws IOException {
+        try (InputStream is = ExecutionGetTest.class.getResourceAsStream("bathy.png")) {
+            assertNotNull(is);
+            return is.readAllBytes();
+        }
     }
 }

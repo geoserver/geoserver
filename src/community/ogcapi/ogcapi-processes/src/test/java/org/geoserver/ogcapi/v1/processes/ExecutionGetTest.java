@@ -16,6 +16,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.jayway.jsonpath.DocumentContext;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wps.MonkeyProcess;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -77,6 +79,39 @@ public class ExecutionGetTest extends AbstractExecutionTest {
         assertEquals("Hello World", json.getString("stringOutput"));
         assertEquals(5, json.getDouble("doubleOutput"), 0);
         assertFalse(json.has("boundingBoxOutput"));
+    }
+
+    @Test
+    public void testEchoImageSingle() throws Exception {
+        byte[] pngBytes = readSamplePng();
+        String pngBase64 = new String(Base64.encodeBase64(pngBytes));
+        String pngEncoded = ResponseUtils.urlEncode(pngBase64);
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/processes/v1/processes/gs:Echo/execution?imageInput=%s&imageInput[mediaType]=image/png&stringOutput[include]=false&doubleOutput[include]=false&boundingBoxOutput[include]=false"
+                        .formatted(pngEncoded));
+        assertEquals("image/png", response.getContentType());
+        // compare images pixel by pixel (the output image is re-encoded, so it won't be bit identical)
+        byte[] responseImage = response.getContentAsByteArray();
+        assertImagesIdentical(pngBytes, responseImage);
+    }
+
+    @Test
+    public void testEchoImageDocument() throws Exception {
+        // OGC API - Processes 1.1 draft spec does not have a way to specify one wants raw output and does not
+        // offer multipart any longer, so code is defaulting to json document output when the process has multiple
+        // outputs
+        byte[] pngBytes = readSamplePng();
+        String pngBase64 = new String(Base64.encodeBase64(pngBytes));
+        String pngEncoded = ResponseUtils.urlEncode(pngBase64);
+        DocumentContext response = getAsJSONPath(
+                "ogc/processes/v1/processes/gs:Echo/execution?imageInput=%s&imageInput[mediaType]=image/png"
+                        .formatted(pngEncoded),
+                200);
+        assertEquals(5d, response.read("$.doubleOutput"), 0);
+        assertEquals("image/png", response.read("$.imageOutput.mediaType"));
+        String imageBase64 = response.read("$.imageOutput.value");
+        byte[] imageBytes = Base64.decodeBase64(imageBase64);
+        assertImagesIdentical(pngBytes, imageBytes);
     }
 
     @Test

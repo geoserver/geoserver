@@ -25,7 +25,7 @@ public class ExecuteRequest {
     Map<String, InputValue> inputs;
 
     Map<String, ExecuteOutput> outputs;
-    ResponseMode response = ResponseMode.RAW;
+    ResponseMode response = ResponseMode.RAW; // the default value, if not specified, is RAW (from spec)
 
     public Map<String, InputValue> getInputs() {
         return inputs;

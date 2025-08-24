@@ -16,13 +16,12 @@
 
     <!-- <mvc:annotation-driven/> -->
     <context:component-scan base-package="org.geoserver.ogcapi.v1.processes"/>
+    <context:component-scan base-package="org.geoserver.ogcapi.v1.processes.echo"/>
 
     <!-- Bridges to have OGC services show up as OWS services too -->
     <bean id="processesServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">
         <constructor-arg index="0" value="Processes"/>
         <constructor-arg index="1" value="1.0.0"/>
     </bean>
-
-    <bean id="echoProcess" class="org.geoserver.ogcapi.v1.processes.echo.EchoProcess"/>
 
 </beans>

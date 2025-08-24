@@ -5,7 +5,7 @@
 package org.geoserver.ogcapi.v1.processes;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.concurrent.CompletableFuture.anyOf;
+import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -19,16 +19,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.mail.BodyPart;
+import javax.mail.Multipart;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.util.Base64;
@@ -294,9 +300,7 @@ public class ExecutionPostTest extends AbstractExecutionTest {
         assertTrue(json.has("binary"));
         JSONObject binary = json.getJSONObject("binary");
         assertEquals("application/zip", binary.getString("mediaType"));
-        assertEquals(
-                new String(org.apache.commons.codec.binary.Base64.encodeBase64(new byte[100])),
-                binary.getString("value"));
+        assertEquals(new String(encodeBase64(new byte[100])), binary.getString("value"));
     }
 
     /** A process with multiple raw outputs, but only one got selected */
@@ -315,6 +319,44 @@ public class ExecutionPostTest extends AbstractExecutionTest {
 
         // the "binary" output was not chosen
         assertFalse(json.has("binary"));
+    }
+
+    /**
+     * A process with multiple raw outputs, requested with raw response, should return a multipart related response
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testMultipleOutputsRaw() throws Exception {
+        String body = getBody("ExecuteMultipleOutputsRaw.json");
+        MockHttpServletResponse response =
+                postAsServletResponse("ogc/processes/v1/processes/gs:MultiRaw/execution", body, "application/json");
+        assertThat(response.getContentType(), Matchers.startsWith("multipart/related; boundary="));
+        FileUtils.writeByteArrayToFile(new File("/tmp/test.bin"), response.getContentAsByteArray());
+        Multipart multipart = getMultipart(response);
+        int count = multipart.getCount();
+        for (int i = 0; i < count; i++) {
+            BodyPart bodyPart = multipart.getBodyPart(i);
+            String[] header = bodyPart.getHeader("Content-ID");
+            assertNotNull(header);
+            assertEquals(1, header.length);
+            String contentId = header[0];
+            if ("<text>".equals(contentId)) {
+                assertEquals("text/plain", bodyPart.getContentType());
+                String text = (String) bodyPart.getContent();
+                assertEquals("This is the raw text", text);
+            } else if ("<binary>".equals(contentId)) {
+                assertEquals("application/zip", bodyPart.getContentType());
+                byte[] bytes = IOUtils.toByteArray(bodyPart.getInputStream());
+                assertArrayEquals(new byte[100], bytes);
+            } else if ("<literal>".equals(contentId)) {
+                assertEquals("text/plain", bodyPart.getContentType());
+                String text = (String) bodyPart.getContent();
+                assertEquals("text", text);
+            } else {
+                fail("Unexpected content id: " + contentId);
+            }
+        }
     }
 
     @Test

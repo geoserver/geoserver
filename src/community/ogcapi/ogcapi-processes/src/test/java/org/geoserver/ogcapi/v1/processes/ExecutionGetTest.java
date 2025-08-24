@@ -53,6 +53,17 @@ public class ExecutionGetTest extends AbstractExecutionTest {
     }
 
     @Test
+    public void testEchoProcess() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse("ogc/processes/v1/processes/gs:Echo/execution?stringInput=Hello%20World");
+        assertEquals("application/json", response.getContentType());
+        JSONObject json = (JSONObject) json(response);
+        print(json);
+        assertEquals("Hello World", json.getString("stringOutput"));
+        assertEquals(5, json.getDouble("doubleOutput"), 0);
+    }
+
+    @Test
     public void testInputOutputMimeTypes() throws Exception {
         // call with custom format for input and output
         MockHttpServletResponse response = getAsServletResponse(

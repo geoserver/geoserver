@@ -23,5 +23,6 @@
         <constructor-arg index="1" value="1.0.0"/>
     </bean>
 
+    <bean id="echoProcess" class="org.geoserver.ogcapi.v1.processes.echo.EchoProcess"/>
 
 </beans>

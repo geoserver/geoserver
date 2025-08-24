@@ -207,4 +207,28 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
             assertEquals("Expected formats do not match", expectedFormats, actualFormats);
         }
     }
+
+    @Test
+    public void testEchoProcess() throws Exception {
+        DocumentContext doc = getAsJSONPath("ogc/processes/v1/processes/gs:Echo", 200);
+        assertEquals("gs:Echo", doc.read("id"));
+        assertEquals("Echo", doc.read("title"));
+        assertEquals("Echoes back the input parameters provided to the process.", doc.read("description"));
+        assertEquals(List.of("sync-execute", "async-execute"), doc.read("jobControlOptions"));
+        // Check inputs
+        assertEquals(2, doc.read("inputs.size()", Integer.class).intValue());
+        // string input
+        DocumentContext stringInput = readContext(doc, "inputs.stringInput");
+        assertEquals("stringInput", stringInput.read("title"));
+        assertEquals("string", stringInput.read("schema.type"));
+        assertEquals(0, stringInput.read("minOccurs", Integer.class).intValue());
+        assertEquals(1, stringInput.read("maxOccurs", Integer.class).intValue());
+        // double input
+        DocumentContext doubleInput = readContext(doc, "inputs.doubleInput");
+        assertEquals("doubleInput", doubleInput.read("title"));
+        assertEquals("number", doubleInput.read("schema.type"));
+        assertEquals("double", doubleInput.read("schema.format"));
+        assertEquals(0, doubleInput.read("minOccurs", Integer.class).intValue());
+        assertEquals(1, doubleInput.read("maxOccurs", Integer.class).intValue());
+    }
 }

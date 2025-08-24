@@ -12,6 +12,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
+import javax.mail.util.SharedByteArrayInputStream;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCApiTestSupport;
@@ -101,5 +106,14 @@ public class AbstractExecutionTest extends OGCApiTestSupport {
             body = IOUtils.toString(is, StandardCharsets.UTF_8);
         }
         return body;
+    }
+
+    /** Parses a multipart message from the response */
+    protected Multipart getMultipart(MockHttpServletResponse response) throws MessagingException, IOException {
+        byte[] body = response.getContentAsByteArray();
+        String contentType = response.getContentType();
+        ByteArrayDataSource ds = new ByteArrayDataSource(new SharedByteArrayInputStream(body), contentType);
+        // MimeMultipart(DataSource) will parse using the provided Content-Type (boundary included)
+        return new MimeMultipart(ds);
     }
 }

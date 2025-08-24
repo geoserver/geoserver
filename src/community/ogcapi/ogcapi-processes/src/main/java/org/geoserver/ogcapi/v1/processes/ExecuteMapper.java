@@ -115,7 +115,7 @@ public class ExecuteMapper {
         Map<String, Parameter<?>> resultInfo = process.getResultInfo();
 
         // filter based on output selection, while validating the chosen output names
-        if (executeRequest.getOutputs() != null) {
+        if (executeRequest.getOutputs() != null && !executeRequest.getOutputs().isEmpty()) {
             Set<String> selectedOutputs = executeRequest.getOutputs().keySet();
             if (!resultInfo.keySet().containsAll(selectedOutputs)) {
                 Set<String> extraOutputs = selectedOutputs.stream()
@@ -137,7 +137,7 @@ public class ExecuteMapper {
         // build WPS response form
         ResponseFormType responseForm = WPS_FACTORY.createResponseFormType();
         execute.setResponseForm(responseForm);
-        if (resultInfo.size() > 1 || async) {
+        if (resultInfo.size() != 1 || async) {
             ResponseDocumentType responseDocument = WPS_FACTORY.createResponseDocumentType();
             responseForm.setResponseDocument(responseDocument);
             responseDocument.setStatus(async);
@@ -171,10 +171,11 @@ public class ExecuteMapper {
                     }
                 }
 
-                // WPS can execute async only in document response mode, but populate the
-                // raw one too for the response to be written correctly (as raw)... using the
-                // lineage flag as a marker to indicate that the response is async but should be raw
-                if (resultInfo.size() == 1 && executeRequest.getResponse() != DOCUMENT && async) {
+                // Using the lineage flag as a marker to indicate that the response should be raw
+                // as WPS has limitations: in raw mode can only do one output, in async mode can only do document
+                // This must be removed once we have a process engine that can use beans instead
+                // of EMF models and has a custom serialization support for them
+                if (resultInfo.size() == 1 || (executeRequest.getResponse() != DOCUMENT)) {
                     responseDocument.setLineage(true);
                 }
 
@@ -200,12 +201,12 @@ public class ExecuteMapper {
                     .map(ExecuteOutputFormat::getMediaType)
                     .ifPresent(mt -> setResponseMediaType(output, resultInfo, mt));
 
-            if (executeRequest.getResponse() == ExecuteRequest.ResponseMode.RAW) {
-                responseForm.setRawDataOutput(output);
-            } else {
+            if (executeRequest.getResponse() == DOCUMENT) {
                 ResponseDocumentType responseDocument = WPS_FACTORY.createResponseDocumentType();
                 responseForm.setResponseDocument(responseDocument);
                 responseDocument.getOutput().add(output);
+            } else {
+                responseForm.setRawDataOutput(output);
             }
         }
         // setup the base URL for the reference outputs

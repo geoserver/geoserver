@@ -50,8 +50,6 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected Integer xmlPostRequestLogBufferSize = LoggingFilter.REQUEST_LOG_BUFFER_SIZE_DEFAULT;
 
-    protected Boolean xmlExternalEntitiesEnabled = Boolean.FALSE;
-
     protected Boolean trailingSlashMatch = getDefaultTrailingSlashMatch();
 
     protected String lockProviderName;
@@ -270,19 +268,25 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     /**
      * If true it enables unrestricted evaluation of XML entities contained in XML files received in a service (WMS,
      * WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     *
+     * @deprecated use the {@code ENTITY_RESOLUTION_UNRESTRICTED} system property
      */
+    @Deprecated(forRemoval = true, since = "2.26.4, 2.27.2, 2.28.0")
     @Override
     public void setXmlExternalEntitiesEnabled(Boolean xmlExternalEntitiesEnabled) {
-        this.xmlExternalEntitiesEnabled = xmlExternalEntitiesEnabled;
+        // do nothing
     }
 
     /**
      * If true it enables unrestricted evaluation of XML entities contained in XML files received in a service (WMS,
      * WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     *
+     * @deprecated use the {@code ENTITY_RESOLUTION_UNRESTRICTED} system property
      */
+    @Deprecated(forRemoval = true, since = "2.26.4, 2.27.2, 2.28.0")
     @Override
     public Boolean isXmlExternalEntitiesEnabled() {
-        return this.xmlExternalEntitiesEnabled;
+        return null;
     }
 
     @Override

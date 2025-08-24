@@ -235,16 +235,27 @@ public class ProcessesService {
 
         // follow up with the required response type
         ResponseFormType responseForm = request.getResponseForm();
+        // did we get a request with raw response, but potentially multiple outputs?
+        boolean rawResponse = hasRawResponse(responseForm);
+
         if (!dumpFinalResponse
                 && responseForm.getResponseDocument() != null
                 && responseForm.getResponseDocument().isStatus()) {
             writeStatusResponse(httpResponse, request, response);
-        } else if (responseForm.getRawDataOutput() != null
-                || responseForm.getResponseDocument().isLineage()) {
+        } else if (rawResponse) {
             writeRawResponse(httpResponse, response);
         } else {
             writeDocumentResponse(process, httpResponse, response);
         }
+    }
+
+    private boolean hasRawResponse(ResponseFormType responseForm) {
+        if (responseForm.getRawDataOutput() != null) return true;
+        // internal convention, OGC API Processes does not use lineage, we are reusing that
+        // flag to indicate raw responses with multiple outputs. Eventually we'll have to
+        // either extend the EMF model or have process-engine use beans with their own
+        // serialization support (with some indication of what/how to deserialize?)
+        return responseForm.getResponseDocument().isLineage();
     }
 
     private static void writeStatusResponse(
@@ -260,21 +271,27 @@ public class ProcessesService {
     }
 
     private void writeRawResponse(HttpServletResponse httpResponse, ExecuteResponseType response) throws IOException {
-        OutputDataType result =
-                (OutputDataType) response.getProcessOutputs().getOutput().get(0);
-        LiteralDataType literal = result.getData().getLiteralData();
-        BoundingBoxType bbox = result.getData().getBoundingBoxData();
-        if (literal != null) {
-            httpResponse.setContentType(TEXT_PLAIN_VALUE);
-            httpResponse.getWriter().write(literal.getValue());
-        } else if (bbox != null) {
-            httpResponse.setContentType(APPLICATION_JSON_VALUE);
-            try (JsonGenerator generator = new JsonFactory().createGenerator(httpResponse.getOutputStream())) {
-                writeBoundingBox(generator, bbox);
+        EList outputs = response.getProcessOutputs().getOutput();
+        HttpResponseWriter responseWriter = HttpResponseWriter.getResponseWriter(httpResponse, outputs.size());
+
+        for (Object outputObj : outputs) {
+            OutputDataType output = (OutputDataType) outputObj;
+            LiteralDataType literal = output.getData().getLiteralData();
+            BoundingBoxType bbox = output.getData().getBoundingBoxData();
+            String identifier = output.getIdentifier().getValue();
+            if (literal != null) {
+                responseWriter.beginPart(TEXT_PLAIN_VALUE, identifier);
+                responseWriter.getServletOutputStream().print(literal.getValue());
+            } else if (bbox != null) {
+                responseWriter.beginPart(APPLICATION_JSON_VALUE, identifier);
+                try (JsonGenerator generator = new JsonFactory().createGenerator(httpResponse.getOutputStream())) {
+                    writeBoundingBox(generator, bbox);
+                }
+            } else {
+                writeComplex(responseWriter, output);
             }
-        } else {
-            writeComplex(httpResponse, result.getData().getComplexData());
         }
+        responseWriter.endResponse();
     }
 
     /**
@@ -431,28 +448,30 @@ public class ProcessesService {
         generator.writeEndObject();
     }
 
-    private void writeComplex(HttpServletResponse httpResponse, ComplexDataType complexData) {
+    private void writeComplex(HttpResponseWriter writer, OutputDataType output) {
+        ComplexDataType complexData = output.getData().getComplexData();
         Object rawResult = complexData.getData().get(0);
+        String identifier = output.getIdentifier().getValue();
         try {
             if (rawResult instanceof RawDataEncoderDelegate delegate) {
-                httpResponse.setContentType(delegate.getRawData().getMimeType());
-                delegate.encode(httpResponse.getOutputStream());
+                writer.beginPart(delegate.getRawData().getMimeType(), identifier);
+                delegate.encode(writer.getServletOutputStream());
             } else if (rawResult instanceof XMLEncoderDelegate delegate) {
                 TransformerHandler xmls =
                         ((SAXTransformerFactory) SAXTransformerFactory.newInstance()).newTransformerHandler();
-                xmls.setResult(new StreamResult(httpResponse.getOutputStream()));
-                httpResponse.setContentType(delegate.getPPIO().getMimeType());
+                xmls.setResult(new StreamResult(writer.getServletOutputStream()));
+                writer.beginPart(delegate.getPPIO().getMimeType(), identifier);
                 delegate.encode(xmls);
             } else if (rawResult instanceof CDataEncoderDelegate cdataDelegate) {
-                httpResponse.setContentType(cdataDelegate.getPPIO().getMimeType());
-                cdataDelegate.encode(httpResponse.getOutputStream());
+                writer.beginPart(cdataDelegate.getPPIO().getMimeType(), identifier);
+                cdataDelegate.encode(writer.getServletOutputStream());
             } else if (rawResult instanceof BinaryEncoderDelegate binaryDelegate) {
-                httpResponse.setContentType(binaryDelegate.getPPIO().getMimeType());
-                binaryDelegate.encode(httpResponse.getOutputStream());
+                writer.beginPart(binaryDelegate.getPPIO().getMimeType(), identifier);
+                binaryDelegate.encode(writer.getServletOutputStream());
             } else if (rawResult instanceof String result) {
                 // this is an already encoded string (async execution stored), just write it out
-                httpResponse.setContentType(complexData.getMimeType());
-                httpResponse.getWriter().print(result);
+                writer.beginPart(complexData.getMimeType(), identifier);
+                writer.getServletOutputStream().print(result);
             } else {
                 throw new IllegalArgumentException(
                         "Cannot encode an object of class " + rawResult.getClass() + " in raw form");

@@ -18,16 +18,16 @@ import org.geoserver.security.config.SecurityAuthProviderConfig;
  * serializes like:
  *
  * <pre>{@code
- * <authProviders>
+ * <authproviders>
  *   <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>...</...>
  *   ...
- * </authProviders>
+ * </authproviders>
  * }</pre>
  *
  * <p>This class exposes a null-safe API and uses defensive copies in setters/getters while keeping a mutable field so
  * XStream can populate it directly.
  */
-@XStreamAlias("authProviders")
+@XStreamAlias("authproviders")
 public class AuthProviderCollection {
 
     /** Backing list used by XStream implicit collection. Do not make final. */

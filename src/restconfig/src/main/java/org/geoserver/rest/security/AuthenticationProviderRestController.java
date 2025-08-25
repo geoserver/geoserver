@@ -54,16 +54,16 @@ import org.springframework.web.util.UriComponentsBuilder;
  * <h3>Resources</h3>
  *
  * <ul>
- *   <li><code>GET /security/authProviders</code> – list enabled providers (in effective order).
- *   <li><code>GET /security/authProviders/{name}</code> – fetch a single provider config.
- *   <li><code>POST /security/authProviders?position={pos}</code> – create a provider and insert it into the enabled
+ *   <li><code>GET /security/authproviders</code> – list enabled providers (in effective order).
+ *   <li><code>GET /security/authproviders/{name}</code> – fetch a single provider config.
+ *   <li><code>POST /security/authproviders?position={pos}</code> – create a provider and insert it into the enabled
  *       order at the specified position (default: append).
- *   <li><code>PUT /security/authProviders/{name}?position={pos}</code> – update an existing provider and optionally
+ *   <li><code>PUT /security/authproviders/{name}?position={pos}</code> – update an existing provider and optionally
  *       move it to a new position.
- *   <li><code>DELETE /security/authProviders/{name}</code> – remove from order (disable) then delete the provider
+ *   <li><code>DELETE /security/authproviders/{name}</code> – remove from order (disable) then delete the provider
  *       configuration from disk.
- *   <li><code>PUT /security/authProviders/order</code> – set the <em>entire</em> enabled order. The list provided
- *       becomes the canonical {@code <authProviderNames>} in the global security config. Names omitted here remain
+ *   <li><code>PUT /security/authproviders/order</code> – set the <em>entire</em> enabled order. The list provided
+ *       becomes the canonical {@code <authproviderNames>} in the global security config. Names omitted here remain
  *       saved on disk but are considered <strong>disabled</strong>.
  * </ul>
  *
@@ -72,9 +72,9 @@ import org.springframework.web.util.UriComponentsBuilder;
  * All endpoints accept / return XML or JSON. For create/update you may send:
  *
  * <ul>
- *   <li>JSON: a single provider under <code>{"authProvider": {...}}</code>, or <code>{"authProviders":[{...}]}</code>
+ *   <li>JSON: a single provider under <code>{"authprovider": {...}}</code>, or <code>{"authproviders":[{...}]}</code>
  *       with exactly one item.
- *   <li>XML: a single {@link SecurityAuthProviderConfig} element, or an <code>&lt;authProviders&gt;</code> wrapper with
+ *   <li>XML: a single {@link SecurityAuthProviderConfig} element, or an <code>&lt;authproviders&gt;</code> wrapper with
  *       exactly one provider.
  * </ul>
  *
@@ -94,7 +94,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * All operations require an authenticated admin; otherwise HTTP 403 is returned.
  */
 @RestController
-@RequestMapping(RestBaseController.ROOT_PATH + "/security/authProviders")
+@RequestMapping(RestBaseController.ROOT_PATH + "/security/authproviders")
 public class AuthenticationProviderRestController extends RestBaseController {
 
     /**
@@ -122,7 +122,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
         xs.allowTypesByWildcard(new String[] {"org.geoserver.rest.security.xml.*"});
 
-        xs.alias("authProviders", AuthProviderCollection.class);
+        xs.alias("authproviders", AuthProviderCollection.class);
         xs.addImplicitCollection(AuthProviderCollection.class, "providers", null, SecurityAuthProviderConfig.class);
 
         xs.alias("order", AuthProviderOrder.class);
@@ -131,7 +131,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
 
     // ------------------------------------------------------------------------ LIST + ITEM --------
 
-    /** List the enabled providers in the current effective order (i.e. the global {@code <authProviderNames>}). */
+    /** List the enabled providers in the current effective order (i.e. the global {@code <authproviderNames>}). */
     @GetMapping(
             path = {"", ".{ext:xml|json}"},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
@@ -199,7 +199,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
             securityManager.reload();
 
             HttpHeaders h = new HttpHeaders();
-            h.setLocation(builder.path("/security/authProviders/{name}")
+            h.setLocation(builder.path("/security/authproviders/{name}")
                     .buildAndExpand(cfg.getName())
                     .toUri());
             return new ResponseEntity<>(wrapObject(cfg, SecurityAuthProviderConfig.class), h, HttpStatus.CREATED);
@@ -319,7 +319,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
     // --------------------------------------------------------------------------- /order API -------
 
     /**
-     * Replace the entire enabled order. The supplied list becomes the exact content of {@code <authProviderNames>} in
+     * Replace the entire enabled order. The supplied list becomes the exact content of {@code <authproviderNames>} in
      * the global security configuration. Providers not listed remain saved on disk but are disabled.
      *
      * <p>Payloads:
@@ -459,12 +459,12 @@ public class AuthenticationProviderRestController extends RestBaseController {
         JsonNode n = MAPPER.readTree(body);
         if (n == null || n.isNull()) throw new BadRequest("Empty JSON payload");
 
-        // unwrap "authProvider" or single-item "authProviders"
-        if (n.has("authProvider")) n = n.get("authProvider");
-        if (n.has("authProviders")
-                && n.get("authProviders").isArray()
-                && n.get("authProviders").size() == 1) {
-            n = n.get("authProviders").get(0);
+        // unwrap "authprovider" or single-item "authproviders"
+        if (n.has("authprovider")) n = n.get("authprovider");
+        if (n.has("authproviders")
+                && n.get("authproviders").isArray()
+                && n.get("authproviders").size() == 1) {
+            n = n.get("authproviders").get(0);
         }
         if (!n.isObject()) throw new BadRequest("Malformed JSON payload");
 

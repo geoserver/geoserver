@@ -8,15 +8,15 @@ info:
     ### Representation notes
     - **XML:** each provider is serialized with its concrete class name as the element name
       (e.g. `<org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>`).
-      For POST/PUT send the provider element **directly** (no `<authProvider>` wrapper).
+      For POST/PUT send the provider element **directly** (no `<authprovider>` wrapper).
     - **JSON:** requests may be **either** a bare object `{ ... }` **or** an envelope:
-        - Single: `{ "authProvider": { ... } }`
-        - List:   `{ "authProviders": [ { ... }, ... ] }`
-      (The controller also accepts a single-item `"authProviders"` array.)
+        - Single: `{ "authprovider": { ... } }`
+        - List:   `{ "authproviders": [ { ... }, ... ] }`
+      (The controller also accepts a single-item `"authproviders"` array.)
     - **Create rules:** `className` is required on POST.
     - **Update rules:** path `{providerName}` **must** equal payload `name`. `className` cannot change
       (you may omit it in the payload to keep the existing value).
-    - **Enable/disable semantics:** the active order in `<authProviderNames>` determines which providers
+    - **Enable/disable semantics:** the active order in `<authproviderNames>` determines which providers
       are enabled. Presence = enabled; absence = disabled.
 
 host: localhost:8080
@@ -26,20 +26,20 @@ security:
   - basicAuth: []
 
 paths:
-  /security/authProviders:
+  /security/authproviders:
     get:
       summary: List providers (active order)
       operationId: listAuthProviders
-      tags: [authProviders]
+      tags: [authproviders]
       produces: [application/json, application/xml]
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/authProviders'
+            $ref: '#/definitions/authproviders'
           examples:
             application/json:
-              authProviders:
+              authproviders:
                 - id: 52857278:13c7ffd66a8:-7ff0
                   name: default
                   className: org.geoserver.security.auth.UsernamePasswordAuthenticationProvider
@@ -54,7 +54,7 @@ paths:
     post:
       summary: Create a provider
       operationId: createAuthProvider
-      tags: [authProviders]
+      tags: [authproviders]
       consumes: [application/json, application/xml]
       produces: [application/json, application/xml]
       parameters:
@@ -68,13 +68,13 @@ paths:
           required: true
           description: |
             Provider payload.
-            - **XML:** send the provider element itself (no `<authProvider>` wrapper).
-            - **JSON:** send a bare object or an `{ "authProvider": { ... } }` envelope.
+            - **XML:** send the provider element itself (no `<authprovider>` wrapper).
+            - **JSON:** send a bare object or an `{ "authprovider": { ... } }` envelope.
           schema:
-            $ref: '#/definitions/authProviderCore'
+            $ref: '#/definitions/authproviderCore'
           x-examples:
             application/json:
-              authProvider:
+              authprovider:
                 name: my-up
                 className: org.geoserver.security.auth.UsernamePasswordAuthenticationProvider
                 userGroupServiceName: default
@@ -92,7 +92,7 @@ paths:
               type: string
               format: uri
           schema:
-            $ref: '#/definitions/authProviderCore'
+            $ref: '#/definitions/authproviderCore'
         '400':
           description: Validation error (e.g., missing `className`, reserved name `order`, duplicate name, invalid position)
           schema: { $ref: '#/definitions/errorResponse' }
@@ -103,11 +103,11 @@ paths:
           description: Server error
           schema: { $ref: '#/definitions/errorResponse' }
 
-  /security/authProviders/{providerName}:
+  /security/authproviders/{providerName}:
     get:
       summary: Get provider
       operationId: getAuthProvider
-      tags: [authProviders]
+      tags: [authproviders]
       produces: [application/json, application/xml]
       parameters:
         - name: providerName
@@ -118,7 +118,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/authProviderCore'
+            $ref: '#/definitions/authproviderCore'
           examples:
             application/json:
               id: 52857278:13c7ffd66a8:-7ff0
@@ -138,7 +138,7 @@ paths:
     put:
       summary: Update provider and/or move its position
       operationId: updateAuthProvider
-      tags: [authProviders]
+      tags: [authproviders]
       consumes: [application/json, application/xml]
       produces: [application/json, application/xml]
       parameters:
@@ -156,13 +156,13 @@ paths:
           required: true
           description: |
             Provider payload.
-            - **XML:** send the provider element itself (no `<authProvider>` wrapper).
-            - **JSON:** send a bare object or an `{ "authProvider": { ... } }` envelope.
+            - **XML:** send the provider element itself (no `<authprovider>` wrapper).
+            - **JSON:** send a bare object or an `{ "authprovider": { ... } }` envelope.
           schema:
-            $ref: '#/definitions/authProviderCore'
+            $ref: '#/definitions/authproviderCore'
           x-examples:
             application/json:
-              authProvider:
+              authprovider:
                 name: default
                 className: org.geoserver.security.auth.UsernamePasswordAuthenticationProvider
                 userGroupServiceName: default
@@ -176,7 +176,7 @@ paths:
         '200':
           description: Updated
           schema:
-            $ref: '#/definitions/authProviderCore'
+            $ref: '#/definitions/authproviderCore'
         '400':
           description: Validation error (e.g., path/payload name mismatch, `className` change, invalid position)
           schema: { $ref: '#/definitions/errorResponse' }
@@ -193,7 +193,7 @@ paths:
     delete:
       summary: Delete provider (also removes it from the active order)
       operationId: deleteAuthProvider
-      tags: [authProviders]
+      tags: [authproviders]
       produces: [application/json, application/xml]
       parameters:
         - name: providerName
@@ -213,11 +213,11 @@ paths:
           description: Server error
           schema: { $ref: '#/definitions/errorResponse' }
 
-  /security/authProviders/order:
+  /security/authproviders/order:
     put:
       summary: Replace active order (enables/disables providers)
       operationId: setAuthProviderOrder
-      tags: [authProviders]
+      tags: [authproviders]
       consumes: [application/json, application/xml]
       produces: [application/json, application/xml]
       parameters:
@@ -225,7 +225,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/authProviderOrder'
+            $ref: '#/definitions/authproviderOrder'
           x-examples:
             application/json:
               order: [default, corporateLdap]
@@ -271,18 +271,18 @@ paths:
           description: Use PUT
 
 definitions:
-  # Envelope used for list responses (JSON); XML root is also <authProviders>
-  authProviders:
+  # Envelope used for list responses (JSON); XML root is also <authproviders>
+  authproviders:
     type: object
     properties:
-      authProviders:
+      authproviders:
         type: array
         items:
-          $ref: '#/definitions/authProviderCore'
+          $ref: '#/definitions/authproviderCore'
     xml:
-      name: authProviders
+      name: authproviders
 
-  authProviderCore:
+  authproviderCore:
     type: object
     required: [name, className, userGroupServiceName]
     additionalProperties: true
@@ -302,7 +302,7 @@ definitions:
     xml:
       name: org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig
 
-  authProviderOrder:
+  authproviderOrder:
     type: object
     required: [order]
     properties:

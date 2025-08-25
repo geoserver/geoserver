@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2014 OpenPlans
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,14 +6,12 @@ package org.geoserver.wms;
 
 import static org.geoserver.wms.RenderingVariables.setQueryHintsFromEnv;
 
-import org.geotools.filter.function.EnvFunction;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 
 /**
- * Helper that injects enviroment variables in the {@link EnvFunction} given a map context
+ * Callback that sets the WMS specific values from env veriables to query hints. To be used further by SQL view layers.
  *
- * @author Andrea Aime - GeoSolutions
  */
 public class RenderingVariablesCallback implements GetMapCallback {
 
@@ -35,7 +32,7 @@ public class RenderingVariablesCallback implements GetMapCallback {
     public WMSMapContent beforeRender(WMSMapContent mapContent) {
         for (Layer layer : mapContent.layers()) {
             if (layer instanceof FeatureLayer) {
-                setQueryHintsFromEnv(layer);
+                setQueryHintsFromEnv((FeatureLayer) layer);
             }
         }
         return mapContent;

@@ -45,19 +45,13 @@ public class RenderingVariables {
         EnvFunction.setLocalValue(WMS_SRS, params.getGetMapRequest().getSRS());
         EnvFunction.setLocalValue(WMS_WIDTH, params.getWidth());
         EnvFunction.setLocalValue(WMS_HEIGHT, params.getHeight());
-        try {
-            double scaleDenominator = params.getScaleDenominator();
-            EnvFunction.setLocalValue(WMS_SCALE_DENOMINATOR, scaleDenominator);
-        } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Failed to compute the scale denominator, wms_scale_denominator env variable is unset",
-                    e);
-        }
+        double scaleDenominator = params.getScaleDenominator();
+        EnvFunction.setLocalValue(WMS_SCALE_DENOMINATOR, scaleDenominator);
     }
 
     public static void setupEnvironmentVariables(WMSMapContent mapContent) {
         EnvFunction.setLocalValue(WMS_BBOX, mapContent.getRenderingArea());
+        EnvFunction.setLocalValue("wms_crs", mapContent.getRenderingArea().getCoordinateReferenceSystem());
         EnvFunction.setLocalValue(WMS_SRS, mapContent.getRequest().getSRS());
         EnvFunction.setLocalValue(WMS_WIDTH, mapContent.getMapWidth());
         EnvFunction.setLocalValue(WMS_HEIGHT, mapContent.getMapHeight());
@@ -72,11 +66,22 @@ public class RenderingVariables {
         }
     }
 
-    public static void setQueryHintsFromEnv(Layer layer) {
+    /**
+     * Update the layer to have query with query hints from env.
+     *
+     * @param layer
+     */
+    public static void setQueryHintsFromEnv(FeatureLayer layer) {
         Query query = setHintsToQuery(layer.getQuery());
-        ((FeatureLayer) layer).setQuery(query);
+        layer.setQuery(query);
     }
 
+    /**
+     * Propagate WMS specific parameters from env variables to query hints.
+     *
+     * @param query
+     * @return
+     */
     public static Query setHintsToQuery(Query query) {
         Query resultQuery = new Query(query);
         @SuppressWarnings("unchecked")

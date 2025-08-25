@@ -72,8 +72,8 @@ public class AuthenticationFilterControllerTest extends GeoServerTestSupport {
         try {
             RestWrapper<AuthFilter> result = controller.list();
             assertNotNull(result.getObject());
-            List<AuthFilter> authFilterList = (List<AuthFilter>) result.getObject();
-            authFilterList.forEach(filter -> {
+            List<AuthFilter> authfilterList = (List<AuthFilter>) result.getObject();
+            authfilterList.forEach(filter -> {
                 assertNotNull(filter.getName());
                 assertNotNull(filter.getConfig());
             });

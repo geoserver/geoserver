@@ -59,7 +59,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  *   <li>Tests call the controller directly (no MockMvc) to keep them fast and focused on config semantics.
  *   <li>Each test starts from a clean state by removing TEST-* providers from both the on-disk provider list and the
  *       enabled order.
- *   <li>Where relevant, we verify both JSON/XML payload handling and the side effects on &lt;authProviderNames&gt;
+ *   <li>Where relevant, we verify both JSON/XML payload handling and the side effects on &lt;authproviderNames&gt;
  *       (enabled/disabled semantics).
  * </ul>
  */
@@ -189,7 +189,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         inner.put("name", name);
         inner.put("className", className);
         if (ugService != null) inner.put("userGroupServiceName", ugService);
-        return Collections.singletonMap("authProvider", inner);
+        return Collections.singletonMap("authprovider", inner);
     }
 
     // ---------------------------------------------------------------------
@@ -217,7 +217,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             assertThat(names, hasItems(n1, n2));
 
             String xml = toXml(col);
-            assertThat(xml, containsString("<authProviders>"));
+            assertThat(xml, containsString("<authproviders>"));
             assertThat(
                     xml,
                     containsString("<org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>"));
@@ -280,7 +280,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             assertEquals(201, resp.getStatusCodeValue());
             HttpHeaders headers = resp.getHeaders();
             assertNotNull(headers.getLocation());
-            assertThat(headers.getLocation().getPath(), is("/security/authProviders/" + name));
+            assertThat(headers.getLocation().getPath(), is("/security/authproviders/" + name));
 
             SecurityAuthProviderConfig createdCfg =
                     (SecurityAuthProviderConfig) resp.getBody().getObject();
@@ -292,7 +292,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         }
     }
 
-    /** create(XML): round-trip; position=0 places it first in &lt;authProviderNames&gt;. */
+    /** create(XML): round-trip; position=0 places it first in &lt;authproviderNames&gt;. */
     @Test
     public void testCreate_XML_roundtrip() throws Exception {
         try {
@@ -342,11 +342,11 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
                 authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, false);
 
         controller.create(
-                jsonRequest(Collections.singletonMap("authProvider", p)), null, UriComponentsBuilder.newInstance());
+                jsonRequest(Collections.singletonMap("authprovider", p)), null, UriComponentsBuilder.newInstance());
         created.add(name); // first create succeeded; track it
 
         controller.create(
-                jsonRequest(Collections.singletonMap("authProvider", p)), null, UriComponentsBuilder.newInstance());
+                jsonRequest(Collections.singletonMap("authprovider", p)), null, UriComponentsBuilder.newInstance());
     }
 
     /** create(JSON): missing className -> 400 BadRequest. */
@@ -356,7 +356,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         Map<String, Object> inner = new LinkedHashMap<>();
         inner.put("name", generateName("bad"));
         controller.create(
-                jsonRequest(Collections.singletonMap("authProvider", inner)), null, UriComponentsBuilder.newInstance());
+                jsonRequest(Collections.singletonMap("authprovider", inner)), null, UriComponentsBuilder.newInstance());
     }
 
     /** create(JSON): position out of range -> 400 BadRequest. */
@@ -367,14 +367,14 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         UsernamePasswordAuthenticationProviderConfig p =
                 authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(name, false);
         controller.create(
-                jsonRequest(Collections.singletonMap("authProvider", p)), 9999, UriComponentsBuilder.newInstance());
+                jsonRequest(Collections.singletonMap("authprovider", p)), 9999, UriComponentsBuilder.newInstance());
     }
 
     // ---------------------------------------------------------------------
     // update
     // ---------------------------------------------------------------------
 
-    /** update(..., position=1): reorders and persists &lt;authProviderNames&gt; without touching IDs/classes. */
+    /** update(..., position=1): reorders and persists &lt;authproviderNames&gt; without touching IDs/classes. */
     @Test
     public void testUpdate_movePosition_andPersist() throws Exception {
         try {
@@ -398,13 +398,13 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             UsernamePasswordAuthenticationProviderConfig providerA =
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(a, false);
             RestWrapper<SecurityAuthProviderConfig> updated =
-                    controller.update(a, jsonRequest(Collections.singletonMap("authProvider", providerA)), 1);
+                    controller.update(a, jsonRequest(Collections.singletonMap("authprovider", providerA)), 1);
             assertEquals(a, ((SecurityAuthProviderConfig) updated.getObject()).getName());
 
             List<String> after = getSecurityManager().loadSecurityConfig().getAuthProviderNames();
             assertThat(after, is(Arrays.asList(b, a)));
 
-            // enabled == names present in <authProviderNames>
+            // enabled == names present in <authproviderNames>
             Set<String> enabled = new LinkedHashSet<>(after);
             Set<String> saved = getSecurityManager().listAuthenticationProviders();
             assertThat(enabled, is(new LinkedHashSet<>(Arrays.asList(b, a))));
@@ -434,7 +434,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
             UsernamePasswordAuthenticationProviderConfig wrong =
                     authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(
                             a + "-other", false);
-            controller.update(a, jsonRequest(Collections.singletonMap("authProvider", wrong)), null);
+            controller.update(a, jsonRequest(Collections.singletonMap("authprovider", wrong)), null);
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -451,7 +451,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         UsernamePasswordAuthenticationProviderConfig payload =
                 authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(a, false);
         payload.setClassName("org.geoserver.security.auth.SomeOtherProvider");
-        controller.update(a, jsonRequest(Collections.singletonMap("authProvider", payload)), null);
+        controller.update(a, jsonRequest(Collections.singletonMap("authprovider", payload)), null);
     }
 
     /** update: out-of-range position -> 400 BadRequest (controller validates/clamps per implementation). */
@@ -464,7 +464,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
 
         UsernamePasswordAuthenticationProviderConfig payload =
                 authenticationProviderHelper.createUsernamePasswordAuthenticationProviderConfig(a, false);
-        controller.update(a, jsonRequest(Collections.singletonMap("authProvider", payload)), 9999);
+        controller.update(a, jsonRequest(Collections.singletonMap("authprovider", payload)), 9999);
     }
 
     // ---------------------------------------------------------------------

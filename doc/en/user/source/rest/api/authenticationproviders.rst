@@ -19,8 +19,8 @@ Content types
 
 - ``application/xml`` — uses the concrete config class name as the element
 - ``application/json`` — plain objects; request envelopes supported:
-  - ``{ "authProvider": { … } }`` for single
-  - ``{ "authProviders": [ { … }, … ] }`` for lists
+  - ``{ "authprovider": { … } }`` for single
+  - ``{ "authproviders": [ { … }, … ] }`` for lists
 
 Status codes
 ------------
@@ -42,15 +42,15 @@ Error body
 Endpoints
 ---------
 
-``GET /security/authProviders``
+``GET /security/authproviders``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 List providers in **active order**.
 
 - Produces: XML, JSON
-- Returns: object with ``authProviders`` array; each entry is a provider
+- Returns: object with ``authproviders`` array; each entry is a provider
 
-``POST /security/authProviders``
+``POST /security/authproviders``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Create a provider; optionally **insert at position** via ``?position=N`` (0-based).
@@ -84,7 +84,7 @@ Rules:
 - Duplicate names rejected
 - ``position`` must be within ``[0..size]``
 
-``GET /security/authProviders/{providerName}``
+``GET /security/authproviders/{providerName}``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Retrieve a provider by name (``.xml``/``.json`` suffix in the name is accepted and normalized).
@@ -92,7 +92,7 @@ Retrieve a provider by name (``.xml``/``.json`` suffix in the name is accepted a
 - Produces: XML, JSON
 - Response: provider object
 
-``PUT /security/authProviders/{providerName}``
+``PUT /security/authproviders/{providerName}``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Update a provider and/or **move** it via ``?position=N``.
@@ -123,7 +123,7 @@ Rules:
 - ``className`` cannot change (omit to keep)
 - ``position`` clamped to list bounds; if omitted, order unchanged
 
-``DELETE /security/authProviders/{providerName}``
+``DELETE /security/authproviders/{providerName}``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Delete a provider and remove it from the active order.
@@ -131,7 +131,7 @@ Delete a provider and remove it from the active order.
 - Produces: XML, JSON
 - Response: ``200`` (empty body)
 
-``PUT /security/authProviders/order``
+``PUT /security/authproviders/order``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Replace the **active order**.

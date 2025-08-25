@@ -38,18 +38,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * System tests for the REST resource {@code /security/authProviders}.
+ * System tests for the REST resource {@code /security/authproviders}.
  *
  * <p>These tests go through the HTTP layer using the GeoServer test harness and verify:
  *
  * <ul>
  *   <li>JSON/XML marshaling shapes,
  *   <li>headers and status codes,
- *   <li>side effects on the enabled order (authProviderNames).
+ *   <li>side effects on the enabled order (authproviderNames).
  * </ul>
  *
  * <p>XStream may produce different JSON shapes: FQN-keyed ({@code {"<FQN>": {...}}}), enveloped
- * ({@code {"authProvider": {...}}}), or a bare object. Helpers below normalize these shapes for assertions.
+ * ({@code {"authprovider": {...}}}), or a bare object. Helpers below normalize these shapes for assertions.
  */
 public class AuthenticationProviderRestControllerMarshallingTest extends GeoServerSystemTestSupport {
 
@@ -84,7 +84,7 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
             // restore order to just ["default"] (best effort)
             try {
                 adminPUT(
-                        BASE + "/security/authProviders/order",
+                        BASE + "/security/authproviders/order",
                         "{\"order\":[\"default\"]}".getBytes(StandardCharsets.UTF_8),
                         "application/json",
                         200);
@@ -93,7 +93,7 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
             }
             for (String n : created) {
                 try {
-                    adminDELETE(BASE + "/security/authProviders/" + n);
+                    adminDELETE(BASE + "/security/authproviders/" + n);
                 } catch (Exception ignored) {
                     // ignore cleanup hiccups
                 }
@@ -179,7 +179,7 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         inner.put("className", CLASSNAME_UP);
         inner.put("userGroupServiceName", "default");
         JSONObject root = new JSONObject();
-        root.put("authProvider", inner);
+        root.put("authprovider", inner);
         return root.toString();
     }
 
@@ -190,7 +190,7 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         inner.put("className", CLASSNAME_UP);
         inner.put("userGroupServiceName", "default");
         JSONObject root = new JSONObject();
-        root.put("authProvider", inner);
+        root.put("authprovider", inner);
         return root.toString();
     }
 
@@ -215,8 +215,8 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
     // ---------------------------------------------------------------------
 
     private static JSONObject unwrapSingle(JSONObject root) {
-        if (root.containsKey("authProvider")) {
-            return root.getJSONObject("authProvider");
+        if (root.containsKey("authprovider")) {
+            return root.getJSONObject("authprovider");
         }
         if (root.size() == 1) {
             String key = (String) root.keySet().iterator().next();
@@ -232,7 +232,7 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         if (root.containsKey("status")) {
             throw new AssertionError("Server returned error: " + root);
         }
-        Object ap = root.get("authProviders");
+        Object ap = root.get("authproviders");
         if (ap instanceof JSONArray) {
             JSONArray out = new JSONArray();
             for (Object o : ((JSONArray) ap)) out.add(unwrapSingle((JSONObject) o));
@@ -249,7 +249,7 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
                 return out;
             }
         }
-        throw new AssertionError("Unrecognized authProviders JSON shape: " + root);
+        throw new AssertionError("Unrecognized authproviders JSON shape: " + root);
     }
 
     private static List<String> names(JSONArray arr) {
@@ -270,20 +270,20 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         created.add(a);
         created.add(b);
 
-        adminPOST(BASE + "/security/authProviders", xml(xmlCreate(a)), "application/xml");
-        adminPOST(BASE + "/security/authProviders", json(jsonCreate(b)), "application/json");
+        adminPOST(BASE + "/security/authproviders", xml(xmlCreate(a)), "application/xml");
+        adminPOST(BASE + "/security/authproviders", json(jsonCreate(b)), "application/json");
 
         adminPUT(
-                BASE + "/security/authProviders/order",
+                BASE + "/security/authproviders/order",
                 json("{\"order\":[\"" + a + "\",\"" + b + "\"]}"),
                 "application/json",
                 200);
 
-        String xmlList = adminGETString200(BASE + "/security/authProviders.xml");
-        assertThat(xmlList, containsString("<authProviders>"));
+        String xmlList = adminGETString200(BASE + "/security/authproviders.xml");
+        assertThat(xmlList, containsString("<authproviders>"));
         assertThat(xmlList, containsString("<" + FQN_CFG + ">"));
 
-        JSON j = adminGETJSON(BASE + "/security/authProviders.json");
+        JSON j = adminGETJSON(BASE + "/security/authproviders.json");
         JSONArray items = unwrapList(j);
         boolean sawA = false, sawB = false;
         for (Object o : items) {
@@ -300,13 +300,13 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         String name = "MARSHAL-" + System.nanoTime() + "-view";
         created.add(name);
 
-        adminPOST(BASE + "/security/authProviders", xml(xmlCreate(name)), "application/xml");
+        adminPOST(BASE + "/security/authproviders", xml(xmlCreate(name)), "application/xml");
 
-        String xml = adminGETString200(BASE + "/security/authProviders/" + name + ".xml");
+        String xml = adminGETString200(BASE + "/security/authproviders/" + name + ".xml");
         assertThat(xml, containsString("<" + FQN_CFG + ">"));
         assertThat(xml, containsString("<name>" + name + "</name>"));
 
-        JSON j = adminGETJSON(BASE + "/security/authProviders/" + name + ".json");
+        JSON j = adminGETJSON(BASE + "/security/authproviders/" + name + ".json");
         JSONObject core = unwrapSingle((JSONObject) j);
         assertEquals(name, core.getString("name"));
         assertEquals(CLASSNAME_UP, core.getString("className"));
@@ -324,13 +324,13 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         created.add(name);
 
         MockHttpServletResponse r =
-                adminPOST(BASE + "/security/authProviders", json(jsonCreate(name)), "application/json");
+                adminPOST(BASE + "/security/authproviders", json(jsonCreate(name)), "application/json");
         assertEquals(201, r.getStatus());
         String loc = r.getHeader("Location");
         assertNotNull(loc);
-        assertTrue(loc.endsWith("/security/authProviders/" + name));
+        assertTrue(loc.endsWith("/security/authproviders/" + name));
 
-        JSON j = adminGETJSON(BASE + "/security/authProviders/" + name + ".json");
+        JSON j = adminGETJSON(BASE + "/security/authproviders/" + name + ".json");
         JSONObject core = unwrapSingle((JSONObject) j);
         assertEquals(name, core.getString("name"));
         assertEquals(CLASSNAME_UP, core.getString("className"));
@@ -342,9 +342,9 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         String name = "MARSHAL-" + System.nanoTime() + "-create-envelope";
         created.add(name);
 
-        adminPOST(BASE + "/security/authProviders", json(jsonCreate(name)), "application/json");
+        adminPOST(BASE + "/security/authproviders", json(jsonCreate(name)), "application/json");
 
-        JSON j = adminGETJSON(BASE + "/security/authProviders.json");
+        JSON j = adminGETJSON(BASE + "/security/authproviders.json");
         JSONArray items = unwrapList(j);
         boolean saw = false;
         for (Object o : items) if (name.equals(((JSONObject) o).optString("name"))) saw = true;
@@ -358,11 +358,11 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         created.add(name);
 
         MockHttpServletResponse r1 =
-                adminPOST(BASE + "/security/authProviders", json(jsonCreate(name)), "application/json");
+                adminPOST(BASE + "/security/authproviders", json(jsonCreate(name)), "application/json");
         assertEquals(201, r1.getStatus());
 
         MockHttpServletResponse r2 =
-                adminPOST(BASE + "/security/authProviders", json(jsonCreate(name)), "application/json");
+                adminPOST(BASE + "/security/authproviders", json(jsonCreate(name)), "application/json");
         assertEquals(400, r2.getStatus());
         assertThat(r2.getContentAsString(), containsString("already exists"));
     }
@@ -374,10 +374,10 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         created.add(name);
 
         MockHttpServletResponse r =
-                adminPOST(BASE + "/security/authProviders?position=0", xml(xmlCreate(name)), "application/xml");
+                adminPOST(BASE + "/security/authproviders?position=0", xml(xmlCreate(name)), "application/xml");
         assertEquals(201, r.getStatus());
 
-        JSON j = adminGETJSON(BASE + "/security/authProviders.json");
+        JSON j = adminGETJSON(BASE + "/security/authproviders.json");
         JSONArray items = unwrapList(j);
         assertEquals(name, ((JSONObject) items.get(0)).optString("name"));
     }
@@ -386,7 +386,7 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
     @Test
     public void create_json_reserved_name_order_400() throws Exception {
         MockHttpServletResponse r =
-                adminPOST(BASE + "/security/authProviders", json(jsonCreate("order")), "application/json");
+                adminPOST(BASE + "/security/authproviders", json(jsonCreate("order")), "application/json");
         assertEquals(400, r.getStatus());
         assertThat(r.getContentAsString(), containsString("reserved"));
     }
@@ -397,10 +397,10 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         JSONObject inner = new JSONObject();
         inner.put("name", "MARSHAL-" + System.nanoTime() + "-nocls");
         JSONObject root = new JSONObject();
-        root.put("authProvider", inner);
+        root.put("authprovider", inner);
 
         MockHttpServletResponse r =
-                adminPOST(BASE + "/security/authProviders", json(root.toString()), "application/json");
+                adminPOST(BASE + "/security/authproviders", json(root.toString()), "application/json");
         assertEquals(400, r.getStatus());
     }
 
@@ -416,23 +416,23 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         created.add(a);
         created.add(b);
 
-        adminPOST(BASE + "/security/authProviders", json(jsonCreate(a)), "application/json");
-        adminPOST(BASE + "/security/authProviders", json(jsonCreate(b)), "application/json");
+        adminPOST(BASE + "/security/authproviders", json(jsonCreate(a)), "application/json");
+        adminPOST(BASE + "/security/authproviders", json(jsonCreate(b)), "application/json");
 
         adminPUT(
-                BASE + "/security/authProviders/order",
+                BASE + "/security/authproviders/order",
                 json("{\"order\":[\"" + a + "\",\"" + b + "\"]}"),
                 "application/json",
                 200);
 
-        JSON jA = adminGETJSON(BASE + "/security/authProviders/" + a + ".json");
+        JSON jA = adminGETJSON(BASE + "/security/authproviders/" + a + ".json");
         String idA = unwrapSingle((JSONObject) jA).getString("id");
 
         MockHttpServletResponse up = adminPUT(
-                BASE + "/security/authProviders/" + a + "?position=1", json(jsonUpdate(idA, a)), "application/json");
+                BASE + "/security/authproviders/" + a + "?position=1", json(jsonUpdate(idA, a)), "application/json");
         assertEquals(200, up.getStatus());
 
-        JSON list = adminGETJSON(BASE + "/security/authProviders.json");
+        JSON list = adminGETJSON(BASE + "/security/authproviders.json");
         JSONArray items = unwrapList(list);
         List<String> order = new ArrayList<>();
         for (Object o : items) order.add(((JSONObject) o).optString("name"));
@@ -445,8 +445,8 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         String name = "MARSHAL-" + System.nanoTime() + "-cls";
         created.add(name);
 
-        adminPOST(BASE + "/security/authProviders", json(jsonCreate(name)), "application/json");
-        JSON j = adminGETJSON(BASE + "/security/authProviders/" + name + ".json");
+        adminPOST(BASE + "/security/authproviders", json(jsonCreate(name)), "application/json");
+        JSON j = adminGETJSON(BASE + "/security/authproviders/" + name + ".json");
         String id = unwrapSingle((JSONObject) j).getString("id");
 
         JSONObject inner = new JSONObject();
@@ -455,10 +455,10 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         inner.put("className", "org.geoserver.security.auth.SomeOtherProvider");
         inner.put("userGroupServiceName", "default");
         JSONObject root = new JSONObject();
-        root.put("authProvider", inner);
+        root.put("authprovider", inner);
 
         MockHttpServletResponse up =
-                adminPUT(BASE + "/security/authProviders/" + name, json(root.toString()), "application/json", 400);
+                adminPUT(BASE + "/security/authproviders/" + name, json(root.toString()), "application/json", 400);
         assertThat(up.getContentAsString(), containsString("Unsupported className"));
     }
 
@@ -468,8 +468,8 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         String name = "MARSHAL-" + System.nanoTime() + "-mismatch";
         created.add(name);
 
-        adminPOST(BASE + "/security/authProviders", json(jsonCreate(name)), "application/json");
-        JSON j = adminGETJSON(BASE + "/security/authProviders/" + name + ".json");
+        adminPOST(BASE + "/security/authproviders", json(jsonCreate(name)), "application/json");
+        JSON j = adminGETJSON(BASE + "/security/authproviders/" + name + ".json");
         String id = unwrapSingle((JSONObject) j).getString("id");
 
         String other = name + "-other";
@@ -479,10 +479,10 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         inner.put("className", CLASSNAME_UP);
         inner.put("userGroupServiceName", "default");
         JSONObject root = new JSONObject();
-        root.put("authProvider", inner);
+        root.put("authprovider", inner);
 
         MockHttpServletResponse up =
-                adminPUT(BASE + "/security/authProviders/" + name, json(root.toString()), "application/json", 400);
+                adminPUT(BASE + "/security/authproviders/" + name, json(root.toString()), "application/json", 400);
         assertThat(up.getContentAsString(), containsString("path name and payload name differ"));
     }
 
@@ -491,13 +491,13 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
     public void update_position_out_of_range_400() throws Exception {
         String name = "MARSHAL-" + System.nanoTime() + "-posoor";
         created.add(name);
-        adminPOST(BASE + "/security/authProviders", json(jsonCreate(name)), "application/json");
+        adminPOST(BASE + "/security/authproviders", json(jsonCreate(name)), "application/json");
 
-        JSON j = adminGETJSON(BASE + "/security/authProviders/" + name + ".json");
+        JSON j = adminGETJSON(BASE + "/security/authproviders/" + name + ".json");
         String id = unwrapSingle((JSONObject) j).getString("id");
 
         MockHttpServletResponse up = adminPUT(
-                BASE + "/security/authProviders/" + name + "?position=9999",
+                BASE + "/security/authproviders/" + name + "?position=9999",
                 json(jsonUpdate(id, name)),
                 "application/json",
                 400);
@@ -516,22 +516,22 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         created.add(a);
         created.add(b);
 
-        adminPOST(BASE + "/security/authProviders", json(jsonCreate(a)), "application/json");
-        adminPOST(BASE + "/security/authProviders", json(jsonCreate(b)), "application/json");
+        adminPOST(BASE + "/security/authproviders", json(jsonCreate(a)), "application/json");
+        adminPOST(BASE + "/security/authproviders", json(jsonCreate(b)), "application/json");
 
         adminPUT(
-                BASE + "/security/authProviders/order",
+                BASE + "/security/authproviders/order",
                 json("{\"order\":[\"" + a + "\",\"" + b + "\"]}"),
                 "application/json",
                 200);
 
-        JSON j1 = adminGETJSON(BASE + "/security/authProviders.json");
+        JSON j1 = adminGETJSON(BASE + "/security/authproviders.json");
         List<String> order1 = names(unwrapList(j1));
         assertThat(order1, contains(a, b));
 
-        adminPUT(BASE + "/security/authProviders/order", json("{\"order\":[\"" + b + "\"]}"), "application/json", 200);
+        adminPUT(BASE + "/security/authproviders/order", json("{\"order\":[\"" + b + "\"]}"), "application/json", 200);
 
-        JSON j2 = adminGETJSON(BASE + "/security/authProviders.json");
+        JSON j2 = adminGETJSON(BASE + "/security/authproviders.json");
         List<String> order2 = names(unwrapList(j2));
         assertThat(order2, contains(b));
         assertThat(order2, not(hasItem(a)));
@@ -546,13 +546,13 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
     public void delete_removes_provider_from_list() throws Exception {
         String name = "MARSHAL-" + System.nanoTime() + "-del";
         created.add(name);
-        adminPOST(BASE + "/security/authProviders", json(jsonCreate(name)), "application/json");
+        adminPOST(BASE + "/security/authproviders", json(jsonCreate(name)), "application/json");
 
-        MockHttpServletResponse del = adminDELETE(BASE + "/security/authProviders/" + name);
+        MockHttpServletResponse del = adminDELETE(BASE + "/security/authproviders/" + name);
         assertEquals(200, del.getStatus());
         created.remove(name); // already deleted
 
-        JSON j = adminGETJSON(BASE + "/security/authProviders.json");
+        JSON j = adminGETJSON(BASE + "/security/authproviders.json");
         JSONArray items = unwrapList(j);
         boolean present = false;
         for (Object o : items) if (name.equals(((JSONObject) o).optString("name"))) present = true;
@@ -565,10 +565,10 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         String name = "MARSHAL-" + System.nanoTime() + "-del403";
         created.add(name);
 
-        adminPOST(BASE + "/security/authProviders", json(jsonCreate(name)), "application/json");
+        adminPOST(BASE + "/security/authproviders", json(jsonCreate(name)), "application/json");
 
         clearAuth(); // simulate no user
-        MockHttpServletRequest req = createRequest(BASE + "/security/authProviders/" + name);
+        MockHttpServletRequest req = createRequest(BASE + "/security/authproviders/" + name);
         req.setMethod("DELETE");
         MockHttpServletResponse r = dispatch(req);
         assertEquals(403, r.getStatus());
@@ -580,11 +580,11 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
     // Tests: security / method constraints
     // ---------------------------------------------------------------------
 
-    /** GET /security/authProviders without authentication is forbidden (403). */
+    /** GET /security/authproviders without authentication is forbidden (403). */
     @Test
     public void list_not_authorised_403() throws Exception {
         clearAuth(); // IMPORTANT: @Before logs in as admin; clear it here
-        MockHttpServletRequest req = createRequest(BASE + "/security/authProviders");
+        MockHttpServletRequest req = createRequest(BASE + "/security/authproviders");
         req.setMethod("GET");
         MockHttpServletResponse r = dispatch(req);
         assertEquals(403, r.getStatus());
@@ -594,15 +594,15 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
     @Test
     public void order_wrong_methods_405() throws Exception {
         // GET
-        MockHttpServletRequest g = createRequest(BASE + "/security/authProviders/order");
+        MockHttpServletRequest g = createRequest(BASE + "/security/authproviders/order");
         g.setMethod("GET");
         assertEquals(405, dispatch(g).getStatus());
         // POST
-        MockHttpServletRequest p = createRequest(BASE + "/security/authProviders/order");
+        MockHttpServletRequest p = createRequest(BASE + "/security/authproviders/order");
         p.setMethod("POST");
         assertEquals(405, dispatch(p).getStatus());
         // DELETE
-        MockHttpServletRequest d = createRequest(BASE + "/security/authProviders/order");
+        MockHttpServletRequest d = createRequest(BASE + "/security/authproviders/order");
         d.setMethod("DELETE");
         assertEquals(405, dispatch(d).getStatus());
     }

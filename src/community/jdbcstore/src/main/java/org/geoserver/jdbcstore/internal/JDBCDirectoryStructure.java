@@ -314,6 +314,15 @@ public class JDBCDirectoryStructure {
             return true;
         }
 
+        public void verifyResource() {
+            EntryMetaData md = getMetadata(path);
+
+            if (!Boolean.FALSE.equals(md.dir)) {
+                throw new IllegalStateException(
+                        "Cannot read resource " + toString() + ": either directory or undefined.");
+            }
+        }
+
         @Override
         public String toString() {
             return mergePath(path);

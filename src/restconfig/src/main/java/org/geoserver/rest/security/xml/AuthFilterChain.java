@@ -17,7 +17,7 @@ import org.geoserver.rest.security.AuthenticationFilterChainRestController;
 import org.geoserver.security.HTTPMethod;
 import org.geoserver.security.RequestFilterChain;
 
-@XStreamAlias("filterChain")
+@XStreamAlias("filterchain")
 public class AuthFilterChain {
     private String name;
     private String className;

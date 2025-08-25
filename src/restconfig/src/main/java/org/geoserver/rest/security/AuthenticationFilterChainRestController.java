@@ -55,7 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH + "/security/filterChain")
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/security/filterchain")
 public class AuthenticationFilterChainRestController extends RestBaseController {
 
     private static final Set<String> RESERVED = Set.of("order");
@@ -87,7 +87,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         xs.allowTypesByWildcard(new String[] {"org.geoserver.rest.security.xml.*"});
 
         // root
-        xs.alias("filterChain", AuthFilterChainCollection.class);
+        xs.alias("filterchain", AuthFilterChainCollection.class);
 
         // collection: no <chains> wrapper; each item is <filters>
         xs.addImplicitCollection(AuthFilterChainCollection.class, "chains", "filters", AuthFilterChainFilters.class);
@@ -289,7 +289,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
             HttpHeaders headers = new HttpHeaders();
             UriComponentsBuilder ub = (builder != null ? builder : UriComponentsBuilder.newInstance());
-            headers.setLocation(ub.path("/security/filterChain/{name}")
+            headers.setLocation(ub.path("/security/filterchain/{name}")
                     .buildAndExpand(model.getName())
                     .toUri());
 
@@ -558,12 +558,12 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 // Accept any of these shapes:
                 //   { "filters": { "@name": ... } }
                 //   { "@name": ... }                      (bare)
-                //   { "filterChain": { "filters":[{...}] } }  (collection with one element)
+                //   { "filterchain": { "filters":[{...}] } }  (collection with one element)
                 com.fasterxml.jackson.databind.JsonNode node = root;
                 if (node.has("filters") && node.get("filters").isObject()) {
                     node = node.get("filters");
-                } else if (node.has("filterChain")) {
-                    JsonNode fc = node.get("filterChain");
+                } else if (node.has("filterchain")) {
+                    JsonNode fc = node.get("filterchain");
                     if (fc != null
                             && fc.has("filters")
                             && fc.get("filters").isArray()
@@ -603,7 +603,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 // XML via XStreamPersister with your aliases
                 XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
                 configureAliases(xp);
-                // Accept either <filters> ... or <filterChain><filters>...</filters></filterChain> with one item
+                // Accept either <filters> ... or <filterchain><filters>...</filters></filterchain> with one item
                 Object o = xp.load(in, Object.class);
                 if (o instanceof AuthFilterChainFilters) return (AuthFilterChainFilters) o;
                 if (o instanceof AuthFilterChainCollection) {
@@ -631,16 +631,16 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 JsonNode root = MAPPER.readTree(in);
                 // Accept:
                 //   { "order":[ ... ] }
-                //   { "filterChain": { "order":[ ... ] } }
+                //   { "filterchain": { "order":[ ... ] } }
                 com.fasterxml.jackson.databind.JsonNode n = root.has("order")
                         ? root.get("order")
-                        : (root.has("filterChain") ? root.get("filterChain").get("order") : null);
+                        : (root.has("filterchain") ? root.get("filterchain").get("order") : null);
                 if (n == null || !n.isArray()) throw new BadRequest("`order` array required");
                 List<String> out = new ArrayList<>();
                 n.forEach(x -> out.add(x.asText()));
                 return out;
             } else {
-                // XML: <order><order>name</order>...</order>  OR  <filterChain><order>...</order></filterChain>
+                // XML: <order><order>name</order>...</order>  OR  <filterchain><order>...</order></filterchain>
                 XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
                 configureAliases(xp);
                 Object o = xp.load(in, Object.class);
@@ -688,9 +688,9 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             ObjectMapper om = new ObjectMapper();
             JsonNode root = om.readTree(body);
 
-            // Unwrap { "filterChain": { ... } } if present
-            if (root.has("filterChain")) {
-                root = root.get("filterChain");
+            // Unwrap { "filterchain": { ... } } if present
+            if (root.has("filterchain")) {
+                root = root.get("filterchain");
             }
 
             // Accept either "filters": [ ... ]  OR "chains": [ ... ]  OR bare [ ... ]

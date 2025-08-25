@@ -5,8 +5,8 @@ Auth Filters
 
 This section documents the REST endpoints for managing authentication filters in GeoServer.
 
-- Collection endpoint: :ref:`/security/authFilters <security_authfilters>`
-- Item endpoint: :ref:`/security/authFilters/{authFilter} <security_authfilters_authfilter>`
+- Collection endpoint: :ref:`/security/authfilters <security_authfilters>`
+- Item endpoint: :ref:`/security/authfilters/{authfilter} <security_authfilters_authfilter>`
 
 .. note::
    Admin privileges are required. All examples below use Basic authentication.
@@ -36,7 +36,7 @@ Fields are specific to each filter type (OpenId Connect, Anonymous, Security Int
 
 .. _security_authfilters:
 
-``/security/authFilters``
+``/security/authfilters``
 -------------------------
 
 Adds or lists authentication filters.
@@ -75,21 +75,21 @@ GET — List all filters
 
    curl -u admin:geoserver \
         -H "Accept: application/xml" \
-        "$BASE/authFilters"
+        "$BASE/authfilters"
 
 **Response: 200 OK**
 
 .. code-block:: xml
 
-   <authFilters>
-     <authFilter>
+   <authfilters>
+     <authfilter>
        <name>Keycloak</name>
        <atom:link xmlns:atom="http://www.w3.org/2005/Atom"
                   rel="alternate"
-                  href="http://localhost:9002/geoserver/rest/security/authFilters/Keycloak.xml"
+                  href="http://localhost:9002/geoserver/rest/security/authfilters/Keycloak.xml"
                   type="application/atom+xml"/>
-     </authFilter>
-   </authFilters>
+     </authfilter>
+   </authfilters>
 
 **JSON**
 
@@ -97,18 +97,18 @@ GET — List all filters
 
    curl -u admin:geoserver \
         -H "Accept: application/json" \
-        "$BASE/authFilters"
+        "$BASE/authfilters"
 
 **Response: 200 OK**
 
 .. code-block:: json
 
    {
-     "authFilters": {
-       "authFilter": [
+     "authfilters": {
+       "authfilter": [
          {
            "name": "Keycloak",
-           "href": "http://localhost:9002/geoserver/rest/security/authFilters/Keycloak.json"
+           "href": "http://localhost:9002/geoserver/rest/security/authfilters/Keycloak.json"
          }
        ]
      }
@@ -124,7 +124,7 @@ POST — Create a filter
    curl -u admin:geoserver \
         -H "Content-Type: application/xml" \
         -i \
-        -d @- "$BASE/authFilters" <<'XML'
+        -d @- "$BASE/authfilters" <<'XML'
    <org.geoserver.security.oauth2.OpenIdConnectFilterConfig>
      <name>Keycloak7</name>
      <className>org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter</className>
@@ -159,7 +159,7 @@ POST — Create a filter
 **Response**
 
 - ``201 Created``  
-- ``Location: http://localhost:9002/geoserver/rest/security/authFilters/Keycloak7``
+- ``Location: http://localhost:9002/geoserver/rest/security/authfilters/Keycloak7``
 
 **JSON**
 
@@ -168,7 +168,7 @@ POST — Create a filter
    curl -u admin:geoserver \
         -H "Content-Type: application/json" \
         -i \
-        -d @- "$BASE/authFilters" <<'JSON'
+        -d @- "$BASE/authfilters" <<'JSON'
    {
      "org.geoserver.security.oauth2.OpenIdConnectFilterConfig": {
        "name": "Keycloak12",
@@ -208,7 +208,7 @@ POST — Create a filter
 **Response**
 
 - ``200 OK`` **or** ``201 Created``  
-- ``Location: http://localhost:9002/geoserver/rest/security/authFilters/Keycloak12``
+- ``Location: http://localhost:9002/geoserver/rest/security/authfilters/Keycloak12``
 
 **Error status codes (collection)**
 
@@ -230,7 +230,7 @@ POST — Create a filter
 
 .. _security_authfilters_authfilter:
 
-``/security/authFilters/{authFilter}``
+``/security/authfilters/{authfilter}``
 --------------------------------------
 
 View, update, or delete an existing authentication filter.
@@ -268,7 +268,7 @@ GET — View a filter
 
    curl -u admin:geoserver \
         -H "Accept: application/xml" \
-        "$BASE/authFilters/anonymous"
+        "$BASE/authfilters/anonymous"
 
 **Response: 200 OK**
 
@@ -286,7 +286,7 @@ GET — View a filter
 
    curl -u admin:geoserver \
         -H "Accept: application/json" \
-        "$BASE/authFilters/Keycloak"
+        "$BASE/authfilters/Keycloak"
 
 **Response: 200 OK**
 
@@ -339,7 +339,7 @@ PUT — Update a filter
    curl -u admin:geoserver \
         -X PUT \
         -H "Content-Type: application/xml" \
-        -d @- "$BASE/authFilters/restInterceptor9" <<'XML'
+        -d @- "$BASE/authfilters/restInterceptor9" <<'XML'
    <org.geoserver.security.config.SecurityInterceptorFilterConfig>
      <id>-2bf62d17:196c4deaf9b:-7fff</id>
      <name>restInterceptor9</name>
@@ -360,7 +360,7 @@ PUT — Update a filter
    curl -u admin:geoserver \
         -X PUT \
         -H "Content-Type: application/json" \
-        -d @- "$BASE/authFilters/restInterceptor13" <<'JSON'
+        -d @- "$BASE/authfilters/restInterceptor13" <<'JSON'
    {
      "org.geoserver.security.config.SecurityInterceptorFilterConfig": {
        "id": "-3abefb99:196c5207331:-7ffe",
@@ -383,7 +383,7 @@ DELETE — Remove a filter
 
    curl -u admin:geoserver \
         -X DELETE \
-        "$BASE/authFilters/restInterceptor13"
+        "$BASE/authfilters/restInterceptor13"
 
 **Response**
 

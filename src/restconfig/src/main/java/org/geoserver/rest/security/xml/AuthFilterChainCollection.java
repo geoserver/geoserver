@@ -9,7 +9,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
 
-@XStreamAlias("filterChain")
+@XStreamAlias("filterchain")
 public class AuthFilterChainCollection {
     @XStreamImplicit(itemFieldName = "filters")
     private List<AuthFilterChainFilters> chains = new ArrayList<>();

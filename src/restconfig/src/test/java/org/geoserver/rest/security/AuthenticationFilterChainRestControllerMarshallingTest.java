@@ -37,12 +37,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 /**
- * End-to-end marshalling tests for AuthenticationFilterChain REST API. Uses header-based content negotiation (no
+ * End-to-end marshaling tests for AuthenticationFilterChain REST API. Uses header-based content negotiation (no
  * .xml/.json suffixes).
  */
 public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoServerSystemTestSupport {
 
-    private static final String BASE = RestBaseController.ROOT_PATH + "/security/filterChain";
+    private static final String BASE = RestBaseController.ROOT_PATH + "/security/filterchain";
     private static final String CLASS_HTML = "org.geoserver.security.HtmlLoginFilterChain";
 
     private static final String CT_XML = "application/xml";
@@ -208,7 +208,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
 
     private List<String> listNamesXml() throws Exception {
         Document dom = getAsDOMWithAccept(BASE, 200, CT_XML);
-        NodeList nodes = xp.getMatchingNodes("/filterChain/filters/@name", dom);
+        NodeList nodes = xp.getMatchingNodes("/filterchain/filters/@name", dom);
         List<String> names = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             names.add(nodes.item(i).getNodeValue());
@@ -220,8 +220,8 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
         String body = getAsString(BASE + ".json");
         JsonNode root = MAPPER.readTree(body);
         JsonNode filters = null;
-        if (root.has("filterChain")) {
-            filters = root.get("filterChain").get("filters");
+        if (root.has("filterchain")) {
+            filters = root.get("filterchain").get("filters");
         } else {
             filters = root.get("filters");
         }
@@ -309,8 +309,8 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
                     }
                 }
 
-                // Other wrapper: { "filterChain": { "filters": [...] } }
-                if (n.has("filterChain")) dq.addLast(n.get("filterChain"));
+                // Other wrapper: { "filterchain": { "filters": [...] } }
+                if (n.has("filterchain")) dq.addLast(n.get("filterchain"));
 
                 // Fallback: any object carrying a name attribute
                 if (getAttr(n, "name") != null) return normalizeChain(n);
@@ -332,7 +332,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
             TestCase.assertEquals(
                     201, doPost(BASE, defaultChainXml(a), CT_XML, CT_XML).getStatus());
             Document dom = getAsDOMWithAccept(BASE, 200, CT_XML);
-            NodeList nodes = xp.getMatchingNodes("/filterChain/filters[@name='" + a + "']", dom);
+            NodeList nodes = xp.getMatchingNodes("/filterchain/filters[@name='" + a + "']", dom);
             assertEquals(1, nodes.getLength());
         } finally {
             safeDeleteXml(a);
@@ -420,7 +420,7 @@ public class AuthenticationFilterChainRestControllerMarshallingTest extends GeoS
             TestCase.assertEquals(201, resp.getStatus());
             String location = resp.getHeader("Location");
             assertNotNull(location);
-            assertTrue(location.endsWith("/security/filterChain/" + name));
+            assertTrue(location.endsWith("/security/filterchain/" + name));
             // verify view
             getAsDOMWithAccept(BASE + "/" + name, 200, CT_XML);
         } finally {

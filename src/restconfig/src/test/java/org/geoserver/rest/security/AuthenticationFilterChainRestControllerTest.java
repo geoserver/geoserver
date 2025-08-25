@@ -33,7 +33,7 @@ import org.w3c.dom.NodeList;
 /** System tests for AuthenticationFilterChainRestController using both XML and JSON. */
 public class AuthenticationFilterChainRestControllerTest extends GeoServerSystemTestSupport {
 
-    private static final String BASE = RestBaseController.ROOT_PATH + "/security/filterChain";
+    private static final String BASE = RestBaseController.ROOT_PATH + "/security/filterchain";
     private static final String CLASS_HTML = "org.geoserver.security.HtmlLoginFilterChain";
 
     private static final String JSON = "application/json";
@@ -158,7 +158,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
 
     private List<String> listNamesXML() throws Exception {
         Document dom = getAsDOM(BASE, 200);
-        NodeList nodes = xp.getMatchingNodes("/filterChain/filters/@name", dom);
+        NodeList nodes = xp.getMatchingNodes("/filterchain/filters/@name", dom);
         List<String> names = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             names.add(nodes.item(i).getNodeValue());
@@ -170,8 +170,8 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
         MockHttpServletResponse r = getAsServletResponse(BASE + ".json");
         TestCase.assertEquals(200, r.getStatus());
         JsonNode root = om.readTree(r.getContentAsByteArray());
-        // Expect shape: { "filterChain": { "filters": [ { "name": ... }, ... ] } }
-        JsonNode arr = root.path("filterChain").path("filters");
+        // Expect shape: { "filterchain": { "filters": [ { "name": ... }, ... ] } }
+        JsonNode arr = root.path("filterchain").path("filters");
         List<String> names = new ArrayList<>();
         if (arr.isArray()) {
             for (JsonNode n : arr) names.add(n.path("@name").asText());
@@ -184,7 +184,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
     @Test
     public void testList_XML_containsDefault() throws Exception {
         Document dom = getAsDOM(BASE, 200);
-        NodeList nodes = xp.getMatchingNodes("/filterChain/filters[@name='default']", dom);
+        NodeList nodes = xp.getMatchingNodes("/filterchain/filters[@name='default']", dom);
         assertTrue(nodes.getLength() >= 1);
     }
 
@@ -193,7 +193,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
         MockHttpServletResponse r = getAsServletResponse(BASE + ".json");
         TestCase.assertEquals(200, r.getStatus());
         JsonNode root = om.readTree(r.getContentAsByteArray());
-        JsonNode arr = root.path("filterChain").path("filters");
+        JsonNode arr = root.path("filterchain").path("filters");
         boolean found = false;
         if (arr.isArray()) {
             for (JsonNode n : arr) if ("default".equals(n.path("@name").asText())) found = true;
@@ -273,7 +273,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
             TestCase.assertEquals(201, resp.getStatus());
             String location = resp.getHeader("Location");
             assertNotNull(location);
-            assertTrue(location.endsWith("/security/filterChain/" + name));
+            assertTrue(location.endsWith("/security/filterchain/" + name));
 
             // view as XML
             getAsDOM(BASE + "/" + name, 200);

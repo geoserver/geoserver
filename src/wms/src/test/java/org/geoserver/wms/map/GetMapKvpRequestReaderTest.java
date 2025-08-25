@@ -794,7 +794,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         GetMapRequest request = reader.createRequest();
         GetMapRequest spyRequest = spy(request);
 
-        @SuppressWarnings("PMD.CloseResource")
         CloseableHttpClient client = mock(CloseableHttpClient.class);
 
         @SuppressWarnings("PMD.CloseResource")
@@ -807,7 +806,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 .thenAnswer(invocation ->
                         GetMapKvpRequestReader.class.getResourceAsStream("BasicPolygonsLibraryNoDefault.sld"));
 
-        @SuppressWarnings("PMD.CloseResource")
         GetMapKvpRequestReader reqReader = new GetMapKvpRequestReader(wms, null) {
             @Override
             protected CloseableHttpClient createHttpClient(RequestConfig config, CacheConfiguration cacheConfig) {

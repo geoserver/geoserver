@@ -311,6 +311,8 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
                 return new String(output.toByteArray());
             });
         }
+
+        @SuppressWarnings("PMD.CloseResource")
         ExecutorService executor = Executors.newFixedThreadPool(8);
         try {
             List<Future<String>> futures = executor.invokeAll(tasks);
@@ -323,7 +325,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
                 }
             }
         } finally {
-            executor.shutdownNow();
+            executor.shutdown();
         }
     }
 

@@ -195,7 +195,6 @@ public class FeatureService {
                 FeatureConformance.IDS,
                 FeatureConformance.SEARCH,
                 FeatureConformance.SORTBY,
-                ECQLConformance.ECQL,
                 ECQLConformance.ECQL_TEXT,
                 CQL2Conformance.CQL2_TEXT,
                 CQL2Conformance.CQL2_ADVANCED,

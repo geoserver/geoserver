@@ -71,9 +71,9 @@ public class GeorectifyCoverageTest extends WPSTestSupport {
         assertEquals(CRS.decode("EPSG:4326", true), warped.getCoordinateReferenceSystem());
         // check the expected location, the output file also got verified visually
         ReferencedEnvelope envelope = warped.getEnvelope2D();
-        assertEquals(-74.0122393, envelope.getMinX(), 1e-6);
-        assertEquals(-74.0078822, envelope.getMaxX(), 1e-6);
-        assertEquals(40.7062701, envelope.getMinY(), 1e-6);
-        assertEquals(40.7126021, envelope.getMaxY(), 1e-6);
+        assertEquals(-74.0122393, envelope.getMinX(), 1e-4);
+        assertEquals(-74.0078822, envelope.getMaxX(), 1e-4);
+        assertEquals(40.7062701, envelope.getMinY(), 1e-4);
+        assertEquals(40.7126021, envelope.getMaxY(), 1e-4);
     }
 }

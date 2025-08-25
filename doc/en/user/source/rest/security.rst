@@ -7,10 +7,13 @@ The REST API allows you to adjust GeoServer security settings.
 
 .. note:: Read the :api:`API reference for /security <security.yaml>`.
 
+.. _rest_security_keystore:
+
 Listing the keystore password
 -----------------------------
 
-**Retrieve the keystore password for the "root" account**
+**Retrieve the keystore password** used to :ref:`encode secrets <security_webadmin_masterpasswordprovider>` in :file:`geoserver.jceks`, 
+and :ref:`optional login <security_webadmin_passwd_keystore>` as ``root`` user (this is the source xml name ``masterPassword`` shown below).
 
 *Request*
 
@@ -20,6 +23,13 @@ Listing the keystore password
 
        curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/security/masterpw.xml
 
+*Response*
+
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?><masterPassword>
+       <oldMasterPassword>geoserver</oldMasterPassword>
+   </masterPassword>
 
 Changing the keystore password
 ------------------------------

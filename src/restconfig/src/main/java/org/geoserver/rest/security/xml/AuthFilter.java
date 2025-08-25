@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.geoserver.security.config.SecurityFilterConfig;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@XStreamAlias("authFilter")
+@XStreamAlias("authfilter")
 @XmlRootElement(name = "AuthFilter")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AuthFilter {

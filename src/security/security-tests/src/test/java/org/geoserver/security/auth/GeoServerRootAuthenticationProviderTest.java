@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.password.MasterPasswordProviderConfig;
@@ -50,12 +51,14 @@ public class GeoServerRootAuthenticationProviderTest extends GeoServerSecurityTe
         assertNull(provider.authenticate(token));
 
         String masterPassword = getMasterPassword();
+
         // We need to enable Master Root login first
         MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
                 .loadMasterPassswordProviderConfig(
                         getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
+
         token = new UsernamePasswordAuthenticationToken(GeoServerUser.ROOT_USERNAME, masterPassword);
         token.setDetails("hallo");
         UsernamePasswordAuthenticationToken result = (UsernamePasswordAuthenticationToken) provider.authenticate(token);
@@ -64,5 +67,15 @@ public class GeoServerRootAuthenticationProviderTest extends GeoServerSecurityTe
         assertNull(result.getCredentials());
         assertEquals(GeoServerUser.ROOT_USERNAME, result.getPrincipal());
         assertEquals("hallo", result.getDetails());
+
+        try {
+            System.setProperty(GeoServerSecurityManager.GEOSERVER_ROOT_LOGIN_ENABLED, "false");
+            assertNull("disable root login", provider.authenticate(token));
+
+            System.setProperty(GeoServerSecurityManager.GEOSERVER_ROOT_LOGIN_ENABLED, "true");
+            assertNotNull("enable root login", provider.authenticate(token));
+        } finally {
+            System.getProperties().remove(GeoServerSecurityManager.GEOSERVER_ROOT_LOGIN_ENABLED);
+        }
     }
 }

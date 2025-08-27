@@ -272,6 +272,13 @@ In addition to the required envelope and location attributes, the schema for the
    * - PropertySelection
      - Optional
      - Boolean value to enable/disable selection of properties from the mosaic index. Default is ``false``. When enabled, the ImageMosaic will try to load in memory only the properties needed to perform mosaicking. A typical use case is using a STAC API as a mosaic index, a STAC item typically contains many complex properties, and the API might be remote, reducing the payload improves both query time and memory usage.
+   * - SkipExternalOverviews
+     - Optional
+     - Boolean value to specify whether to skip checks for external overviews. Default is ``false``. When enabled, the ImageMosaic will not look for external overview files.
+
+.. note:: ImageMosaic also supports the ``-Dit.geosolutions.skip.external.files.lookup`` system property (default: false). This property is used as a fallback only when the ``SkipExternalOverviews`` setting is not specified in the mosaic configuration.
+
+
 
 Here is a sample :file:`indexer.properties` file::
 

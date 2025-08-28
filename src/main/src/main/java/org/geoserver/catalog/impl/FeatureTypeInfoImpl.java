@@ -216,7 +216,7 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
 
                 if (attr == null) {
                     if (otherAttr != null) return false;
-                } else if (!attr.equalsIngnoreFeatureType(otherAttr)) {
+                } else if (!attr.equalsIgnoreFeatureType(otherAttr)) {
                     return false;
                 }
             }

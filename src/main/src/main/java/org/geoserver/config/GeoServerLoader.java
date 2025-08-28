@@ -1048,7 +1048,7 @@ public abstract class GeoServerLoader {
 
     protected void logStop(Stopwatch stoppedSw, final Catalog catalog) {
         Supplier<String> msg = () -> String.format(
-                "Read Catalog in %s: workspaces: %,d, namespaces: %,d, styles: %,d, stores: %,d, resources: %,d, layers: %,d, layer groups: %,d.",
+                "Read Catalog in %s : workspaces: %,d, namespaces: %,d, styles: %,d, stores: %,d, resources: %,d, layers: %,d, layer groups: %,d.",
                 stoppedSw,
                 catalog.count(WorkspaceInfo.class, Predicates.acceptAll()),
                 catalog.count(NamespaceInfo.class, Predicates.acceptAll()),

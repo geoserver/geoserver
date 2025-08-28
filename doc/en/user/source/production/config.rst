@@ -399,9 +399,10 @@ When processing XML documents from service requests (POST requests, and GET requ
 For handling ``jar:file:`` and ``vfs:`` (WildFly) entity resolution, GeoServer will attempt to determine the location
 of the webapp's lib directory and restrict entity resolution to that directory. This functionality is particularly
 important when GeoServer is deployed in a Windows operating system. While this functionality has been tested in basic
-Tomcat, Jetty and WildFly installations, it is possible that some installations may experience problems with it. If
-necessary, this functionality can be disabled by setting the ``-DENTITY_RESOLUTION_UNRESTRICTED_INTERNAL=true`` system
-property.
+Tomcat, Jetty and WildFly installations, it is possible that some installations may experience problems with it.
+
+If necessary, this functionality can be disabled by setting the ``ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL`` application property to ``true``.
+For example with ``-DENTITY_RESOLUTION_UNRESTRICTED_INTERNAL=true`` java system property.
 
 GeoServer provides a number of facilities to control external entity resolution:
 

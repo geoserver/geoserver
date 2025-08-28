@@ -17,7 +17,7 @@ security:
   - basicAuth: []
 
 paths:
-  /authFilters:
+  /authfilters:
     get:
       operationId: listAuthFilters
       tags: [AuthFilters]
@@ -31,23 +31,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthFiltersIndex'
               example: |
-                <authFilters>
-                  <authFilter>
+                <authfilters>
+                  <authfilter>
                     <name>Keycloak</name>
                     <atom:link xmlns:atom="http://www.w3.org/2005/Atom"
                                rel="alternate"
-                               href="http://localhost:9002/geoserver/rest/security/authFilters/Keycloak.xml"
+                               href="http://localhost:9002/geoserver/rest/security/authfilters/Keycloak.xml"
                                type="application/atom+xml"/>
-                  </authFilter>
-                </authFilters>
+                  </authfilter>
+                </authfilters>
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthFiltersIndex'
               example:
-                authFilters:
-                  authFilter:
+                authfilters:
+                  authfilter:
                     - name: Keycloak
-                      href: http://localhost:9002/geoserver/rest/security/authFilters/Keycloak.json
+                      href: http://localhost:9002/geoserver/rest/security/authfilters/Keycloak.json
         '403':
           $ref: '#/components/responses/Forbidden'
         '406':
@@ -96,7 +96,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /authFilters/{filterName}:
+  /authfilters/{filterName}:
     parameters:
       - name: filterName
         in: path
@@ -320,10 +320,10 @@ components:
       description: Wrapper for list responses.
       type: object
       properties:
-        authFilters:
+        authfilters:
           type: object
           properties:
-            authFilter:
+            authfilter:
               type: array
               items:
                 $ref: '#/components/schemas/AuthFilterListItem'

@@ -133,6 +133,18 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL
+       
+       :doc:`/production/config`, default false.
+     - x
+     - x
+     - x
+   * - ENTITY_RESOLUTION_ALLOWLIST
+       
+       :doc:`/production/config`.
+     - x
+     - x
+     - x
    * - geoserver.xframe.shouldSetPolicy
        
        :doc:`/production/config`, default true.

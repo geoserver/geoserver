@@ -437,6 +437,14 @@ External Entities Resolution
 
 When processing XML documents from service requests (POST requests, and GET requests with FILTER and SLD_BODY parameters) XML entity resolution is used to obtain any referenced documents. This is most commonly seen when the XML request provides the location of an XSD schema location for validation).
 
+For handling ``jar:file:`` and ``vfs:`` (WildFly) entity resolution, GeoServer will attempt to determine the location
+of the webapp's lib directory and restrict entity resolution to that directory. This functionality is particularly
+important when GeoServer is deployed in a Windows operating system. While this functionality has been tested in basic
+Tomcat, Jetty and WildFly installations, it is possible that some installations may experience problems with it.
+
+If necessary, this functionality can be disabled by setting the ``ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL`` application property to ``true``.
+For example with ``-DENTITY_RESOLUTION_UNRESTRICTED_INTERNAL=true`` java system property.
+
 GeoServer provides a number of facilities to control external entity resolution:
 
 * By default `http` and `https` entity resolution is restricted to the following default::

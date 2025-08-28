@@ -43,7 +43,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping(
-        path = RestBaseController.ROOT_PATH + "/security/authFilters",
+        path = RestBaseController.ROOT_PATH + "/security/authfilters",
         produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
 public class AuthenticationFilterController extends RestBaseController {
     private static final Logger LOGGER = Logger.getLogger(AuthenticationFilterController.class.getName());
@@ -76,13 +76,13 @@ public class AuthenticationFilterController extends RestBaseController {
     @GetMapping(value = "/{filterName}")
     public RestWrapper<SecurityFilterConfig> view(@PathVariable("filterName") String filterName) {
         checkAuthorisation();
-        SecurityFilterConfig authFilter = null;
+        SecurityFilterConfig authfilter = null;
         try {
-            authFilter = securityManager.loadFilterConfig(filterName, false);
+            authfilter = securityManager.loadFilterConfig(filterName, false);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return wrapObject(authFilter, SecurityFilterConfig.class);
+        return wrapObject(authfilter, SecurityFilterConfig.class);
     }
 
     // FilterConfigValidator to check if filter is valid
@@ -91,10 +91,10 @@ public class AuthenticationFilterController extends RestBaseController {
     // 403
     @PostMapping(consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public RestWrapper<SecurityFilterConfig> post(
-            @RequestBody SecurityFilterConfig authFilterRequest, UriComponentsBuilder uriComponentsBuilder) {
+            @RequestBody SecurityFilterConfig authfilterRequest, UriComponentsBuilder uriComponentsBuilder) {
         checkAuthorisation();
-        SecurityFilterConfig authFilterResponse = saveAuthFilter(authFilterRequest);
-        return wrapObject(authFilterResponse, SecurityFilterConfig.class);
+        SecurityFilterConfig authfilterResponse = saveAuthFilter(authfilterRequest);
+        return wrapObject(authfilterResponse, SecurityFilterConfig.class);
     }
 
     // 200
@@ -104,9 +104,9 @@ public class AuthenticationFilterController extends RestBaseController {
             value = "/{filterName}",
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public @ResponseStatus(code = HttpStatus.OK) void put(
-            @PathVariable("filterName") String filterName, @RequestBody SecurityFilterConfig authFilterRequest) {
+            @PathVariable("filterName") String filterName, @RequestBody SecurityFilterConfig authfilterRequest) {
         checkAuthorisation();
-        updateAuthFilter(filterName, authFilterRequest);
+        updateAuthFilter(filterName, authfilterRequest);
     }
 
     // 200 when deleted
@@ -154,16 +154,16 @@ public class AuthenticationFilterController extends RestBaseController {
 
     protected List<AuthFilter> loadAuthFilters() {
         try {
-            Set<String> authFilterNames = securityManager.listFilters(GeoServerAuthenticationFilter.class);
-            List<AuthFilter> authFilters = new ArrayList<>();
-            for (String filterName : authFilterNames) {
+            Set<String> authfilterNames = securityManager.listFilters(GeoServerAuthenticationFilter.class);
+            List<AuthFilter> authfilters = new ArrayList<>();
+            for (String filterName : authfilterNames) {
                 SecurityFilterConfig securityFilterConfig = securityManager.loadFilterConfig(filterName, false);
                 if (securityFilterConfig != null) {
                     AuthFilter filter = new AuthFilter(securityFilterConfig);
-                    authFilters.add(filter);
+                    authfilters.add(filter);
                 }
             }
-            return authFilters;
+            return authfilters;
         } catch (IOException ex) {
             throw new IllegalStateException("Cannot load provider filters", ex);
         }
@@ -204,12 +204,12 @@ public class AuthenticationFilterController extends RestBaseController {
         }
     }
 
-    protected void updateAuthFilter(String filterName, SecurityFilterConfig authFilterRequest) {
-        if (!filterName.equals(authFilterRequest.getName())) {
+    protected void updateAuthFilter(String filterName, SecurityFilterConfig authfilterRequest) {
+        if (!filterName.equals(authfilterRequest.getName())) {
             LOGGER.warning(format(
                     "Cannot modify the config %s because the name %s in the body does not match",
-                    filterName, authFilterRequest.getName()));
-            throw new NameMismatchException(filterName, authFilterRequest.getName());
+                    filterName, authfilterRequest.getName()));
+            throw new NameMismatchException(filterName, authfilterRequest.getName());
         }
 
         try {
@@ -219,10 +219,10 @@ public class AuthenticationFilterController extends RestBaseController {
                 throw new IllegalArgumentException(format("Cannot update %s because it does not exist", filterName));
             }
 
-            filterConfigValidator.validateFilterConfig(authFilterRequest);
-            authFilterRequest.setId(filter.getId());
-            authFilterRequest.setName(authFilterRequest.getName());
-            securityManager.saveFilter(authFilterRequest);
+            filterConfigValidator.validateFilterConfig(authfilterRequest);
+            authfilterRequest.setId(filter.getId());
+            authfilterRequest.setName(authfilterRequest.getName());
+            securityManager.saveFilter(authfilterRequest);
             securityManager.reload();
         } catch (IOException | SecurityConfigException ex) {
             throw new IllegalStateException("Cannot access filter provider configs", ex);

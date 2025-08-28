@@ -21,7 +21,7 @@ Representation
      </org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
 
 - **JSON** requests/responses are **plain objects** (example below). For requests,
-  the controller also accepts the **envelope** ``{ "authProvider": { … } }``.
+  the controller also accepts the **envelope** ``{ "authprovider": { … } }``.
 
 General rules
 -------------
@@ -32,7 +32,7 @@ General rules
   - ``className`` **cannot change**; omit it to keep the current value.
   - ``id`` may be omitted; the existing value is preserved.
 - **Order & enable/disable:**
-  - The active list in the security config (``<authProviderNames>``) defines both **order** and **which providers are enabled**.
+  - The active list in the security config (``<authproviderNames>``) defines both **order** and **which providers are enabled**.
   - Names **present** = enabled (in that order). Names **absent** = disabled (kept on disk).
 
 Base URL
@@ -43,7 +43,7 @@ All examples assume:
 ``http://localhost:8080/geoserver/rest``
 
 ------------------------------------------------
-List providers — ``GET /security/authProviders``
+List providers — ``GET /security/authproviders``
 ------------------------------------------------
 
 Returns providers in the **current active order**.
@@ -52,33 +52,33 @@ Returns providers in the **current active order**.
 
    curl -u admin:•••• \
         -H "Accept: application/xml" \
-        http://localhost:8080/geoserver/rest/security/authProviders
+        http://localhost:8080/geoserver/rest/security/authproviders
 
 **Response 200 (XML)**
 
 .. code-block:: xml
 
-   <authProviders>
+   <authproviders>
      <org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
        <id>52857278:13c7ffd66a8:-7ff0</id>
        <name>default</name>
        <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>
        <userGroupServiceName>default</userGroupServiceName>
      </org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig>
-   </authProviders>
+   </authproviders>
 
 .. admonition:: curl (JSON)
 
    curl -u admin:•••• \
         -H "Accept: application/json" \
-        http://localhost:8080/geoserver/rest/security/authProviders
+        http://localhost:8080/geoserver/rest/security/authproviders
 
 **Response 200 (JSON)**
 
 .. code-block:: json
 
    {
-     "authProviders": [
+     "authproviders": [
        {
          "id": "52857278:13c7ffd66a8:-7ff0",
          "name": "default",
@@ -89,14 +89,14 @@ Returns providers in the **current active order**.
    }
 
 ---------------------------------------------------------------
-Get a provider — ``GET /security/authProviders/{providerName}``
+Get a provider — ``GET /security/authproviders/{providerName}``
 ---------------------------------------------------------------
 
 .. admonition:: curl (XML)
 
    curl -u admin:•••• \
         -H "Accept: application/xml" \
-        http://localhost:8080/geoserver/rest/security/authProviders/default
+        http://localhost:8080/geoserver/rest/security/authproviders/default
 
 **Response 200 (XML)**
 
@@ -123,7 +123,7 @@ Get a provider — ``GET /security/authProviders/{providerName}``
 Status: ``200``, ``403``, ``404``, ``500``
 
 ----------------------------------------------------
-Create a provider — ``POST /security/authProviders``
+Create a provider — ``POST /security/authproviders``
 ----------------------------------------------------
 
 Optional ``?position=N`` (0-based) inserts the new provider at that index; omit to append.
@@ -137,7 +137,7 @@ Optional ``?position=N`` (0-based) inserts the new provider at that index; omit 
            -H "Content-Type: application/xml" \
            -H "Accept: application/xml" \
            --data-binary @- \
-           http://localhost:8080/geoserver/rest/security/authProviders <<'EOF'
+           http://localhost:8080/geoserver/rest/security/authproviders <<'EOF'
       <org.geoserver.security.config.LdapAuthenticationProviderConfig>
         <name>corporateLdap</name>
         <className>org.geoserver.security.auth.LdapAuthenticationProvider</className>
@@ -155,7 +155,7 @@ Optional ``?position=N`` (0-based) inserts the new provider at that index; omit 
            -H "Content-Type: application/json" \
            -H "Accept: application/json" \
            --data '{"name":"corporateLdap","className":"org.geoserver.security.auth.LdapAuthenticationProvider","userGroupServiceName":"ldapUsers"}' \
-           http://localhost:8080/geoserver/rest/security/authProviders
+           http://localhost:8080/geoserver/rest/security/authproviders
 
 .. admonition:: curl (JSON body — envelope)
 
@@ -165,14 +165,14 @@ Optional ``?position=N`` (0-based) inserts the new provider at that index; omit 
            -X POST \
            -H "Content-Type: application/json" \
            -H "Accept: application/json" \
-           --data '{"authProvider":{"name":"corporateLdap","className":"org.geoserver.security.auth.LdapAuthenticationProvider","userGroupServiceName":"ldapUsers"}}' \
-           http://localhost:8080/geoserver/rest/security/authProviders
+           --data '{"authprovider":{"name":"corporateLdap","className":"org.geoserver.security.auth.LdapAuthenticationProvider","userGroupServiceName":"ldapUsers"}}' \
+           http://localhost:8080/geoserver/rest/security/authproviders
 
 **Response 201**
 
 .. code-block:: none
 
-   Location: /geoserver/rest/security/authProviders/corporateLdap
+   Location: /geoserver/rest/security/authproviders/corporateLdap
 
 Body echoes the created provider with a server-assigned ``id``.
 
@@ -180,7 +180,7 @@ Status: ``201``, ``400`` (validation/duplicate/reserved name/position), ``403``,
 
 
 ------------------------------------------------------------------
-Update a provider — ``PUT /security/authProviders/{providerName}``
+Update a provider — ``PUT /security/authproviders/{providerName}``
 ------------------------------------------------------------------
 
 You may also **move** a provider by adding ``?position=N``.
@@ -200,7 +200,7 @@ Rules recap:
            -H "Content-Type: application/xml" \
            -H "Accept: application/xml" \
            --data-binary @- \
-           "http://localhost:8080/geoserver/rest/security/authProviders/corporateLdap?position=0" <<'EOF'
+           "http://localhost:8080/geoserver/rest/security/authproviders/corporateLdap?position=0" <<'EOF'
       <org.geoserver.security.config.LdapAuthenticationProviderConfig>
         <name>corporateLdap</name>
         <className>org.geoserver.security.auth.LdapAuthenticationProvider</className>
@@ -217,7 +217,7 @@ Rules recap:
            -H "Content-Type: application/json" \
            -H "Accept: application/json" \
            --data '{"name":"corporateLdap","className":"org.geoserver.security.auth.LdapAuthenticationProvider","userGroupServiceName":"ldapUsers"}' \
-           "http://localhost:8080/geoserver/rest/security/authProviders/corporateLdap?position=0"
+           "http://localhost:8080/geoserver/rest/security/authproviders/corporateLdap?position=0"
 
 **Response 200** returns the updated provider.
 
@@ -227,7 +227,7 @@ Rules recap:
 
 
 ---------------------------------------------------------------------
-Delete a provider — ``DELETE /security/authProviders/{providerName}``
+Delete a provider — ``DELETE /security/authproviders/{providerName}``
 ---------------------------------------------------------------------
 
 Removes the provider **and** drops it from the active order.
@@ -238,14 +238,14 @@ Removes the provider **and** drops it from the active order.
 
       curl -u admin:•••• \
            -X DELETE \
-           http://localhost:8080/geoserver/rest/security/authProviders/corporateLdap
+           http://localhost:8080/geoserver/rest/security/authproviders/corporateLdap
 
 .. rubric:: Status codes
 
 ``200``, ``403``, ``404`` (not found), ``410`` (already removed), ``500``
 
 -------------------------------------------------------------------
-Re-order / enable / disable — ``PUT /security/authProviders/order``
+Re-order / enable / disable — ``PUT /security/authproviders/order``
 -------------------------------------------------------------------
 
 Send the **complete** list of provider names in the desired order:
@@ -263,7 +263,7 @@ Only **PUT** is allowed.
            -X PUT \
            -H "Content-Type: application/json" \
            --data '{"order":["corporateLdap","default"]}' \
-           http://localhost:8080/geoserver/rest/security/authProviders/order
+           http://localhost:8080/geoserver/rest/security/authproviders/order
 
 .. admonition:: curl (XML)
 
@@ -273,7 +273,7 @@ Only **PUT** is allowed.
            -X PUT \
            -H "Content-Type: application/xml" \
            --data-binary @- \
-           http://localhost:8080/geoserver/rest/security/authProviders/order <<'EOF'
+           http://localhost:8080/geoserver/rest/security/authproviders/order <<'EOF'
       <order>
         <order>corporateLdap</order>
         <order>default</order>

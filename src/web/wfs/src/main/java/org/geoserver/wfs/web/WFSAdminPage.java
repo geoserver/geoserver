@@ -17,6 +17,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Check;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
@@ -187,6 +188,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         // allowGlobalQueries checkbox
         form.add(new CheckBox("allowGlobalQueries"));
         form.add(new CheckBox("disableStoredQueriesManagement"));
+        form.add(new CheckBox("enabledSchemaOverrideForVirtualAPI"));
         form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
     }
 

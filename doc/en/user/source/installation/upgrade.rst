@@ -108,6 +108,13 @@ Configuration:
 
 For additional information see :ref:`datadir-loader` documentation.
 
+ENTITY_RESOLUTION_UNRESTRICTED application property (GeoServer 2.26.4 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The global setting :guilabel:`Unrestricted XML External Entity Resolution` has been repalced with the ``ENTITY_RESOLUTION_UNRESTRICTED`` application property.
+
+For more information see :ref:`production_config_external_entities`.
+
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

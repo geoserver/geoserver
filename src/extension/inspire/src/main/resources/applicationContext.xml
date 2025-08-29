@@ -19,6 +19,8 @@
   <bean id="inspireWmtsExtendedCapsProvider" class="org.geoserver.inspire.wmts.WMTSExtendedCapabilitiesProvider">
     <constructor-arg ref="geoServer"/>
   </bean>
+
+  <bean id="inspireXStreamConfigurer" class="org.geoserver.inspire.InspireXStreamPersisterInitializer"/>
   
   <bean id="inspireWmsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
       <description>This bean adds the necessary form fields to Geoserver admin interface</description>

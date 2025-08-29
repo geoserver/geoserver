@@ -164,6 +164,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             mc.addLayer(layer);
             // setup the env variables just like in the original GetMap
             RenderingVariables.setupEnvironmentVariables(mc);
+            RenderingVariables.setQueryHintsFromEnv(layer);
 
             // setup the transformation from screen to world space
             AffineTransform worldToScreen = RendererUtilities.worldToScreenTransform(

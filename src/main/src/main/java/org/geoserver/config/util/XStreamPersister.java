@@ -267,6 +267,12 @@ public class XStreamPersister {
 
     Map<Class<?>, String> backwardBreifMap = new HashMap<>();
 
+    /**
+     * List containing classes that should be ignored by XStream. This is required because sometimes generic converter
+     * may be registered in XStream, which will be used instead of dedicated converter from GeoTools
+     */
+    List<Class<?>> backwardBreifIgnored = new ArrayList<>();
+
     private Level forceLevel = LOGGER.getLevel() == null ? Level.INFO : LOGGER.getLevel();
 
     /** Flag controlling whether the persister should perform encryption on password fields */
@@ -546,6 +552,10 @@ public class XStreamPersister {
         forwardBreifMap.put(typeId, clazz);
         backwardBreifMap.put(clazz, typeId);
         xs.allowTypes(new Class[] {clazz});
+    }
+
+    public void addBackwardsBriefIgnored(Class<?> clazz) {
+        backwardBreifIgnored.add(clazz);
     }
 
     public XStream getXStream() {
@@ -918,6 +928,9 @@ public class XStreamPersister {
         }
 
         protected String getComplexTypeId(Class<?> clazz) {
+            if (backwardBreifIgnored.contains(clazz)) {
+                return null;
+            }
             String typeId = backwardBreifMap.get(clazz);
             if (typeId == null) {
                 List<Class<?>> matches = new ArrayList<>();

@@ -17,7 +17,7 @@ public class SolrXStreamInitializer implements XStreamPersisterInitializer {
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType("solrLayerConfiguration", SolrLayerConfiguration.class);
+        persister.registerBriefMapComplexType("solrLayerConfiguration", SolrLayerConfiguration.class);
         XStream xs = persister.getXStream();
         xs.alias("solrAttribute", SolrAttribute.class);
         xs.allowTypes(new Class[] {SolrAttribute.class, SolrLayerConfiguration.class});

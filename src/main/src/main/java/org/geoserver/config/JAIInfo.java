@@ -81,10 +81,5 @@ public interface JAIInfo extends Cloneable, Serializable {
 
     void setTileCache(TileCache tileCache);
 
-    /** JAI-EXT section */
-    JAIEXTInfo getJAIEXTInfo();
-
-    void setJAIEXTInfo(JAIEXTInfo jaiext);
-
     public JAIInfo clone();
 }

@@ -8,7 +8,6 @@ package org.geoserver.config.impl;
 import java.io.Serializable;
 import org.eclipse.imagen.JAI;
 import org.eclipse.imagen.TileCache;
-import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 
 public class JAIInfoImpl implements Serializable, JAIInfo {
@@ -50,8 +49,6 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     boolean allowNativeWarp = DEFAULT_WarpNative;
 
     PngEncoderType pngEncoderType = PngEncoderType.PNGJ;
-
-    JAIEXTInfo jaiext = new JAIEXTInfoImpl();
 
     /** @uml.property name="allowInterpolation" */
     @Override
@@ -261,18 +258,5 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     @Override
     public void setPngEncoderType(PngEncoderType pngEncoderType) {
         this.pngEncoderType = pngEncoderType;
-    }
-
-    @Override
-    public JAIEXTInfo getJAIEXTInfo() {
-        if (jaiext == null) {
-            jaiext = new JAIEXTInfoImpl();
-        }
-        return jaiext;
-    }
-
-    @Override
-    public void setJAIEXTInfo(JAIEXTInfo jaiext) {
-        this.jaiext = jaiext;
     }
 }

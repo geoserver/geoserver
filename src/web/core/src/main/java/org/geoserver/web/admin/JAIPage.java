@@ -21,13 +21,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.config.JAIInfo.PngEncoderType;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.PercentageTextField;
-import org.geotools.image.ImageWorker;
 
 /** Edits the JAI configuration parameters */
 // TODO WICKET8 - Verify this page works OK
@@ -66,25 +64,6 @@ public class JAIPage extends ServerAdminPage {
         form.add(new CheckBox("recycling"));
         form.add(new CheckBox("jpegAcceleration"));
         addPngEncoderEditor(form);
-        CheckBox checkBoxMosaic = new CheckBox("allowNativeMosaic");
-        CheckBox checkBoxWarp = new CheckBox("allowNativeWarp");
-        JAIInfo info = jaiModel.getObject();
-        JAIEXTInfo je = null;
-        boolean isJAIExtEnabled = ImageWorker.isJaiExtEnabled();
-        if (isJAIExtEnabled) {
-            je = info.getJAIEXTInfo();
-        }
-        boolean mosaicEnabled = je != null && !je.getJAIEXTOperations().contains("Mosaic");
-        boolean warpEnabled = je != null && !je.getJAIEXTOperations().contains("Warp");
-        checkBoxMosaic.setEnabled(mosaicEnabled);
-        checkBoxWarp.setEnabled(warpEnabled);
-        form.add(checkBoxMosaic);
-        form.add(checkBoxWarp);
-        JAIEXTPanel jaiExtPanel = new JAIEXTPanel("jaiext", jaiModel);
-        if (!isJAIExtEnabled) {
-            jaiExtPanel.setVisible(false);
-        }
-        form.add(jaiExtPanel);
 
         Button submit = new Button("submit") {
             private static final long serialVersionUID = -2842881187264147131L;

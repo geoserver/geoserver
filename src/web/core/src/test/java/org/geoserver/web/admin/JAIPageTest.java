@@ -6,27 +6,14 @@
 package org.geoserver.web.admin;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
-import java.util.Collection;
-import java.util.Set;
-import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
-import org.eclipse.imagen.media.JAIExt;
-import org.eclipse.imagen.media.mlib.MlibWarpRIF;
-import org.eclipse.imagen.media.opimage.WarpRIF;
-import org.eclipse.imagen.registry.RenderedRegistryMode;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geotools.image.ImageWorker;
-import org.geotools.image.util.ImageUtilities;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -80,106 +67,5 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(JAIPage.class);
         JAIInfo jai = geoServer.getGlobal().getJAI();
         assertEquals(3, jai.getTileThreads());
-    }
-
-    @Test
-    public void testNativeWarp() {
-        if (!ImageUtilities.isMediaLibAvailable()) {
-            // If medialib acceleration is not available, the test is not needed
-            Assert.assertTrue(true);
-            return;
-        }
-        GeoServer geoServer = getGeoServerApplication().getGeoServer();
-        GeoServerInfo global = geoServer.getGlobal();
-        JAIInfo info = global.getJAI();
-
-        // Ensure that by default Warp acceleration is set to false
-        Assert.assertFalse(info.isAllowNativeWarp());
-
-        // Register Warp as JAI operation
-        JAIExt.registerJAIDescriptor("Warp");
-        JAIEXTInfo jeinfo = info.getJAIEXTInfo();
-        Set<String> jeOps = jeinfo.getJAIEXTOperations();
-        jeOps.remove("Warp");
-        jeinfo.setJAIEXTOperations(jeOps);
-        jeinfo.getJAIOperations().add("Warp");
-        info.setJAIEXTInfo(jeinfo);
-        global.setJAI(info);
-        geoServer.save(global);
-
-        login();
-        // Ensure the page is rendered
-        tester.startPage(JAIPage.class);
-        tester.assertRenderedPage(JAIPage.class);
-
-        // Ensure the JAI Page is present if enabled
-        Palette p;
-        Collection jaiext;
-        Object factory;
-        boolean isJAIExtEnabled = ImageWorker.isJaiExtEnabled();
-
-        if (isJAIExtEnabled) {
-            tester.assertComponent("form:jaiext", JAIEXTPanel.class);
-            tester.assertComponent("form:jaiext:jaiextOps", Palette.class);
-            p = (Palette) tester.getComponentFromLastRenderedPage("form:jaiext:jaiextOps");
-            jaiext = p.getChoices();
-            assertNotNull(jaiext);
-            // JAI choices
-            assertFalse(jaiext.contains("Warp"));
-        } else {
-            tester.assertInvisible("form:jaiext");
-        }
-        // Set Native Warp enabled
-        FormTester form = tester.newFormTester("form");
-        form.setValue("allowNativeWarp", true);
-        form.submit("submit");
-
-        // Ensure no exception has been thrown
-        tester.assertNoErrorMessage();
-
-        info = global.getJAI();
-
-        // Check that Warp is enabled
-        if (isJAIExtEnabled) {
-            Assert.assertTrue(info.isAllowNativeWarp());
-            // Ensure the factory is correctly registered
-            factory = info.getJAI().getOperationRegistry().getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
-            Assert.assertTrue(factory instanceof MlibWarpRIF);
-        } else {
-            Assert.assertFalse(info.isAllowNativeWarp());
-            factory = info.getJAI().getOperationRegistry().getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
-            Assert.assertTrue(factory instanceof WarpRIF);
-        }
-
-        // Unset Native Warp enabled
-
-        // Render the page again
-        tester.startPage(JAIPage.class);
-        tester.assertRenderedPage(JAIPage.class);
-
-        if (isJAIExtEnabled) {
-            tester.assertComponent("form:jaiext", JAIEXTPanel.class);
-            tester.assertComponent("form:jaiext:jaiextOps", Palette.class);
-            p = (Palette) tester.getComponentFromLastRenderedPage("form:jaiext:jaiextOps");
-            jaiext = p.getChoices();
-            assertNotNull(jaiext);
-            // JAI choices
-            assertFalse(jaiext.contains("Warp"));
-        }
-        form = tester.newFormTester("form");
-        form.setValue("allowNativeWarp", false);
-        form.submit("submit");
-
-        // Ensure no exception has been thrown
-        tester.assertNoErrorMessage();
-
-        info = global.getJAI();
-
-        // Check that Warp is disabled
-        Assert.assertFalse(info.isAllowNativeWarp());
-
-        // Ensure the factory is correctly registered
-        factory = info.getJAI().getOperationRegistry().getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
-        Assert.assertTrue(factory instanceof WarpRIF);
     }
 }

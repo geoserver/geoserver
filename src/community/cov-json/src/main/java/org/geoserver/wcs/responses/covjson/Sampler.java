@@ -5,7 +5,7 @@
 package org.geoserver.wcs.responses.covjson;
 
 import java.awt.image.DataBuffer;
-import javax.media.jai.iterator.RandomIter;
+import org.eclipse.imagen.iterator.RandomIter;
 
 /**
  * Class used to return samples from an underlying randomIter, returning proper type of number (integer, float, double),

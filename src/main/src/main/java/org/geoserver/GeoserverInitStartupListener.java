@@ -7,7 +7,6 @@ package org.geoserver;
 
 import com.google.common.collect.Lists;
 import it.geosolutions.concurrent.ConcurrentTileCacheMultiMap;
-import it.geosolutions.jaiext.ConcurrentOperationRegistry;
 import java.beans.Introspector;
 import java.lang.reflect.Method;
 import java.sql.Driver;
@@ -30,17 +29,17 @@ import javax.imageio.spi.IIOServiceProvider;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageReaderWriterSpi;
 import javax.imageio.spi.ImageWriterSpi;
-import javax.media.jai.JAI;
-import javax.media.jai.OperationRegistry;
-import javax.media.jai.RegistryElementDescriptor;
-import javax.media.jai.RegistryMode;
-import javax.media.jai.remote.SerializableRenderedImage;
-import javax.media.jai.util.ImagingListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.OperationRegistry;
+import org.eclipse.imagen.RegistryElementDescriptor;
+import org.eclipse.imagen.RegistryMode;
+import org.eclipse.imagen.media.ConcurrentOperationRegistry;
+import org.eclipse.imagen.util.ImagingListener;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.logging.LoggingUtils.GeoToolsLoggingRedirection;
@@ -198,7 +197,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
     }
 
     private static final class GeoServerImagingListener implements ImagingListener {
-        private static final Logger LOGGER = Logging.getLogger("javax.media.jai");
+        private static final Logger LOGGER = Logging.getLogger("org.eclipse.imagen");
 
         @Override
         public boolean errorOccurred(String message, Throwable thrown, Object where, boolean isRetryable)

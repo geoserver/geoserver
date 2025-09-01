@@ -9,7 +9,6 @@ import static org.geoserver.wms.featureinfo.ColorMapLabelMatcher.DEFAULT_ATTRIBU
 import static org.geoserver.wms.featureinfo.ColorMapLabelMatcher.getLabelAttributeNameCount;
 import static org.geoserver.wms.featureinfo.ColorMapLabelMatcher.isLabelReplacingValue;
 
-import it.geosolutions.jaiext.range.Range;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
@@ -23,8 +22,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.media.jai.PlanarImage;
 import org.eclipse.emf.ecore.xml.type.internal.DataValue.XMLChar;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.media.range.Range;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wms.FeatureInfoRequestParameters;

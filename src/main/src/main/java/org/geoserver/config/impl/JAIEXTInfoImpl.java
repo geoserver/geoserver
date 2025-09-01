@@ -4,11 +4,11 @@
  */
 package org.geoserver.config.impl;
 
-import it.geosolutions.jaiext.ConcurrentOperationRegistry.OperationItem;
-import it.geosolutions.jaiext.JAIExt;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import org.eclipse.imagen.media.ConcurrentOperationRegistry.OperationItem;
+import org.eclipse.imagen.media.JAIExt;
 import org.geoserver.config.JAIEXTInfo;
 import org.geotools.image.ImageWorker;
 

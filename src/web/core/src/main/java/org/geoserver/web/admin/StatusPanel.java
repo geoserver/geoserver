@@ -5,15 +5,12 @@
 package org.geoserver.web.admin;
 
 import com.sun.media.imageioimpl.common.PackageUtil;
-import com.sun.media.jai.util.CacheDiagnostics;
 import java.awt.GraphicsEnvironment;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.JAI;
-import javax.media.jai.TileCache;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -21,6 +18,9 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.StringResourceModel;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.TileCache;
+import org.eclipse.imagen.media.util.CacheDiagnostics;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Predicates;

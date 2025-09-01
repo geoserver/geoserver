@@ -25,7 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.text.WordUtils;
 import org.geoserver.wms.GetLegendGraphicRequest;
-import org.geoserver.wms.map.ImageUtils;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.PropertyDescriptor;
@@ -727,9 +726,9 @@ public class LegendUtils {
                 + (right != null ? right.getWidth() : 0)
                 + 2 * dx
                 + 0.5);
-        final BufferedImage finalImage = ImageUtils.createImage(totalWidth, totalHeight, null, transparent);
+        final BufferedImage finalImage = ImageUtilities.createImage(totalWidth, totalHeight, null, transparent);
         final Graphics2D finalGraphics =
-                ImageUtils.prepareTransparency(transparent, backgroundColor, finalImage, hintsMap);
+                ImageUtilities.prepareTransparency(transparent, backgroundColor, finalImage, hintsMap);
 
         // place the left element
         int offsetX = 0;

@@ -5,12 +5,12 @@
  */
 package org.geoserver.jai;
 
-import it.geosolutions.jaiext.JAIExt;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.media.jai.JAI;
-import javax.media.jai.TileCache;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.TileCache;
+import org.eclipse.imagen.media.JAIExt;
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;

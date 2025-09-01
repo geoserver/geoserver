@@ -4,7 +4,6 @@
  */
 package org.geoserver.wps.gs.download.vertical.op;
 
-import it.geosolutions.jaiext.range.Range;
 import java.awt.Rectangle;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
@@ -13,10 +12,11 @@ import java.awt.image.WritableRaster;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.PointOpImage;
-import javax.media.jai.RasterAccessor;
-import javax.media.jai.RasterFormatTag;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.PointOpImage;
+import org.eclipse.imagen.RasterAccessor;
+import org.eclipse.imagen.RasterFormatTag;
+import org.eclipse.imagen.media.range.Range;
 import org.geoserver.wps.WPSException;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;

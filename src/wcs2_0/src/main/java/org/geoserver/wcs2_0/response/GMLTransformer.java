@@ -5,7 +5,6 @@
  */
 package org.geoserver.wcs2_0.response;
 
-import it.geosolutions.jaiext.range.NoDataContainer;
 import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
@@ -20,9 +19,10 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.measure.Unit;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.iterator.RectIter;
-import javax.media.jai.iterator.RectIterFactory;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.iterator.RectIter;
+import org.eclipse.imagen.iterator.RectIterFactory;
+import org.eclipse.imagen.media.range.NoDataContainer;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;

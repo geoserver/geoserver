@@ -7,8 +7,8 @@ package org.geoserver.wms.map;
 import java.awt.RenderingHints;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.operator.ExtremaDescriptor;
+import org.eclipse.imagen.RenderedOp;
+import org.eclipse.imagen.operator.ExtremaDescriptor;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.image.util.ImageUtilities;
 

@@ -5,8 +5,6 @@
  */
 package org.geoserver.wms.map;
 
-import it.geosolutions.jaiext.lookup.LookupTable;
-import it.geosolutions.jaiext.lookup.LookupTableFactory;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -22,13 +20,15 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.Interpolation;
-import javax.media.jai.InterpolationBicubic2;
-import javax.media.jai.InterpolationBilinear;
-import javax.media.jai.InterpolationNearest;
-import javax.media.jai.JAI;
-import javax.media.jai.LookupTableJAI;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.InterpolationBicubic2;
+import org.eclipse.imagen.InterpolationBilinear;
+import org.eclipse.imagen.InterpolationNearest;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.LookupTableJAI;
+import org.eclipse.imagen.media.lookup.LookupTable;
+import org.eclipse.imagen.media.lookup.LookupTableFactory;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
@@ -616,7 +616,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             final Color bgColor,
             final RenderedImage preparedImage,
             final Map<RenderingHints.Key, Object> hintsMap) {
-        return ImageUtils.prepareTransparency(transparent, bgColor, preparedImage, hintsMap);
+        return ImageUtilities.prepareTransparency(transparent, bgColor, preparedImage, hintsMap);
     }
 
     /** Allows subclasses to customize the renderer before the paint method gets invoked */
@@ -637,7 +637,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * otherwise. Subclasses may override this method should they need a special kind of image
      */
     protected RenderedImage prepareImage(int width, int height, IndexColorModel palette, boolean transparent) {
-        return ImageUtils.createImage(
+        return ImageUtilities.createImage(
                 width, height, isPaletteSupported() ? palette : null, transparent && isTransparencySupported());
     }
 
@@ -671,7 +671,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * When you override {@link #prepareImage(int, int, IndexColorModel, boolean)} remember to override this one as well
      */
     protected long getDrawingSurfaceMemoryUse(int width, int height, IndexColorModel palette, boolean transparent) {
-        return ImageUtils.getDrawingSurfaceMemoryUse(
+        return ImageUtilities.getDrawingSurfaceMemoryUse(
                 width, height, isPaletteSupported() ? palette : null, transparent && isTransparencySupported());
     }
 

@@ -5,16 +5,16 @@
  */
 package org.geoserver.wps.ppio;
 
-import com.sun.media.jai.codec.ImageDecoder;
-import com.sun.media.jai.codec.ImageEncoder;
-import com.sun.media.jai.codecimpl.JPEGImageDecoder;
-import com.sun.media.jai.codecimpl.JPEGImageEncoder;
-import com.sun.media.jai.codecimpl.PNGImageDecoder;
-import com.sun.media.jai.codecimpl.PNGImageEncoder;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.eclipse.imagen.media.codec.ImageDecoder;
+import org.eclipse.imagen.media.codec.ImageEncoder;
+import org.eclipse.imagen.media.codecimpl.JPEGImageDecoder;
+import org.eclipse.imagen.media.codecimpl.JPEGImageEncoder;
+import org.eclipse.imagen.media.codecimpl.PNGImageDecoder;
+import org.eclipse.imagen.media.codecimpl.PNGImageEncoder;
 import org.geoserver.wps.WPSException;
 
 public abstract class ImagePPIO extends BinaryPPIO {

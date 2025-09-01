@@ -6,8 +6,8 @@
 package org.geoserver.config;
 
 import java.io.Serializable;
-import javax.media.jai.JAI;
-import javax.media.jai.TileCache;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.TileCache;
 
 /**
  * Java Advanced Imaging configuration.

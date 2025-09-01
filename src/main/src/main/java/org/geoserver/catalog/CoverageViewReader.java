@@ -5,14 +5,8 @@
  */
 package org.geoserver.catalog;
 
-import com.sun.media.imageioimpl.common.BogusColorSpace;
 import it.geosolutions.imageio.maskband.DatasetLayout;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
-import it.geosolutions.jaiext.JAIExt;
-import it.geosolutions.jaiext.jiffleop.JiffleDescriptor;
-import it.geosolutions.jaiext.range.NoDataContainer;
-import it.geosolutions.jaiext.range.Range;
-import it.geosolutions.jaiext.utilities.ImageLayout2;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -39,14 +33,20 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javax.media.jai.ColorModelFactory;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.JAI;
-import javax.media.jai.ROI;
-import javax.media.jai.RasterFactory;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.operator.ConstantDescriptor;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.imagen.ColorModelFactory;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.NotAColorSpace;
+import org.eclipse.imagen.ROI;
+import org.eclipse.imagen.RasterFactory;
+import org.eclipse.imagen.RenderedOp;
+import org.eclipse.imagen.media.JAIExt;
+import org.eclipse.imagen.media.jiffleop.JiffleDescriptor;
+import org.eclipse.imagen.media.range.NoDataContainer;
+import org.eclipse.imagen.media.range.Range;
+import org.eclipse.imagen.media.utilities.ImageLayout2;
+import org.eclipse.imagen.operator.ConstantDescriptor;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.CoverageViewHandler.CoveragesConsistencyChecker;
@@ -409,7 +409,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
                         cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
                         break;
                     default:
-                        cs = new BogusColorSpace(numBands);
+                        cs = new NotAColorSpace(numBands);
                 }
 
                 return RasterFactory.createComponentColorModel(dataType, cs, false, false, Transparency.OPAQUE);

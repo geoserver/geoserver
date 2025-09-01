@@ -5,16 +5,10 @@
  */
 package org.geoserver.wcs2_0;
 
-import it.geosolutions.jaiext.utilities.ImageLayout2;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.RenderedImage;
-import javax.media.jai.Interpolation;
-import javax.media.jai.InterpolationNearest;
-import javax.media.jai.JAI;
-import javax.media.jai.Warp;
-import javax.media.jai.WarpAffine;
 import net.opengis.wcs20.ScaleAxisByFactorType;
 import net.opengis.wcs20.ScaleAxisType;
 import net.opengis.wcs20.ScaleByFactorType;
@@ -24,6 +18,12 @@ import net.opengis.wcs20.ScalingType;
 import net.opengis.wcs20.TargetAxisExtentType;
 import net.opengis.wcs20.TargetAxisSizeType;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.InterpolationNearest;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.Warp;
+import org.eclipse.imagen.WarpAffine;
+import org.eclipse.imagen.media.utilities.ImageLayout2;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.api.coverage.grid.GridEnvelope;

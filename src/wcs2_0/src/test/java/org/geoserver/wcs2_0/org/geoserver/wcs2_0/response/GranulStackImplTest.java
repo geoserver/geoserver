@@ -6,7 +6,6 @@ package org.geoserver.wcs2_0.org.geoserver.wcs2_0.response;
 
 import static org.junit.Assert.assertTrue;
 
-import com.sun.media.jai.operator.ImageReadDescriptor;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -19,7 +18,8 @@ import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.MemoryCacheImageInputStream;
-import javax.media.jai.RenderedOp;
+import org.eclipse.imagen.RenderedOp;
+import org.eclipse.imagen.media.imageread.ImageReadDescriptor;
 import org.geoserver.wcs2_0.response.GranuleStackImpl;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;

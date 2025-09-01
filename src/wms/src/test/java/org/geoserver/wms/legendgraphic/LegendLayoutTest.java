@@ -16,7 +16,7 @@ import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.media.jai.PlanarImage;
+import org.eclipse.imagen.PlanarImage;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StyleInfo;

@@ -5,10 +5,6 @@
  */
 package org.geoserver.wms.map;
 
-import it.geosolutions.jaiext.colorindexer.CachingColorIndexer;
-import it.geosolutions.jaiext.colorindexer.ColorIndexer;
-import it.geosolutions.jaiext.colorindexer.LRUColorIndexer;
-import it.geosolutions.jaiext.colorindexer.Quantizer;
 import java.awt.Transparency;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
@@ -16,6 +12,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Function;
+import org.eclipse.imagen.media.colorindexer.CachingColorIndexer;
+import org.eclipse.imagen.media.colorindexer.ColorIndexer;
+import org.eclipse.imagen.media.colorindexer.LRUColorIndexer;
+import org.eclipse.imagen.media.colorindexer.Quantizer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
@@ -198,7 +198,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
 
     /** @param originalImage */
     protected RenderedImage forceIndexed8Bitmask(RenderedImage originalImage, InverseColorMapOp paletteInverter) {
-        return ImageUtils.forceIndexed8Bitmask(originalImage, paletteInverter);
+        return ImageUtilities.forceIndexed8Bitmask(originalImage, paletteInverter);
     }
 
     /** Returns the capabilities for this output format */

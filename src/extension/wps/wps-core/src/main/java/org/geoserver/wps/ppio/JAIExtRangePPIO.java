@@ -5,7 +5,7 @@
  */
 package org.geoserver.wps.ppio;
 
-import it.geosolutions.jaiext.range.Range;
+import org.eclipse.imagen.media.range.Range;
 import org.geotools.util.Converter;
 
 /**

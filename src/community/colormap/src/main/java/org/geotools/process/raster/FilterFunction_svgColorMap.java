@@ -6,14 +6,14 @@ package org.geotools.process.raster;
 
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
-import it.geosolutions.jaiext.classifier.LinearColorMap;
-import it.geosolutions.jaiext.piecewise.TransformationException;
 import java.awt.Color;
 import java.awt.image.IndexColorModel;
 import java.security.InvalidParameterException;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.eclipse.imagen.media.classifier.LinearColorMap;
+import org.eclipse.imagen.media.piecewise.TransformationException;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;

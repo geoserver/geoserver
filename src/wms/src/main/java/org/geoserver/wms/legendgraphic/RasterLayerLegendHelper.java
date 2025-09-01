@@ -27,7 +27,6 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.ColorMapLegendCreator.Builder;
-import org.geoserver.wms.map.ImageUtils;
 import org.geotools.api.style.ChannelSelection;
 import org.geotools.api.style.ColorMap;
 import org.geotools.api.style.ColorMapEntry;
@@ -252,9 +251,9 @@ public class RasterLayerLegendHelper {
                 // creating a legend
                 image = cMapLegendCreator.getLegend(tally);
             else {
-                image = ImageUtils.createImage(width, height, null, transparent);
+                image = ImageUtilities.createImage(width, height, null, transparent);
                 final Graphics2D graphics =
-                        ImageUtils.prepareTransparency(transparent, bgColor, image, new HashMap<>());
+                        ImageUtilities.prepareTransparency(transparent, bgColor, image, new HashMap<>());
                 if (defaultLegend == null) {
                     drawRasterIcon(graphics);
                 } else {

@@ -327,8 +327,4 @@ public interface WFSInfo extends ServiceInfo {
     boolean isDisableStoredQueriesManagement();
 
     void setDisableStoredQueriesManagement(boolean disableStoredQueriesManagement);
-
-    boolean isEnabledSchemaOverrideForVirtualAPI();
-
-    void setEnabledSchemaOverrideForVirtualAPI(boolean enabledSchemaOverrideForVirtualAPI);
 }

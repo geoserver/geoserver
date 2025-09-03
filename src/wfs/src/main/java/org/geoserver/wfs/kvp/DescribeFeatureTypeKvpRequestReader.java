@@ -15,24 +15,22 @@ import net.opengis.wfs.WfsFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.ecore.EFactory;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
 import org.xml.sax.helpers.NamespaceSupport;
 
 public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
 
-    private final GeoServer geoServer;
+    private final Catalog catalog;
 
-    public DescribeFeatureTypeKvpRequestReader(final GeoServer geoServer) {
+    public DescribeFeatureTypeKvpRequestReader(final Catalog catalog) {
         super(DescribeFeatureTypeType.class, WfsFactory.eINSTANCE);
-        this.geoServer = geoServer;
+        this.catalog = catalog;
     }
 
-    public DescribeFeatureTypeKvpRequestReader(final GeoServer geoServer, Class<?> requestBean, EFactory factory) {
+    public DescribeFeatureTypeKvpRequestReader(final Catalog catalog, Class<?> requestBean, EFactory factory) {
         super(requestBean, factory);
-        this.geoServer = geoServer;
+        this.catalog = catalog;
     }
 
     @Override
@@ -85,12 +83,6 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
             }
         }
 
-        Catalog catalog = geoServer.getCatalog();
-        WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();
-        WFSInfo wfs = geoServer.getService(defaultWorkspace, WFSInfo.class);
-        if (wfs == null) {
-            wfs = geoServer.getService(WFSInfo.class);
-        }
         if (namespaces != null) {
             List<QName> typeNames = req.getTypeNames();
             List<QName> newList = new ArrayList<>(typeNames.size());
@@ -98,7 +90,7 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
                 String localPart = name.getLocalPart();
                 String prefix = name.getPrefix();
 
-                if (wfs.isEnabledSchemaOverrideForVirtualAPI() && StringUtils.isBlank(prefix)) {
+                if (StringUtils.isBlank(prefix)) {
                     prefix = namespaces.getPrefix(name.getNamespaceURI());
                 }
                 String namespaceURI = name.getNamespaceURI();

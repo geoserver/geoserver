@@ -20,7 +20,6 @@ import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
@@ -340,12 +339,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
     }
 
     private String getSchemaOverridePrefix(QName qName, NamespaceSupport namespaces, String prefix) {
-        WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();
-        WFSInfo service = geoServer.getService(defaultWorkspace, WFSInfo.class);
-        if (service == null) {
-            service = geoServer.getService(WFSInfo.class);
-        }
-        if (service.isEnabledSchemaOverrideForVirtualAPI() && StringUtils.isBlank(prefix)) {
+        if (StringUtils.isBlank(prefix)) {
             prefix = namespaces.getPrefix(qName.getNamespaceURI());
         }
         return prefix;

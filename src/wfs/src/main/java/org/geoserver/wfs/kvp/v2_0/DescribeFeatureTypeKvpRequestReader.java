@@ -7,11 +7,11 @@ package org.geoserver.wfs.kvp.v2_0;
 
 import net.opengis.wfs20.DescribeFeatureTypeType;
 import net.opengis.wfs20.Wfs20Factory;
-import org.geoserver.config.GeoServer;
+import org.geoserver.catalog.Catalog;
 
 public class DescribeFeatureTypeKvpRequestReader extends org.geoserver.wfs.kvp.DescribeFeatureTypeKvpRequestReader {
 
-    public DescribeFeatureTypeKvpRequestReader(final GeoServer geoServer) {
-        super(geoServer, DescribeFeatureTypeType.class, Wfs20Factory.eINSTANCE);
+    public DescribeFeatureTypeKvpRequestReader(final Catalog catalog) {
+        super(catalog, DescribeFeatureTypeType.class, Wfs20Factory.eINSTANCE);
     }
 }

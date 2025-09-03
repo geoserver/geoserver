@@ -224,10 +224,10 @@ public class WFSURIHandler extends URIHandlerImpl {
             switch (ver) {
                 case V_10:
                 case V_11:
-                    dftReqReader = new DescribeFeatureTypeKvpRequestReader(geoServer);
+                    dftReqReader = new DescribeFeatureTypeKvpRequestReader(catalog);
                     break;
                 default:
-                    dftReqReader = new org.geoserver.wfs.kvp.v2_0.DescribeFeatureTypeKvpRequestReader(geoServer);
+                    dftReqReader = new org.geoserver.wfs.kvp.v2_0.DescribeFeatureTypeKvpRequestReader(catalog);
             }
 
             // parse the key value pairs

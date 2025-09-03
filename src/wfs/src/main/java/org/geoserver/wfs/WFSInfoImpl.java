@@ -25,7 +25,6 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected boolean hitsIgnoreMaxFeatures = false;
     protected boolean includeWFSRequestDumpFile = true;
     protected boolean disableStoredQueriesManagement = false;
-    protected boolean schemaOverrideForVirtualAPI = false;
     protected List<String> srs = new ArrayList<>();
     protected Boolean allowGlobalQueries = true;
     protected Boolean simpleConversionEnabled = false;
@@ -208,16 +207,6 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     }
 
     @Override
-    public boolean isEnabledSchemaOverrideForVirtualAPI() {
-        return schemaOverrideForVirtualAPI;
-    }
-
-    @Override
-    public void setEnabledSchemaOverrideForVirtualAPI(boolean enabledSchemaOverrideForVirtualAPI) {
-        this.schemaOverrideForVirtualAPI = enabledSchemaOverrideForVirtualAPI;
-    }
-
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
@@ -236,7 +225,6 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         result = prime * result + ((getFeatureOutputTypes == null) ? 0 : getFeatureOutputTypes.hashCode());
         result = prime * result + ((csvDateFormat == null) ? 0 : csvDateFormat.hashCode());
         result = prime * result + (disableStoredQueriesManagement ? 1231 : 1237);
-        result = prime * result + (schemaOverrideForVirtualAPI ? 1231 : 1237);
         return result;
     }
 

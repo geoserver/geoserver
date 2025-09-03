@@ -332,11 +332,6 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
 
     @Test
     public void testUserSuppliedTypeNameNamespaceWithVirtualService() throws Exception {
-        GeoServer geoServer = getGeoServer();
-        WFSInfo service = geoServer.getService(WFSInfo.class);
-        service.setEnabledSchemaOverrideForVirtualAPI(true);
-        geoServer.save(service);
-
         final QName typeName = LAKES;
         String path = "gs/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&"
                 + "typeNames=test:"

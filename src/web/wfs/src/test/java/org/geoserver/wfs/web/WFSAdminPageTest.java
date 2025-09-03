@@ -124,13 +124,6 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
         assertTrue("disableStoredQueriesManagement = true", wfs.isDisableStoredQueriesManagement());
-        // test schemaOverrideForVirtualAPI
-        tester.startPage(WFSAdminPage.class);
-        ft = tester.newFormTester("form");
-        ft.setValue("enabledSchemaOverrideForVirtualAPI", true);
-        ft.submit("submit");
-        wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
-        assertTrue("enabledSchemaOverrideForVirtualAPI = true", wfs.isEnabledSchemaOverrideForVirtualAPI());
     }
 
     @Test

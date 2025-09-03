@@ -616,7 +616,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             final Color bgColor,
             final RenderedImage preparedImage,
             final Map<RenderingHints.Key, Object> hintsMap) {
-        return ImageUtilities.prepareTransparency(transparent, bgColor, preparedImage, hintsMap);
+        return ImageUtils.prepareTransparency(transparent, bgColor, preparedImage, hintsMap);
     }
 
     /** Allows subclasses to customize the renderer before the paint method gets invoked */
@@ -637,7 +637,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * otherwise. Subclasses may override this method should they need a special kind of image
      */
     protected RenderedImage prepareImage(int width, int height, IndexColorModel palette, boolean transparent) {
-        return ImageUtilities.createImage(
+        return ImageUtils.createImage(
                 width, height, isPaletteSupported() ? palette : null, transparent && isTransparencySupported());
     }
 
@@ -671,7 +671,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * When you override {@link #prepareImage(int, int, IndexColorModel, boolean)} remember to override this one as well
      */
     protected long getDrawingSurfaceMemoryUse(int width, int height, IndexColorModel palette, boolean transparent) {
-        return ImageUtilities.getDrawingSurfaceMemoryUse(
+        return ImageUtils.getDrawingSurfaceMemoryUse(
                 width, height, isPaletteSupported() ? palette : null, transparent && isTransparencySupported());
     }
 

@@ -4,7 +4,6 @@
  */
 package org.geoserver.web.admin;
 
-import com.sun.media.imageioimpl.common.PackageUtil;
 import java.awt.GraphicsEnvironment;
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -221,9 +220,6 @@ public class StatusPanel extends Panel {
                         + System.getProperty("java.vm.name")
                         + ")");
 
-        values.put(KEY_JAI_AVAILABLE, Boolean.toString(isNativeJAIAvailable()));
-        values.put(KEY_JAI_IMAGEIO_AVAILABLE, Boolean.toString(PackageUtil.isCodecLibAvailable()));
-
         GeoServerInfo geoServerInfo = parent.getGeoServer().getGlobal();
         JAIInfo jaiInfo = geoServerInfo.getJAI();
         JAI jai = jaiInfo.getJAI();
@@ -270,17 +266,6 @@ public class StatusPanel extends Panel {
             return renderer;
         } catch (Throwable e) {
             return "Unknown";
-        }
-    }
-
-    boolean isNativeJAIAvailable() {
-        // we directly access the Mlib Image class, if in the classpath it will tell us if
-        // the native extensions are available, if not, an Error will be thrown
-        try {
-            Class<?> image = Class.forName("com.sun.medialib.mlib.Image");
-            return (Boolean) image.getMethod("isAvailable").invoke(null);
-        } catch (Throwable e) {
-            return false;
         }
     }
 

@@ -5,7 +5,7 @@
  */
 package org.geoserver.wms.worldwind;
 
-import com.sun.media.imageioimpl.plugins.raw.RawImageWriterSpi;
+import it.geosolutions.imageio.plugins.raw.RawImageWriterSpi;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;

@@ -18,7 +18,6 @@ public interface JAIInfo extends Cloneable, Serializable {
 
     static enum PngEncoderType {
         JDK,
-        NATIVE,
         PNGJ
     }
 

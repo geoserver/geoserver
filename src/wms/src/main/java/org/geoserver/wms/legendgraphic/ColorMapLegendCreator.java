@@ -28,6 +28,7 @@ import org.geoserver.wms.legendgraphic.Cell.SingleColorMapEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.LegendUtils.HAlign;
 import org.geoserver.wms.legendgraphic.LegendUtils.LegendLayout;
 import org.geoserver.wms.legendgraphic.LegendUtils.VAlign;
+import org.geoserver.wms.map.ImageUtils;
 import org.geotools.api.style.ColorMap;
 import org.geotools.api.style.ColorMapEntry;
 import org.geotools.api.style.SelectedChannelType;
@@ -628,9 +629,9 @@ public class ColorMapLegendCreator {
         //
         // create a sample image for computing dimensions of text strings
         //
-        BufferedImage image = ImageUtilities.createImage(1, 1, null, transparent);
+        BufferedImage image = ImageUtils.createImage(1, 1, null, transparent);
         final Map<Key, Object> hintsMap = new HashMap<>();
-        Graphics2D graphics = ImageUtilities.prepareTransparency(transparent, backgroundColor, image, hintsMap);
+        Graphics2D graphics = ImageUtils.prepareTransparency(transparent, backgroundColor, image, hintsMap);
 
         // elements used to compute maximum dimensions for rows and cells
         rowH = 0;
@@ -756,9 +757,9 @@ public class ColorMapLegendCreator {
 
         // creating a backbuffer image on which we should draw the bkgColor for this colormap
         // element
-        final BufferedImage image = ImageUtilities.createImage(1, 1, null, transparent);
+        final BufferedImage image = ImageUtils.createImage(1, 1, null, transparent);
         final Map<Key, Object> hintsMap = new HashMap<>();
-        final Graphics2D graphics = ImageUtilities.prepareTransparency(transparent, backgroundColor, image, hintsMap);
+        final Graphics2D graphics = ImageUtils.prepareTransparency(transparent, backgroundColor, image, hintsMap);
 
         // list where we store the rows for the footer
         final ImageQueue queue = new ImageQueue(tally);
@@ -904,7 +905,7 @@ public class ColorMapLegendCreator {
 
         final int totalWidth = (int) finalDimension.getWidth();
         final int totalHeight = (int) finalDimension.getHeight();
-        BufferedImage finalLegend = ImageUtilities.createImage(totalWidth, totalHeight, null, transparent);
+        BufferedImage finalLegend = ImageUtils.createImage(totalWidth, totalHeight, null, transparent);
 
         /*
          * For RAMP type, only HORIZONTAL or VERTICAL condition is valid
@@ -913,7 +914,7 @@ public class ColorMapLegendCreator {
 
             final Map<Key, Object> hintsMap = new HashMap<>();
             Graphics2D finalGraphics =
-                    ImageUtilities.prepareTransparency(transparent, backgroundColor, finalLegend, hintsMap);
+                    ImageUtils.prepareTransparency(transparent, backgroundColor, finalLegend, hintsMap);
             hintsMap.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             finalGraphics.setRenderingHints(hintsMap);
 

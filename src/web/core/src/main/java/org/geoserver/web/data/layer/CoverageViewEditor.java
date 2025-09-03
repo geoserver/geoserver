@@ -37,7 +37,6 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.eclipse.imagen.ImageLayout;
-import org.eclipse.imagen.media.JAIExt;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.CoverageView.CompositionType;
@@ -224,8 +223,6 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         add(heterogeneousControlsContainer);
         WebMarkupContainer heterogeneousControls = new WebMarkupContainer("heterogeneousControls");
         heterogeneousControlsContainer.add(heterogeneousControls);
-        // need the band-merge from JAI-EXT to work in heterogeneous mode
-        heterogeneousControls.setVisible(JAIExt.isJAIExtOperation("BandMerge"));
 
         DropDownChoice<EnvelopeCompositionType> envelopePolicy =
                 new DropDownChoice<>("envelopeCompositionType", Arrays.asList(EnvelopeCompositionType.values()));

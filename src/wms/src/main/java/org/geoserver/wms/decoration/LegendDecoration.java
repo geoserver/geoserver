@@ -42,6 +42,7 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphicBuilder;
 import org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader;
 import org.geoserver.wms.legendgraphic.LegendUtils;
+import org.geoserver.wms.map.ImageUtils;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.style.FeatureTypeStyle;
 import org.geotools.api.style.Rule;
@@ -189,8 +190,8 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             int strokeWidth = (int) Math.ceil(size.getWidth());
 
             // output image
-            BufferedImage finalLegend = ImageUtilities.createImage(strokeWidth, strokeHeight, null, false);
-            Graphics2D finalGraphics = ImageUtilities.prepareTransparency(
+            BufferedImage finalLegend = ImageUtils.createImage(strokeWidth, strokeHeight, null, false);
+            Graphics2D finalGraphics = ImageUtils.prepareTransparency(
                     false, LegendUtils.getBackgroundColor(legend.request), finalLegend, new HashMap<>());
 
             // title

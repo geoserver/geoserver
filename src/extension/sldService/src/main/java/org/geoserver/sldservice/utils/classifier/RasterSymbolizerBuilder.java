@@ -21,7 +21,6 @@ import org.eclipse.imagen.Histogram;
 import org.eclipse.imagen.JAI;
 import org.eclipse.imagen.ParameterBlockJAI;
 import org.eclipse.imagen.RenderedOp;
-import org.eclipse.imagen.media.JAIExt;
 import org.eclipse.imagen.media.classbreaks.ClassBreaksDescriptor;
 import org.eclipse.imagen.media.classbreaks.ClassBreaksRIF;
 import org.eclipse.imagen.media.classbreaks.Classification;
@@ -360,34 +359,28 @@ public class RasterSymbolizerBuilder {
             // Create the parameterBlock
             ParameterBlock pb = new ParameterBlock();
             pb.setSource(iw.getRenderedImage(), 0);
-            if (JAIExt.isJAIExtOperation("Stats")) {
-                StatsType[] stats = {StatsType.MEAN, StatsType.DEV_STD, StatsType.EXTREMA};
+            StatsType[] stats = {StatsType.MEAN, StatsType.DEV_STD, StatsType.EXTREMA};
 
-                // Image parameters
-                pb.set(iw.getXPeriod(), 0); // xPeriod
-                pb.set(iw.getYPeriod(), 1); // yPeriod
-                pb.set(iw.getROI(), 2); // ROI
-                pb.set(iw.getNoData(), 3); // NoData
-                pb.set(stats, 6); // statistic operation
-                final RenderedOp statsImage = JAI.create("Stats", pb, iw.getRenderingHints());
-                // Retrieving the statistics
-                Statistics[][] results = (Statistics[][]) statsImage.getProperty(Statistics.STATS_PROPERTY);
-                double mean = (double) results[0][0].getResult();
-                double stddev = (double) results[0][1].getResult();
-                double[] extrema = (double[]) results[0][2].getResult();
-                double min = extrema[0];
-                double max = extrema[1];
-                // return a range centered in the mean with the desired number of standard
-                // deviations, but make sure it does not exceed the data minimim and maximums
-                return new NumberRange<>(
-                        Double.class,
-                        Math.max(mean - stddev * standardDeviations, min),
-                        Math.min(mean + stddev * standardDeviations, max));
-            } else {
-                // the op should be unique to jai-ext but best be careful
-                throw new IllegalArgumentException(
-                        "Stats image operation is not backed by JAIExt, please enable JAIExt");
-            }
+            // Image parameters
+            pb.set(iw.getXPeriod(), 0); // xPeriod
+            pb.set(iw.getYPeriod(), 1); // yPeriod
+            pb.set(iw.getROI(), 2); // ROI
+            pb.set(iw.getNoData(), 3); // NoData
+            pb.set(stats, 6); // statistic operation
+            final RenderedOp statsImage = JAI.create("Stats", pb, iw.getRenderingHints());
+            // Retrieving the statistics
+            Statistics[][] results = (Statistics[][]) statsImage.getProperty(Statistics.STATS_PROPERTY);
+            double mean = (double) results[0][0].getResult();
+            double stddev = (double) results[0][1].getResult();
+            double[] extrema = (double[]) results[0][2].getResult();
+            double min = extrema[0];
+            double max = extrema[1];
+            // return a range centered in the mean with the desired number of standard
+            // deviations, but make sure it does not exceed the data minimim and maximums
+            return new NumberRange<>(
+                    Double.class,
+                    Math.max(mean - stddev * standardDeviations, min),
+                    Math.min(mean + stddev * standardDeviations, max));
         }
     }
 

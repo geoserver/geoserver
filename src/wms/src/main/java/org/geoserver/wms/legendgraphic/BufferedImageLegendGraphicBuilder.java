@@ -26,6 +26,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.CascadedLegendRequest;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
+import org.geoserver.wms.map.ImageUtils;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.filter.expression.Expression;
@@ -292,9 +293,9 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         ImageList legendsStack = new ImageList(layersImages.getTally().getRemaining());
         for (int i = 0; i < ruleCount; i++) {
 
-            final BufferedImage image = ImageUtilities.createImage(w, h, null, transparent);
+            final BufferedImage image = ImageUtils.createImage(w, h, null, transparent);
             final Map<RenderingHints.Key, Object> hintsMap = new HashMap<>();
-            final Graphics2D graphics = ImageUtilities.prepareTransparency(
+            final Graphics2D graphics = ImageUtils.prepareTransparency(
                     transparent, LegendUtils.getBackgroundColor(request), image, hintsMap);
             graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -409,7 +410,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
     private BufferedImage getLayerTitle(
             LegendRequest legend, int w, int h, boolean transparent, GetLegendGraphicRequest request) {
         String title = legend.getTitle();
-        final BufferedImage image = ImageUtilities.createImage(w, h, null, transparent);
+        final BufferedImage image = ImageUtils.createImage(w, h, null, transparent);
         return LegendMerger.getRenderedLabel(image, title, request);
     }
 
@@ -455,7 +456,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
 
             image = rescaleBufferedImage(
                     image, titleImage != null ? titleImage : getLayerTitle(legend, w, h, transparent, request));
-            final BufferedImage rescale = ImageUtilities.createImage(image.getWidth(), image.getHeight(), null, true);
+            final BufferedImage rescale = ImageUtils.createImage(image.getWidth(), image.getHeight(), null, true);
 
             Graphics2D g = (Graphics2D) rescale.getGraphics();
             g.setColor(new Color(255, 255, 255, 0));

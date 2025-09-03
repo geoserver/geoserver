@@ -99,13 +99,11 @@ public class PNGMapResponse extends RenderedImageMapResponse {
             image = new PNGJWriter().writePNG(image, outStream, quality, mapContent);
             RasterCleaner.addImage(image);
         } else {
-            Boolean PNGNativeAcc = (encoder == JAIInfo.PngEncoderType.NATIVE);
             SampleModel sm = image.getSampleModel();
             int numBits = sm.getSampleSize(0);
             // png acceleration only works on 2 bit and 8 bit images, crashes on 4 bits
-            boolean nativeAcceleration = PNGNativeAcc.booleanValue() && !(numBits > 1 && numBits < 8);
             ImageWorker iw = new ImageWorker(image);
-            iw.writePNG(outStream, "FILTERED", quality, nativeAcceleration, false);
+            iw.writePNG(outStream, "FILTERED", quality, false, false);
             RasterCleaner.addImage(iw.getRenderedImage());
         }
 

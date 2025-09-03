@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.LegendUtils.LegendLayout;
+import org.geoserver.wms.map.ImageUtils;
 import org.geotools.api.style.Rule;
 
 /**
@@ -692,9 +693,9 @@ public class LegendMerger {
         // buffer the width a bit
         totalWidth += 2;
         final BufferedImage finalLegend =
-                ImageUtilities.createImage(totalWidth, totalHeight, null, options.isTransparent());
+                ImageUtils.createImage(totalWidth, totalHeight, null, options.isTransparent());
         final Map<RenderingHints.Key, Object> hintsMap = new HashMap<>();
-        Graphics2D finalGraphics = ImageUtilities.prepareTransparency(
+        Graphics2D finalGraphics = ImageUtils.prepareTransparency(
                 options.isTransparent(), options.getBackgroundColor(), finalLegend, hintsMap);
         // finalGraphics.setFont(labelFont);
         if (options.isAntialias()) {
@@ -750,9 +751,9 @@ public class LegendMerger {
         // buffer the width a bit
         totalWidth += 2;
         final BufferedImage finalLegend =
-                ImageUtilities.createImage(totalWidth, totalHeight, null, options.isTransparent());
+                ImageUtils.createImage(totalWidth, totalHeight, null, options.isTransparent());
         final Map<RenderingHints.Key, Object> hintsMap = new HashMap<>();
-        Graphics2D finalGraphics = ImageUtilities.prepareTransparency(
+        Graphics2D finalGraphics = ImageUtils.prepareTransparency(
                 options.isTransparent(), options.getBackgroundColor(), finalLegend, hintsMap);
         // finalGraphics.setFont(labelFont);
         if (options.isAntialias()) {
@@ -804,9 +805,9 @@ public class LegendMerger {
         int wid = img.getWidth() + label.getWidth() + labelXOffset;
         int height = Math.max(img.getHeight(), label.getHeight());
         // create a new buffer and draw two image into the new image
-        BufferedImage newImage = ImageUtilities.createImage(wid, height, null, transparent);
+        BufferedImage newImage = ImageUtils.createImage(wid, height, null, transparent);
         final Map<RenderingHints.Key, Object> hintsMap = new HashMap<>();
-        Graphics2D g2 = ImageUtilities.prepareTransparency(transparent, backgroundColor, newImage, hintsMap);
+        Graphics2D g2 = ImageUtils.prepareTransparency(transparent, backgroundColor, newImage, hintsMap);
         g2.setFont(labelFont);
         if (useAA) {
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -845,9 +846,9 @@ public class LegendMerger {
         int height = img.getHeight() + label.getHeight() + offset;
         int wid = Math.max(img.getWidth(), label.getWidth()) + offset;
         // create a new buffer and draw two image into the new image
-        BufferedImage newImage = ImageUtilities.createImage(wid, height, null, transparent);
+        BufferedImage newImage = ImageUtils.createImage(wid, height, null, transparent);
         final Map<RenderingHints.Key, Object> hintsMap = new HashMap<>();
-        Graphics2D g2 = ImageUtilities.prepareTransparency(transparent, backgroundColor, newImage, hintsMap);
+        Graphics2D g2 = ImageUtils.prepareTransparency(transparent, backgroundColor, newImage, hintsMap);
         g2.setFont(labelFont);
         if (useAA) {
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);

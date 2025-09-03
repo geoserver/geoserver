@@ -41,7 +41,6 @@ import org.eclipse.imagen.NotAColorSpace;
 import org.eclipse.imagen.ROI;
 import org.eclipse.imagen.RasterFactory;
 import org.eclipse.imagen.RenderedOp;
-import org.eclipse.imagen.media.JAIExt;
 import org.eclipse.imagen.media.jiffleop.JiffleDescriptor;
 import org.eclipse.imagen.media.range.NoDataContainer;
 import org.eclipse.imagen.media.range.Range;
@@ -131,8 +130,6 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
     private CoverageViewHandler handler;
 
-    boolean canSupportHeterogeneousCoverages = false;
-
     /** The name of the reference coverage, we can remove/revisit it once we relax some constraint */
     String referenceName;
 
@@ -153,9 +150,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
         this.coverageView = coverageView;
         this.hints = hints;
         referenceName = coverageView.getBand(0).getInputCoverageBands().get(0).getCoverageName();
-        canSupportHeterogeneousCoverages = JAIExt.isJAIExtOperation("BandMerge");
 
-        this.handler = new CoverageViewHandler(canSupportHeterogeneousCoverages, delegate, referenceName, coverageView);
+        this.handler = new CoverageViewHandler(delegate, referenceName, coverageView);
 
         if (this.hints != null && this.hints.containsKey(Hints.GRID_COVERAGE_FACTORY)) {
             final Object factory = this.hints.get(Hints.GRID_COVERAGE_FACTORY);
@@ -542,7 +538,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
                     composer.putReader(coverageName, reader);
                     // Remove this when removing constraints
                     if (checker == null) {
-                        checker = new CoveragesConsistencyChecker(reader, canSupportHeterogeneousCoverages);
+                        checker = new CoveragesConsistencyChecker(reader);
                     } else {
                         checker.checkConsistency(reader);
                     }

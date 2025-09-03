@@ -686,6 +686,7 @@ class RasterDownload {
                 null,
                 null,
                 backgroundValues,
+                null,
                 jaiHints);
 
         // Setting up a gridCoverage on top of the new image

@@ -19,6 +19,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.map.ImageUtils;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 
@@ -66,8 +67,7 @@ public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSuppo
     }
 
     protected int getTitleHeight(GetLegendGraphicRequest req) {
-        final BufferedImage image =
-                ImageUtilities.createImage(req.getWidth(), req.getHeight(), null, req.isTransparent());
+        final BufferedImage image = ImageUtils.createImage(req.getWidth(), req.getHeight(), null, req.isTransparent());
         return getRenderedLabel(image, "TESTTITLE", req).getHeight();
     }
 

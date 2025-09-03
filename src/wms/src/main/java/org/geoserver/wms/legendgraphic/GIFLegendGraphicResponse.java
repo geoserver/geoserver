@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.map.ImageUtils;
 import org.geotools.image.ImageWorker;
 import org.springframework.util.Assert;
 
@@ -49,7 +50,7 @@ public class GIFLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
 
         BufferedImage legendGraphic = (BufferedImage) ((LegendGraphic) legend).getLegend();
 
-        RenderedImage forcedIndexed8Bitmask = ImageUtilities.forceIndexed8Bitmask(legendGraphic, null);
+        RenderedImage forcedIndexed8Bitmask = ImageUtils.forceIndexed8Bitmask(legendGraphic, null);
         ImageWorker imageWorker = new ImageWorker(forcedIndexed8Bitmask);
         imageWorker.writeGIF(output, "LZW", 0.75f);
     }

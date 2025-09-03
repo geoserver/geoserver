@@ -198,7 +198,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
 
     /** @param originalImage */
     protected RenderedImage forceIndexed8Bitmask(RenderedImage originalImage, InverseColorMapOp paletteInverter) {
-        return ImageUtilities.forceIndexed8Bitmask(originalImage, paletteInverter);
+        return ImageUtils.forceIndexed8Bitmask(originalImage, paletteInverter);
     }
 
     /** Returns the capabilities for this output format */

@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.admin;
 
-import com.sun.media.imageioimpl.common.PackageUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -120,9 +119,6 @@ public class JAIPage extends ServerAdminPage {
     private void addPngEncoderEditor(Form<JAIInfo> form) {
         // get the list of available encoders
         List<PngEncoderType> encoders = new ArrayList<>(Arrays.asList(JAIInfo.PngEncoderType.values()));
-        if (!PackageUtil.isCodecLibAvailable()) {
-            encoders.remove(PngEncoderType.NATIVE);
-        }
         // create the editor, eventually set a default value
         DropDownChoice<JAIInfo.PngEncoderType> editor =
                 new DropDownChoice<>("pngEncoderType", encoders, new ChoiceRenderer<>() {

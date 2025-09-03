@@ -187,7 +187,6 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         // allowGlobalQueries checkbox
         form.add(new CheckBox("allowGlobalQueries"));
         form.add(new CheckBox("disableStoredQueriesManagement"));
-        form.add(new CheckBox("enabledSchemaOverrideForVirtualAPI"));
         form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
     }
 

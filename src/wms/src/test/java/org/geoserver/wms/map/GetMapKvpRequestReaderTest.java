@@ -814,7 +814,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         };
 
         int numberOfThreads = 10;
-        @SuppressWarnings("PMD.CloseResource")
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
         for (int i = 0; i < numberOfThreads; i++) {
@@ -1497,7 +1496,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 server.getAddress().getPort());
         server.createContext("/sld", createLongResponseHandler());
 
-        @SuppressWarnings("PMD.CloseResource")
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
         server.setExecutor(threadPoolExecutor);
 

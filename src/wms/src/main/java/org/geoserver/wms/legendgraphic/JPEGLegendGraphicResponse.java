@@ -42,7 +42,7 @@ public class JPEGLegendGraphicResponse extends AbstractGetLegendGraphicResponse 
         Assert.isInstanceOf(BufferedImageLegendGraphic.class, legend);
 
         BufferedImage legendImage = (BufferedImage) ((LegendGraphic) legend).getLegend();
-        new ImageWorker(legendImage).writeJPEG(output, "JPEG", 0.25f, false);
+        new ImageWorker(legendImage).writeJPEG(output, "JPEG", 0.25f);
     }
 
     @Override

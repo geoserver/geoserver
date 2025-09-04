@@ -72,7 +72,7 @@ public abstract class CoveragePPIO extends BinaryPPIO {
             RenderedImage renderedImage = gridCoverage.getRenderedImage();
             ImageWorker worker = new ImageWorker(renderedImage);
             float quality = extractQuality(encodingParameters);
-            worker.writePNG(outputStream, "FILTERED", quality, false, false);
+            worker.writePNG(outputStream, "FILTERED", quality, false);
         }
 
         @Override
@@ -109,7 +109,7 @@ public abstract class CoveragePPIO extends BinaryPPIO {
             RenderedImage renderedImage = gridCoverage.getRenderedImage();
             ImageWorker worker = new ImageWorker(renderedImage);
             float quality = extractQuality(encodingParameters);
-            worker.writeJPEG(outputStream, "JPEG", quality, false);
+            worker.writeJPEG(outputStream, "JPEG", quality);
         }
 
         @Override

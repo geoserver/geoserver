@@ -50,7 +50,6 @@ import org.geotools.api.referencing.AuthorityFactory;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.image.io.ImageIOExt;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.factory.AbstractAuthorityFactory;
@@ -159,11 +158,6 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         // Fix issue with tomcat and JreMemoryLeakPreventionListener causing issues with
         // IIORegistry leading to imageio plugins not being properly initialized
         ImageIO.scanForPlugins();
-
-        // in any case, the native png reader is worse than the pure java ones, so
-        // let's disable it (the native png writer is on the other side faster)...
-        ImageIOExt.allowNativeCodec("png", ImageReaderSpi.class, false);
-        ImageIOExt.allowNativeCodec("png", ImageWriterSpi.class, true);
 
         // remove the ImageIO JPEG200 readers/writes, they are outdated and not quite working
         // GeoTools has the GDAL and Kakadu ones which do work, removing these avoids the

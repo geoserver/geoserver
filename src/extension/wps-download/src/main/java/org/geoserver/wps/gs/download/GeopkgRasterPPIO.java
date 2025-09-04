@@ -164,12 +164,11 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
                     RenderedImage finalImage = iw.getRenderedImage();
                     JpegOrPngChooser chooser = new JpegOrPngChooser(finalImage);
                     if (chooser.isJpegPreferred()) {
-                        iw.writeJPEG(bos, "JPEG", 0.75f, false);
+                        iw.writeJPEG(bos, "JPEG", 0.75f);
                     } else {
                         // tried PNGJ too but got weird output with the built-in nurc:mosaic
                         // empty tiles, repeated ones, it does not happen with IW
-                        iw.writePNG(
-                                bos, "FILTERED", 0.75F, false, finalImage.getColorModel() instanceof IndexColorModel);
+                        iw.writePNG(bos, "FILTERED", 0.75F, finalImage.getColorModel() instanceof IndexColorModel);
                     }
 
                     // finally add to the geopackage

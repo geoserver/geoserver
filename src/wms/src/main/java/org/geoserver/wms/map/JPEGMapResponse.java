@@ -59,7 +59,7 @@ public final class JPEGMapResponse extends RenderedImageMapResponse {
 
         float quality = (100 - wms.getJpegCompression()) / 100.0f;
         ImageWorker iw = new ImageWorker(image);
-        iw.writeJPEG(outStream, "JPEG", quality, false);
+        iw.writeJPEG(outStream, "JPEG", quality);
         RasterCleaner.addImage(iw.getRenderedImage());
 
         if (LOGGER.isLoggable(Level.FINE)) {

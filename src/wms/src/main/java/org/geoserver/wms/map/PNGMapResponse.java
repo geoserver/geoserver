@@ -103,7 +103,7 @@ public class PNGMapResponse extends RenderedImageMapResponse {
             int numBits = sm.getSampleSize(0);
             // png acceleration only works on 2 bit and 8 bit images, crashes on 4 bits
             ImageWorker iw = new ImageWorker(image);
-            iw.writePNG(outStream, "FILTERED", quality, false, false);
+            iw.writePNG(outStream, "FILTERED", quality, false);
             RasterCleaner.addImage(iw.getRenderedImage());
         }
 

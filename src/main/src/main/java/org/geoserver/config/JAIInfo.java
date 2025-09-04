@@ -55,21 +55,6 @@ public interface JAIInfo extends Cloneable, Serializable {
 
     void setPngEncoderType(PngEncoderType type);
 
-    /** Flag controlling native JPEG image processing. */
-    boolean isJpegAcceleration();
-
-    void setJpegAcceleration(boolean jpegAcceleration);
-
-    /** Flag controlling native mosaicing operations. */
-    boolean isAllowNativeMosaic();
-
-    void setAllowNativeMosaic(boolean allowNativeMosaic);
-
-    /** Flag controlling native warping operations. */
-    boolean isAllowNativeWarp();
-
-    void setAllowNativeWarp(boolean allowNativeWarp);
-
     /** The jai instance. */
     JAI getJAI();
 

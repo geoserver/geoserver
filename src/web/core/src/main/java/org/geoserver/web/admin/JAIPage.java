@@ -61,7 +61,6 @@ public class JAIPage extends ServerAdminPage {
         tilePriority.add(RangeValidator.minimum(0));
         form.add(tilePriority);
         form.add(new CheckBox("recycling"));
-        form.add(new CheckBox("jpegAcceleration"));
         addPngEncoderEditor(form);
 
         Button submit = new Button("submit") {

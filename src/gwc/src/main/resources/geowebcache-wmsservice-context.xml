@@ -46,13 +46,13 @@
 	<bean id="PNGEncoder" class="org.geowebcache.io.codec.PNGImageEncoder">
 		<constructor-arg index="0" value="false" />
 		<constructor-arg index="1" value="0.25" />
-		<constructor-arg>
+		<constructor-arg index="2">
 			<map>
 				<entry key="COMPRESSION" value="FILTERED" />
 				<entry key="COMPRESSION_RATE" value="0.75" />
 			</map>
 		</constructor-arg>
-		<constructor-arg index="4" value="false" />
+		<constructor-arg index="3" value="false" />
 	</bean>
 
 	<bean id="GIFEncoder" class="org.geowebcache.io.codec.ImageEncoderImpl">

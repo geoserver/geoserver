@@ -42,8 +42,7 @@ public class JPEGLegendGraphicResponse extends AbstractGetLegendGraphicResponse 
         Assert.isInstanceOf(BufferedImageLegendGraphic.class, legend);
 
         BufferedImage legendImage = (BufferedImage) ((LegendGraphic) legend).getLegend();
-        boolean nativeAcc = wms.getJPEGNativeAcceleration();
-        new ImageWorker(legendImage).writeJPEG(output, "JPEG", 0.25f, nativeAcc);
+        new ImageWorker(legendImage).writeJPEG(output, "JPEG", 0.25f, false);
     }
 
     @Override

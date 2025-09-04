@@ -13,7 +13,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.JAIInfo;
-import org.geotools.image.jai.Registry;
 
 /**
  * Initializes JAI functionality from configuration.
@@ -77,10 +76,5 @@ public class JAIInitializer implements GeoServerInitializer {
         jaiDef.getTileScheduler().setPrefetchParallelism(jai.getTileThreads());
         jaiDef.getTileScheduler().setPriority(jai.getTilePriority());
         jaiDef.getTileScheduler().setPrefetchPriority(jai.getTilePriority());
-
-        // Workaround for native mosaic BUG
-        Registry.setNativeAccelerationAllowed("Mosaic", jai.isAllowNativeMosaic(), jaiDef);
-        // Workaround for native Warp BUG
-        Registry.setNativeAccelerationAllowed("Warp", jai.isAllowNativeWarp(), jaiDef);
     }
 }

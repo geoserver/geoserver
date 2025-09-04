@@ -58,9 +58,6 @@ public class StatusPanel extends Panel {
 
     private static final String KEY_JVM_VERSION = "jvm_version";
 
-    private static final String KEY_JAI_AVAILABLE = "jai_available";
-    private static final String KEY_JAI_IMAGEIO_AVAILABLE = "jai_imageio_available";
-
     private static final String KEY_JAI_MAX_MEM = "jai_max_mem";
 
     private static final String KEY_JAI_MEM_USAGE = "jai_mem_usage";
@@ -104,8 +101,6 @@ public class StatusPanel extends Panel {
         add(new Label("connections", new MapModel<>(values, KEY_CONNECTIONS)));
         add(new Label("memory", new MapModel<>(values, KEY_MEMORY)));
         add(new Label("jvm.version", new MapModel<>(values, KEY_JVM_VERSION)));
-        add(new Label("jai.available", new MapModel<>(values, KEY_JAI_AVAILABLE)));
-        add(new Label("jai.imageio.available", new MapModel<>(values, KEY_JAI_IMAGEIO_AVAILABLE)));
         add(new Label("jai.memory.available", new MapModel<>(values, KEY_JAI_MAX_MEM)));
         add(new Label("jai.memory.used", new MapModel<>(values, KEY_JAI_MEM_USAGE)));
         add(new Label("jai.memory.threshold", new MapModel<>(values, KEY_JAI_MEM_THRESHOLD)));

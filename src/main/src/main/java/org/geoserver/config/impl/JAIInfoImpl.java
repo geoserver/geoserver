@@ -36,18 +36,6 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     public static final boolean DEFAULT_ImageIOCache = false;
     boolean imageIOCache = DEFAULT_ImageIOCache;
 
-    public static final boolean DEFAULT_PNGNative = false;
-    boolean pngAcceleration = DEFAULT_PNGNative;
-
-    public static final boolean DEFAULT_JPEGNative = false;
-    boolean jpegAcceleration = DEFAULT_JPEGNative;
-
-    public static final boolean DEFAULT_MosaicNative = false;
-    boolean allowNativeMosaic = DEFAULT_MosaicNative;
-
-    public static final boolean DEFAULT_WarpNative = false;
-    boolean allowNativeWarp = DEFAULT_WarpNative;
-
     PngEncoderType pngEncoderType = PngEncoderType.PNGJ;
 
     /** @uml.property name="allowInterpolation" */
@@ -122,24 +110,6 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         this.memoryThreshold = memoryThreshold;
     }
 
-    public boolean isPngAcceleration() {
-        return pngAcceleration;
-    }
-
-    public void setPngAcceleration(boolean pngAcceleration) {
-        this.pngAcceleration = pngAcceleration;
-    }
-
-    @Override
-    public boolean isJpegAcceleration() {
-        return jpegAcceleration;
-    }
-
-    @Override
-    public void setJpegAcceleration(boolean jpegAcceleration) {
-        this.jpegAcceleration = jpegAcceleration;
-    }
-
     public void setImageIOCache(boolean imageIOCache) {
         this.imageIOCache = imageIOCache;
     }
@@ -175,39 +145,15 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     }
 
     @Override
-    public boolean isAllowNativeMosaic() {
-        return allowNativeMosaic;
-    }
-
-    @Override
-    public void setAllowNativeMosaic(boolean allowNativeMosaic) {
-        this.allowNativeMosaic = allowNativeMosaic;
-    }
-
-    @Override
-    public boolean isAllowNativeWarp() {
-        return allowNativeWarp;
-    }
-
-    @Override
-    public void setAllowNativeWarp(boolean allowNativeWarp) {
-        this.allowNativeWarp = allowNativeWarp;
-    }
-
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + (allowInterpolation ? 1231 : 1237);
-        result = prime * result + (allowNativeMosaic ? 1231 : 1237);
-        result = prime * result + (allowNativeWarp ? 1231 : 1237);
         result = prime * result + (imageIOCache ? 1231 : 1237);
-        result = prime * result + (jpegAcceleration ? 1231 : 1237);
         long temp = Double.doubleToLongBits(memoryCapacity);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(memoryThreshold);
         result = prime * result + (int) (temp ^ (temp >>> 32));
-        result = prime * result + (pngAcceleration ? 1231 : 1237);
         result = prime * result + (recycling ? 1231 : 1237);
         result = prime * result + tilePriority;
         result = prime * result + tileThreads;
@@ -223,13 +169,9 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         if (getClass() != obj.getClass()) return false;
         JAIInfoImpl other = (JAIInfoImpl) obj;
         if (allowInterpolation != other.allowInterpolation) return false;
-        if (allowNativeMosaic != other.allowNativeMosaic) return false;
-        if (allowNativeWarp != other.allowNativeWarp) return false;
         if (imageIOCache != other.imageIOCache) return false;
-        if (jpegAcceleration != other.jpegAcceleration) return false;
         if (Double.doubleToLongBits(memoryCapacity) != Double.doubleToLongBits(other.memoryCapacity)) return false;
         if (Double.doubleToLongBits(memoryThreshold) != Double.doubleToLongBits(other.memoryThreshold)) return false;
-        if (pngAcceleration != other.pngAcceleration) return false;
         if (recycling != other.recycling) return false;
         if (tilePriority != other.tilePriority) return false;
         if (tileThreads != other.tileThreads) return false;

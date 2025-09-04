@@ -47,8 +47,6 @@ JAI Configuration:
   <li>Memory Capacity:  "${properties.jAI.memoryCapacity}"</li>
   <li>Memory Threshold:  "${properties.jAI.memoryThreshold}"</li>
   <li>PNG Encoder:  "${properties.jAI.pngEncoderType}"</li>
-  <li>JPEG Acceleration:  "${properties.jAI.jpegAcceleration}"</li>
-  <li>Allow Native Mosaic:  "${properties.jAI.allowNativeMosaic}"</li>
 </ul>
 
 Coverage Access Settings:

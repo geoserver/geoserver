@@ -34,6 +34,8 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Node;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.MemoryLockProvider;
@@ -373,5 +375,21 @@ public class LoggingStartupContextListenerTest {
         String contents = FileUtils.readFileToString(logFile, UTF_8);
         Pattern pattern = Pattern.compile("\\d{2} \\w{3} \\d{2}:\\d{2}:\\d{2}.*", DOTALL);
         assertTrue(pattern.matcher(contents).matches());
+    }
+
+    @Test
+    public void testReloadWithRelinquishLog4jControl() throws Exception {
+        // GEOS-11924: with RELINQUISH_LOG4J_CONTROL initialize() registers no listener, onReload() must cope with that
+        boolean previous = LoggingUtils.relinquishLog4jControl;
+        LoggingUtils.relinquishLog4jControl = true;
+        try {
+            GeoServer geoServer = new GeoServerImpl();
+            LoggingInitializer initializer = new LoggingInitializer();
+            initializer.setGeoServer(geoServer);
+            initializer.initialize(geoServer);
+            initializer.onReload(); // NullPointerException on listener before the fix
+        } finally {
+            LoggingUtils.relinquishLog4jControl = previous;
+        }
     }
 }

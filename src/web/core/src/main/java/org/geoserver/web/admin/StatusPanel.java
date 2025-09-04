@@ -217,6 +217,7 @@ public class StatusPanel extends Panel {
 
         GeoServerInfo geoServerInfo = parent.getGeoServer().getGlobal();
         JAIInfo jaiInfo = geoServerInfo.getJAI();
+        @SuppressWarnings("PMD.CloseResource")
         JAI jai = jaiInfo.getJAI();
         CoverageAccessInfo coverageAccess = geoServerInfo.getCoverageAccess();
         TileCache jaiCache = jaiInfo.getTileCache();

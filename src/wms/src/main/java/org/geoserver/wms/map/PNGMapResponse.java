@@ -6,7 +6,6 @@
 package org.geoserver.wms.map;
 
 import java.awt.image.RenderedImage;
-import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
@@ -99,9 +98,6 @@ public class PNGMapResponse extends RenderedImageMapResponse {
             image = new PNGJWriter().writePNG(image, outStream, quality, mapContent);
             RasterCleaner.addImage(image);
         } else {
-            SampleModel sm = image.getSampleModel();
-            int numBits = sm.getSampleSize(0);
-            // png acceleration only works on 2 bit and 8 bit images, crashes on 4 bits
             ImageWorker iw = new ImageWorker(image);
             iw.writePNG(outStream, "FILTERED", quality, false);
             RasterCleaner.addImage(iw.getRenderedImage());

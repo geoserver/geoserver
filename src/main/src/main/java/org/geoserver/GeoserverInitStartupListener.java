@@ -75,6 +75,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
     private static final double DEFAULT_COMPARISON_TOLERANCE = 1e-8;
 
     @Override
+    @SuppressWarnings("PMD.CloseResource")
     public void contextInitialized(ServletContextEvent sce) {
         // enable JTS overlay-ng unless otherwise set (first thing, before JTS has a chance
         // to initialize itself)
@@ -183,6 +184,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
     }
 
     /** Sets a custom ImagingListener used to ignore common warnings */
+    @SuppressWarnings("PMD.CloseResource")
     public static void initJAIDefaultInstance() {
         JAI jaiDef = JAI.getDefaultInstance();
         if (!(jaiDef.getImagingListener() instanceof GeoServerImagingListener)) {

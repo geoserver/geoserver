@@ -41,8 +41,8 @@ public class JAIInitializer implements GeoServerInitializer {
         });
     }
 
+    @SuppressWarnings("PMD.CloseResource")
     void initJAI(JAIInfo jai) {
-
         JAI jaiDef = JAI.getDefaultInstance();
         jai.setJAI(jaiDef);
 

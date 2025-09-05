@@ -261,9 +261,6 @@ class CoverageViewHandler {
             final Rectangle thatRectangle =
                     new Rectangle(gridRange.getLow(0), gridRange.getLow(1), gridRange.getSpan(0), gridRange.getSpan(1));
             if (!thisRectangle.equals(thatRectangle)) {
-                if (!true) {
-                    throw new IllegalArgumentException("The coverage gridRange should be the same for all coverages");
-                }
                 return false;
             }
 

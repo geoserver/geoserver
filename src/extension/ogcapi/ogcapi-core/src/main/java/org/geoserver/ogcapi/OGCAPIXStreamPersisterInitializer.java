@@ -19,7 +19,7 @@ public class OGCAPIXStreamPersisterInitializer implements XStreamPersisterInitia
         XStream xs = persister.getXStream();
         xs.alias("link", LinkInfo.class);
         xs.addDefaultImplementation(LinkInfoImpl.class, LinkInfo.class);
-        persister.registerBreifMapComplexType("list", List.class);
+        persister.registerBriefMapComplexType("list", List.class);
         xs.allowTypes(new Class[] {LinkInfo.class});
     }
 }

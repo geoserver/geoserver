@@ -262,10 +262,16 @@ public class XStreamPersister {
     /** Flag controlling how references to objects are encoded. */
     boolean referenceByName = false;
 
-    /** The type map used in {@link BreifMapConverter} to handle complex objects */
-    Map<String, Class<?>> forwardBreifMap = new HashMap<>();
+    /** The type map used in {@link BriefMapConverter} to handle complex objects */
+    Map<String, Class<?>> forwardBriefMap = new HashMap<>();
 
-    Map<Class<?>, String> backwardBreifMap = new HashMap<>();
+    Map<Class<?>, String> backwardBriefMap = new HashMap<>();
+
+    /**
+     * List containing classes that should be ignored by XStream. This is required because sometimes generic converter
+     * may be registered in XStream, which will be used instead of dedicated converter from GeoTools
+     */
+    List<Class<?>> backwardBriefIgnored = new ArrayList<>();
 
     private Level forceLevel = LOGGER.getLevel() == null ? Level.INFO : LOGGER.getLevel();
 
@@ -395,7 +401,7 @@ public class XStreamPersister {
         xs.omitField(impl(StoreInfo.class), "error");
         // xs.omitField(StoreInfo.class), "workspace"); //handled by StoreInfoConverter
         xs.registerLocalConverter(impl(StoreInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
-        xs.registerLocalConverter(impl(StoreInfo.class), "connectionParameters", new BreifMapConverter());
+        xs.registerLocalConverter(impl(StoreInfo.class), "connectionParameters", new BriefMapConverter());
         xs.registerLocalConverter(impl(StoreInfo.class), "metadata", new MetadataMapConverter());
         xs.registerLocalConverter(impl(WMSStoreInfo.class), "password", new EncryptedFieldConverter());
         xs.registerLocalConverter(impl(WMTSStoreInfo.class), "password", new EncryptedFieldConverter());
@@ -447,7 +453,7 @@ public class XStreamPersister {
         xs.registerLocalConverter(impl(LayerInfo.class), "styles", new ReferenceCollectionConverter(StyleInfo.class));
         xs.registerLocalConverter(impl(LayerInfo.class), "metadata", new MetadataMapConverter());
 
-        xs.registerLocalConverter(impl(WMSLayerInfo.class), "vendorParameters", new BreifMapConverter());
+        xs.registerLocalConverter(impl(WMSLayerInfo.class), "vendorParameters", new BriefMapConverter());
 
         // LayerGroupInfo
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
@@ -521,9 +527,9 @@ public class XStreamPersister {
         xs.registerConverter(new MeasureConverter());
         xs.registerConverter(new MultimapConverter(xs.getMapper()));
         // register Virtual structure handling
-        registerBreifMapComplexType("virtualTable", VirtualTable.class);
-        registerBreifMapComplexType("coverageView", CoverageView.class);
-        registerBreifMapComplexType("dimensionInfo", DimensionInfoImpl.class);
+        registerBriefMapComplexType("virtualTable", VirtualTable.class);
+        registerBriefMapComplexType("coverageView", CoverageView.class);
+        registerBriefMapComplexType("dimensionInfo", DimensionInfoImpl.class);
 
         callback = new Callback();
 
@@ -540,14 +546,29 @@ public class XStreamPersister {
     }
 
     /**
+     * Old method with typo in the name. Remains for backwards compatibility
+     *
+     * @param typeId
+     * @param clazz
+     */
+    @Deprecated
+    public void registerBreifMapComplexType(String typeId, Class<?> clazz) {
+        registerBriefMapComplexType(typeId, clazz);
+    }
+
+    /**
      * Use this method to register complex types that cannot be simply represented as a string in a
-     * {@link BreifMapConverter}. The {@code typeId} will be used as a type discriminator in the brief map, as well as
+     * {@link BriefMapConverter}. The {@code typeId} will be used as a type discriminator in the brief map, as well as
      * the element root for the complex object to be converted.
      */
-    public void registerBreifMapComplexType(String typeId, Class<?> clazz) {
-        forwardBreifMap.put(typeId, clazz);
-        backwardBreifMap.put(clazz, typeId);
+    public void registerBriefMapComplexType(String typeId, Class<?> clazz) {
+        forwardBriefMap.put(typeId, clazz);
+        backwardBriefMap.put(clazz, typeId);
         xs.allowTypes(new Class[] {clazz});
+    }
+
+    public void addBackwardsBriefIgnored(Class<?> clazz) {
+        backwardBriefIgnored.add(clazz);
     }
 
     public XStream getXStream() {
@@ -787,12 +808,12 @@ public class XStreamPersister {
     //
 
     // simple object converters
-    /** Map converter which encodes a map more breifly than the standard map converter. */
-    public class BreifMapConverter extends MapConverter {
+    /** Map converter which encodes a map more briefly than the standard map converter. */
+    public class BriefMapConverter extends MapConverter {
 
         static final String ENCRYPTED_FIELDS_KEY = "org.geoserver.config.encryptedFields";
 
-        public BreifMapConverter() {
+        public BriefMapConverter() {
             super(getXStream().getMapper());
         }
 
@@ -916,17 +937,20 @@ public class XStreamPersister {
         }
 
         private Class<?> getComplexTypeClass(String typeId) {
-            return forwardBreifMap.get(typeId);
+            return forwardBriefMap.get(typeId);
         }
 
         protected String getComplexTypeId(Class<?> clazz) {
-            String typeId = backwardBreifMap.get(clazz);
+            if (backwardBriefIgnored.contains(clazz)) {
+                return null;
+            }
+            String typeId = backwardBriefMap.get(clazz);
             if (typeId == null) {
                 List<Class<?>> matches = new ArrayList<>();
                 collectSuperclasses(clazz, matches);
                 for (Iterator<Class<?>> it = matches.iterator(); it.hasNext(); ) {
                     Class<?> sper = it.next();
-                    if (backwardBreifMap.get(sper) == null) {
+                    if (backwardBriefMap.get(sper) == null) {
                         it.remove();
                     }
                 }
@@ -944,7 +968,7 @@ public class XStreamPersister {
                 }
 
                 if (!matches.isEmpty()) {
-                    typeId = backwardBreifMap.get(matches.get(0));
+                    typeId = backwardBriefMap.get(matches.get(0));
                 }
             }
 
@@ -1031,7 +1055,7 @@ public class XStreamPersister {
     }
 
     /** Custom converter for the special metadata map. */
-    class MetadataMapConverter extends BreifMapConverter {
+    class MetadataMapConverter extends BriefMapConverter {
 
         @Override
         public boolean canConvert(Class type) {
@@ -1075,7 +1099,7 @@ public class XStreamPersister {
         @SuppressWarnings("unchecked")
         public void marshal(Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
             Multimap map = (Multimap) value;
-            // similar to BreifMapConverter, but handling the multimap nature of this thing
+            // similar to BriefMapConverter, but handling the multimap nature of this thing
             for (Object key : map.keySet()) {
                 for (Object v : map.get(key)) {
                     if (v != null) {
@@ -1665,7 +1689,7 @@ public class XStreamPersister {
                 // set the hint for the map converter as to which fields to encode in the connection
                 // parameter of this store
                 context.put(
-                        BreifMapConverter.ENCRYPTED_FIELDS_KEY,
+                        BriefMapConverter.ENCRYPTED_FIELDS_KEY,
                         secMgr.getConfigPasswordEncryptionHelper().getEncryptedFields((StoreInfo) source));
             }
 

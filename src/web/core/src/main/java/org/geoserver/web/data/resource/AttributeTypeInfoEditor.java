@@ -26,7 +26,7 @@ import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
+import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
@@ -80,7 +80,7 @@ class AttributeTypeInfoEditor extends Panel {
 
         List<AttributeTypeInfo> attributes = getAttributes(model, parent);
         table = new EditorTable(attributes, parent);
-        table.setItemReuseStrategy(new ReuseIfModelsEqualStrategy());
+        table.setItemReuseStrategy(new DefaultItemReuseStrategy());
         table.setPageable(false);
         table.setFilterable(false);
         add(table);

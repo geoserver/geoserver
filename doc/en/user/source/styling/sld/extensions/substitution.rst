@@ -70,7 +70,7 @@ The predefined variables are:
      - Either ``vector`` or empty
      - this variable gets set to ``vector`` when the kml generator is writing out vector features as placemarks, as opposed to ground overlays
 
-     
+Mentioned variables (with exception of kmlOutputMode and wms_crs) are also propagated to query hints for feature layers, in order to be used by SQL views.
 
 Example
 -------     

@@ -24,7 +24,7 @@ package org.geoserver.platform.resource;
  * Properties properties = new Properties();
  * properties.put("hello","world");
  * OutputStream out = resourceStore.get("module/configuration.properties").out();
- * properties.store( out, null );
+ * SortedPropertiesWriter.storeSorted(properties, out, null );
  * out.close();
  * </code>
  * </pre>

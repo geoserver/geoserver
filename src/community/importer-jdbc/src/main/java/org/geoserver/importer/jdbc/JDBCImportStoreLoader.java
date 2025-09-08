@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.api.data.DataStoreFinder;
 import org.geotools.data.DataUtilities;
 import org.geotools.jdbc.JDBCDataStore;
@@ -58,7 +59,7 @@ public class JDBCImportStoreLoader implements DisposableBean {
             fixture.put("database", dataDir.getRoot().dir().getAbsolutePath() + "/importer/h2-store");
             fixture.put("dbtype", "h2");
             try (OutputStream os = resource.out()) {
-                fixture.store(os, "Defaulting to local H2 database");
+                SortedPropertiesWriter.storeSorted(fixture, os, "Defaulting to local H2 database");
             }
         }
         Properties params = new Properties();

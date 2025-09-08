@@ -6,7 +6,7 @@ Filter Chains
 .. _security_filterchains:
 
 ``/security/filterChains``
-----------------------------------
+--------------------------
 
 Adds or Lists the filter chains in the geoserver systems
 

@@ -13,7 +13,7 @@ public class GlobalAttributeXStreamInitializer implements XStreamPersisterInitia
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType("globalAttribute", GlobalAttribute.class);
+        persister.registerBriefMapComplexType("globalAttribute", GlobalAttribute.class);
         XStream xs = persister.getXStream();
         xs.alias("globalAttribute", GlobalAttribute.class);
     }

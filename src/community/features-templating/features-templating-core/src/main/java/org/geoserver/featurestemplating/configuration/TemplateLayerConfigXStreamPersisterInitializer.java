@@ -14,7 +14,7 @@ public class TemplateLayerConfigXStreamPersisterInitializer implements XStreamPe
     public void init(XStreamPersister persister) {
         persister.getXStream().alias("Rule", TemplateRule.class);
         persister.getXStream().alias("TemplateLayerConfig", TemplateLayerConfig.class);
-        persister.registerBreifMapComplexType("TemplateRuleType", TemplateRule.class);
-        persister.registerBreifMapComplexType("LayerConfigType", TemplateLayerConfig.class);
+        persister.registerBriefMapComplexType("TemplateRuleType", TemplateRule.class);
+        persister.registerBriefMapComplexType("LayerConfigType", TemplateLayerConfig.class);
     }
 }

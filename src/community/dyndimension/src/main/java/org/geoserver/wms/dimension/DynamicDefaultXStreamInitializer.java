@@ -19,7 +19,8 @@ public class DynamicDefaultXStreamInitializer implements XStreamPersisterInitial
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType("DynamicDefaultValues", DefaultValueConfigurations.class);
+
+        persister.registerBriefMapComplexType("DynamicDefaultValues", DefaultValueConfigurations.class);
         XStream xs = persister.getXStream();
         xs.alias("configuration", DefaultValueConfiguration.class);
         xs.allowTypeHierarchy(org.geoserver.wms.dimension.DefaultValueConfiguration.class);

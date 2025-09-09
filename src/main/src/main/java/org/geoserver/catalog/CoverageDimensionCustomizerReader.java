@@ -6,7 +6,6 @@
 package org.geoserver.catalog;
 
 import it.geosolutions.imageio.maskband.DatasetLayout;
-import it.geosolutions.jaiext.range.NoDataContainer;
 import java.awt.Color;
 import java.awt.image.ColorModel;
 import java.io.IOException;
@@ -19,9 +18,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.PropertySource;
-import javax.media.jai.PropertySourceImpl;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.PropertySource;
+import org.eclipse.imagen.PropertySourceImpl;
+import org.eclipse.imagen.media.range.NoDataContainer;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
 import org.geotools.api.coverage.SampleDimension;

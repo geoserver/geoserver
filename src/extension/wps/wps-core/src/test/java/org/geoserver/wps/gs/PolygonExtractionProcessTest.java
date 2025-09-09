@@ -8,8 +8,8 @@ package org.geoserver.wps.gs;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import it.geosolutions.jaiext.range.RangeFactory;
 import java.util.List;
+import org.eclipse.imagen.media.range.RangeFactory;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;

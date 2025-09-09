@@ -5,10 +5,10 @@
  */
 package org.geoserver.wps.gs;
 
-import it.geosolutions.jaiext.range.Range;
-import it.geosolutions.jaiext.stats.Statistics;
 import java.io.InputStream;
 import javax.xml.namespace.QName;
+import org.eclipse.imagen.media.range.Range;
+import org.eclipse.imagen.media.stats.Statistics;
 import org.geoserver.wps.ppio.XMLPPIO;
 import org.geotools.process.classify.ClassificationStats;
 import org.xml.sax.ContentHandler;

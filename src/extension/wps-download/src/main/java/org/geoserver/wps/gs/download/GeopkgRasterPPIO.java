@@ -21,10 +21,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.JAI;
-import javax.media.jai.operator.MosaicDescriptor;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.media.mosaic.MosaicDescriptor;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.map.JpegOrPngChooser;
@@ -164,12 +164,11 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
                     RenderedImage finalImage = iw.getRenderedImage();
                     JpegOrPngChooser chooser = new JpegOrPngChooser(finalImage);
                     if (chooser.isJpegPreferred()) {
-                        iw.writeJPEG(bos, "JPEG", 0.75f, false);
+                        iw.writeJPEG(bos, "JPEG", 0.75f);
                     } else {
                         // tried PNGJ too but got weird output with the built-in nurc:mosaic
                         // empty tiles, repeated ones, it does not happen with IW
-                        iw.writePNG(
-                                bos, "FILTERED", 0.75F, false, finalImage.getColorModel() instanceof IndexColorModel);
+                        iw.writePNG(bos, "FILTERED", 0.75F, finalImage.getColorModel() instanceof IndexColorModel);
                     }
 
                     // finally add to the geopackage

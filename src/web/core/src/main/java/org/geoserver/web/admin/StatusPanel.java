@@ -4,16 +4,12 @@
  */
 package org.geoserver.web.admin;
 
-import com.sun.media.imageioimpl.common.PackageUtil;
-import com.sun.media.jai.util.CacheDiagnostics;
 import java.awt.GraphicsEnvironment;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.JAI;
-import javax.media.jai.TileCache;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -21,6 +17,9 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.StringResourceModel;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.TileCache;
+import org.eclipse.imagen.media.util.CacheDiagnostics;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Predicates;
@@ -58,9 +57,6 @@ public class StatusPanel extends Panel {
     private static final String KEY_MEMORY = "memory";
 
     private static final String KEY_JVM_VERSION = "jvm_version";
-
-    private static final String KEY_JAI_AVAILABLE = "jai_available";
-    private static final String KEY_JAI_IMAGEIO_AVAILABLE = "jai_imageio_available";
 
     private static final String KEY_JAI_MAX_MEM = "jai_max_mem";
 
@@ -105,8 +101,6 @@ public class StatusPanel extends Panel {
         add(new Label("connections", new MapModel<>(values, KEY_CONNECTIONS)));
         add(new Label("memory", new MapModel<>(values, KEY_MEMORY)));
         add(new Label("jvm.version", new MapModel<>(values, KEY_JVM_VERSION)));
-        add(new Label("jai.available", new MapModel<>(values, KEY_JAI_AVAILABLE)));
-        add(new Label("jai.imageio.available", new MapModel<>(values, KEY_JAI_IMAGEIO_AVAILABLE)));
         add(new Label("jai.memory.available", new MapModel<>(values, KEY_JAI_MAX_MEM)));
         add(new Label("jai.memory.used", new MapModel<>(values, KEY_JAI_MEM_USAGE)));
         add(new Label("jai.memory.threshold", new MapModel<>(values, KEY_JAI_MEM_THRESHOLD)));
@@ -221,11 +215,9 @@ public class StatusPanel extends Panel {
                         + System.getProperty("java.vm.name")
                         + ")");
 
-        values.put(KEY_JAI_AVAILABLE, Boolean.toString(isNativeJAIAvailable()));
-        values.put(KEY_JAI_IMAGEIO_AVAILABLE, Boolean.toString(PackageUtil.isCodecLibAvailable()));
-
         GeoServerInfo geoServerInfo = parent.getGeoServer().getGlobal();
         JAIInfo jaiInfo = geoServerInfo.getJAI();
+        @SuppressWarnings("PMD.CloseResource")
         JAI jai = jaiInfo.getJAI();
         CoverageAccessInfo coverageAccess = geoServerInfo.getCoverageAccess();
         TileCache jaiCache = jaiInfo.getTileCache();
@@ -270,17 +262,6 @@ public class StatusPanel extends Panel {
             return renderer;
         } catch (Throwable e) {
             return "Unknown";
-        }
-    }
-
-    boolean isNativeJAIAvailable() {
-        // we directly access the Mlib Image class, if in the classpath it will tell us if
-        // the native extensions are available, if not, an Error will be thrown
-        try {
-            Class<?> image = Class.forName("com.sun.medialib.mlib.Image");
-            return (Boolean) image.getMethod("isAvailable").invoke(null);
-        } catch (Throwable e) {
-            return false;
         }
     }
 

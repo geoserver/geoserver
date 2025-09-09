@@ -5,16 +5,13 @@
  */
 package org.geoserver.wps.ppio;
 
-import com.sun.media.jai.codec.ImageDecoder;
-import com.sun.media.jai.codec.ImageEncoder;
-import com.sun.media.jai.codecimpl.JPEGImageDecoder;
-import com.sun.media.jai.codecimpl.JPEGImageEncoder;
-import com.sun.media.jai.codecimpl.PNGImageDecoder;
-import com.sun.media.jai.codecimpl.PNGImageEncoder;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageWriter;
 import org.geoserver.wps.WPSException;
 
 public abstract class ImagePPIO extends BinaryPPIO {
@@ -23,28 +20,31 @@ public abstract class ImagePPIO extends BinaryPPIO {
         super(RenderedImage.class, RenderedImage.class, mimeType);
     }
 
-    public abstract ImageEncoder getEncoder(OutputStream os);
+    public ImageWriter getWriter() {
+        return ImageIO.getImageWritersBySuffix(getFileExtension()).next();
+    }
 
-    public abstract ImageDecoder getDecoder(InputStream os);
+    public ImageReader getReader() {
+        return ImageIO.getImageReadersBySuffix("PNG").next();
+    }
 
     @Override
     public void encode(Object value, OutputStream outputStream) throws Exception {
         RenderedImage renderedImage = (RenderedImage) value;
-        ImageEncoder encoder = getEncoder(outputStream);
-        encoder.encode(renderedImage);
+        ImageWriter encoder = getWriter();
+        encoder.setOutput(outputStream);
+        encoder.write(renderedImage);
     }
 
     @Override
     public Object decode(InputStream inputStream) throws Exception {
-        ImageDecoder decoder = getDecoder(inputStream);
+        ImageReader decoder = getReader();
         RenderedImage ri = null;
         try {
-            ri = decoder.decodeAsRenderedImage();
+            decoder.setInput(inputStream);
+            ri = decoder.read(0);
         } catch (IOException ioe) {
-            WPSException wpse =
-                    new WPSException("Unable to decode the image. Expected an image having mimetype = " + mimeType);
-            wpse.initCause(ioe);
-            throw wpse;
+            return new WPSException("Unable to decode the image. Expected an image having mimetype = " + mimeType, ioe);
         }
         return ri;
     }
@@ -53,16 +53,6 @@ public abstract class ImagePPIO extends BinaryPPIO {
 
         public PNGPPIO() {
             super("image/png");
-        }
-
-        @Override
-        public final ImageEncoder getEncoder(OutputStream outputStream) {
-            return new PNGImageEncoder(outputStream, null);
-        }
-
-        @Override
-        public final ImageDecoder getDecoder(InputStream inputStream) {
-            return new PNGImageDecoder(inputStream, null);
         }
 
         @Override
@@ -75,16 +65,6 @@ public abstract class ImagePPIO extends BinaryPPIO {
 
         public JPEGPPIO() {
             super("image/jpeg");
-        }
-
-        @Override
-        public final ImageDecoder getDecoder(InputStream inputStream) {
-            return new JPEGImageDecoder(inputStream, null);
-        }
-
-        @Override
-        public ImageEncoder getEncoder(OutputStream outputStream) {
-            return new JPEGImageEncoder(outputStream, null);
         }
 
         @Override

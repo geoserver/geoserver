@@ -4,11 +4,11 @@
  */
 package org.geoserver.wps.gs;
 
-import it.geosolutions.jaiext.range.Range;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
+import org.eclipse.imagen.media.range.Range;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.util.CoverageUtils;

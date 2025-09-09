@@ -6,7 +6,7 @@
 package org.geoserver.wms.worldwind.util;
 
 import java.util.HashMap;
-import javax.media.jai.Interpolation;
+import org.eclipse.imagen.Interpolation;
 import org.geotools.api.coverage.Coverage;
 import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.api.coverage.grid.GridEnvelope;

@@ -5,8 +5,7 @@
  */
 package org.geoserver.wms.worldwind;
 
-import com.sun.media.imageioimpl.plugins.raw.RawImageWriterSpi;
-import it.geosolutions.jaiext.range.RangeFactory;
+import it.geosolutions.imageio.plugins.raw.RawImageWriterSpi;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -24,9 +23,10 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.imageio.stream.ImageOutputStream;
-import javax.media.jai.Interpolation;
-import javax.media.jai.JAI;
-import javax.media.jai.TiledImage;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.TiledImage;
+import org.eclipse.imagen.media.range.RangeFactory;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.ServiceException;

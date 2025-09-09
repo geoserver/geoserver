@@ -4,14 +4,14 @@
  */
 package org.geoserver.wps.gs.download.vertical.op;
 
-import it.geosolutions.jaiext.range.Range;
 import java.awt.RenderingHints;
 import java.awt.image.RenderedImage;
-import javax.media.jai.JAI;
-import javax.media.jai.OperationDescriptorImpl;
-import javax.media.jai.ParameterBlockJAI;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.registry.RenderedRegistryMode;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.OperationDescriptorImpl;
+import org.eclipse.imagen.ParameterBlockJAI;
+import org.eclipse.imagen.RenderedOp;
+import org.eclipse.imagen.media.range.Range;
+import org.eclipse.imagen.registry.RenderedRegistryMode;
 import org.geotools.api.referencing.operation.MathTransform;
 
 public class VerticalTransformDescriptor extends OperationDescriptorImpl {
@@ -22,7 +22,7 @@ public class VerticalTransformDescriptor extends OperationDescriptorImpl {
     private static final String[][] resources = {
         {"GlobalName", "verticalTransform"},
         {"LocalName", "vertical"},
-        {"Vendor", "it.geosolutions.jaiext"},
+        {"Vendor", "org.eclipse.imagen.media"},
         {"Description", "This class executes the operation selected by the user on each pixel of the source images "},
         {"DocURL", "Not Defined"},
         {"Version", "1.0"},
@@ -36,7 +36,7 @@ public class VerticalTransformDescriptor extends OperationDescriptorImpl {
 
     /** Input Parameter class */
     private static final Class<?>[] paramClasses = {
-        MathTransform.class, MathTransform.class, it.geosolutions.jaiext.range.Range.class
+        MathTransform.class, MathTransform.class, org.eclipse.imagen.media.range.Range.class
     };
 
     /** Input Parameter default values */

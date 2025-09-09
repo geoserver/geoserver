@@ -14,7 +14,6 @@ import java.awt.image.DataBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
-import javax.imageio.spi.ImageReaderSpi;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -30,7 +29,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geoserver.wms.WMSInfo;
-import org.geotools.image.io.ImageIOExt;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -122,7 +120,6 @@ public class CustomDimensionsTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testGetMap() throws Exception {
-        ImageIOExt.allowNativeCodec("tif", ImageReaderSpi.class, false);
         setExceptionsOnInvalidDimension(false);
 
         setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, null, null);

@@ -81,8 +81,8 @@
       <artifactId>gt-geojson-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>it.geosolutions.jaiext.zonal</groupId>
-      <artifactId>jt-zonal</artifactId>
+      <groupId>org.eclipse.imagen</groupId>
+      <artifactId>zonal</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools.jdbc</groupId>

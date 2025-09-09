@@ -9,7 +9,7 @@ import it.geosolutions.imageio.maskband.DatasetLayout;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import javax.media.jai.ImageLayout;
+import org.eclipse.imagen.ImageLayout;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.api.data.ResourceInfo;

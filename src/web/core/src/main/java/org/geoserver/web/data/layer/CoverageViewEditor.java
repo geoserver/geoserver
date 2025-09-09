@@ -7,7 +7,6 @@ package org.geoserver.web.data.layer;
 
 import static org.geoserver.catalog.CoverageView.BAND_SEPARATOR;
 
-import it.geosolutions.jaiext.JAIExt;
 import java.awt.image.DataBuffer;
 import java.awt.image.SampleModel;
 import java.io.IOException;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.media.jai.ImageLayout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -38,6 +36,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
+import org.eclipse.imagen.ImageLayout;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.CoverageView.CompositionType;
@@ -224,8 +223,6 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         add(heterogeneousControlsContainer);
         WebMarkupContainer heterogeneousControls = new WebMarkupContainer("heterogeneousControls");
         heterogeneousControlsContainer.add(heterogeneousControls);
-        // need the band-merge from JAI-EXT to work in heterogeneous mode
-        heterogeneousControls.setVisible(JAIExt.isJAIExtOperation("BandMerge"));
 
         DropDownChoice<EnvelopeCompositionType> envelopePolicy =
                 new DropDownChoice<>("envelopeCompositionType", Arrays.asList(EnvelopeCompositionType.values()));

@@ -6,7 +6,7 @@ package org.geoserver.wms.staticRasterStore;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import javax.media.jai.ImageLayout;
+import org.eclipse.imagen.ImageLayout;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.referencing.datum.PixelInCell;

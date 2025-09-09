@@ -365,6 +365,7 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
         // check DFT
         String path = "ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=" + layerId;
         Document doc = getAsDOM(path);
+        print(doc);
         assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='abstract']/@type", doc);
         assertXpathNotExists("//xsd:element[@name='surfaceProperty']", doc);
         assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='new']/@type", doc);

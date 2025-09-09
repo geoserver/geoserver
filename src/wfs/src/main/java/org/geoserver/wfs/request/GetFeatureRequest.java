@@ -26,9 +26,9 @@ import org.geotools.xsd.EMFUtils;
 public abstract class GetFeatureRequest extends RequestObject {
 
     public static GetFeatureRequest adapt(Object request) {
-        if (request instanceof EObject type1) {
-            return new WFS11(type1);
-        } else if (request instanceof EObject type) {
+        if (request instanceof GetFeatureType type) {
+            return new WFS11(type);
+        } else if (request instanceof net.opengis.wfs20.GetFeatureType type) {
             return new WFS20(type);
         }
         return null;

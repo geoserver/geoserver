@@ -37,9 +37,9 @@ import org.geotools.api.data.Transaction;
 public abstract class TransactionRequest extends RequestObject {
 
     public static TransactionRequest adapt(Object request) {
-        if (request instanceof EObject type1) {
-            return new WFS11(type1);
-        } else if (request instanceof EObject type) {
+        if (request instanceof TransactionType type) {
+            return new WFS11(type);
+        } else if (request instanceof net.opengis.wfs20.TransactionType type) {
             return new WFS20(type);
         }
         return null;

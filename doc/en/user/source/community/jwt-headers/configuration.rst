@@ -26,7 +26,6 @@ User Name Options
      - The name of the HTTP header item that contains the user name.
    * - Format the Header value is in
      - Format that the user name is in:
-	 
 	   * Simple String - user name is the header's value.
 	   * JSON - The header is a JSON string.  Use "JSON path" for where the user name is in the JSON. 
 	   * JWT -  The header is a JWT (base64) string.  Use "JSON path" for where the user name is in the JWT claims. 
@@ -83,7 +82,6 @@ You can use the standard role source options in GeoServer (`Request Header`, `Us
      - Meaning
    * - Role Source
      - Which Role Source to use:
-	 
 	   * Header containing JSON String - Header contains a JSON claims object
 	   * Header Containing JWT - Header contains a Base64 JWT Access Token
    * - Request Header attribute for Roles

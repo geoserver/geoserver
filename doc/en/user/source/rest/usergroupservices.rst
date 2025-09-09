@@ -98,11 +98,11 @@ To create an **XML-backed** user/group service you must provide a `fileName` and
     --header 'Accept: application/xml' \
     --data-binary @- <<'XML'
     <org.geoserver.security.xml.XMLUserGroupServiceConfig>
-      <name>users1</name>
-      <className>org.geoserver.security.xml.XMLUserGroupService</className>
-      <fileName>users1.xml</fileName>
-      <passwordEncoderName>plainTextPasswordEncoder</passwordEncoderName>
-      <passwordPolicyName>default</passwordPolicyName>
+    <name>users1</name>
+    <className>org.geoserver.security.xml.XMLUserGroupService</className>
+    <fileName>users1.xml</fileName>
+    <passwordEncoderName>plainTextPasswordEncoder</passwordEncoderName>
+    <passwordPolicyName>default</passwordPolicyName>
     </org.geoserver.security.xml.XMLUserGroupServiceConfig>
     XML
 
@@ -118,13 +118,13 @@ To create an **XML-backed** user/group service you must provide a `fileName` and
     --header 'Content-Type: application/json' \
     --header 'Accept: application/json' \
     --data-raw '{
-      "org.geoserver.security.xml.XMLUserGroupServiceConfig": {
-        "name": "users2",
-        "className": "org.geoserver.security.xml.XMLUserGroupService",
-        "fileName": "users2.xml",
-        "passwordEncoderName": "plainTextPasswordEncoder",
-        "passwordPolicyName": "default"
-      }
+    "org.geoserver.security.xml.XMLUserGroupServiceConfig": {
+    "name": "users2",
+    "className": "org.geoserver.security.xml.XMLUserGroupService",
+    "fileName": "users2.xml",
+    "passwordEncoderName": "plainTextPasswordEncoder",
+    "passwordPolicyName": "default"
+    }
     }'
 
 *Response*
@@ -145,11 +145,11 @@ The payload **name** must match the path parameter. A mismatch is a **400 Bad Re
     --header 'Accept: application/xml' \
     --data-binary @- <<'XML'
     <org.geoserver.security.xml.XMLUserGroupServiceConfig>
-      <name>users1</name>
-      <className>org.geoserver.security.xml.XMLUserGroupService</className>
-      <fileName>users1.xml</fileName>
-      <passwordEncoderName>digestPasswordEncoder</passwordEncoderName>
-      <passwordPolicyName>default</passwordPolicyName>
+    <name>users1</name>
+    <className>org.geoserver.security.xml.XMLUserGroupService</className>
+    <fileName>users1.xml</fileName>
+    <passwordEncoderName>digestPasswordEncoder</passwordEncoderName>
+    <passwordPolicyName>default</passwordPolicyName>
     </org.geoserver.security.xml.XMLUserGroupServiceConfig>
     XML
 
@@ -165,13 +165,13 @@ The payload **name** must match the path parameter. A mismatch is a **400 Bad Re
     --header 'Content-Type: application/json' \
     --header 'Accept: application/json' \
     --data-raw '{
-      "org.geoserver.security.xml.XMLUserGroupServiceConfig": {
-        "name": "users2",
-        "className": "org.geoserver.security.xml.XMLUserGroupService",
-        "fileName": "users2.xml",
-        "passwordEncoderName": "plainTextPasswordEncoder",
-        "passwordPolicyName": "default"
-      }
+    "org.geoserver.security.xml.XMLUserGroupServiceConfig": {
+    "name": "users2",
+    "className": "org.geoserver.security.xml.XMLUserGroupService",
+    "fileName": "users2.xml",
+    "passwordEncoderName": "plainTextPasswordEncoder",
+    "passwordPolicyName": "default"
+    }
     }'
 
 *Response*

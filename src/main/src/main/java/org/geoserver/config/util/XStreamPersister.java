@@ -436,6 +436,10 @@ public class XStreamPersister {
                 impl(CoverageInfo.class), "interpolationMethods", new LaxCollectionConverter(xs.getMapper()));
         xs.registerLocalConverter(impl(CoverageInfo.class), "dimensions", new LaxCollectionConverter(xs.getMapper()));
 
+        // JAIInfo
+        xs.registerLocalConverter(
+                impl(JAIInfo.class), "pngEncoderType", new EnumWithDefaultConverter(JAIInfo.PngEncoderType.JDK));
+
         // CoverageDimensionInfo
         xs.registerLocalConverter(impl(CoverageDimensionInfo.class), "range", new NumberRangeConverter());
 

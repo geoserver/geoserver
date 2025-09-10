@@ -6,11 +6,12 @@ package org.geoserver.web.security.oauth2.login;
 
 import static java.lang.Boolean.TRUE;
 
-import java.util.Map;
+import java.util.Set;
+import org.apache.wicket.ClassAttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.StyleAttributeModifier;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.form.CheckBox;
 
 /**
@@ -34,27 +35,48 @@ public class ToggleDisplayCheckboxBehavior extends Behavior {
     @Override
     public void bind(Component component) {
         super.bind(component);
-        targetComponent.add(new StyleAttributeModifier() {
-            private static final long serialVersionUID = 1L;
 
+        //this is used during ajax calls (also to set it up)
+        targetComponent.add(new ClassAttributeModifier() {
             @Override
-            protected Map<String, String> update(Map<String, String> pOldStyles) {
+            protected Set<String> update(Set<String> classes) {
                 CheckBox cb = (CheckBox) component;
                 Boolean lChecked = TRUE.equals(cb.getModelObject());
-                pOldStyles.put("display", lChecked ? "block" : "none");
-                return pOldStyles;
+                if (lChecked) {
+                    classes.remove("display-none");
+                    classes.add("display-block");
+                } else {
+                    classes.add("display-none");
+                    classes.remove("display-block");
+                }
+                return classes;
             }
         });
     }
 
     @Override
-    public void onComponentTag(Component component, ComponentTag tag) {
-        super.onComponentTag(component, tag);
+    public void renderHead(Component component, IHeaderResponse response) {
+        super.renderHead(component, response);
+        String script = "\n";
 
-        String onchangeScript = String.format(
-                "document.getElementById('%s').style.display = this.checked ? 'block' : 'none' ;",
-                targetComponent.getMarkupId(true));
+        // this will attach a change listener to the checkbox
+        // the state of the checkbox will then display:block/display:none the panel
+        //this is used while the user is working with the page
+        script += "$('#" + targetComponent.getMarkupId(true)
+                + "').parent().find(\"ul li input\").on('change',function() { \n"
+                + "   var element1 = $('#"
+                + targetComponent.getMarkupId(true) + "');\n"
+                + " var element = element1.parent().find(\"ul li input\")[0];\n"
+                + "    if (element.checked) {\n"
+                + "        element1.addClass('display-block');\n"
+                + "        element1.removeClass('display-none');\n"
+                + "    } else {\n"
+                + "        element1.addClass('display-none');\n"
+                + "        element1.removeClass('display-block');\n"
+                + "   }\n"
+                + "} \n);\n\n";
 
-        tag.put("onchange", onchangeScript);
+        script += "\n";
+        response.render(OnDomReadyHeaderItem.forScript(script));
     }
 }

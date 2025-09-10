@@ -36,7 +36,7 @@ public class ToggleDisplayCheckboxBehavior extends Behavior {
     public void bind(Component component) {
         super.bind(component);
 
-        //this is used during ajax calls (also to set it up)
+        // this is used during ajax calls (also to set it up)
         targetComponent.add(new ClassAttributeModifier() {
             @Override
             protected Set<String> update(Set<String> classes) {
@@ -61,7 +61,7 @@ public class ToggleDisplayCheckboxBehavior extends Behavior {
 
         // this will attach a change listener to the checkbox
         // the state of the checkbox will then display:block/display:none the panel
-        //this is used while the user is working with the page
+        // this is used while the user is working with the page
         script += "$('#" + targetComponent.getMarkupId(true)
                 + "').parent().find(\"ul li input\").on('change',function() { \n"
                 + "   var element1 = $('#"

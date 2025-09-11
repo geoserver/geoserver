@@ -1,0 +1,34 @@
+.display-none {
+    display: none;
+}
+
+.display-inline {
+    display: inline;
+}
+
+.display-block{
+    display: block;
+}
+
+
+.display-flex {
+    display: flex;
+}
+
+ul.horizontal div {
+    display: inline;
+}
+
+
+.checkLabelInline {
+    vertical-align: middle;
+    line-height: 2em;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex-wrap: wrap;
+
+    label {
+        padding: 0 5px;
+    }
+}

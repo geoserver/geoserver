@@ -37,8 +37,9 @@
     <include>commons-logging-*.jar</include>
     <include>jetty-*.jar</include>
     <include>jetty-util-*.jar</include>
-    <include>javax.servlet-api-*.jar</include>
     <include>xmlParserAPIs-*.jar</include>
+    <include>slf4j-*.jar</include>
+    <include>log4j-*.jar</include>
    </includes>
    <excludes>
     <exclude>log4j-over-slf4j-*.jar</exclude>

@@ -55,9 +55,13 @@
       <version>3.1.M0</version>
     </dependency>
     <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-slf4j-impl</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>${jetty.servlet-api.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-el</groupId>

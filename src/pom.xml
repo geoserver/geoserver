@@ -114,7 +114,7 @@
     <jacoco.version>0.8.13</jacoco.version>
     <jasypt.version>1.9.3</jasypt.version>
     <javac.version>9+181-r4173-1</javac.version>
-    <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
+    <jetty.servlet-api.version>4.0.6</jetty.servlet-api.version>
     <jetty.version>10.0.25</jetty.version>
     <jmh.version>1.37</jmh.version>
     <joda-time.version>2.8.1</joda-time.version>

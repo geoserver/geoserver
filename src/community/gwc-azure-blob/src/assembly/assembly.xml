@@ -21,6 +21,7 @@
                 <include>netty*.jar</include>
                 <include>rxjava*.jar</include>
                 <include>reactive-streams*.jar</include>
+                <include>reactor*.jar</include>
                 <include>joda-time*.jar</include>
                 <include>jackson*.jar</include>
                 <include>woodstox*.jar</include>

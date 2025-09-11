@@ -18,9 +18,6 @@ import java.util.UUID;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.rest.security.UserGroupServiceController.DeleteBlackListException;
-import org.geoserver.rest.security.UserGroupServiceController.MissingNameException;
-import org.geoserver.rest.security.UserGroupServiceController.NotAuthorised;
 import org.geoserver.rest.security.xml.UserGroupServiceSummary;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -29,10 +26,12 @@ import org.geoserver.security.xml.XMLUserGroupServiceConfig;
 import org.geoserver.test.GeoServerTestSupport;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class UserGroupServiceControllerTest extends GeoServerTestSupport {
@@ -88,10 +87,15 @@ public class UserGroupServiceControllerTest extends GeoServerTestSupport {
         }
     }
 
-    @Test(expected = NotAuthorised.class)
+    @Test
     public void testList_NotAuthorized() {
         SecurityContextHolder.clearContext();
-        controller.list();
+        try {
+            controller.list();
+            fail("Expected 403 FORBIDDEN when not authorized");
+        } catch (HttpClientErrorException e) {
+            assertEquals(HttpStatus.FORBIDDEN, e.getStatusCode());
+        }
     }
 
     // --------------------------
@@ -118,12 +122,38 @@ public class UserGroupServiceControllerTest extends GeoServerTestSupport {
         }
     }
 
-    @Test(expected = NotAuthorised.class)
+    @Test
     public void testView_NotAuthorized() throws Exception {
-        SecurityContextHolder.clearContext();
+        // 1) create the resource as admin
         String name = TEST_SERVICE_PREFIX + "view-" + UUID.randomUUID();
+        setAdmin();
         createServiceFromDefault(name);
-        controller.view(name);
+        SecurityContextHolder.clearContext();
+
+        // 2) now, without auth, viewing must be 403
+        try {
+            controller.view(name);
+            fail("Expected 403 FORBIDDEN when not authorized");
+        } catch (HttpClientErrorException e) {
+            assertEquals(HttpStatus.FORBIDDEN, e.getStatusCode());
+        }
+    }
+
+    @Test
+    public void testDelete_NotAuthorised() throws Exception {
+        // 1) create the resource as admin
+        String name = TEST_SERVICE_PREFIX + "delete-na-" + UUID.randomUUID();
+        setAdmin();
+        createServiceFromDefault(name);
+        SecurityContextHolder.clearContext();
+
+        // 2) now, without auth, deleting must be 403
+        try {
+            controller.delete(name);
+            fail("Expected 403 FORBIDDEN when not authorized");
+        } catch (HttpClientErrorException e) {
+            assertEquals(HttpStatus.FORBIDDEN, e.getStatusCode());
+        }
     }
 
     @Test
@@ -133,9 +163,9 @@ public class UserGroupServiceControllerTest extends GeoServerTestSupport {
             String name = TEST_SERVICE_PREFIX + "missing-" + UUID.randomUUID();
             try {
                 controller.view(name);
-                fail("Expected IllegalArgumentException for missing service");
-            } catch (IllegalArgumentException expected) {
-                // ok
+                fail("Expected 404 NOT_FOUND for missing service");
+            } catch (HttpClientErrorException e) {
+                assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
             }
         } finally {
             SecurityContextHolder.clearContext();
@@ -167,13 +197,18 @@ public class UserGroupServiceControllerTest extends GeoServerTestSupport {
         }
     }
 
-    @Test(expected = MissingNameException.class)
+    @Test
     public void testCreate_MissingName() throws Exception {
         setAdmin();
         try {
             SecurityUserGroupServiceConfig req = cloneDefaultWithName(null);
             // no name
-            controller.post(req, UriComponentsBuilder.newInstance());
+            try {
+                controller.post(req, UriComponentsBuilder.newInstance());
+                fail("Expected 400 BAD_REQUEST for missing name");
+            } catch (HttpClientErrorException e) {
+                assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+            }
         } finally {
             SecurityContextHolder.clearContext();
         }
@@ -189,14 +224,14 @@ public class UserGroupServiceControllerTest extends GeoServerTestSupport {
             first.setId(null);
             controller.post(first, UriComponentsBuilder.newInstance());
 
-            // second creation with same name → expect DuplicateNameException from controller
+            // second creation with same name → expect 400 BAD_REQUEST
             SecurityUserGroupServiceConfig dup = cloneDefaultWithName(name);
             dup.setId(null);
             try {
                 controller.post(dup, UriComponentsBuilder.newInstance());
-                fail("Expected DuplicateNameException");
-            } catch (UserGroupServiceController.DuplicateNameException expected) {
-                // ok
+                fail("Expected 400 BAD_REQUEST for duplicate name");
+            } catch (HttpClientErrorException e) {
+                assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
             }
         } finally {
             SecurityContextHolder.clearContext();
@@ -219,7 +254,6 @@ public class UserGroupServiceControllerTest extends GeoServerTestSupport {
             // load current, tweak a simple field that is safe to change
             SecurityUserGroupServiceConfig toUpdate = getSecurityManager().loadUserGroupServiceConfig(name);
             assertNotNull(toUpdate);
-            // keep id, keep name; (optionally change a boolean/property present on default config)
             // round-trip update
             controller.put(name, toUpdate);
 
@@ -249,21 +283,13 @@ public class UserGroupServiceControllerTest extends GeoServerTestSupport {
 
             try {
                 controller.view(name);
-                fail("Expected 404 (IllegalArgumentException) after delete");
-            } catch (IllegalArgumentException expected) {
-                // ok
+                fail("Expected 404 NOT_FOUND after delete");
+            } catch (HttpClientErrorException e) {
+                assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
             }
         } finally {
             SecurityContextHolder.clearContext();
         }
-    }
-
-    @Test(expected = NotAuthorised.class)
-    public void testDelete_NotAuthorised() throws Exception {
-        SecurityContextHolder.clearContext();
-        String name = TEST_SERVICE_PREFIX + "delete-na-" + UUID.randomUUID();
-        createServiceFromDefault(name);
-        controller.delete(name);
     }
 
     @Test
@@ -272,9 +298,9 @@ public class UserGroupServiceControllerTest extends GeoServerTestSupport {
         try {
             try {
                 controller.delete("default");
-                fail("Expected DeleteBlackListException for 'default'");
-            } catch (DeleteBlackListException expected) {
-                // ok
+                fail("Expected 400 BAD_REQUEST for blacklisted 'default'");
+            } catch (HttpClientErrorException e) {
+                assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
             }
         } finally {
             SecurityContextHolder.clearContext();
@@ -341,7 +367,7 @@ public class UserGroupServiceControllerTest extends GeoServerTestSupport {
 
     private void setAdmin() {
         Authentication auth = new UsernamePasswordAuthenticationToken(
-                "admin", "password", Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR")));
+                "admin", "geoserver", Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR")));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 }

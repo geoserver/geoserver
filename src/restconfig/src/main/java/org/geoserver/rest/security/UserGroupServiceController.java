@@ -22,6 +22,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /** REST controller to manage User/Group Services (UserGroupServer) configurations. */
@@ -75,15 +77,17 @@ public class UserGroupServiceController extends RestBaseController {
         try {
             SecurityUserGroupServiceConfig cfg = securityManager.loadUserGroupServiceConfig(serviceName);
             if (cfg == null) {
-                throw new IllegalArgumentException(format("Cannot find user/group service %s", serviceName));
+                throw new HttpClientErrorException(
+                        HttpStatus.NOT_FOUND, format("Cannot find user/group service %s", serviceName));
             }
             return wrapObject(cfg, SecurityUserGroupServiceConfig.class);
         } catch (IOException e) {
-            throw new IllegalStateException("Cannot load user/group service config", e);
+            throw new HttpClientErrorException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Cannot load user/group service config");
         }
     }
 
-    // 201, 400, 403
+    // 200/201, 400, 403
     @PostMapping(consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public RestWrapper<SecurityUserGroupServiceConfig> post(
             @RequestBody SecurityUserGroupServiceConfig request, UriComponentsBuilder uriComponentsBuilder) {
@@ -115,7 +119,7 @@ public class UserGroupServiceController extends RestBaseController {
 
     private void checkAuthorisation() {
         if (!securityManager.checkAuthenticationForAdminRole()) {
-            throw new NotAuthorised();
+            throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "Admin role required to access this resource");
         }
     }
 
@@ -157,55 +161,76 @@ public class UserGroupServiceController extends RestBaseController {
             }
             return out;
         } catch (IOException ex) {
-            throw new IllegalStateException("Cannot list user/group services", ex);
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot list user/group services");
         }
     }
 
     protected SecurityUserGroupServiceConfig saveUserGroupService(SecurityUserGroupServiceConfig newCfg) {
-        if (newCfg == null) throw new BadRequest("Request body is empty");
+        if (newCfg == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Request body is empty");
+        }
         if (Strings.isNullOrEmpty(newCfg.getName())) {
             LOGGER.warning("Cannot create user/group service: missing name");
-            throw new MissingNameException();
+            throw new HttpClientErrorException(
+                    HttpStatus.BAD_REQUEST, "Cannot create the config: no name parameter provided");
         }
 
         try {
             if (securityManager.loadUserGroupServiceConfig(newCfg.getName()) != null) {
                 LOGGER.warning(format("Cannot create user/group service %s: name already exists", newCfg.getName()));
-                throw new DuplicateNameException(newCfg.getName());
+                throw new HttpClientErrorException(
+                        HttpStatus.BAD_REQUEST,
+                        format("Cannot create the config %s because the name is already in use", newCfg.getName()));
             }
         } catch (IOException ex) {
-            throw new IllegalStateException("Cannot access user/group service configs", ex);
+            throw new HttpClientErrorException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Cannot access user/group service configs");
         }
 
         try {
             // Validation happens inside saveUserGroupService; throws SecurityConfigException if invalid
             securityManager.saveUserGroupService(newCfg);
             securityManager.reload();
-        } catch (IOException | SecurityConfigException ex) {
-            throw new IllegalStateException("Cannot save user/group service " + newCfg.getName(), ex);
+        } catch (SecurityConfigException sce) {
+            // configuration validation problem -> client error
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, sce.getMessage());
+        } catch (IOException ioe) {
+            // persistence problem -> server error
+            throw new HttpClientErrorException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Cannot save user/group service " + newCfg.getName());
         }
 
         try {
             return securityManager.loadUserGroupServiceConfig(newCfg.getName());
         } catch (IOException ex) {
-            throw new IllegalStateException("Cannot reload user/group service " + newCfg.getName() + " after save", ex);
+            throw new HttpClientErrorException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Cannot reload user/group service " + newCfg.getName() + " after save");
         }
     }
 
     protected void updateUserGroupService(String serviceName, SecurityUserGroupServiceConfig request) {
-        if (request == null) throw new BadRequest("Request body is empty");
+        if (request == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Request body is empty");
+        }
         if (!serviceName.equals(request.getName())) {
             LOGGER.warning(format(
                     "Cannot modify service %s because the name %s in the body does not match",
                     serviceName, request.getName()));
-            throw new NameMismatchException(serviceName, request.getName());
+            throw new HttpClientErrorException(
+                    HttpStatus.BAD_REQUEST,
+                    format(
+                            "Cannot modify the config %s because the name %s in the body does not match",
+                            serviceName, request.getName()));
         }
 
         try {
             SecurityUserGroupServiceConfig existing = securityManager.loadUserGroupServiceConfig(serviceName);
             if (existing == null) {
                 LOGGER.warning(format("Cannot update %s because it does not exist", serviceName));
-                throw new IllegalArgumentException(format("Cannot update %s because it does not exist", serviceName));
+                // for this API we use 400 (matches existing tests/behavior)
+                throw new HttpClientErrorException(
+                        HttpStatus.BAD_REQUEST, format("Cannot update %s because it does not exist", serviceName));
             }
 
             // keep id stable
@@ -214,82 +239,62 @@ public class UserGroupServiceController extends RestBaseController {
             // Validation happens inside saveUserGroupService
             securityManager.saveUserGroupService(request);
             securityManager.reload();
-        } catch (IOException | SecurityConfigException ex) {
-            throw new IllegalStateException("Cannot update user/group service " + serviceName, ex);
+        } catch (SecurityConfigException sce) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, sce.getMessage());
+        } catch (IOException ioe) {
+            throw new HttpClientErrorException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Cannot update user/group service " + serviceName);
         }
     }
 
     protected void removeUserGroupService(String serviceName) {
         if (DELETE_BLACK_LIST.contains(serviceName)) {
             LOGGER.warning(format("Cannot delete %s because it is a required user/group service", serviceName));
-            throw new DeleteBlackListException(serviceName);
+            throw new HttpClientErrorException(
+                    HttpStatus.BAD_REQUEST,
+                    format("Cannot delete %s because it is a required user/group service", serviceName));
         }
 
         try {
             SecurityUserGroupServiceConfig cfg = securityManager.loadUserGroupServiceConfig(serviceName);
             if (cfg == null) {
                 LOGGER.warning(format("Cannot delete %s because it does not exist", serviceName));
-                throw new IllegalArgumentException("Cannot find user/group service " + serviceName);
+                throw new HttpClientErrorException(
+                        HttpStatus.NOT_FOUND, "Cannot find user/group service " + serviceName);
             }
             securityManager.removeUserGroupService(cfg);
             securityManager.reload();
-        } catch (IOException | SecurityConfigException ex) {
-            throw new IllegalStateException("Cannot remove user/group service " + serviceName, ex);
+        } catch (SecurityConfigException sce) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, sce.getMessage());
+        } catch (IOException ioe) {
+            throw new HttpClientErrorException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Cannot remove user/group service " + serviceName);
         }
     }
 
     // ---------------------------------------------------------------------
-    // Exception handlers (mirroring your example)
+    // Exception handling
     // ---------------------------------------------------------------------
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> somethingNotFound(IllegalArgumentException exception) {
-        return new ResponseEntity<>(
-                new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage()), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(DeleteBlackListException.class)
-    public ResponseEntity<ErrorResponse> blackListed(DeleteBlackListException exception) {
-        return new ResponseEntity<>(
-                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(NameMismatchException.class)
-    public ResponseEntity<ErrorResponse> nameMismatched(NameMismatchException exception) {
-        return new ResponseEntity<>(
-                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(MissingNameException.class)
-    public ResponseEntity<ErrorResponse> missingName(MissingNameException exception) {
-        return new ResponseEntity<>(
-                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(BadRequest.class)
-    public ResponseEntity<ErrorResponse> badRequest(BadRequest exception) {
-        return new ResponseEntity<>(
-                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(SecurityConfigException.class)
-    public ResponseEntity<ErrorResponse> securityIssue(SecurityConfigException exception) {
-        return new ResponseEntity<>(
-                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(IOException.class)
-    public ResponseEntity<ErrorResponse> ioIssue(IOException exception) {
-        return new ResponseEntity<>(
-                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage()), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<ErrorResponse> handleHttpClientError(HttpClientErrorException ex) {
+        // Use status from exception; prefer its statusText (we passed our message there)
+        HttpStatus status = ex.getStatusCode();
+        String message = ex.getStatusText();
+        // Allow content negotiation to serialize this small error bean
+        return ResponseEntity.status(status)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(new ErrorResponse(status.value(), message));
     }
 
     // ---------------------------------------------------------------------
-    // Exceptions
+    // Error DTO
     // ---------------------------------------------------------------------
     public static class ErrorResponse {
         private int status;
         private String message;
+
+        public ErrorResponse() {}
 
         public ErrorResponse(int status, String message) {
             this.status = status;
@@ -310,44 +315,6 @@ public class UserGroupServiceController extends RestBaseController {
 
         public void setMessage(String message) {
             this.message = message;
-        }
-    }
-
-    public static class DeleteBlackListException extends RuntimeException {
-        public DeleteBlackListException(String name) {
-            super(format("Cannot delete %s because it is a required user/group service", name));
-        }
-    }
-
-    public static class NameMismatchException extends RuntimeException {
-        public NameMismatchException(String pathName, String configName) {
-            super(format(
-                    "Cannot modify the config %s because the name %s in the body does not match",
-                    pathName, configName));
-        }
-    }
-
-    public static class DuplicateNameException extends RuntimeException {
-        public DuplicateNameException(String configName) {
-            super(format("Cannot create the config %s because the name is already in use", configName));
-        }
-    }
-
-    public static class MissingNameException extends RuntimeException {
-        public MissingNameException() {
-            super("Cannot create the config: no name parameter provided");
-        }
-    }
-
-    public static class BadRequest extends RuntimeException {
-        public BadRequest(String message) {
-            super(message);
-        }
-    }
-
-    public static class NotAuthorised extends RuntimeException {
-        public NotAuthorised() {
-            super("Admin role required to access this resource");
         }
     }
 }

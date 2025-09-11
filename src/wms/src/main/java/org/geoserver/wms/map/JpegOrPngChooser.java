@@ -7,9 +7,8 @@ package org.geoserver.wms.map;
 import java.awt.RenderingHints;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
-import org.eclipse.imagen.RenderedOp;
-import org.eclipse.imagen.operator.ExtremaDescriptor;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ImageUtilities;
 
 /**
@@ -68,9 +67,9 @@ public class JpegOrPngChooser {
         int numBands = renderedImage.getSampleModel().getNumBands();
         if (numBands == 4 || numBands == 2) {
             RenderingHints renderingHints = ImageUtilities.getRenderingHints(renderedImage);
-            RenderedOp extremaOp = ExtremaDescriptor.create(renderedImage, null, 1, 1, false, 1, renderingHints);
-            double[][] extrema = (double[][]) extremaOp.getProperty("Extrema");
-            double[] mins = extrema[0];
+            ImageWorker iw = new ImageWorker(renderedImage);
+            iw.setRenderingHints(renderingHints);
+            double[] mins = iw.getMinimums();
 
             return mins[mins.length - 1] == 255; // fully opaque
         } else if (renderedImage.getColorModel() instanceof IndexColorModel) {

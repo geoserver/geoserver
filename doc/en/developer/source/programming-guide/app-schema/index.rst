@@ -8,10 +8,6 @@ The offline tests in app-schema-test suite use properties files as data source. 
 Prerequisites
 -------------
 
-This requires installation of Oracle driver in Maven repository::       
-                                  
-    mvn install:install-file -Dfile=ojdbc7.jar -DgroupId=com.oracle -DartifactId=ojdbc7 -Dversion=12.1.0.2 -Dpackaging=jar 
-
 You would also need to have test databases for both Oracle and Postgis. Then follow these steps:
 
 * Create oracle.properties and postgis.properties in {user directory}/.geoserver directory.

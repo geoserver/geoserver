@@ -38,3 +38,4 @@ This section describes the GeoServer REST configuration API.
    filterchains
    authenticationfilters
    authenticationproviders
+   usergroupservices

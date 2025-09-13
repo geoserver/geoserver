@@ -437,62 +437,65 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertNotNull(jsonRules);
         assertEquals(1, jsonRules.size());
 
-        final String jsonRuleBody = "{\n"
-                + "  'Rule': {\n"
-                + "    'priority': 0,\n"
-                + "    'userName': null,\n"
-                + "    'roleName': null,\n"
-                + "    'addressRange': null,\n"
-                + "    'workspace': 'geonode',\n"
-                + "    'layer': 'DE_USNG_UTM18',\n"
-                + "    'service': null,\n"
-                + "    'request': null,\n"
-                + "    'subfield': null,\n"
-                + "    'access': 'ALLOW',\n"
-                + "    'limits': null,\n"
-                + "    'layerDetails': {\n"
-                + "      'layerType': 'VECTOR',\n"
-                + "      'defaultStyle': 'DE_USNG_UTM18',\n"
-                + "      'cqlFilterRead': 'Northings >= 100',\n"
-                + "      'cqlFilterWrite': null,\n"
-                + "      'allowedArea': 'SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))',\n"
-                + "      'catalogMode': null,\n"
-                + "      'allowedStyles': [],\n"
-                + "      'attributes': [\n"
-                + "        {\n"
-                + "          'name': 'Eastings',\n"
-                + "          'dataType': 'java.lang.String',\n"
-                + "          'accessType': 'READWRITE'\n"
-                + "        },\n"
-                + "        {\n"
-                + "          'name': 'the_geom',\n"
-                + "          'dataType': 'org.locationtech.jts.geom.MultiPolygon',\n"
-                + "          'accessType': 'READONLY'\n"
-                + "        },\n"
-                + "        {\n"
-                + "          'name': 'GRID1MIL',\n"
-                + "          'dataType': 'java.lang.String',\n"
-                + "          'accessType': 'NONE'\n"
-                + "        },\n"
-                + "        {\n"
-                + "          'name': 'GRID100K',\n"
-                + "          'dataType': 'java.lang.String',\n"
-                + "          'accessType': 'READONLY'\n"
-                + "        },\n"
-                + "        {\n"
-                + "          'name': 'Northings',\n"
-                + "          'dataType': 'java.lang.String',\n"
-                + "          'accessType': 'NONE'\n"
-                + "        },\n"
-                + "        {\n"
-                + "          'name': 'USNG',\n"
-                + "          'dataType': 'java.lang.String',\n"
-                + "          'accessType': 'NONE'\n"
-                + "        }\n"
-                + "      ]\n"
-                + "    }\n"
-                + "  }\n"
-                + "}";
+        final String jsonRuleBody =
+                """
+                {
+                  'Rule': {
+                    'priority': 0,
+                    'userName': null,
+                    'roleName': null,
+                    'addressRange': null,
+                    'workspace': 'geonode',
+                    'layer': 'DE_USNG_UTM18',
+                    'service': null,
+                    'request': null,
+                    'subfield': null,
+                    'access': 'ALLOW',
+                    'limits': null,
+                    'layerDetails': {
+                      'layerType': 'VECTOR',
+                      'defaultStyle': 'DE_USNG_UTM18',
+                      'cqlFilterRead': 'Northings >= 100',
+                      'cqlFilterWrite': null,
+                      'allowedArea': 'SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))',
+                      'catalogMode': null,
+                      'allowedStyles': [],
+                      'attributes': [
+                        {
+                          'name': 'Eastings',
+                          'dataType': 'java.lang.String',
+                          'accessType': 'READWRITE'
+                        },
+                        {
+                          'name': 'the_geom',
+                          'dataType': 'org.locationtech.jts.geom.MultiPolygon',
+                          'accessType': 'READONLY'
+                        },
+                        {
+                          'name': 'GRID1MIL',
+                          'dataType': 'java.lang.String',
+                          'accessType': 'NONE'
+                        },
+                        {
+                          'name': 'GRID100K',
+                          'dataType': 'java.lang.String',
+                          'accessType': 'READONLY'
+                        },
+                        {
+                          'name': 'Northings',
+                          'dataType': 'java.lang.String',
+                          'accessType': 'NONE'
+                        },
+                        {
+                          'name': 'USNG',
+                          'dataType': 'java.lang.String',
+                          'accessType': 'NONE'
+                        }
+                      ]
+                    }
+                  }
+                }\
+                """;
 
         MockHttpServletResponse response =
                 postAsServletResponse(RestBaseController.ROOT_PATH + "/geofence/rules", jsonRuleBody, "text/json");
@@ -725,17 +728,19 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
 
         XStreamPersister persister = xpf.createXMLPersister();
         controller.configurePersister(persister, null);
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<Rule>"
-                + "<access>LIMIT</access>"
-                + "<layer>DE_USNG_UTM18</layer>"
-                + "<limits>"
-                + "     <allowedArea>SRID=4326;MULTIPOLYGON (((-75 -90, -75 90, 75 90, 75 -90, -75 -90)))</allowedArea>"
-                + "     <catalogMode>HIDDEN</catalogMode>"
-                + "</limits>"
-                + "<priority>1</priority>"
-                + "<workspace>geonode</workspace>"
-                + "</Rule>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <Rule>\
+                <access>LIMIT</access>\
+                <layer>DE_USNG_UTM18</layer>\
+                <limits>\
+                     <allowedArea>SRID=4326;MULTIPOLYGON (((-75 -90, -75 90, 75 90, 75 -90, -75 -90)))</allowedArea>\
+                     <catalogMode>HIDDEN</catalogMode>\
+                </limits>\
+                <priority>1</priority>\
+                <workspace>geonode</workspace>\
+                </Rule>""";
 
         ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(UTF_8));
 

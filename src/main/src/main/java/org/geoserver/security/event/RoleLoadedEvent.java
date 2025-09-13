@@ -6,6 +6,7 @@
 
 package org.geoserver.security.event;
 
+import java.io.Serial;
 import java.util.EventObject;
 import org.geoserver.security.GeoServerRoleService;
 
@@ -20,6 +21,7 @@ import org.geoserver.security.GeoServerRoleService;
 public class RoleLoadedEvent extends EventObject {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public RoleLoadedEvent(GeoServerRoleService source) {

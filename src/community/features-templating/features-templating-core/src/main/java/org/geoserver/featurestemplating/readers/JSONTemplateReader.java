@@ -112,8 +112,8 @@ public class JSONTemplateReader implements TemplateReader {
                 if (entryName.equals(SOURCEKEY)) {
                     String source = valueNode.asText();
                     currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
-                    if (currentBuilder instanceof SourceBuilder) {
-                        ((SourceBuilder) currentBuilder).setSource(source);
+                    if (currentBuilder instanceof SourceBuilder builder) {
+                        builder.setSource(source);
                     }
                 } else if (entryName.equals(FILTERKEY)) {
                     currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
@@ -336,7 +336,6 @@ public class JSONTemplateReader implements TemplateReader {
     }
 
     private boolean isRootOrHasNotOwnOutput(TemplateBuilder parent) {
-        return parent instanceof RootBuilder
-                || (parent instanceof SourceBuilder && !((SourceBuilder) parent).hasOwnOutput());
+        return parent instanceof RootBuilder || (parent instanceof SourceBuilder sb && !sb.hasOwnOutput());
     }
 }

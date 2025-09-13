@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.netcdf.layer;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -18,6 +19,7 @@ import org.geoserver.web.util.MetadataMapModel;
 public class NetCDFOutTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public NetCDFOutTabPanel(String id, IModel<LayerInfo> model, IModel<CoverageInfo> resourceModel) {

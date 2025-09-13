@@ -403,12 +403,10 @@ public class WMTSLayerController extends AbstractCatalogController {
                     String prefix,
                     HierarchicalStreamWriter writer,
                     MarshallingContext context) {
-                if (obj instanceof NamespaceInfo) {
-                    NamespaceInfo ns = (NamespaceInfo) obj;
+                if (obj instanceof NamespaceInfo ns) {
                     converter.encodeLink("/namespaces/" + converter.encode(ns.getPrefix()), writer);
                 }
-                if (obj instanceof WMTSStoreInfo) {
-                    WMTSStoreInfo store = (WMTSStoreInfo) obj;
+                if (obj instanceof WMTSStoreInfo store) {
                     converter.encodeLink(
                             "/workspaces/"
                                     + converter.encode(store.getWorkspace().getName())

@@ -134,11 +134,11 @@ public class MasterPasswordControllerTest extends SecurityRESTTestSupport {
     @Test
     public void testPutAsJSON() throws Exception {
 
-        String body = String.format(jsonTemplate, "geoserver", "geoserver1");
+        String body = jsonTemplate.formatted("geoserver", "geoserver1");
         assertEquals(200, putAsServletResponse(MP_URI_JSON, body, "text/json").getStatus());
         assertTrue(getSecurityManager().checkMasterPassword("geoserver1"));
 
-        body = String.format(jsonTemplate, "geoserver1", "geoserver");
+        body = jsonTemplate.formatted("geoserver1", "geoserver");
         assertEquals(200, putAsServletResponse(MP_URI_JSON, body, "text/json").getStatus());
         assertTrue(getSecurityManager().checkMasterPassword("geoserver"));
     }

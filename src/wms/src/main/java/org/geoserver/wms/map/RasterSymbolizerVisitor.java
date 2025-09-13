@@ -122,10 +122,10 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
     @Override
     public void visit(StyledLayerDescriptor sld) {
         for (StyledLayer sl : sld.getStyledLayers()) {
-            if (sl instanceof UserLayer) {
-                ((UserLayer) sl).accept(this);
-            } else if (sl instanceof NamedLayer) {
-                ((NamedLayer) sl).accept(this);
+            if (sl instanceof UserLayer layer1) {
+                layer1.accept(this);
+            } else if (sl instanceof NamedLayer layer) {
+                layer.accept(this);
             }
         }
     }
@@ -171,8 +171,8 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
                 Expression tx = isTransformFeatureInfo(fts) ? fts.getTransformation() : null;
                 if (tx != null) {
                     boolean rasterTransformation = false;
-                    if (tx instanceof CoverageReadingTransformation)
-                        this.coverageReadingTransformation = (CoverageReadingTransformation) tx;
+                    if (tx instanceof CoverageReadingTransformation transformation)
+                        this.coverageReadingTransformation = transformation;
                     else if (tx instanceof Function) {
                         rasterTransformation = isRasterTransformation(tx, rasterTransformation);
                     }
@@ -232,8 +232,8 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
 
     @Override
     public void visit(Symbolizer sym) {
-        if (sym instanceof RasterSymbolizer) {
-            visit((RasterSymbolizer) sym);
+        if (sym instanceof RasterSymbolizer symbolizer) {
+            visit(symbolizer);
         } else {
             otherSymbolizers = true;
         }

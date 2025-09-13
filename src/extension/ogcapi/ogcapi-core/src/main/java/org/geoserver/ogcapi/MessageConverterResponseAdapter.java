@@ -70,7 +70,7 @@ public class MessageConverterResponseAdapter<T> implements HttpMessageConverter<
     public void write(T value, MediaType mediaType, HttpOutputMessage httpOutputMessage)
             throws IOException, HttpMessageNotWritableException {
         Optional<Response> response = getResponse(mediaType);
-        if (!response.isPresent()) {
+        if (response.isEmpty()) {
             throw new IllegalArgumentException(
                     "Could not find a Response handling " + mediaType + " for binding " + valueClass);
         }

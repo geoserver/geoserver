@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.publish;
 
+import java.io.Serial;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.ComponentInfo;
 
@@ -17,6 +18,7 @@ import org.geoserver.web.ComponentInfo;
 public abstract class PublishedConfigurationPanelInfo<T extends PublishedInfo>
         extends ComponentInfo<PublishedConfigurationPanel<T>> {
 
+    @Serial
     private static final long serialVersionUID = 6115999990499640707L;
 
     public abstract Class<T> getPublishedInfoClass();

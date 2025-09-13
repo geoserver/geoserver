@@ -5,10 +5,12 @@
  */
 package org.geoserver.web.data.layer;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 class SQLViewAttribute implements Serializable {
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -926721043289684925L;
 
     String name;

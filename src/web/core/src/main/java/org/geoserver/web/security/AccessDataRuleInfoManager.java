@@ -54,12 +54,11 @@ public class AccessDataRuleInfoManager {
     }
 
     public String getWorkspaceName(CatalogInfo info) {
-        if (info instanceof WorkspaceInfo) {
-            return ((WorkspaceInfo) info).getName();
-        } else if (info instanceof LayerInfo) {
-            return ((LayerInfo) info).getResource().getStore().getWorkspace().getName();
-        } else if (info instanceof LayerGroupInfo) {
-            LayerGroupInfo group = (LayerGroupInfo) info;
+        if (info instanceof WorkspaceInfo workspaceInfo) {
+            return workspaceInfo.getName();
+        } else if (info instanceof LayerInfo layerInfo) {
+            return layerInfo.getResource().getStore().getWorkspace().getName();
+        } else if (info instanceof LayerGroupInfo group) {
             String wsName = group.getWorkspace() != null ? group.getWorkspace().getName() : null;
             return wsName;
         } else {
@@ -68,8 +67,8 @@ public class AccessDataRuleInfoManager {
     }
 
     public String getLayerName(CatalogInfo info) {
-        if (info instanceof PublishedInfo) {
-            return ((PublishedInfo) info).getName();
+        if (info instanceof PublishedInfo publishedInfo) {
+            return publishedInfo.getName();
         } else {
             return null;
         }
@@ -104,13 +103,13 @@ public class AccessDataRuleInfoManager {
 
     public Set<DataAccessRule> getResourceRule(String workspaceName, CatalogInfo info) {
         Set<DataAccessRule> rules = null;
-        if (info instanceof LayerInfo) {
-            rules = getLayerSecurityRule(workspaceName, ((PublishedInfo) info).getName());
+        if (info instanceof PublishedInfo layerInfo) {
+            rules = getLayerSecurityRule(workspaceName, layerInfo.getName());
         } else if (info instanceof LayerGroupInfo) {
             if (workspaceName == null) rules = getGlobalLayerGroupSecurityRule(((LayerGroupInfo) info).getName());
             else rules = getLayerSecurityRule(workspaceName, ((PublishedInfo) info).getName());
-        } else if (info instanceof WorkspaceInfo) {
-            rules = getWorkspaceDataAccessRules(((WorkspaceInfo) info).getName());
+        } else if (info instanceof WorkspaceInfo workspaceInfo) {
+            rules = getWorkspaceDataAccessRules(workspaceInfo.getName());
         }
         return rules;
     }

@@ -78,8 +78,7 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
         @Override
         public Authentication authenticate(Authentication authentication, HttpServletRequest request)
                 throws AuthenticationException {
-            if (authentication instanceof UsernamePasswordAuthenticationToken) {
-                UsernamePasswordAuthenticationToken up = (UsernamePasswordAuthenticationToken) authentication;
+            if (authentication instanceof UsernamePasswordAuthenticationToken up) {
                 if ("foo".equals(up.getPrincipal()) && "bar".equals(up.getCredentials())) {
                     authentication = new UsernamePasswordAuthenticationToken("foo", "bar", Collections.emptyList());
                 }

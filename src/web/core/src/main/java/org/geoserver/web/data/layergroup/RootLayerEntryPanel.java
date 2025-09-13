@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -25,6 +26,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /** Allows to edit the root layer of a layer group */
 public class RootLayerEntryPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 3471204885852128002L;
 
     public RootLayerEntryPanel(String id, WorkspaceInfo workspace, final IModel<LayerGroupInfo> model) {
@@ -33,6 +35,7 @@ public class RootLayerEntryPanel extends Panel {
         setOutputMarkupId(true);
 
         final TextField<LayerInfo> rootLayerField = new TextField<>("rootLayer") {
+            @Serial
             private static final long serialVersionUID = -8033503312874828019L;
 
             @SuppressWarnings("unchecked")
@@ -66,6 +69,7 @@ public class RootLayerEntryPanel extends Panel {
         }
 
         DropDownChoice<StyleInfo> styleField = new DropDownChoice<>("rootLayerStyle", styles) {
+            @Serial
             private static final long serialVersionUID = 1190134258726393181L;
 
             @SuppressWarnings("unchecked")
@@ -84,6 +88,7 @@ public class RootLayerEntryPanel extends Panel {
         final GSModalWindow popupWindow = new GSModalWindow("popup");
         add(popupWindow);
         add(new AjaxLink<>("add") {
+            @Serial
             private static final long serialVersionUID = 723787950130153037L;
 
             @Override
@@ -92,6 +97,7 @@ public class RootLayerEntryPanel extends Panel {
                 popupWindow.setInitialWidth(525);
                 popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
                 popupWindow.setContent(new LayerListPanel(popupWindow.getContentId(), workspace) {
+                    @Serial
                     private static final long serialVersionUID = -650599334132713975L;
 
                     @Override

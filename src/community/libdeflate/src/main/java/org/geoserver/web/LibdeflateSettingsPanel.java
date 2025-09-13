@@ -4,6 +4,7 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -54,6 +55,7 @@ public class LibdeflateSettingsPanel<T extends LibdeflateSettings> extends FormC
         LibdeflateSettings object = getSettings(model);
 
         compressionPriority.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -66,6 +68,7 @@ public class LibdeflateSettingsPanel<T extends LibdeflateSettings> extends FormC
         });
 
         decompressionPriority.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -77,6 +80,7 @@ public class LibdeflateSettingsPanel<T extends LibdeflateSettings> extends FormC
             }
         });
         minLevel.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -88,6 +92,7 @@ public class LibdeflateSettingsPanel<T extends LibdeflateSettings> extends FormC
             }
         });
         maxLevel.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -111,8 +116,7 @@ public class LibdeflateSettingsPanel<T extends LibdeflateSettings> extends FormC
     @Override
     public void convertInput() {
         IVisitor<Component, Object> formComponentVisitor = (component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
+            if (component instanceof FormComponent<?> formComponent) {
                 formComponent.processInput();
             }
         };

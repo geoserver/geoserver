@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.model.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import org.geotools.util.Converters;
 
 public class ComplexMetadataAttributeImpl<T extends Serializable> implements ComplexMetadataAttribute<T> {
 
+    @Serial
     private static final long serialVersionUID = 7309095204153589550L;
 
     private Map<String, Serializable> map;
@@ -36,8 +38,7 @@ public class ComplexMetadataAttributeImpl<T extends Serializable> implements Com
     public T getValue() {
         Object val = map.get(strPath);
         for (int i : indexRef.getIndex()) {
-            if (val instanceof List<?>) {
-                List<?> list = (List<?>) val;
+            if (val instanceof List<?> list) {
                 try {
                     val = list.get(i);
                 } catch (IndexOutOfBoundsException e) {

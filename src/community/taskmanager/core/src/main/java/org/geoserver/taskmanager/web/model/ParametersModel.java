@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.model;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class ParametersModel extends GeoServerDataProvider<Parameter> {
 
+    @Serial
     private static final long serialVersionUID = 7539336498086934903L;
 
     public static final Property<Parameter> NAME = new BeanProperty<Parameter>("name", "name");

@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -18,6 +19,7 @@ import org.geoserver.taskmanager.util.TaskManagerBeans;
 
 public class NewTaskPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -1678565286034119572L;
 
     public NewTaskPanel(String id, Configuration config) {
@@ -36,6 +38,7 @@ public class NewTaskPanel extends Panel {
                 .setOutputMarkupId(true));
 
         getCopyField().add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = -5575115165929413404L;
 
             @Override
@@ -52,6 +55,7 @@ public class NewTaskPanel extends Panel {
         });
 
         getTypeField().add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = -1427899086435643578L;
 
             @Override

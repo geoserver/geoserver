@@ -14,82 +14,48 @@ import org.w3c.dom.Document;
 public class WFSFilteringTest extends WFSTestSupport {
 
     static final String QUERY_SINGLE = //
-            "<wfs:GetFeature xmlns:wfs=\"http://www.opengis.net/wfs\"\n"
-                    + //
-                    "                xmlns:cite=\"http://www.opengis.net/cite\"\n"
-                    + //
-                    "                xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
-                    + //
-                    "                service=\"WFS\" version=\"${version}\">\n"
-                    + //
-                    "  <wfs:Query typeName=\"cite:Buildings\">\n"
-                    + //
-                    "    <ogc:Filter>\n"
-                    + //
-                    "      <ogc:DWithin>\n"
-                    + //
-                    "        <ogc:PropertyName>the_geom</ogc:PropertyName>\n"
-                    + //
-                    "        <ogc:Function name=\"querySingle\">\n"
-                    + //
-                    "           <ogc:Literal>cite:Streams</ogc:Literal>\n"
-                    + //
-                    "           <ogc:Literal>the_geom</ogc:Literal>\n"
-                    + //
-                    "           <ogc:Literal>INCLUDE</ogc:Literal>\n"
-                    + //
-                    "        </ogc:Function>\n"
-                    + //
-                    "        <ogc:Distance units=\"meter\">${distance}</ogc:Distance>\n"
-                    + //
-                    "      </ogc:DWithin>\n"
-                    + //
-                    "    </ogc:Filter>\n"
-                    + //
-                    "  </wfs:Query>\n"
-                    + //
-                    "</wfs:GetFeature>";
+            """
+                    <wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs"
+                                    xmlns:cite="http://www.opengis.net/cite"
+                                    xmlns:ogc="http://www.opengis.net/ogc"
+                                    service="WFS" version="${version}">
+                      <wfs:Query typeName="cite:Buildings">
+                        <ogc:Filter>
+                          <ogc:DWithin>
+                            <ogc:PropertyName>the_geom</ogc:PropertyName>
+                            <ogc:Function name="querySingle">
+                               <ogc:Literal>cite:Streams</ogc:Literal>
+                               <ogc:Literal>the_geom</ogc:Literal>
+                               <ogc:Literal>INCLUDE</ogc:Literal>
+                            </ogc:Function>
+                            <ogc:Distance units="meter">${distance}</ogc:Distance>
+                          </ogc:DWithin>
+                        </ogc:Filter>
+                      </wfs:Query>
+                    </wfs:GetFeature>""";
 
     static final String QUERY_MULTI = //
-            "<wfs:GetFeature xmlns:wfs=\"http://www.opengis.net/wfs\"\n"
-                    + //
-                    "  xmlns:cite=\"http://www.opengis.net/cite\" "
-                    + //
-                    "  xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
-                    + //
-                    "  service=\"WFS\" version=\"${version}\">\n"
-                    + //
-                    "  <wfs:Query typeName=\"cite:Buildings\">\n"
-                    + //
-                    "    <ogc:Filter>\n"
-                    + //
-                    "      <ogc:DWithin>\n"
-                    + //
-                    "        <ogc:PropertyName>the_geom</ogc:PropertyName>\n"
-                    + //
-                    "        <ogc:Function name=\"collectGeometries\">\n"
-                    + //
-                    "          <ogc:Function name=\"queryCollection\">\n"
-                    + //
-                    "            <ogc:Literal>cite:RoadSegments</ogc:Literal>\n"
-                    + //
-                    "            <ogc:Literal>the_geom</ogc:Literal>\n"
-                    + //
-                    "            <ogc:Literal>NAME = 'Route 5'</ogc:Literal>\n"
-                    + //
-                    "          </ogc:Function>\n"
-                    + //
-                    "        </ogc:Function>\n"
-                    + //
-                    "        <ogc:Distance units=\"meter\">0.001</ogc:Distance>\n"
-                    + //
-                    "      </ogc:DWithin>\n"
-                    + //
-                    "    </ogc:Filter>\n"
-                    + //
-                    "  </wfs:Query>\n"
-                    + //
-                    "</wfs:GetFeature>";
+            """
+                    <wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs"
+                      xmlns:cite="http://www.opengis.net/cite" \
+                      xmlns:ogc="http://www.opengis.net/ogc"
+                      service="WFS" version="${version}">
+                      <wfs:Query typeName="cite:Buildings">
+                        <ogc:Filter>
+                          <ogc:DWithin>
+                            <ogc:PropertyName>the_geom</ogc:PropertyName>
+                            <ogc:Function name="collectGeometries">
+                              <ogc:Function name="queryCollection">
+                                <ogc:Literal>cite:RoadSegments</ogc:Literal>
+                                <ogc:Literal>the_geom</ogc:Literal>
+                                <ogc:Literal>NAME = 'Route 5'</ogc:Literal>
+                              </ogc:Function>
+                            </ogc:Function>
+                            <ogc:Distance units="meter">0.001</ogc:Distance>
+                          </ogc:DWithin>
+                        </ogc:Filter>
+                      </wfs:Query>
+                    </wfs:GetFeature>""";
 
     @Test
     public void testSingleSmallDistance10() throws Exception {

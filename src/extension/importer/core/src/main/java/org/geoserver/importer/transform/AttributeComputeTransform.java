@@ -4,6 +4,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.security.InvalidParameterException;
 import org.geoserver.importer.ImportTask;
 import org.geotools.api.data.DataStore;
@@ -17,6 +18,7 @@ import org.geotools.filter.text.ecql.ECQL;
 /** Transform creating a new attribute based on the existing ones */
 public class AttributeComputeTransform extends AbstractTransform implements InlineVectorTransform {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** field to remap */

@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.cas;
 
+import java.io.Serial;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.RoleSource;
 
@@ -15,6 +16,7 @@ import org.geoserver.security.config.RoleSource;
  */
 public class CasAuthenticationFilterConfig extends PreAuthenticatedUserNameFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

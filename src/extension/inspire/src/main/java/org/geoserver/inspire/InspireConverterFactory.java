@@ -39,9 +39,9 @@ public class InspireConverterFactory implements ConverterFactory {
 
         @Override
         public <T> T convert(Object source, Class<T> target) throws Exception {
-            if (source instanceof String && UniqueResourceIdentifiers.class.equals(target)) {
+            if (source instanceof String string && UniqueResourceIdentifiers.class.equals(target)) {
                 UniqueResourceIdentifiers identifiers = new UniqueResourceIdentifiers();
-                String[] values = ((String) source).split("\\s*;\\s*");
+                String[] values = string.split("\\s*;\\s*");
                 for (String value : values) {
                     String[] elements = value.split("\\s*,\\s*");
                     if (elements.length == 0) {
@@ -89,8 +89,7 @@ public class InspireConverterFactory implements ConverterFactory {
                     identifiers.add(id);
                 }
                 return target.cast(identifiers);
-            } else if (source instanceof UniqueResourceIdentifiers && String.class.equals(target)) {
-                UniqueResourceIdentifiers ids = (UniqueResourceIdentifiers) source;
+            } else if (source instanceof UniqueResourceIdentifiers ids && String.class.equals(target)) {
                 if (!ids.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     for (UniqueResourceIdentifier id : ids) {

@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.ldap;
 
+import java.io.Serial;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 
 /**
@@ -14,6 +15,7 @@ import org.geoserver.security.config.SecurityRoleServiceConfig;
  */
 public class LDAPRoleServiceConfig extends LDAPBaseSecurityServiceConfig implements SecurityRoleServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = -5731528105464984100L;
 
     public LDAPRoleServiceConfig() {}

@@ -318,10 +318,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         for (Map.Entry<FeatureType, List<Feature>> entry : map.entrySet()) {
             FeatureType type = entry.getKey();
             List<Feature> list = entry.getValue();
-            if (type instanceof SimpleFeatureType) {
+            if (type instanceof SimpleFeatureType featureType) {
                 @SuppressWarnings("unchecked")
                 List<SimpleFeature> sf = new ArrayList<>((List) list);
-                result.add(new ListFeatureCollection((SimpleFeatureType) type, sf));
+                result.add(new ListFeatureCollection(featureType, sf));
             } else {
                 result.add(new ListComplexFeatureCollection(type, list));
             }

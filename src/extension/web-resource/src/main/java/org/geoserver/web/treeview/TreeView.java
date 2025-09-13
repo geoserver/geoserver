@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.treeview;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +37,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
  */
 public class TreeView<T> extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 2683470514874500599L;
 
     /** Behaviour for selected node */
@@ -299,6 +301,7 @@ public class TreeView<T> extends Panel {
      */
     protected abstract class TreeNodeView extends Panel {
 
+        @Serial
         private static final long serialVersionUID = 2940674057639126436L;
 
         protected Component selectableLabel;
@@ -349,6 +352,7 @@ public class TreeView<T> extends Panel {
         }
 
         private class SelectableLabelClickBehavior extends AjaxEventBehavior {
+            @Serial
             private static final long serialVersionUID = -3705747320247194977L;
 
             public SelectableLabelClickBehavior() {
@@ -428,12 +432,14 @@ public class TreeView<T> extends Panel {
     /** View for an expandable tree node (directory node) */
     protected class TreeExpandableNodeView extends TreeNodeView {
 
+        @Serial
         private static final long serialVersionUID = 2940674057639126436L;
 
         public TreeExpandableNodeView(String id, IModel<TreeNode<T>> nodeModel) {
             super(id, nodeModel);
             final AjaxCheckBox cbExpand = new AjaxCheckBox(
                     "cbExpand", nodeModel.getObject().getExpanded()) {
+                @Serial
                 private static final long serialVersionUID = 7602857423814264211L;
 
                 @Override
@@ -490,6 +496,7 @@ public class TreeView<T> extends Panel {
     /** View for an tree node leaf */
     protected class TreeLeafView extends TreeNodeView {
 
+        @Serial
         private static final long serialVersionUID = 2940674057639126436L;
 
         public TreeLeafView(String id, IModel<TreeNode<T>> nodeModel) {
@@ -500,6 +507,7 @@ public class TreeView<T> extends Panel {
 
     /** Custom mark data */
     protected static class Mark implements Serializable {
+        @Serial
         private static final long serialVersionUID = -827616908801489309L;
 
         private AttributeAppender behaviour;

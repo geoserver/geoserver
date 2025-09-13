@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
 
 /**
@@ -18,6 +19,7 @@ public class UsernamePasswordAuthenticationFilterConfig extends SecurityFilterCo
     public static final String DEFAULT_PASSWORD_PARAM = "password";
     public static final String DEFAULT_USERNAME_PARAM = "username";
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String passwordParameterName;

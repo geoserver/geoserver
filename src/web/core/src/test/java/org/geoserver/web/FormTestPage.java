@@ -5,6 +5,7 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -17,6 +18,7 @@ import org.apache.wicket.model.IModel;
  */
 public class FormTestPage extends WebPage {
 
+    @Serial
     private static final long serialVersionUID = 4530843789748801989L;
 
     public static final String PANEL = "panel";

@@ -104,10 +104,11 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                     feature.getUserData().put(Hints.USE_PROVIDED_FID, true);
                 } else {
                     Object identifier = feature.getAttribute(new NameImpl(GML.NAMESPACE, "identifier"));
-                    if (WFSInfo.Version.V_20.compareTo(insert.getVersion()) >= 0 && identifier instanceof String) {
+                    if (WFSInfo.Version.V_20.compareTo(insert.getVersion()) >= 0
+                            && identifier instanceof String string) {
                         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(feature.getFeatureType());
                         fb.init(feature);
-                        feature = fb.buildFeature((String) identifier);
+                        feature = fb.buildFeature(string);
                         feature.getUserData().put(Hints.USE_PROVIDED_FID, true);
                     }
                 }

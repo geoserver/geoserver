@@ -59,8 +59,8 @@ public class XMLRoleService extends AbstractRoleService {
         super.initializeFromConfig(config);
         validatingXMLSchema = false;
 
-        if (config instanceof XMLSecurityServiceConfig) {
-            validatingXMLSchema = ((XMLSecurityServiceConfig) config).isValidating();
+        if (config instanceof XMLSecurityServiceConfig serviceConfig) {
+            validatingXMLSchema = serviceConfig.isValidating();
 
             // copy schema file
             Resource xsdFile = getConfigRoot().get(XMLConstants.FILE_RR_SCHEMA);
@@ -69,8 +69,8 @@ public class XMLRoleService extends AbstractRoleService {
             }
         }
 
-        if (config instanceof FileBasedSecurityServiceConfig) {
-            String fileName = ((FileBasedSecurityServiceConfig) config).getFileName();
+        if (config instanceof FileBasedSecurityServiceConfig serviceConfig) {
+            String fileName = serviceConfig.getFileName();
 
             File roleFile = new File(fileName);
             if (roleFile.isAbsolute()) {

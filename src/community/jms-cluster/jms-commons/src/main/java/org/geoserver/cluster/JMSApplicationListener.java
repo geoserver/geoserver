@@ -75,10 +75,7 @@ public class JMSApplicationListener implements ApplicationListener<ApplicationEv
             LOGGER.fine("Incoming event of type " + event.getClass().getSimpleName());
         }
 
-        if (event instanceof ToggleEvent) {
-
-            // enable/disable the producer
-            final ToggleEvent tEv = (ToggleEvent) event;
+        if (event instanceof ToggleEvent tEv) {
             if (tEv.getType().equals(this.type)) {
                 setStatus(tEv.toggleTo());
             }

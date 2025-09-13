@@ -45,10 +45,10 @@ public class ExcelMonitorConverter extends BaseMonitorConverter {
                     continue;
                 }
 
-                if (obj instanceof Date) {
-                    cell.setCellValue((Date) obj);
-                } else if (obj instanceof Number) {
-                    cell.setCellValue(((Number) obj).doubleValue());
+                if (obj instanceof Date date) {
+                    cell.setCellValue(date);
+                } else if (obj instanceof Number number) {
+                    cell.setCellValue(number.doubleValue());
                 } else {
                     cell.setCellValue(new HSSFRichTextString(obj.toString()));
                 }

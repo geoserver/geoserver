@@ -48,11 +48,11 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
                     String id, IModel<ExecutionStatus> itemModel, Property<ExecutionStatus> property) {
                 // have the base class create a label for us
                 Object value = property.getPropertyValue(itemModel.getObject());
-                if (value instanceof Date) {
+                if (value instanceof Date date) {
                     SimpleDateFormat gmtFrmt = new SimpleDateFormat(
                             "E, d MMM yyyy HH:mm:ss.SSS 'GMT'", Session.get().getLocale());
                     gmtFrmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-                    return new Label(id, gmtFrmt.format((Date) value));
+                    return new Label(id, gmtFrmt.format(date));
                 }
                 return null;
             }

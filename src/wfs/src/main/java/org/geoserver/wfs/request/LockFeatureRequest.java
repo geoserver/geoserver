@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.util.FeatureMap;
 public abstract class LockFeatureRequest extends RequestObject {
 
     public static LockFeatureRequest adapt(Object request) {
-        if (request instanceof LockFeatureType) {
-            return new WFS11((EObject) request);
-        } else if (request instanceof net.opengis.wfs20.LockFeatureType) {
-            return new WFS20((EObject) request);
+        if (request instanceof LockFeatureType type) {
+            return new WFS11(type);
+        } else if (request instanceof net.opengis.wfs20.LockFeatureType type) {
+            return new WFS20(type);
         }
         return null;
     }

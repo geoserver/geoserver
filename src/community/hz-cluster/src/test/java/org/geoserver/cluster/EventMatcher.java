@@ -24,8 +24,7 @@ public class EventMatcher implements IArgumentMatcher {
 
     @Override
     public boolean matches(Object argument) {
-        if (argument instanceof Event) {
-            Event evt = (Event) argument;
+        if (argument instanceof Event evt) {
             return source == null || evt.getSource().equals(source);
         } else {
             return false;

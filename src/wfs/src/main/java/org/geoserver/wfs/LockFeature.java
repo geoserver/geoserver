@@ -146,8 +146,8 @@ public class LockFeature {
                     // now gather the features
                     features = source.getFeatures(filter);
 
-                    if (source instanceof FeatureLocking) {
-                        ((FeatureLocking) source).setFeatureLock(fLock);
+                    if (source instanceof FeatureLocking locking) {
+                        locking.setFeatureLock(fLock);
                     }
                 } catch (IOException e) {
                     throw new WFSException(request, e);
@@ -272,8 +272,8 @@ public class LockFeature {
                 // TODO: support locking for DataAccess
                 if (meta.isEnabled()) {
                     DataAccess da = meta.getDataStore(null);
-                    if (da instanceof DataStore) {
-                        dataStore = (DataStore) da;
+                    if (da instanceof DataStore dataStore1) {
+                        dataStore = dataStore1;
                     }
                 }
 
@@ -317,8 +317,8 @@ public class LockFeature {
                 // TODO: support locking for DataAccess
                 if (meta.isEnabled()) {
                     DataAccess da = meta.getDataStore(null);
-                    if (da instanceof DataStore) {
-                        dataStore = (DataStore) da;
+                    if (da instanceof DataStore dataStore1) {
+                        dataStore = dataStore1;
                     }
                 }
 
@@ -351,8 +351,8 @@ public class LockFeature {
                 // TODO: support locking for DataAccess
                 if (meta.isEnabled()) {
                     DataAccess da = meta.getDataStore(null);
-                    if (da instanceof DataStore) {
-                        dataStore = (DataStore) da;
+                    if (da instanceof DataStore dataStore1) {
+                        dataStore = dataStore1;
                     }
                 }
 
@@ -392,8 +392,8 @@ public class LockFeature {
                 // TODO: support locking for DataAccess
                 if (meta.isEnabled()) {
                     DataAccess da = meta.getDataStore(null);
-                    if (da instanceof DataStore) {
-                        dataStore = (DataStore) da;
+                    if (da instanceof DataStore dataStore1) {
+                        dataStore = dataStore1;
                     }
                 }
 
@@ -410,8 +410,7 @@ public class LockFeature {
                 // calling "exists" clears an expired lock, do this instead to verify existence
                 // since for the past 10+ years InProcessLockingManager has been the only game in
                 // town
-                if (lockingManager instanceof InProcessLockingManager) {
-                    InProcessLockingManager ip = (InProcessLockingManager) lockingManager;
+                if (lockingManager instanceof InProcessLockingManager ip) {
                     Set<InProcessLockingManager.Lock> locks = ip.allLocks();
                     if (locks != null) {
                         lockFound |= locks.stream().anyMatch(l -> l.isMatch(lockId));

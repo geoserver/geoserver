@@ -102,8 +102,9 @@ public class CollectionDAPA extends AbstractDocument {
         endpoint.setTitle(
                 "Retrieve a time series for selected variables for each zone in an area and apply functions on the values of each time series.");
         endpoint.setDescription(
-                "This DAPA endpoint returns a time aggregate for each zone in an area, in the selected time interval.\n"
-                        + "Each result contains contains the aggregation functions evaluated over the time series of each value associated to the zone.");
+                """
+                This DAPA endpoint returns a time aggregate for each zone in an area, in the selected time interval.
+                Each result contains contains the aggregation functions evaluated over the time series of each value associated to the zone.""");
         Link executeLink = getExecuteLink(collectionId, "processes/area:aggregate-time");
         endpoint.addLink(executeLink);
         endpoint.setMediaTypes(AGGREGATION_MEDIA_TYPES);

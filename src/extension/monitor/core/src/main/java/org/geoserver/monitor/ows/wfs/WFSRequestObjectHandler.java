@@ -61,8 +61,7 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
     }
 
     protected String toString(Object name) {
-        if (name instanceof QName) {
-            QName qName = (QName) name;
+        if (name instanceof QName qName) {
             String prefix = qName.getPrefix();
             if (prefix == null || "".equals(prefix)) {
                 prefix = qName.getNamespaceURI();

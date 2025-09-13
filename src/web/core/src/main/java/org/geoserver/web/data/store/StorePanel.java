@@ -9,6 +9,7 @@ import static org.geoserver.web.data.store.StoreProvider.ENABLED;
 import static org.geoserver.web.data.store.StoreProvider.NAME;
 import static org.geoserver.web.data.store.StoreProvider.WORKSPACE;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -47,6 +48,7 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
 @SuppressWarnings("serial")
 public class StorePanel extends GeoServerTablePanel<StoreInfo> {
 
+    @Serial
     private static final long serialVersionUID = 5957961031378924960L;
 
     private GSModalWindow popupWindow;

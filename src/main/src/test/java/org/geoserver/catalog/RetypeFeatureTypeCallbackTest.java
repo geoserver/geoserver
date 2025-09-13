@@ -368,8 +368,8 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
             return ofNullable(simpleFeature.getProperty(name))
                     .flatMap(property -> ofNullable(property.getValue()))
                     .map(Object::toString)
-                    .orElseThrow(() ->
-                            new IllegalArgumentException(String.format("cannot get value of property [%s]", name)));
+                    .orElseThrow(
+                            () -> new IllegalArgumentException("cannot get value of property [%s]".formatted(name)));
         }
 
         public SimpleFeatureType defineGeometryAttributeFor(FeatureTypeInfo info, SimpleFeatureType src)

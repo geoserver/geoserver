@@ -122,7 +122,13 @@ public class FeatureWrapperTest {
         template.process(f, out);
 
         assertEquals(
-                "\n" + "Name: string_value\n" + "Value: string1\n" + "Name: string_value\n" + "Value: string2\n",
+                """
+
+                Name: string_value
+                Value: string1
+                Name: string_value
+                Value: string2
+                """,
                 out.toString().replace(',', '.').replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 

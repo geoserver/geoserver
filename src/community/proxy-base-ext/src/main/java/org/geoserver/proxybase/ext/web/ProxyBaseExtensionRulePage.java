@@ -29,7 +29,7 @@ public class ProxyBaseExtensionRulePage extends GeoServerSecuredPage {
         Form<ProxyBaseExtensionRule> form = new Form<>("form");
         add(form);
         List<WrappedTab> tabs = new ArrayList<>();
-        if (!optionalRuleModel.isPresent() || optionalRuleModel.get().getPosition() != null) {
+        if (optionalRuleModel.isEmpty() || optionalRuleModel.get().getPosition() != null) {
             tabs.add(new WrappedTab("Proxy Base Extension Rule", simpleRuleModel) {
                 @Override
                 public Panel getPanel(String panelId) {

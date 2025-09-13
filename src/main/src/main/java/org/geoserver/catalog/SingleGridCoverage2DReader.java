@@ -33,8 +33,8 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
     protected String coverageName;
 
     public static SingleGridCoverage2DReader wrap(GridCoverage2DReader delegate, String coverageName) {
-        if (delegate instanceof StructuredGridCoverage2DReader) {
-            return new StructuredSingleGridCoverage2DReader((StructuredGridCoverage2DReader) delegate, coverageName);
+        if (delegate instanceof StructuredGridCoverage2DReader reader) {
+            return new StructuredSingleGridCoverage2DReader(reader, coverageName);
         } else {
             return new SingleGridCoverage2DReader(delegate, coverageName);
         }

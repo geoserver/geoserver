@@ -131,23 +131,22 @@ public class TiledCRSFactory extends AuthorityFactoryAdapter implements CRSAutho
     protected CoordinateReferenceSystem replace(CoordinateReferenceSystem crs, String code) throws FactoryException {
 
         final Datum datum;
-        if (crs instanceof SingleCRS) {
-            datum = ((SingleCRS) crs).getDatum();
+        if (crs instanceof SingleCRS rS) {
+            datum = rS.getDatum();
         } else {
             datum = null;
         }
         CoordinateSystem cs = crs.getCoordinateSystem();
         final Map<String, ?> properties = getProperties(crs, code);
 
-        if (crs instanceof ProjectedCRS) {
-            final ProjectedCRS projectedCRS = (ProjectedCRS) crs;
+        if (crs instanceof ProjectedCRS projectedCRS) {
             final CoordinateReferenceSystem baseCRS = projectedCRS.getBaseCRS();
             Conversion fromBase = projectedCRS.getConversionFromBase();
             return new DefaultProjectedCRS(
                     properties,
                     fromBase,
                     (GeographicCRS) baseCRS,
-                    ((ProjectedCRS) crs).getConversionFromBase().getMathTransform(),
+                    projectedCRS.getConversionFromBase().getMathTransform(),
                     (CartesianCS) cs);
         } else if (crs instanceof GeographicCRS) {
             return new DefaultGeographicCRS(properties, (GeodeticDatum) datum, (EllipsoidalCS) cs);

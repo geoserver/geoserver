@@ -309,8 +309,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(resource.getName()).andReturn(name).anyTimes();
         expect(resource.prefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(resource.getNamespace()).andReturn(ns).anyTimes();
-        if (resource instanceof FeatureTypeInfo) {
-            expect(((FeatureTypeInfo) resource).getFeatureSource(anyObject(), anyObject()))
+        if (resource instanceof FeatureTypeInfo info) {
+            expect(info.getFeatureSource(anyObject(), anyObject()))
                     .andReturn(fs)
                     .anyTimes();
         }

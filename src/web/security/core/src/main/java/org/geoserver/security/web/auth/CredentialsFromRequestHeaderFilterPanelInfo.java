@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import org.geoserver.security.config.CredentialsFromRequestHeaderFilterConfig;
 import org.geoserver.security.filter.GeoServerCredentialsFromRequestHeaderFilter;
 
@@ -17,6 +18,7 @@ public class CredentialsFromRequestHeaderFilterPanelInfo
         extends AuthenticationFilterPanelInfo<
                 CredentialsFromRequestHeaderFilterConfig, CredentialsFromRequestHeaderFilterPanel> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public CredentialsFromRequestHeaderFilterPanelInfo() {

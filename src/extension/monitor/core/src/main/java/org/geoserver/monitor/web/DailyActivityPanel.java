@@ -5,6 +5,7 @@
  */
 package org.geoserver.monitor.web;
 
+import java.io.Serial;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,6 +15,7 @@ import org.jfree.data.time.Second;
 
 public class DailyActivityPanel extends ActivityChartBasePanel {
 
+    @Serial
     private static final long serialVersionUID = -3347402344921524474L;
 
     public DailyActivityPanel(String id, Monitor monitor) {

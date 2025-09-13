@@ -144,8 +144,7 @@ public class MapMLHTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
             bbox = fc.getBounds();
         }
         if (bbox == null) {
-            if (fc instanceof TypeInfoCollectionWrapper) {
-                TypeInfoCollectionWrapper wrapper = (TypeInfoCollectionWrapper) fc;
+            if (fc instanceof TypeInfoCollectionWrapper wrapper) {
                 try {
                     bbox = wrapper.getFeatureTypeInfo().boundingBox();
                 } catch (Exception e) {

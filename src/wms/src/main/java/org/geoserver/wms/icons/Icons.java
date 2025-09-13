@@ -143,8 +143,8 @@ public class Icons {
 
         GraphicalSymbol gs = g.graphicalSymbols().iterator().next();
 
-        if (gs instanceof Mark) {
-            Stroke stroke = ((Mark) gs).getStroke();
+        if (gs instanceof Mark mark) {
+            Stroke stroke = mark.getStroke();
             if (stroke != null && stroke.getWidth() != null) {
                 Double width = stroke.getWidth().evaluate(f, Double.class);
                 if (width != null) {
@@ -154,8 +154,8 @@ public class Icons {
         }
 
         if (size == null) {
-            if (gs instanceof ExternalGraphic) {
-                size = (double) getExternalSize((ExternalGraphic) gs, f);
+            if (gs instanceof ExternalGraphic graphic) {
+                size = (double) getExternalSize(graphic, f);
             } else {
                 size = DEFAULT_SYMBOL_SIZE;
             }

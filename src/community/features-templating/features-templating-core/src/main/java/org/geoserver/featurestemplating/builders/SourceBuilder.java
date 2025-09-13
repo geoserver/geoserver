@@ -100,7 +100,7 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
     public String getStrSource() {
         if (source == null) return null;
 
-        if (source instanceof AttributeExpressionImpl) return ((AttributeExpressionImpl) source).getPropertyName();
+        if (source instanceof AttributeExpressionImpl impl) return impl.getPropertyName();
         else
             return Optional.ofNullable(source.evaluate(null))
                     .map(o -> o.toString())

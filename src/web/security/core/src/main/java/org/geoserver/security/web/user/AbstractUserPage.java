@@ -6,6 +6,7 @@
 package org.geoserver.security.web.user;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -191,6 +192,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
 
         // add the validators
         form.add(new EqualInputValidator(pw1, pw2) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

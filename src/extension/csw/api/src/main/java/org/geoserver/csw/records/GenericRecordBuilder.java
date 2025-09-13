@@ -424,8 +424,8 @@ public class GenericRecordBuilder implements RecordBuilder {
                         e);
             }
         }
-        if (geom instanceof Polygon) {
-            geom = geom.getFactory().createMultiPolygon(new Polygon[] {(Polygon) geom});
+        if (geom instanceof Polygon polygon) {
+            geom = geom.getFactory().createMultiPolygon(new Polygon[] {polygon});
         }
 
         if (queryables.getBoundingBoxPropertyName() != null) {
@@ -460,9 +460,7 @@ public class GenericRecordBuilder implements RecordBuilder {
 
         AttributeBuilder ab = new AttributeBuilder(new LenientFeatureFactoryImpl());
 
-        if (node instanceof TreeLeaf) {
-
-            TreeLeaf leaf = (TreeLeaf) node;
+        if (node instanceof TreeLeaf leaf) {
 
             ab.setDescriptor(fork.descriptor);
             Attribute att = ab.buildSimple(null, leaf.value);
@@ -471,11 +469,11 @@ public class GenericRecordBuilder implements RecordBuilder {
             }
             return att;
 
-        } else if (node instanceof TreeBranch) {
+        } else if (node instanceof TreeBranch branch) {
 
             ab.setDescriptor(fork.descriptor);
             List<Attribute> list = new ArrayList<>();
-            for (TreeFork childFork : ((TreeBranch) node).children.values()) {
+            for (TreeFork childFork : branch.children.values()) {
                 for (TreeNode childNode : childFork.nodes) {
                     list.add(buildNode(childFork, childNode));
                 }

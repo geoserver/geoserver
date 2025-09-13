@@ -104,12 +104,12 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
     }
 
     protected void checkContext(Object context) {
-        if (context instanceof JSONArray) {
-            int size = ((JSONArray) context).size();
+        if (context instanceof JSONArray array) {
+            int size = array.size();
             assertTrue(size > 0);
         }
-        if (context instanceof JSONObject) {
-            assertFalse(((JSONObject) context).isEmpty());
+        if (context instanceof JSONObject object) {
+            assertFalse(object.isEmpty());
         }
     }
 

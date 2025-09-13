@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.security.ldap;
 
+import java.io.Serial;
 import org.geoserver.security.ldap.LDAPAuthenticationProvider;
 import org.geoserver.security.ldap.LDAPSecurityServiceConfig;
 import org.geoserver.security.web.auth.AuthenticationProviderPanelInfo;
@@ -17,6 +18,7 @@ import org.geoserver.security.web.auth.AuthenticationProviderPanelInfo;
 public class LDAPAuthProviderPanelInfo
         extends AuthenticationProviderPanelInfo<LDAPSecurityServiceConfig, LDAPAuthProviderPanel> {
 
+    @Serial
     private static final long serialVersionUID = 4754541712479614409L;
 
     public LDAPAuthProviderPanelInfo() {

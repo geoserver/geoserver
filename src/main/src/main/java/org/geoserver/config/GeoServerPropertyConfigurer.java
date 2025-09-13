@@ -80,8 +80,8 @@ public class GeoServerPropertyConfigurer extends PropertySourcesPlaceholderConfi
     public void setLocation(Resource location) {
         try {
             location = SpringResourceAdaptor.relative(location, data.getResourceStore());
-            if (location instanceof SpringResourceAdaptor) {
-                configFile = ((SpringResourceAdaptor) location).getResource();
+            if (location instanceof SpringResourceAdaptor adaptor) {
+                configFile = adaptor.getResource();
             }
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error reading resource " + location, e);

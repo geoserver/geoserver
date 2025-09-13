@@ -125,8 +125,7 @@ public class GeoNodeJsonEncoder implements NotificationEncoder {
             source.setRootLayer(obj.getRootLayer() != null ? obj.getRootLayer().getPath() : "");
             for (PublishedInfo pl : obj.getLayers()) {
                 KombuLayerSimpleInfo kl = new KombuLayerSimpleInfo();
-                if (pl instanceof LayerInfo) {
-                    LayerInfo li = (LayerInfo) pl;
+                if (pl instanceof LayerInfo li) {
                     kl.setName(li.getName());
                     String lstyle =
                             li.getDefaultStyle() != null ? li.getDefaultStyle().getName() : "";

@@ -179,32 +179,32 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     }
 
     private void accept(CatalogInfo proxy, CatalogVisitor visitor) {
-        if (proxy instanceof WorkspaceInfo) {
-            visitor.visit((WorkspaceInfo) proxy);
-        } else if (proxy instanceof NamespaceInfo) {
-            visitor.visit((NamespaceInfo) proxy);
-        } else if (proxy instanceof CoverageStoreInfo) {
-            visitor.visit((CoverageStoreInfo) proxy);
-        } else if (proxy instanceof DataStoreInfo) {
-            visitor.visit((DataStoreInfo) proxy);
-        } else if (proxy instanceof WMSStoreInfo) {
-            visitor.visit((WMSStoreInfo) proxy);
-        } else if (proxy instanceof WMTSStoreInfo) {
-            visitor.visit((WMTSStoreInfo) proxy);
-        } else if (proxy instanceof CoverageInfo) {
-            visitor.visit((CoverageInfo) proxy);
-        } else if (proxy instanceof FeatureTypeInfo) {
-            visitor.visit((FeatureTypeInfo) proxy);
-        } else if (proxy instanceof WMSLayerInfo) {
-            visitor.visit((WMSLayerInfo) proxy);
-        } else if (proxy instanceof WMTSLayerInfo) {
-            visitor.visit((WMTSLayerInfo) proxy);
-        } else if (proxy instanceof LayerInfo) {
-            visitor.visit((LayerInfo) proxy);
-        } else if (proxy instanceof LayerGroupInfo) {
-            visitor.visit((LayerGroupInfo) proxy);
-        } else if (proxy instanceof StyleInfo) {
-            visitor.visit((StyleInfo) proxy);
+        if (proxy instanceof WorkspaceInfo info12) {
+            visitor.visit(info12);
+        } else if (proxy instanceof NamespaceInfo info11) {
+            visitor.visit(info11);
+        } else if (proxy instanceof CoverageStoreInfo info10) {
+            visitor.visit(info10);
+        } else if (proxy instanceof DataStoreInfo info9) {
+            visitor.visit(info9);
+        } else if (proxy instanceof WMSStoreInfo info8) {
+            visitor.visit(info8);
+        } else if (proxy instanceof WMTSStoreInfo info7) {
+            visitor.visit(info7);
+        } else if (proxy instanceof CoverageInfo info6) {
+            visitor.visit(info6);
+        } else if (proxy instanceof FeatureTypeInfo info5) {
+            visitor.visit(info5);
+        } else if (proxy instanceof WMSLayerInfo info4) {
+            visitor.visit(info4);
+        } else if (proxy instanceof WMTSLayerInfo info3) {
+            visitor.visit(info3);
+        } else if (proxy instanceof LayerInfo info2) {
+            visitor.visit(info2);
+        } else if (proxy instanceof LayerGroupInfo info1) {
+            visitor.visit(info1);
+        } else if (proxy instanceof StyleInfo info) {
+            visitor.visit(info);
         }
     }
 
@@ -472,8 +472,8 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
     private Object readResolve() throws ObjectStreamException {
         // replace the main proxy object
-        if (proxyObject instanceof CatalogInfo) {
-            CatalogInfo replacement = replaceCatalogInfo((CatalogInfo) proxyObject);
+        if (proxyObject instanceof CatalogInfo info) {
+            CatalogInfo replacement = replaceCatalogInfo(info);
             if (replacement != null) {
                 proxyObject = unwrap(replacement);
             }
@@ -483,16 +483,16 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         if (properties != null) {
             for (Entry<String, Object> property : properties.entrySet()) {
                 Object value = property.getValue();
-                if (value instanceof CatalogInfo) {
-                    CatalogInfo replacement = replaceCatalogInfo((CatalogInfo) value);
+                if (value instanceof CatalogInfo info) {
+                    CatalogInfo replacement = replaceCatalogInfo(info);
                     if (replacement != null) {
                         property.setValue(unwrap(replacement));
                     }
-                } else if (value instanceof Collection) {
-                    Collection clone = cloneCollection((Collection) value);
+                } else if (value instanceof Collection collection) {
+                    Collection clone = cloneCollection(collection);
                     property.setValue(clone);
-                } else if (value instanceof MetadataMap) {
-                    MetadataMap clone = cloneMetadataMap((MetadataMap) value);
+                } else if (value instanceof MetadataMap map) {
+                    MetadataMap clone = cloneMetadataMap(map);
                     property.setValue(clone);
                 }
             }
@@ -502,12 +502,11 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         if (oldCollectionValues != null) {
             for (Entry<String, Object> oce : oldCollectionValues.entrySet()) {
                 Object value = oce.getValue();
-                if (value instanceof Collection) {
-                    Collection oldCollection = (Collection) value;
+                if (value instanceof Collection oldCollection) {
                     Collection clone = cloneCollection(oldCollection);
                     oce.setValue(clone);
-                } else if (value instanceof MetadataMap) {
-                    MetadataMap clone = cloneMetadataMap((MetadataMap) value);
+                } else if (value instanceof MetadataMap map) {
+                    MetadataMap clone = cloneMetadataMap(map);
                     oce.setValue(clone);
                 }
             }
@@ -521,8 +520,8 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         for (Entry<String, Serializable> entry : original.entrySet()) {
             String key = entry.getKey();
             Serializable value = entry.getValue();
-            if (value instanceof CatalogInfo) {
-                CatalogInfo replacement = replaceCatalogInfo((CatalogInfo) value);
+            if (value instanceof CatalogInfo info) {
+                CatalogInfo replacement = replaceCatalogInfo(info);
                 if (replacement != null) {
                     value = replacement;
                 }
@@ -540,8 +539,8 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         try {
             Collection clone = oldCollectionClass.getDeclaredConstructor().newInstance();
             for (Object o : oldCollection) {
-                if (o instanceof CatalogInfo) {
-                    CatalogInfo replacement = replaceCatalogInfo((CatalogInfo) o);
+                if (o instanceof CatalogInfo info) {
+                    CatalogInfo replacement = replaceCatalogInfo(info);
                     if (replacement != null) {
                         clone.add(unwrap(replacement));
                     } else {

@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -24,6 +25,7 @@ import org.geoserver.web.publish.PublishedEditTabPanel;
  */
 public class LayerCacheOptionsTabPanel extends PublishedEditTabPanel<PublishedInfo> {
 
+    @Serial
     private static final long serialVersionUID = -2995387155768727100L;
 
     private GeoServerTileLayerEditor editor;

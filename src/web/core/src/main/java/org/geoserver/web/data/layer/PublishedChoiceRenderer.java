@@ -5,12 +5,14 @@
  */
 package org.geoserver.web.data.layer;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.PublishedInfo;
 
 /** Simple choice renderer for {@link PublishedInfo} */
 public class PublishedChoiceRenderer extends ChoiceRenderer<PublishedInfo> {
 
+    @Serial
     private static final long serialVersionUID = -5617204445401506143L;
 
     @Override

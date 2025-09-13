@@ -698,12 +698,15 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
 
         // add a transformation to compute a new attribute
-        String json = "{\n"
-                + "  \"type\": \"AttributeComputeTransform\",\n"
-                + "  \"field\": \"label\",\n"
-                + "  \"fieldType\": \"java.lang.String\",\n"
-                + "  \"cql\": \"'Test string'\"\n"
-                + "}";
+        String json =
+                """
+                {
+                  "type": "AttributeComputeTransform",
+                  "field": "label",
+                  "fieldType": "java.lang.String",
+                  "cql": "'Test string'"
+                }\
+                """;
 
         MockHttpServletResponse resp = postAsServletResponse(
                 RestBaseController.ROOT_PATH + "/imports/" + context.getId() + "/tasks/0/transforms",
@@ -845,11 +848,14 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
 
         // add a transformation to run post script
-        String json = "{\n"
-                + "  \"type\": \"PostScriptTransform\",\n"
-                + "  \"name\": \"test.sh\",\n"
-                + "  \"options\": [\"test.abc\"]"
-                + "}";
+        String json =
+                """
+                {
+                  "type": "PostScriptTransform",
+                  "name": "test.sh",
+                  "options": ["test.abc"]\
+                }\
+                """;
 
         MockHttpServletResponse resp = postAsServletResponse(
                 RestBaseController.ROOT_PATH + "/imports/" + context.getId() + "/tasks/0/transforms",
@@ -890,11 +896,14 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         context.getTasks().get(0).getData().setCharsetEncoding("UTF-8");
 
         // add a transformation to run post script
-        String json = "{\n"
-                + "  \"type\": \"DateFormatTransform\",\n"
-                + "  \"field\": \"Year_Date\",\n"
-                + "  \"presentation\": \"DISCRETE_INTERVAL\""
-                + "}";
+        String json =
+                """
+                {
+                  "type": "DateFormatTransform",
+                  "field": "Year_Date",
+                  "presentation": "DISCRETE_INTERVAL"\
+                }\
+                """;
 
         MockHttpServletResponse resp = postAsServletResponse(
                 RestBaseController.ROOT_PATH + "/imports/" + context.getId() + "/tasks/0/transforms",
@@ -1070,12 +1079,15 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 catalog.getLayerByName(basicPolygonsName).getDefaultStyle().getId());
 
         // Do a JSON PUT to change the default style
-        String contextDefinition = "{\"layer\": {\n"
-                + "  \"name\": \"BasicPolygons\",\n"
-                + "  \"defaultStyle\":   {\n"
-                + "    \"name\": \"polygon\"\n"
-                + "  },\n"
-                + "}}";
+        String contextDefinition =
+                """
+                {"layer": {
+                  "name": "BasicPolygons",
+                  "defaultStyle":   {
+                    "name": "polygon"
+                  },
+                }}\
+                """;
 
         MockHttpServletResponse response = putAsServletResponse(
                 "/rest/layers/" + basicPolygonsName.toString(), contextDefinition, "application/json");

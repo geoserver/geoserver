@@ -32,16 +32,15 @@ public class TransactionCallbackTester implements TransactionCallback {
 
     public static TransactionRequest defaultTransformation(Catalog catalog, TransactionRequest request) {
         for (TransactionElement element : request.getElements()) {
-            if (element instanceof Insert) {
-                for (Object f : ((Insert) element).getFeatures()) {
+            if (element instanceof Insert insert) {
+                for (Object f : insert.getFeatures()) {
                     SimpleFeature sf = (SimpleFeature) f;
                     if ("Points".equals(sf.getType().getTypeName())) {
                         // check inserts can be modified
                         sf.setAttribute("id", sf.getAttribute("id") + "-modified");
                     }
                 }
-            } else if (element instanceof Update) {
-                Update update = (Update) element;
+            } else if (element instanceof Update update) {
                 List<Property> updateProperties = update.getUpdateProperties();
                 Property property = update.createProperty();
                 property.setName(new QName(null, "NAME"));

@@ -273,12 +273,12 @@ public class RestElasticClient implements ElasticClient {
                 throw new IllegalStateException("Authentication could not be determined!");
             }
             if (!auth.isAuthenticated()) {
-                throw new IllegalStateException(String.format("User is not authenticated: %s", auth.getName()));
+                throw new IllegalStateException("User is not authenticated: %s".formatted(auth.getName()));
             }
             optionsBuilder.addHeader(RUN_AS, auth.getName());
-            LOGGER.fine(String.format("Performing request on behalf of user %s", auth.getName()));
+            LOGGER.fine("Performing request on behalf of user %s".formatted(auth.getName()));
         } else {
-            LOGGER.fine(String.format("Performing request with %s credentials", isAdmin ? "user" : "proxy"));
+            LOGGER.fine("Performing request with %s credentials".formatted(isAdmin ? "user" : "proxy"));
         }
         request.setOptions(optionsBuilder);
         final Response response = client.performRequest(request);

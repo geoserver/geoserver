@@ -116,9 +116,9 @@ public final class JmsEventsListener extends JMSApplicationListener implements S
         for (Message message : messages) {
             try {
                 String handlerKey = message.getStringProperty(JMSEventHandlerSPI.getKeyName());
-                if (handlerKey.equals(handlerName) && message instanceof ObjectMessage) {
+                if (handlerKey.equals(handlerName) && message instanceof ObjectMessage objectMessage) {
                     // we found a message that match's the desired handler
-                    String object = ((ObjectMessage) message).getObject().toString();
+                    String object = objectMessage.getObject().toString();
                     found.add(handler.deserialize(object));
                 }
             } catch (Exception exception) {

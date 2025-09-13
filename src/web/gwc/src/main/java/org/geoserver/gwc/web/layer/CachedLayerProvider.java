@@ -8,6 +8,7 @@ package org.geoserver.gwc.web.layer;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,9 +30,12 @@ import org.geowebcache.layer.TileLayer;
  */
 class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
 
+    @Serial
     private static final long serialVersionUID = -8599398086587516574L;
+
     static final Property<TileLayer> TYPE = new AbstractProperty<>("type") {
 
+        @Serial
         private static final long serialVersionUID = 3215255763580377079L;
 
         @Override
@@ -52,6 +56,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
     static final Property<TileLayer> NAME = new BeanProperty<>("name", "name");
 
     static final Property<TileLayer> QUOTA_LIMIT = new AbstractProperty<>("quotaLimit") {
+        @Serial
         private static final long serialVersionUID = 5091453765439157623L;
 
         @Override
@@ -63,6 +68,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
     };
 
     static final Property<TileLayer> QUOTA_USAGE = new AbstractProperty<>("quotaUsed") {
+        @Serial
         private static final long serialVersionUID = 3503671083744555325L;
 
         /** @retun the used quota for the tile layer, may be {@code null} */
@@ -82,6 +88,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
     static final Property<TileLayer> ENABLED = new BeanProperty<>("enabled", "enabled");
 
     static final Property<TileLayer> PREVIEW_LINKS = new AbstractProperty<>("preview") {
+        @Serial
         private static final long serialVersionUID = 4375670219356088450L;
 
         @Override
@@ -101,6 +108,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
     };
 
     static final Property<TileLayer> ACTIONS = new AbstractProperty<>("actions") {
+        @Serial
         private static final long serialVersionUID = 247933970378482802L;
 
         @Override

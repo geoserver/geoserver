@@ -92,7 +92,7 @@ public class RasterAttributeTableConfig extends PublishedConfigurationPanel<Laye
                 createStyle();
                 target.add(styleToolbar);
                 Page page = getPage();
-                if (page instanceof GeoServerBasePage) ((GeoServerBasePage) page).addFeedbackPanels(target);
+                if (page instanceof GeoServerBasePage basePage) basePage.addFeedbackPanels(target);
                 page.visitChildren((c, v) -> {
                     if (c.getClass().getSimpleName().equals("WMSLayerConfig")) {
                         target.add(c);

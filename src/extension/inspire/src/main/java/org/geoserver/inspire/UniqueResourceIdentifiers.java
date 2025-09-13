@@ -5,6 +5,7 @@
  */
 package org.geoserver.inspire;
 
+import java.io.Serial;
 import java.util.ArrayList;
 
 /**
@@ -14,6 +15,7 @@ import java.util.ArrayList;
  */
 public class UniqueResourceIdentifiers extends ArrayList<UniqueResourceIdentifier> {
 
+    @Serial
     private static final long serialVersionUID = -6132343935725006351L;
 
     public UniqueResourceIdentifiers() {}

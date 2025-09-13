@@ -73,18 +73,17 @@ public class SystemPropertyStatus implements ModuleStatus {
         }
         LOGGER.log(
                 Level.WARNING,
-                String.format(
-                        "environment variable '%s' should be 'true' or 'false', but was '%s'",
-                        SystemPropertyStatusEnabledEnvironmentVar, val));
+                "environment variable '%s' should be 'true' or 'false', but was '%s'"
+                        .formatted(SystemPropertyStatusEnabledEnvironmentVar, val));
         return false; // bad value -> default
     }
 
     @Override
     public Optional<String> getMessage() {
         if (!isShow()) {
-            String message = String.format(
-                    "Java system properties hidden for security reasons.  Set the environment variable '%s' to 'true' to see them.",
-                    SystemPropertyStatusEnabledEnvironmentVar);
+            String message =
+                    "Java system properties hidden for security reasons.  Set the environment variable '%s' to 'true' to see them."
+                            .formatted(SystemPropertyStatusEnabledEnvironmentVar);
             return Optional.of(message);
         }
         StringBuffer result = new StringBuffer();

@@ -6,6 +6,7 @@ package org.geoserver.wms.web.data;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -33,6 +34,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 class ChooseImagePanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 7564545298131010218L;
 
     private WorkspaceInfo ws;
@@ -65,6 +67,7 @@ class ChooseImagePanel extends Panel {
         DropDownChoice<String> image = new DropDownChoice<>("image", imageModel, new ArrayList<>(imageSet));
 
         Image display = new Image("display", new ResourceStreamResource(new AbstractResourceStream() {
+            @Serial
             private static final long serialVersionUID = 9031811973994305485L;
 
             transient InputStream is;
@@ -86,6 +89,7 @@ class ChooseImagePanel extends Panel {
         display.setOutputMarkupPlaceholderTag(true).setVisible(false);
 
         image.setNullValid(true).setOutputMarkupId(true).add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 6320466559337730660L;
 
             @Override
@@ -98,6 +102,7 @@ class ChooseImagePanel extends Panel {
         });
 
         upload.setOutputMarkupId(true).add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 5905505859401520055L;
 
             @Override
@@ -114,6 +119,7 @@ class ChooseImagePanel extends Panel {
         add(upload);
 
         findParent(Form.class).add(new AbstractFormValidator() {
+            @Serial
             private static final long serialVersionUID = 1388363954282359884L;
 
             @Override

@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.dto.impl;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.metadata.data.dto.AttributeConfiguration;
@@ -18,6 +19,7 @@ import org.geoserver.metadata.data.dto.AttributeTypeConfiguration;
  */
 public class AttributeTypeConfigurationImpl implements AttributeTypeConfiguration {
 
+    @Serial
     private static final long serialVersionUID = 7617959011871570119L;
 
     String typename;

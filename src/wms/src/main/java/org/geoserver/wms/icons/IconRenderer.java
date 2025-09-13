@@ -92,8 +92,8 @@ public final class IconRenderer {
             for (Rule rule : ftStyle.rules()) {
                 if (rule.symbolizers().isEmpty()) throw new IllegalArgumentException("Symbolizer list was empty");
                 for (Symbolizer symbolizer : rule.symbolizers()) {
-                    if (symbolizer instanceof PointSymbolizer) {
-                        Graphic g = ((PointSymbolizer) symbolizer).getGraphic();
+                    if (symbolizer instanceof PointSymbolizer pointSymbolizer) {
+                        Graphic g = pointSymbolizer.getGraphic();
                         if (g != null) {
                             Double rotation =
                                     g.getRotation() != null ? g.getRotation().evaluate(null, Double.class) : null;

@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.impl;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import org.springframework.util.StringUtils;
  */
 public class GeoServerUser implements UserDetails, CredentialsContainer, Comparable<GeoServerUser> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String DEFAULT_ADMIN_PASSWD = "geoserver";
@@ -212,8 +214,8 @@ public class GeoServerUser implements UserDetails, CredentialsContainer, Compara
      */
     @Override
     public boolean equals(Object rhs) {
-        if (rhs instanceof GeoServerUser) {
-            return username.equals(((GeoServerUser) rhs).username);
+        if (rhs instanceof GeoServerUser user) {
+            return username.equals(user.username);
         }
         return false;
     }

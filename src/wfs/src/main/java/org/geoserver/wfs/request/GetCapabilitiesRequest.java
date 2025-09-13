@@ -22,10 +22,10 @@ public abstract class GetCapabilitiesRequest extends RequestObject {
     private String[] acceptLanguages;
 
     public static GetCapabilitiesRequest adapt(Object request) {
-        if (request instanceof GetCapabilitiesType) {
-            return new WFS11((EObject) request);
-        } else if (request instanceof net.opengis.wfs20.GetCapabilitiesType) {
-            return new WFS20((EObject) request);
+        if (request instanceof GetCapabilitiesType type) {
+            return new WFS11(type);
+        } else if (request instanceof net.opengis.wfs20.GetCapabilitiesType type) {
+            return new WFS20(type);
         }
         return null;
     }

@@ -4,6 +4,7 @@
  */
 package org.geoserver.featurestemplating.web;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -33,6 +34,7 @@ public class TemplateInfoPage extends GeoServerSecuredPage {
     public TemplateInfoPage() {
         add(new AjaxLink<Object>("addNew") {
 
+            @Serial
             private static final long serialVersionUID = -4136656891019857299L;
 
             @Override
@@ -82,6 +84,7 @@ public class TemplateInfoPage extends GeoServerSecuredPage {
 
     private AjaxLink<Object> newRemoveLink() {
         return new AjaxLink<Object>("removeSelected") {
+            @Serial
             private static final long serialVersionUID = 2421854498051377608L;
 
             @Override

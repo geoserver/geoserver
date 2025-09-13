@@ -60,9 +60,8 @@ public enum GeometryTypeEnum {
     public static GeometryTypeEnum forResourceDefaultGeometry(ResourceInfo resource) throws IOException {
         if (resource instanceof CoverageInfo) {
             return POLYGON;
-        } else if (resource instanceof FeatureTypeInfo) {
-            GeometryDescriptor gDesc =
-                    ((FeatureTypeInfo) resource).getFeatureType().getGeometryDescriptor();
+        } else if (resource instanceof FeatureTypeInfo info) {
+            GeometryDescriptor gDesc = info.getFeatureType().getGeometryDescriptor();
             if (gDesc == null) {
                 return null;
             } else {

@@ -6,6 +6,7 @@
 package org.geoserver.wcs.web.demo;
 
 import java.awt.geom.AffineTransform;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -18,6 +19,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
  * @author Andrea Aime - GeoSolutions
  */
 class GetCoverageRequest implements Serializable {
+    @Serial
     private static final long serialVersionUID = -1473018934663380028L;
 
     enum Version {

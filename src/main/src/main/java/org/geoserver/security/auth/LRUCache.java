@@ -6,6 +6,7 @@
 
 package org.geoserver.security.auth;
 
+import java.io.Serial;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import java.util.Map;
  */
 public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final int capacity;

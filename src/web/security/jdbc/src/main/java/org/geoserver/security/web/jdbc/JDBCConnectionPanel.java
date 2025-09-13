@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.jdbc;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -36,6 +37,7 @@ import org.geotools.util.logging.Logging;
 // TODO WICKET8 - Verify this page works OK
 public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends FormComponentPanel<T> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");

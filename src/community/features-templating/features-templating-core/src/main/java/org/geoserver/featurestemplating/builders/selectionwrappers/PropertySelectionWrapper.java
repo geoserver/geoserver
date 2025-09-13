@@ -60,8 +60,7 @@ public class PropertySelectionWrapper extends TemplateBuilderWrapper {
         TemplateBuilder builder = this;
         TemplateBuilder currParent = builder.getParent();
         while (currParent != null) {
-            if (currParent instanceof AbstractTemplateBuilder && hasSelectableKey(currParent)) {
-                AbstractTemplateBuilder parent = (AbstractTemplateBuilder) currParent;
+            if (currParent instanceof AbstractTemplateBuilder parent && hasSelectableKey(currParent)) {
                 String pKey = parent.getKey(context);
                 if (pKey != null) linkedList.addFirst(pKey);
             }
@@ -80,8 +79,8 @@ public class PropertySelectionWrapper extends TemplateBuilderWrapper {
      *     chosen handler.
      */
     protected Object pruneJsonNodeIfNeeded(TemplateBuilderContext context, Object value) {
-        if (value instanceof JsonNode) {
-            value = strategy.pruneJsonAttributes((JsonNode) value, getFullKey(context));
+        if (value instanceof JsonNode node) {
+            value = strategy.pruneJsonAttributes(node, getFullKey(context));
         }
         return value;
     }

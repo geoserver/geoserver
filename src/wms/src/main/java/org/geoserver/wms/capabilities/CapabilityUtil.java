@@ -57,11 +57,9 @@ public final class CapabilityUtil {
             if (styledLayers.isPresent()) {
                 for (StyledLayer styledLayer : styledLayers.get()) {
                     List<Style> stylesList = Collections.emptyList();
-                    if (styledLayer instanceof NamedLayer) {
-                        NamedLayer namedLayer = (NamedLayer) styledLayer;
+                    if (styledLayer instanceof NamedLayer namedLayer) {
                         stylesList = namedLayer.styles();
-                    } else if (styledLayer instanceof UserLayer) {
-                        UserLayer userLayer = (UserLayer) styledLayer;
+                    } else if (styledLayer instanceof UserLayer userLayer) {
                         stylesList = userLayer.userStyles();
                     }
                     for (Style style : stylesList) {
@@ -141,11 +139,11 @@ public final class CapabilityUtil {
                 StyleInfo styleInfo = layerGroup.getStyles().get(i);
                 if (styleInfo == null) {
                     PublishedInfo publishedInfo = layerGroup.getLayers().get(i);
-                    if (publishedInfo instanceof LayerInfo) {
-                        styleInfo = ((LayerInfo) publishedInfo).getDefaultStyle();
+                    if (publishedInfo instanceof LayerInfo info1) {
+                        styleInfo = info1.getDefaultStyle();
                         stylesCopy.add(styleInfo);
-                    } else if (publishedInfo instanceof LayerGroupInfo) {
-                        findLayerGroupStyles((LayerGroupInfo) publishedInfo, stylesCopy);
+                    } else if (publishedInfo instanceof LayerGroupInfo info) {
+                        findLayerGroupStyles(info, stylesCopy);
                     }
                 } else {
                     stylesCopy.add(styleInfo);
@@ -188,10 +186,10 @@ public final class CapabilityUtil {
      */
     public static NumberRange<Double> searchMinMaxScaleDenominator(final PublishedInfo publishedInfo)
             throws IOException {
-        if (publishedInfo instanceof LayerInfo) {
-            return searchMinMaxScaleDenominator((LayerInfo) publishedInfo);
-        } else if (publishedInfo instanceof LayerGroupInfo) {
-            return searchMinMaxScaleDenominator((LayerGroupInfo) publishedInfo);
+        if (publishedInfo instanceof LayerInfo info1) {
+            return searchMinMaxScaleDenominator(info1);
+        } else if (publishedInfo instanceof LayerGroupInfo info) {
+            return searchMinMaxScaleDenominator(info);
         }
         throw new UnsupportedOperationException("PublishedInfo must be either Layer or Layergroup");
     }

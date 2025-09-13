@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.resources;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import org.geoserver.web.treeview.TreeView;
  */
 public class ClipBoard implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -5996563694112082364L;
 
     private static final String MARK_COPY = "copy";

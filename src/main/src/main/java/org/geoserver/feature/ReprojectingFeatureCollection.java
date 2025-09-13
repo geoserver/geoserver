@@ -221,9 +221,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
             AttributeDescriptor type = schema.getDescriptor(i);
             Object object = feature.getAttribute(type.getName());
 
-            if (object instanceof Geometry) {
-                // check for crs
-                Geometry geometry = (Geometry) object;
+            if (object instanceof Geometry geometry) {
                 CoordinateReferenceSystem crs = (CoordinateReferenceSystem) geometry.getUserData();
 
                 if (crs == null) {

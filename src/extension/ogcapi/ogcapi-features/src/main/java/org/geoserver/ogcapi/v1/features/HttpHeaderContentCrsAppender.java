@@ -30,9 +30,9 @@ public class HttpHeaderContentCrsAppender extends AbstractDispatcherCallback {
     public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
 
         // is this a feature response we are about to encode?
-        if (result instanceof FeaturesResponse) {
+        if (result instanceof FeaturesResponse featuresResponse) {
             HttpServletResponse httpResponse = request.getHttpResponse();
-            FeatureCollectionResponse fcr = ((FeaturesResponse) result).getResponse();
+            FeatureCollectionResponse fcr = featuresResponse.getResponse();
             CoordinateReferenceSystem crs = Optional.ofNullable(fcr)
                     .map(fct -> fct.getFeatures().get(0))
                     .map(fc -> fc.getSchema())

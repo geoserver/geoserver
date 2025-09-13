@@ -23,8 +23,8 @@ public interface TypeInfoCollectionWrapper {
     @SuppressWarnings("unchecked")
     static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> wrap(
             FeatureCollection<T, F> delegate, FeatureTypeInfo featureTypeInfo) {
-        if (delegate instanceof SimpleFeatureCollection) {
-            return (FeatureCollection<T, F>) new Simple((SimpleFeatureCollection) delegate, featureTypeInfo);
+        if (delegate instanceof SimpleFeatureCollection collection) {
+            return (FeatureCollection<T, F>) new Simple(collection, featureTypeInfo);
         } else {
             return new Complex<>(delegate, featureTypeInfo);
         }

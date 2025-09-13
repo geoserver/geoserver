@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import org.apache.wicket.Application;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.security.config.RoleSource;
@@ -17,6 +18,7 @@ import org.geoserver.security.config.RoleSource;
 public class RoleSourceChoiceRenderer extends ChoiceRenderer<RoleSource> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override

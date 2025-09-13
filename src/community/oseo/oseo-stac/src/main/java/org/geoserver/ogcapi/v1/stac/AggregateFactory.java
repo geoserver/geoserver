@@ -75,8 +75,7 @@ public class AggregateFactory {
                 return "";
             }
         } else if (AggregateType.BOUNDS.equals(aggregate)) {
-            if (visitorReturn != null && visitorReturn instanceof ReferencedEnvelope) {
-                ReferencedEnvelope envelope = (ReferencedEnvelope) visitorReturn;
+            if (visitorReturn != null && visitorReturn instanceof ReferencedEnvelope envelope) {
                 if ("x".equals(property)) {
                     return new EnvelopeWrapper(envelope).getX();
                 } else if ("y".equals(property)) {
@@ -96,8 +95,8 @@ public class AggregateFactory {
                 return new EnvelopeWrapper(null);
             }
         } else if (AggregateType.DISTINCT.equals(aggregate)) {
-            if (visitorReturn != null && visitorReturn instanceof Set) {
-                List<Integer> distinct = new ArrayList<>((Set) visitorReturn);
+            if (visitorReturn != null && visitorReturn instanceof Set set) {
+                List<Integer> distinct = new ArrayList<>(set);
                 Collections.sort(distinct);
                 return distinct;
             } else {

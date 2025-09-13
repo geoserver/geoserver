@@ -122,12 +122,15 @@ public class AggregateProcessTest extends WPSTestSupport {
                 + "      </wps:Data>\n"
                 + "    </wps:Input>\n";
         if (groupBy) {
-            xml += "    <wps:Input>\n"
-                    + "      <ows:Identifier>groupByAttributes</ows:Identifier>\n"
-                    + "      <wps:Data>\n"
-                    + "        <wps:LiteralData>name</wps:LiteralData>\n"
-                    + "      </wps:Data>\n"
-                    + "    </wps:Input>\n";
+            xml +=
+                    """
+                        <wps:Input>
+                          <ows:Identifier>groupByAttributes</ows:Identifier>
+                          <wps:Data>
+                            <wps:LiteralData>name</wps:LiteralData>
+                          </wps:Data>
+                        </wps:Input>
+                    """;
         }
         xml += "  </wps:DataInputs>\n" + " <wps:ResponseForm>\n";
         if (rawOutput) {

@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.resources;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +22,7 @@ import org.geoserver.platform.resource.ResourceNotification.Event;
  */
 public class ResourceExpandedStates implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 8635581624445593893L;
 
     protected Set<String> expanded = new HashSet<>();
@@ -32,6 +34,7 @@ public class ResourceExpandedStates implements Serializable {
     /** The model for a single resource node */
     protected class ResourceExpandedState implements IModel<Boolean>, ResourceListener {
 
+        @Serial
         private static final long serialVersionUID = 4995246395674902150L;
 
         protected Resource resource;

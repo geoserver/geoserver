@@ -131,8 +131,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
      */
     void handleOpacity(Expression opacity) {
         if (opacity == null) return;
-        if (opacity instanceof Literal) {
-            Literal lo = (Literal) opacity;
+        if (opacity instanceof Literal lo) {
             double value = lo.evaluate(null, Double.class).doubleValue();
             translucentSymbolizers = translucentSymbolizers || value != 1;
         } else {
@@ -147,8 +146,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
      */
     void handleColor(Expression color) {
         if (color == null) return;
-        if (color instanceof Literal) {
-            Literal lc = (Literal) color;
+        if (color instanceof Literal lc) {
             String rgbColor = lc.evaluate(null, String.class);
             colors.add(Color.decode(rgbColor));
         } else {
@@ -185,10 +183,10 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
         StyledLayer[] layers = sld.getStyledLayers();
 
         for (StyledLayer layer : layers) {
-            if (layer instanceof NamedLayer) {
-                ((NamedLayer) layer).accept(this);
-            } else if (layer instanceof UserLayer) {
-                ((UserLayer) layer).accept(this);
+            if (layer instanceof NamedLayer namedLayer) {
+                namedLayer.accept(this);
+            } else if (layer instanceof UserLayer userLayer) {
+                userLayer.accept(this);
             }
         }
     }
@@ -219,24 +217,24 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     /** @see org.geotools.api.style.StyleVisitor#visit(org.geotools.api.style.Symbolizer) */
     @Override
     public void visit(Symbolizer sym) {
-        if (sym instanceof PointSymbolizer) {
-            visit((PointSymbolizer) sym);
+        if (sym instanceof PointSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof LineSymbolizer) {
-            visit((LineSymbolizer) sym);
+        if (sym instanceof LineSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof PolygonSymbolizer) {
-            visit((PolygonSymbolizer) sym);
+        if (sym instanceof PolygonSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof TextSymbolizer) {
-            visit((TextSymbolizer) sym);
+        if (sym instanceof TextSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof RasterSymbolizer) {
-            visit((RasterSymbolizer) sym);
+        if (sym instanceof RasterSymbolizer symbolizer) {
+            visit(symbolizer);
         }
     }
 

@@ -165,9 +165,9 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
     /** Helper method that obtains a WFS data store from a generic data access by unwrapping it if necessary. */
     private static WFSDataStore extractWfsDataStore(DataAccess dataStore) {
         assertThat(dataStore, notNullValue());
-        if (dataStore instanceof Wrapper) {
+        if (dataStore instanceof Wrapper wrapper) {
             // an exception will be throw if no wfs data store can be found
-            return ((Wrapper) dataStore).unwrap(WFSDataStore.class);
+            return wrapper.unwrap(WFSDataStore.class);
         }
         assertThat(dataStore, instanceOf(WFSDataStore.class));
         return (WFSDataStore) dataStore;

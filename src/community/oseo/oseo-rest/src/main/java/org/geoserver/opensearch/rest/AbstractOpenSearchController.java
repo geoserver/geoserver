@@ -287,8 +287,8 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
                     } else {
                         fb.set(ad.getLocalName(), value);
                         if (("eo:identifier".equals(ad.getLocalName()) || "eop:identifier".equals(ad.getLocalName()))
-                                && value instanceof String) {
-                            identifier = (String) value;
+                                && value instanceof String string) {
+                            identifier = string;
                         }
                     }
                 }
@@ -395,8 +395,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             Object converted = convert(originalValue, pd.getType().getBinding());
             // features need to have an identifier for the creation to work, if null must be skipped
             if (pd.getType() instanceof FeatureType) {
-                if (converted instanceof Feature) {
-                    Feature f = (Feature) converted;
+                if (converted instanceof Feature f) {
                     Attribute attribute = ab.buildSimple(f.getIdentifier().getID(), converted);
                     builder.append(pd.getName(), attribute);
                 }
@@ -424,9 +423,8 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         // might have too many side effects as a globally available converter
         // we might revisit this decision later
         if (converted == null) {
-            if (targetClass.isArray() && value instanceof List) {
+            if (targetClass.isArray() && value instanceof List list) {
                 Class<?> componentType = targetClass.getComponentType();
-                List list = (List) value;
                 converted = Array.newInstance(componentType, list.size());
                 int i = 0;
                 for (Object o : list) {

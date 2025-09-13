@@ -6,6 +6,7 @@
 package org.geoserver.web.data.importer;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
@@ -39,7 +40,9 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 // TODO WICKET8 - Verify this page works OK
 public class WMSLayerImporterPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -3413451886777414860L;
+
     String storeId;
     private GeoServerTablePanel<LayerResource> layers;
     private WMSLayerProvider provider;
@@ -73,6 +76,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
         add(form);
         layers = new GeoServerTablePanel<>("layerChooser", provider, true) {
 
+            @Serial
             private static final long serialVersionUID = -5817898784100419973L;
 
             @Override
@@ -114,6 +118,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
     SimpleAjaxLink<LayerResource> resourceChooserLink(String id, IModel<LayerResource> itemModel, IModel<?> label) {
         return new SimpleAjaxLink<>(id, itemModel, label) {
 
+            @Serial
             private static final long serialVersionUID = 163167608296661157L;
 
             @Override
@@ -141,6 +146,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
     AjaxSubmitLink submitLink() {
         return new AjaxSubmitLink("import") {
 
+            @Serial
             private static final long serialVersionUID = -7161320029912723242L;
 
             @Override
@@ -186,6 +192,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
     AjaxSubmitLink importAllLink() {
         return new AjaxSubmitLink("importAll") {
 
+            @Serial
             private static final long serialVersionUID = 7089389540839181808L;
 
             @Override
@@ -258,7 +265,9 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
 
     final class StatusModel implements IModel<String> {
 
+        @Serial
         private static final long serialVersionUID = 7754149365712750847L;
+
         IModel<LayerResource> layerResource;
 
         public StatusModel(IModel<LayerResource> layerResource) {
@@ -284,7 +293,9 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
 
     static final class IconModel implements IModel<PackageResourceReference> {
 
+        @Serial
         private static final long serialVersionUID = 5762710251083186192L;
+
         IModel<LayerResource> layerResource;
 
         public IconModel(IModel<LayerResource> layerResource) {

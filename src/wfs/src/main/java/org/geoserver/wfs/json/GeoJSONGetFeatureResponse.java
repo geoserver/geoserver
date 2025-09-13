@@ -420,14 +420,11 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat impleme
                             jsonWriter.value(TemporalUtils.printDate((Date) value));
                         } else {
                             jsonWriter.key(ad.getLocalName());
-                            if ((value instanceof Double && Double.isNaN((Double) value))
-                                    || value instanceof Float && Float.isNaN((Float) value)) {
+                            if (isNaN(value)) {
                                 jsonWriter.value(null);
-                            } else if ((value instanceof Double && ((Double) value) == Double.POSITIVE_INFINITY)
-                                    || value instanceof Float && ((Float) value) == Float.POSITIVE_INFINITY) {
+                            } else if (isPositiveInfinity(value)) {
                                 jsonWriter.value("Infinity");
-                            } else if ((value instanceof Double && ((Double) value) == Double.NEGATIVE_INFINITY)
-                                    || value instanceof Float && ((Float) value) == Float.NEGATIVE_INFINITY) {
+                            } else if (isNegativeInfinity(value)) {
                                 jsonWriter.value("-Infinity");
                             } else {
                                 jsonWriter.value(value);
@@ -449,6 +446,20 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat impleme
             }
         }
         return new FeaturesInfo(crs, hasGeom, featureCount);
+    }
+
+    private boolean isNegativeInfinity(Object value) {
+        return (value instanceof Double dv && dv == Double.NEGATIVE_INFINITY)
+                || (value instanceof Float fv && fv == Float.NEGATIVE_INFINITY);
+    }
+
+    private boolean isPositiveInfinity(Object value) {
+        return (value instanceof Double dv && dv == Double.POSITIVE_INFINITY)
+                || (value instanceof Float fv && fv == Float.POSITIVE_INFINITY);
+    }
+
+    private boolean isNaN(Object value) {
+        return (value instanceof Double dv && Double.isNaN(dv)) || (value instanceof Float fv && Float.isNaN(fv));
     }
 
     /**

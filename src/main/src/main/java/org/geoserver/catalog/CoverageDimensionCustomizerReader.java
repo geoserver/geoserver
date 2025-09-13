@@ -144,9 +144,8 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         if (coverageName != null) {
             reader = SingleGridCoverage2DReader.wrap(delegate, coverageName);
         }
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            return new CoverageDimensionCustomizerStructuredReader(
-                    (StructuredGridCoverage2DReader) reader, coverageName, info);
+        if (reader instanceof StructuredGridCoverage2DReader dReader) {
+            return new CoverageDimensionCustomizerStructuredReader(dReader, coverageName, info);
         } else {
             return new CoverageDimensionCustomizerReader(reader, coverageName, info);
         }
@@ -165,9 +164,8 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         if (coverageName != null) {
             reader = SingleGridCoverage2DReader.wrap(delegate, coverageName);
         }
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            return new CoverageDimensionCustomizerStructuredReader(
-                    (StructuredGridCoverage2DReader) reader, coverageName, info);
+        if (reader instanceof StructuredGridCoverage2DReader dReader) {
+            return new CoverageDimensionCustomizerStructuredReader(dReader, coverageName, info);
         } else {
             return new CoverageDimensionCustomizerReader(reader, coverageName, info);
         }
@@ -530,8 +528,8 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
 
         @Override
         public boolean isWrapperFor(Class<?> iface) {
-            if (gridCoverage instanceof Wrapper) {
-                return ((Wrapper) gridCoverage).isWrapperFor(iface);
+            if (gridCoverage instanceof Wrapper wrapper) {
+                return wrapper.isWrapperFor(iface);
             }
             return iface.isInstance(gridCoverage);
         }
@@ -539,8 +537,8 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         @Override
         @SuppressWarnings("unchecked")
         public <T> T unwrap(Class<T> iface) throws IllegalArgumentException {
-            if (gridCoverage instanceof Wrapper) {
-                return ((Wrapper) gridCoverage).unwrap(iface);
+            if (gridCoverage instanceof Wrapper wrapper) {
+                return wrapper.unwrap(iface);
             }
             if (iface.isInstance(gridCoverage)) {
                 return (T) gridCoverage;

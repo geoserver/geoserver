@@ -5,6 +5,7 @@
  */
 package org.geoserver.monitor.web;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -23,6 +24,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 
 public class LiveActivityPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -2807950039989311964L;
 
     public LiveActivityPanel(String id) {
@@ -30,6 +32,7 @@ public class LiveActivityPanel extends Panel {
 
         GeoServerTablePanel<RequestData> requests =
                 new GeoServerTablePanel<>("requests", new LiveRequestDataProvider()) {
+                    @Serial
                     private static final long serialVersionUID = -431473636413825153L;
 
                     @Override
@@ -46,6 +49,7 @@ public class LiveActivityPanel extends Panel {
 
     static class LiveRequestDataProvider extends GeoServerDataProvider<RequestData> {
 
+        @Serial
         private static final long serialVersionUID = -5576324995486786071L;
 
         static final Property<RequestData> ID = new BeanProperty<>("id", "id");

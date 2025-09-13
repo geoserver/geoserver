@@ -121,22 +121,25 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         wms13Client.expectGet(new URL(mockJpegUrl), new MockHttpResponse(gifRoadsImage, "image/gif"));
 
         // mock JSON Legend calls
-        String jsonResponse = "{\"Legend\": [{\n"
-                + "  \"layerName\": \"roads22\",\n"
-                + "  \"title\": \"roads\",\n"
-                + "  \"rules\": [  {\n"
-                + "    \"name\": \"Rule 1\",\n"
-                + "    \"title\": \"Green Line\",\n"
-                + "    \"abstract\": \"A green line with a 2 pixel width\",\n"
-                + "    \"symbolizers\": [{\"Line\":     {\n"
-                + "      \"stroke\": \"#0000FF\",\n"
-                + "      \"stroke-width\": 1,\n"
-                + "      \"stroke-opacity\": \"1\",\n"
-                + "      \"stroke-linecap\": \"butt\",\n"
-                + "      \"stroke-linejoin\": \"miter\"\n"
-                + "    }}]\n"
-                + "  }]\n"
-                + "}]}";
+        String jsonResponse =
+                """
+                {"Legend": [{
+                  "layerName": "roads22",
+                  "title": "roads",
+                  "rules": [  {
+                    "name": "Rule 1",
+                    "title": "Green Line",
+                    "abstract": "A green line with a 2 pixel width",
+                    "symbolizers": [{"Line":     {
+                      "stroke": "#0000FF",
+                      "stroke-width": 1,
+                      "stroke-opacity": "1",
+                      "stroke-linecap": "butt",
+                      "stroke-linejoin": "miter"
+                    }}]
+                  }]
+                }]}\
+                """;
 
         // this url is coming from caps111.xml file
         String mockCascadedJSONUrl = wms13BaseURL
@@ -327,22 +330,25 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         wms11Client.expectGet(new URL(mockJpegUrl), new MockHttpResponse(gifRoadsImage, "image/gif"));
 
         // mock JSON Legend calls
-        String jsonResponse = "{\"Legend\": [{\n"
-                + "  \"layerName\": \"roads22\",\n"
-                + "  \"title\": \"roads\",\n"
-                + "  \"rules\": [  {\n"
-                + "    \"name\": \"Rule 1\",\n"
-                + "    \"title\": \"Green Line\",\n"
-                + "    \"abstract\": \"A green line with a 2 pixel width\",\n"
-                + "    \"symbolizers\": [{\"Line\":     {\n"
-                + "      \"stroke\": \"#0000FF\",\n"
-                + "      \"stroke-width\": 1,\n"
-                + "      \"stroke-opacity\": \"1\",\n"
-                + "      \"stroke-linecap\": \"butt\",\n"
-                + "      \"stroke-linejoin\": \"miter\"\n"
-                + "    }}]\n"
-                + "  }]\n"
-                + "}]}";
+        String jsonResponse =
+                """
+                {"Legend": [{
+                  "layerName": "roads22",
+                  "title": "roads",
+                  "rules": [  {
+                    "name": "Rule 1",
+                    "title": "Green Line",
+                    "abstract": "A green line with a 2 pixel width",
+                    "symbolizers": [{"Line":     {
+                      "stroke": "#0000FF",
+                      "stroke-width": 1,
+                      "stroke-opacity": "1",
+                      "stroke-linecap": "butt",
+                      "stroke-linejoin": "miter"
+                    }}]
+                  }]
+                }]}\
+                """;
 
         // this url is coming from caps111.xml file
         String mockCascadedJSONUrl = wms11BaseURL

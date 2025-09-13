@@ -5,8 +5,11 @@
  */
 package org.geoserver.wms;
 
+import java.io.Serial;
+
 public class WatermarkInfoImpl implements WatermarkInfo {
 
+    @Serial
     private static final long serialVersionUID = -3306354572824960991L;
 
     boolean enabled;

@@ -112,7 +112,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     public void writeElementNameAndValue(String key, Object elementValue, EncodingHints encodingHints)
             throws IOException {
         boolean encodeAsAttribute = isEncodeAsAttribute(encodingHints);
-        boolean repeatName = elementValue instanceof List && ((List) elementValue).size() > 1;
+        boolean repeatName = elementValue instanceof List l && l.size() > 1;
         boolean canClose = false;
         if (key != null && !repeatName && !encodeAsAttribute) {
             writeElementName(key, encodingHints);
@@ -136,25 +136,21 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
                     writeAsCharacters(String.valueOf(elementValue));
                     canClose = true;
                 }
-            } else if (elementValue instanceof Geometry) {
-                writeGeometry((Geometry) elementValue);
+            } else if (elementValue instanceof Geometry geometry) {
+                writeGeometry(geometry);
                 canClose = true;
-            } else if (elementValue instanceof Date) {
-                Date timeStamp = (Date) elementValue;
+            } else if (elementValue instanceof Date timeStamp) {
                 String formatted = new ISO8601Formatter().format(timeStamp);
                 if (encodeAsAttribute) writeAsAttribute(key, elementValue, encodingHints);
                 else {
                     streamWriter.writeCharacters(formatted);
                     canClose = true;
                 }
-            } else if (elementValue instanceof ComplexAttribute) {
-                ComplexAttribute attr = (ComplexAttribute) elementValue;
+            } else if (elementValue instanceof ComplexAttribute attr) {
                 writeElementNameAndValue(encodeAsAttribute ? key : null, attr.getValue(), encodingHints);
-            } else if (elementValue instanceof Attribute) {
-                Attribute attr = (Attribute) elementValue;
+            } else if (elementValue instanceof Attribute attr) {
                 writeElementNameAndValue(encodeAsAttribute ? key : null, attr.getValue(), encodingHints);
-            } else if (elementValue instanceof List) {
-                List list = (List) elementValue;
+            } else if (elementValue instanceof List list) {
                 if (!repeatName && !list.isEmpty()) {
                     writeElementNameAndValue(key, list.get(0), encodingHints);
                 } else {

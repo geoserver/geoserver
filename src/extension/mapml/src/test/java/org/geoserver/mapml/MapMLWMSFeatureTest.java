@@ -299,13 +299,11 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         for (Feature feature : features) {
             Object geometry = feature.getGeometry().getGeometryContent().getValue();
             // all lines are small enough that they are simplified to start/end
-            if (geometry instanceof LineString) {
-                LineString ls = (LineString) geometry;
+            if (geometry instanceof LineString ls) {
                 String lscoords =
                         ls.getCoordinates().get(0).getCoordinates().get(0).toString();
                 assertEquals(4, lscoords.split(" ").length);
-            } else if (geometry instanceof MultiLineString) {
-                MultiLineString mls = (MultiLineString) geometry;
+            } else if (geometry instanceof MultiLineString mls) {
                 for (Coordinates je : mls.getTwoOrMoreCoordinatePairs()) {
                     String mlscoords = je.getCoordinates().get(0).toString();
                     assertEquals(2, mlscoords.split(" ").length);
@@ -348,16 +346,14 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         for (Feature feature : features) {
             Object geometry = feature.getGeometry().getGeometryContent().getValue();
             // all lines are small enough that they are simplified to start/end
-            if (geometry instanceof LineString) {
-                LineString ls = (LineString) geometry;
+            if (geometry instanceof LineString ls) {
                 String lscoords =
                         ls.getCoordinates().get(0).getCoordinates().get(0).toString();
                 String[] coords = lscoords.split(" ");
                 BigDecimal bd = new BigDecimal(coords[0]).stripTrailingZeros();
                 int scale = bd.scale();
                 assertEquals(expectedScale, scale);
-            } else if (geometry instanceof MultiLineString) {
-                MultiLineString mls = (MultiLineString) geometry;
+            } else if (geometry instanceof MultiLineString mls) {
                 for (Coordinates je : mls.getTwoOrMoreCoordinatePairs()) {
                     String mlscoords = je.getCoordinates().get(0).toString();
                     String[] coords = mlscoords.split(" ");
@@ -414,11 +410,13 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             template = new File(parent, MAPML_FEATURE_HEAD_FTL);
             FileUtils.write(
                     template,
-                    "<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-                            + "<map-head>\n"
-                            + "  <map-style>.desired {stroke-dashoffset:3}</map-style>\n"
-                            + "</map-head>\n"
-                            + "</mapml->\n",
+                    """
+                    <mapml- xmlns="http://www.w3.org/1999/xhtml">
+                    <map-head>
+                      <map-style>.desired {stroke-dashoffset:3}</map-style>
+                    </map-head>
+                    </mapml->
+                    """,
                     "UTF-8");
             Mapml mapmlFeatures = new MapMLWMSRequest()
                     .name(MockData.BRIDGES.getLocalPart())
@@ -451,28 +449,30 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             template = new File(parent, MAPML_FEATURE_FTL);
             FileUtils.write(
                     template,
-                    "<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-                            + "<map-head>\n"
-                            + "</map-head>\n"
-                            + "<map-body>\n"
-                            + "<map-feature>\n"
-                            + "  <#list attributes as attribute>\n"
-                            + "    <#if attribute.name == \"NAME\">\n"
-                            + "      <map-properties name=\"UPDATED ${attribute.name}\" value=\"CHANGED ${attribute.value}\"/>\n"
-                            + "    </#if>\n"
-                            + "  </#list>\n"
-                            + "  <#list attributes as gattribute>\n"
-                            + "    <#if gattribute.isGeometry>\n"
-                            + "      <map-geometry>"
-                            + "       <map-point>"
-                            + "       <map-coordinates><#list gattribute.rawValue.coordinates as coord>"
-                            + "        <#if coord?index == 0><map-span class=\"desired\">${coord.x} ${coord.y}</map-span><#else>${coord.x} ${coord.y}</#if></#list></map-coordinates></map-point>"
-                            + "      </map-geometry>"
-                            + "    </#if>\n"
-                            + "  </#list>\n"
-                            + "</map-feature>\n"
-                            + "</map-body>\n"
-                            + "</mapml->\n",
+                    """
+                    <mapml- xmlns="http://www.w3.org/1999/xhtml">
+                    <map-head>
+                    </map-head>
+                    <map-body>
+                    <map-feature>
+                      <#list attributes as attribute>
+                        <#if attribute.name == "NAME">
+                          <map-properties name="UPDATED ${attribute.name}" value="CHANGED ${attribute.value}"/>
+                        </#if>
+                      </#list>
+                      <#list attributes as gattribute>
+                        <#if gattribute.isGeometry>
+                          <map-geometry>\
+                           <map-point>\
+                           <map-coordinates><#list gattribute.rawValue.coordinates as coord>\
+                            <#if coord?index == 0><map-span class="desired">${coord.x} ${coord.y}</map-span><#else>${coord.x} ${coord.y}</#if></#list></map-coordinates></map-point>\
+                          </map-geometry>\
+                        </#if>
+                      </#list>
+                    </map-feature>
+                    </map-body>
+                    </mapml->
+                    """,
                     "UTF-8");
             Mapml mapmlFeatures = new MapMLWMSRequest()
                     .name(MockData.BRIDGES.getLocalPart())
@@ -511,19 +511,21 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             template = new File(parent, MAPML_FEATURE_FTL);
             FileUtils.write(
                     template,
-                    "<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-                            + "<map-head>\n"
-                            + "</map-head>\n"
-                            + "<map-body>\n"
-                            + "<map-feature>\n"
-                            + "  <#list attributes as attribute>\n"
-                            + "    <#if attribute.isGeometry>\n"
-                            + "      <map-geometry><map-linestring><map-coordinates><#list attribute.rawValue.coordinates as coord><#if coord?index == 2> <map-span class=\"desired\">${coord.x} ${coord.y}<#elseif coord?index == 3>${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates></map-linestring></map-geometry>\n"
-                            + "    </#if>\n"
-                            + "  </#list>\n"
-                            + "</map-feature>\n"
-                            + "</map-body>\n"
-                            + "</mapml->\n",
+                    """
+                    <mapml- xmlns="http://www.w3.org/1999/xhtml">
+                    <map-head>
+                    </map-head>
+                    <map-body>
+                    <map-feature>
+                      <#list attributes as attribute>
+                        <#if attribute.isGeometry>
+                          <map-geometry><map-linestring><map-coordinates><#list attribute.rawValue.coordinates as coord><#if coord?index == 2> <map-span class="desired">${coord.x} ${coord.y}<#elseif coord?index == 3>${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates></map-linestring></map-geometry>
+                        </#if>
+                      </#list>
+                    </map-feature>
+                    </map-body>
+                    </mapml->
+                    """,
                     "UTF-8");
             Mapml mapmlFeatures = new MapMLWMSRequest()
                     .name(MockData.MLINES.getLocalPart())
@@ -561,25 +563,27 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             template = new File(parent, MAPML_FEATURE_FTL);
             FileUtils.write(
                     template,
-                    "<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-                            + "<map-head>\n"
-                            + "</map-head>\n"
-                            + "<map-body>\n"
-                            + "<map-feature>\n"
-                            + "  <#list attributes as attribute>\n"
-                            + "    <#if attribute.isGeometry>\n"
-                            + "      <map-geometry>\n"
-                            + "       <map-polygon>"
-                            + "       <#assign shell = attribute.rawValue.getExteriorRing()><map-coordinates><#list shell.coordinates as coord><#if coord?index == 0><map-span class=\"desired\">${coord.x} ${coord.y}<#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates>"
-                            + "      <#list 0 ..< attribute.rawValue.getNumInteriorRing() as index>"
-                            + "        <#assign hole = attribute.rawValue.getInteriorRingN(index)><map-coordinates><#list hole.coordinates as coord><#if coord?index == 0><map-span class=\"desired\">${coord.x} ${coord.y} <#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates></#list>"
-                            + "       </map-polygon>"
-                            + "      </map-geometry>\n"
-                            + "    </#if>\n"
-                            + "  </#list>\n"
-                            + "</map-feature>\n"
-                            + "</map-body>\n"
-                            + "</mapml- >\n",
+                    """
+                    <mapml- xmlns="http://www.w3.org/1999/xhtml">
+                    <map-head>
+                    </map-head>
+                    <map-body>
+                    <map-feature>
+                      <#list attributes as attribute>
+                        <#if attribute.isGeometry>
+                          <map-geometry>
+                           <map-polygon>\
+                           <#assign shell = attribute.rawValue.getExteriorRing()><map-coordinates><#list shell.coordinates as coord><#if coord?index == 0><map-span class="desired">${coord.x} ${coord.y}<#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates>\
+                          <#list 0 ..< attribute.rawValue.getNumInteriorRing() as index>\
+                            <#assign hole = attribute.rawValue.getInteriorRingN(index)><map-coordinates><#list hole.coordinates as coord><#if coord?index == 0><map-span class="desired">${coord.x} ${coord.y} <#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates></#list>\
+                           </map-polygon>\
+                          </map-geometry>
+                        </#if>
+                      </#list>
+                    </map-feature>
+                    </map-body>
+                    </mapml- >
+                    """,
                     "UTF-8");
             Mapml mapmlFeatures = new MapMLWMSRequest()
                     .name(MockData.POLYGONS.getLocalPart())
@@ -620,49 +624,51 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             template = new File(parent, MAPML_FEATURE_FTL);
             FileUtils.write(
                     template,
-                    "<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-                            + "<map-head>\n"
-                            + "</map-head>\n"
-                            + "<map-body>\n"
-                            + "<map-feature>\n"
-                            + "<#if attributes.FID.value == \"117\">\n"
-                            + "  <#list attributes as attribute>\n"
-                            + "    <#if attribute.isGeometry>\n"
-                            + "      <map-geometry>\n"
-                            + "        <map-multipolygon>"
-                            + "      <#list 0 ..< attribute.rawValue.getNumGeometries() as index>"
-                            + "        <#assign polygon = attribute.rawValue.getGeometryN(index)>"
-                            + "       <map-polygon>"
-                            + "       <#assign shell = polygon.getExteriorRing()><map-coordinates><#list shell.coordinates as coord><#if coord?index == 0><map-span class=\"desired\">${coord.x} ${coord.y}<#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates>"
-                            + "      <#list 0 ..< polygon.getNumInteriorRing() as index>"
-                            + "        <#assign hole = polygon.getInteriorRingN(index)><map-coordinates><#list hole.coordinates as coord><#if coord?index == 0><map-span class=\"desired\">${coord.x} ${coord.y} <#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates></#list>"
-                            + "       </map-polygon>"
-                            + "        </#list>"
-                            + "       </map-multipolygon>"
-                            + "      </map-geometry>\n"
-                            + "    </#if>\n"
-                            + "  </#list>\n"
-                            + "<#else>\n"
-                            + "  <#list attributes as attribute>\n"
-                            + "    <#if attribute.isGeometry>\n"
-                            + "      <map-geometry>\n"
-                            + "        <map-multipolygon>"
-                            + "      <#list 0 ..< attribute.rawValue.getNumGeometries() as index>"
-                            + "        <#assign polygon = attribute.rawValue.getGeometryN(index)>"
-                            + "       <map-polygon>"
-                            + "       <#assign shell = polygon.getExteriorRing()><map-coordinates><#list shell.coordinates as coord> ${coord.x} ${coord.y} </#list></map-coordinates>"
-                            + "      <#list 0 ..< polygon.getNumInteriorRing() as index>"
-                            + "        <#assign hole = polygon.getInteriorRingN(index)><map-coordinates><#list hole.coordinates as coord> ${coord.x} ${coord.y} </#list></map-coordinates></#list>"
-                            + "       </map-polygon>"
-                            + "        </#list>"
-                            + "       </map-multipolygon>"
-                            + "      </map-geometry>\n"
-                            + "    </#if>\n"
-                            + "  </#list>\n"
-                            + "</#if>\n"
-                            + "</map-feature>\n"
-                            + "</map-body>\n"
-                            + "</mapml- >\n",
+                    """
+                    <mapml- xmlns="http://www.w3.org/1999/xhtml">
+                    <map-head>
+                    </map-head>
+                    <map-body>
+                    <map-feature>
+                    <#if attributes.FID.value == "117">
+                      <#list attributes as attribute>
+                        <#if attribute.isGeometry>
+                          <map-geometry>
+                            <map-multipolygon>\
+                          <#list 0 ..< attribute.rawValue.getNumGeometries() as index>\
+                            <#assign polygon = attribute.rawValue.getGeometryN(index)>\
+                           <map-polygon>\
+                           <#assign shell = polygon.getExteriorRing()><map-coordinates><#list shell.coordinates as coord><#if coord?index == 0><map-span class="desired">${coord.x} ${coord.y}<#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates>\
+                          <#list 0 ..< polygon.getNumInteriorRing() as index>\
+                            <#assign hole = polygon.getInteriorRingN(index)><map-coordinates><#list hole.coordinates as coord><#if coord?index == 0><map-span class="desired">${coord.x} ${coord.y} <#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates></#list>\
+                           </map-polygon>\
+                            </#list>\
+                           </map-multipolygon>\
+                          </map-geometry>
+                        </#if>
+                      </#list>
+                    <#else>
+                      <#list attributes as attribute>
+                        <#if attribute.isGeometry>
+                          <map-geometry>
+                            <map-multipolygon>\
+                          <#list 0 ..< attribute.rawValue.getNumGeometries() as index>\
+                            <#assign polygon = attribute.rawValue.getGeometryN(index)>\
+                           <map-polygon>\
+                           <#assign shell = polygon.getExteriorRing()><map-coordinates><#list shell.coordinates as coord> ${coord.x} ${coord.y} </#list></map-coordinates>\
+                          <#list 0 ..< polygon.getNumInteriorRing() as index>\
+                            <#assign hole = polygon.getInteriorRingN(index)><map-coordinates><#list hole.coordinates as coord> ${coord.x} ${coord.y} </#list></map-coordinates></#list>\
+                           </map-polygon>\
+                            </#list>\
+                           </map-multipolygon>\
+                          </map-geometry>
+                        </#if>
+                      </#list>
+                    </#if>
+                    </map-feature>
+                    </map-body>
+                    </mapml- >
+                    """,
                     "UTF-8");
             Mapml mapmlFeatures = new MapMLWMSRequest()
                     .name(MockData.NAMED_PLACES.getLocalPart())
@@ -712,8 +718,8 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         for (int i = 0; i < values.length; i++) {
             Object value = values[i];
             if (type.getDescriptor(i) instanceof GeometryDescriptor) {
-                if (value instanceof String) {
-                    value = new WKTReader2().read((String) value);
+                if (value instanceof String string) {
+                    value = new WKTReader2().read(string);
                 }
             }
             builder.set(i, value);

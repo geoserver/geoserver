@@ -175,10 +175,9 @@ public class TopoJSONEncoder {
                 JsonElement jsonValue;
                 if (value instanceof Map) {
                     jsonValue = properties((Map<String, Object>) value);
-                } else if (value instanceof Boolean) {
-                    jsonValue = new JsonPrimitive((Boolean) value);
-                } else if (value instanceof Number) {
-                    Number n = (Number) value;
+                } else if (value instanceof Boolean boolean1) {
+                    jsonValue = new JsonPrimitive(boolean1);
+                } else if (value instanceof Number n) {
                     if (n instanceof Double && n.doubleValue() % 1 == 0) {
                         n = Long.valueOf(n.longValue());
                     } else if (n instanceof Float && n.floatValue() % 1 == 0) {

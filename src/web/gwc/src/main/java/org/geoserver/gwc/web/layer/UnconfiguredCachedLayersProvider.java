@@ -6,6 +6,7 @@
 package org.geoserver.gwc.web.layer;
 
 import com.google.common.collect.Streams;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,12 +39,14 @@ import org.geowebcache.layer.TileLayer;
 /** @author groldan */
 class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> {
 
+    @Serial
     private static final long serialVersionUID = -8599398086587516574L;
 
     private static final Logger LOGGER = Logging.getLogger(UnconfiguredCachedLayersProvider.class);
 
     static final Property<TileLayer> TYPE = new AbstractProperty<>("type") {
 
+        @Serial
         private static final long serialVersionUID = 3215255763580377079L;
 
         @Override
@@ -75,7 +78,9 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
      * (at the moment, at least)
      */
     private class CachedSize implements Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
+
         private static final long NOT_CACHED = Long.MIN_VALUE;
         private String[] cachedSizeKeywords;
         private long cachedSize = NOT_CACHED;
@@ -211,6 +216,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
 
     private class UnconfiguredTileLayerDetachableModel extends LoadableDetachableModel<TileLayer> {
 
+        @Serial
         private static final long serialVersionUID = -8920290470035166218L;
 
         private String name;

@@ -5,9 +5,12 @@
  */
 package org.geoserver.web.admin;
 
+import java.io.Serial;
+
 public class StatusPage extends AbstractStatusPage {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -5811282543852926742L;
 
     public void StatusNewPage() {

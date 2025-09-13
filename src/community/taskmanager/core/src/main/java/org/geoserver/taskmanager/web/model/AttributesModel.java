@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.model;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class AttributesModel extends GeoServerDataProvider<Attribute> {
 
+    @Serial
     private static final long serialVersionUID = -8846370782957169591L;
 
     public static final Property<Attribute> NAME = new BeanProperty<Attribute>("name", "name");
@@ -30,6 +32,7 @@ public class AttributesModel extends GeoServerDataProvider<Attribute> {
 
     public static final Property<Attribute> ACTIONS = new AbstractProperty<Attribute>("actions") {
 
+        @Serial
         private static final long serialVersionUID = -978472501994535469L;
 
         @Override

@@ -54,8 +54,7 @@ public class SQLViewAttributeProvider extends GeoServerDataProvider<SQLViewAttri
                     new SQLViewAttribute(ad.getLocalName(), ad.getType().getBinding());
             String attName = ad.getName().getLocalPart();
             attributes.add(at);
-            if (ad instanceof GeometryDescriptor) {
-                GeometryDescriptor gd = (GeometryDescriptor) ad;
+            if (ad instanceof GeometryDescriptor gd) {
                 if (gd.getUserData().get(JDBCDataStore.JDBC_NATIVE_SRID) != null) {
                     at.setSrid((Integer) gd.getUserData().get(JDBCDataStore.JDBC_NATIVE_SRID));
                 } else if (gd.getCoordinateReferenceSystem() != null) {

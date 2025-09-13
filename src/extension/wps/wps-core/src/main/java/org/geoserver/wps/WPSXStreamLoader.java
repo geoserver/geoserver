@@ -215,8 +215,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                 if (converted.getFilteredProcesses() != null) {
                     List<ProcessInfo> newFilteredProcesses = new ArrayList<>();
                     for (Object fp : converted.getFilteredProcesses()) {
-                        if (fp instanceof NameImpl) {
-                            NameImpl ni = (NameImpl) fp;
+                        if (fp instanceof NameImpl ni) {
                             ProcessInfo pi = new ProcessInfoImpl();
                             pi.setName(ni);
                             pi.setEnabled(false);

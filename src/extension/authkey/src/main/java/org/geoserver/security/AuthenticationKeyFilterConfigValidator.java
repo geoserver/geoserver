@@ -25,8 +25,7 @@ public class AuthenticationKeyFilterConfigValidator extends FilterConfigValidato
     @Override
     public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
 
-        if (config instanceof AuthenticationKeyFilterConfig)
-            validateFilterConfig((AuthenticationKeyFilterConfig) config);
+        if (config instanceof AuthenticationKeyFilterConfig filterConfig) validateFilterConfig(filterConfig);
         else super.validateFilterConfig(config);
     }
 

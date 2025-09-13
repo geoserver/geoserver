@@ -532,8 +532,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
                 if (gc instanceof GridCoverage2D) {
                     gc.dispose(true);
                 }
-                if (ri instanceof PlanarImage) {
-                    ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+                if (ri instanceof PlanarImage image) {
+                    ImageUtilities.disposePlanarImageChain(image);
                 }
             }
         }
@@ -1294,8 +1294,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     private void killThreads(List threads) {
         if (threads != null && !threads.isEmpty()) {
             for (Object thread : threads) {
-                if (thread instanceof Thread) {
-                    killThread((Thread) thread);
+                if (thread instanceof Thread thread1) {
+                    killThread(thread1);
                 }
             }
         }
@@ -1414,25 +1414,27 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     @Test
     public void testEPSGLookup() throws Exception {
         // UTM 32 North, without EPSG codes
-        String wkt = "PROJCS[\"WGS 84 / UTM zone 32N\",\n"
-                + "    GEOGCS[\"WGS 84\",\n"
-                + "        DATUM[\"WGS_1984\",\n"
-                + "            SPHEROID[\"WGS 84\",6378137,298.257223563,\n"
-                + "                AUTHORITY[\"EPSG\",\"7030\"]]],\n"
-                + "        PRIMEM[\"Greenwich\",0,\n"
-                + "            AUTHORITY[\"EPSG\",\"8901\"]],\n"
-                + "        UNIT[\"degree\",0.0174532925199433,\n"
-                + "            AUTHORITY[\"EPSG\",\"9122\"]]],\n"
-                + "    PROJECTION[\"Transverse_Mercator\"],\n"
-                + "    PARAMETER[\"latitude_of_origin\",0],\n"
-                + "    PARAMETER[\"central_meridian\",9],\n"
-                + "    PARAMETER[\"scale_factor\",0.9996],\n"
-                + "    PARAMETER[\"false_easting\",500000],\n"
-                + "    PARAMETER[\"false_northing\",0],\n"
-                + "    UNIT[\"metre\",1,\n"
-                + "        AUTHORITY[\"EPSG\",\"9001\"]],\n"
-                + "    AXIS[\"Easting\",EAST],\n"
-                + "    AXIS[\"Northing\",NORTH]]";
+        String wkt =
+                """
+                PROJCS["WGS 84 / UTM zone 32N",
+                    GEOGCS["WGS 84",
+                        DATUM["WGS_1984",
+                            SPHEROID["WGS 84",6378137,298.257223563,
+                                AUTHORITY["EPSG","7030"]]],
+                        PRIMEM["Greenwich",0,
+                            AUTHORITY["EPSG","8901"]],
+                        UNIT["degree",0.0174532925199433,
+                            AUTHORITY["EPSG","9122"]]],
+                    PROJECTION["Transverse_Mercator"],
+                    PARAMETER["latitude_of_origin",0],
+                    PARAMETER["central_meridian",9],
+                    PARAMETER["scale_factor",0.9996],
+                    PARAMETER["false_easting",500000],
+                    PARAMETER["false_northing",0],
+                    UNIT["metre",1,
+                        AUTHORITY["EPSG","9001"]],
+                    AXIS["Easting",EAST],
+                    AXIS["Northing",NORTH]]""";
         CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
         assertEquals("EPSG:32632", ResourcePool.lookupIdentifier(crs, true));
     }
@@ -1440,15 +1442,17 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     @Test
     public void testIAULookup() throws Exception {
         // Sun CRS, without authority and code
-        String wkt = "GEOGCS[\"Sun (2015) - Sphere / Ocentric\",\n"
-                + "    DATUM[\"Sun (2015) - Sphere\",\n"
-                + "        SPHEROID[\"Sun (2015) - Sphere\",695700000,0,\n"
-                + "            AUTHORITY[\"IAU\",\"1000\"]],\n"
-                + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
-                + "    PRIMEM[\"Reference Meridian\",0,\n"
-                + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
-                + "    UNIT[\"degree\",0.0174532925199433,\n"
-                + "        AUTHORITY[\"EPSG\",\"9122\"]]]";
+        String wkt =
+                """
+                GEOGCS["Sun (2015) - Sphere / Ocentric",
+                    DATUM["Sun (2015) - Sphere",
+                        SPHEROID["Sun (2015) - Sphere",695700000,0,
+                            AUTHORITY["IAU","1000"]],
+                        AUTHORITY["IAU","1000"]],
+                    PRIMEM["Reference Meridian",0,
+                        AUTHORITY["IAU","1000"]],
+                    UNIT["degree",0.0174532925199433,
+                        AUTHORITY["EPSG","9122"]]]""";
         CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
         assertEquals("IAU:1000", ResourcePool.lookupIdentifier(crs, true));
     }
@@ -1470,8 +1474,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         Iterator<DataStoreFactorySpi> factoryIterator = DataStoreFinder.getAllDataStores();
         while (factoryIterator.hasNext()) {
             DataStoreFactorySpi spi = factoryIterator.next();
-            if (spi instanceof TestDirectoryStoreFactorySpi) testDirectoryFactory = (TestDirectoryStoreFactorySpi) spi;
-            else if (spi instanceof ShapefileDirectoryFactory) shapeDirectorFactory = (ShapefileDirectoryFactory) spi;
+            if (spi instanceof TestDirectoryStoreFactorySpi factorySpi) testDirectoryFactory = factorySpi;
+            else if (spi instanceof ShapefileDirectoryFactory factory) shapeDirectorFactory = factory;
         }
         assertNotNull(shapeDirectorFactory);
         assertNotNull(testDirectoryFactory);

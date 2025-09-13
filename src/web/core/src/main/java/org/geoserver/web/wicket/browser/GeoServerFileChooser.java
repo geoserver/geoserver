@@ -8,6 +8,7 @@ package org.geoserver.web.wicket.browser;
 import java.awt.AWTError;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -32,7 +33,9 @@ import org.geotools.util.logging.Logging;
 // TODO WICKET8 - Verify this page works OK
 public class GeoServerFileChooser extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -6246944669686555266L;
+
     static Boolean HIDE_FS = null;
 
     static {
@@ -130,6 +133,7 @@ public class GeoServerFileChooser extends Panel {
                 "roots", new Model<>(selectionRoot), new Model<>(roots), new FileRootsRenderer(this));
         choice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
+            @Serial
             private static final long serialVersionUID = -1527567847101388940L;
 
             @Override
@@ -145,6 +149,7 @@ public class GeoServerFileChooser extends Panel {
         // the breadcrumbs
         breadcrumbs = new FileBreadcrumbs("breadcrumbs", new Model<>(selectionRoot), file) {
 
+            @Serial
             private static final long serialVersionUID = -6995769189316700797L;
 
             @Override
@@ -158,6 +163,7 @@ public class GeoServerFileChooser extends Panel {
         // the file tables
         fileTable = new FileDataView("fileTable", new FileProvider(file)) {
 
+            @Serial
             private static final long serialVersionUID = -5481794219862786117L;
 
             @Override
@@ -241,6 +247,7 @@ public class GeoServerFileChooser extends Panel {
     //
     static class FileRootsRenderer extends ChoiceRenderer<File> {
 
+        @Serial
         private static final long serialVersionUID = 1389015915737006638L;
 
         Component component;

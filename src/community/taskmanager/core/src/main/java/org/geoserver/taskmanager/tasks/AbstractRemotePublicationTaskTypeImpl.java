@@ -185,8 +185,8 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
 
             final GSResourceEncoder re = catalogUtil.syncMetadata(resource, tempName);
             re.setNativeName(resource.getNativeName());
-            if (re instanceof GSCoverageEncoder) {
-                ((GSCoverageEncoder) re).setNativeCoverageName(((CoverageInfo) resource).getNativeCoverageName());
+            if (re instanceof GSCoverageEncoder encoder) {
+                encoder.setNativeCoverageName(((CoverageInfo) resource).getNativeCoverageName());
             }
             re.setAdvertised(false);
 

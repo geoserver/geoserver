@@ -53,19 +53,25 @@ public class ExecuteInternalWFSTest extends WPSTestSupport {
         String wfsUrl = "http://geoserver/wfs";
 
         if ("POST".equals(method) && "1.0".equals(version)) {
-            wfsReq = "<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\">\n"
-                    + "     <wfs:Query typeName=\"cite:Lakes\">\n"
-                    + "     </wfs:Query>\n"
-                    + "</wfs:GetFeature>\n";
+            wfsReq =
+                    """
+                    <wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">
+                         <wfs:Query typeName="cite:Lakes">
+                         </wfs:Query>
+                    </wfs:GetFeature>
+                    """;
         } else if ("GET".equals(method) && "1.0".equals(version)) {
             wfsUrl +=
                     "?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;outputFormat=GML2&amp;typeName=cite:Lakes";
         } else if ("POST".equals(method) && "2.0".equals(version)) {
 
-            wfsReq = "<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" outputFormat=\"GML2\">\n"
-                    + "     <wfs:Query typeNames=\"cite:Lakes\">\n"
-                    + "     </wfs:Query>\n"
-                    + "</wfs:GetFeature>\n";
+            wfsReq =
+                    """
+                    <wfs:GetFeature service="WFS" version="2.0.0" outputFormat="GML2">
+                         <wfs:Query typeNames="cite:Lakes">
+                         </wfs:Query>
+                    </wfs:GetFeature>
+                    """;
         } else if ("GET".equals(method) && "2.0".equals(version)) {
             wfsUrl +=
                     "?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;outputFormat=GML2&amp;typeNames=cite:Lakes";

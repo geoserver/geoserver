@@ -324,8 +324,7 @@ public abstract class DimensionHelper {
                 timeInfo = Converters.convert(value, DimensionInfo.class);
             } else if (key.equals(ResourceInfo.ELEVATION)) {
                 elevInfo = Converters.convert(value, DimensionInfo.class);
-            } else if (value instanceof DimensionInfo) {
-                DimensionInfo dimInfo = (DimensionInfo) value;
+            } else if (value instanceof DimensionInfo dimInfo) {
                 if (dimInfo.isEnabled()) {
                     if (key.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
                         String dimensionName = key.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length());
@@ -630,13 +629,13 @@ public abstract class DimensionHelper {
         Object minValue = values.first();
         Object maxValue = values.last();
         Date min, max;
-        if (minValue instanceof DateRange) {
-            min = ((DateRange) minValue).getMinValue();
+        if (minValue instanceof DateRange range) {
+            min = range.getMinValue();
         } else {
             min = (Date) minValue;
         }
-        if (maxValue instanceof DateRange) {
-            max = ((DateRange) maxValue).getMaxValue();
+        if (maxValue instanceof DateRange range) {
+            max = range.getMaxValue();
         } else {
             max = (Date) maxValue;
         }
@@ -649,13 +648,13 @@ public abstract class DimensionHelper {
         Object minValue = values.first();
         Object maxValue = values.last();
         Number min, max;
-        if (minValue instanceof NumberRange) {
-            min = (Number) ((NumberRange) minValue).getMinValue();
+        if (minValue instanceof NumberRange range) {
+            min = (Number) range.getMinValue();
         } else {
             min = (Number) minValue;
         }
-        if (maxValue instanceof NumberRange) {
-            max = (Number) ((NumberRange) maxValue).getMaxValue();
+        if (maxValue instanceof NumberRange range) {
+            max = (Number) range.getMaxValue();
         } else {
             max = (Number) maxValue;
         }

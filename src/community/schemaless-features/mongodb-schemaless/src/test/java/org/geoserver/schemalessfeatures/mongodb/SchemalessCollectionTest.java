@@ -76,8 +76,7 @@ public class SchemalessCollectionTest extends AbstractMongoDBOnlineTestSupport {
         while (it.hasNext()) {
             Feature f = it.next();
             Object result = pn.evaluate(f);
-            if (result instanceof List) {
-                List listRes = (List) result;
+            if (result instanceof List listRes) {
                 assertEquals(5, listRes.size());
                 assertTrue(listRes.containsAll(Arrays.asList(35, 25, 80, 1019, 1015)));
             }
@@ -96,10 +95,9 @@ public class SchemalessCollectionTest extends AbstractMongoDBOnlineTestSupport {
         PropertyName pn = FF.property("measurements.values");
         Feature f = it.next();
         Object result = pn.evaluate(f);
-        if (result instanceof List) {
-            List listRes = (List) result;
+        if (result instanceof List listRes) {
             assertEquals(5, listRes.size());
-            ((List) result).forEach(e -> assertTrue(e instanceof Feature));
+            listRes.forEach(e -> assertTrue(e instanceof Feature));
         }
     }
 

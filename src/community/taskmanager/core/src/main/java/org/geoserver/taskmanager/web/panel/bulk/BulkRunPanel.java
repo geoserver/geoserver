@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel.bulk;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -26,6 +27,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 // TODO WICKET8 - Verify this page works OK
 public class BulkRunPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -7787191736336649903L;
 
     private IModel<String> workspaceModel = new Model<>("%");
@@ -68,6 +70,7 @@ public class BulkRunPanel extends Panel {
 
         Label batchesFound =
                 new Label("batchesFound", new ParamResourceModel("batchesFound", this, new IModel<String>() {
+                    @Serial
                     private static final long serialVersionUID = -6328441242635771092L;
 
                     @Override
@@ -84,6 +87,7 @@ public class BulkRunPanel extends Panel {
         add(batchesFound.setOutputMarkupId(true));
 
         AjaxSubmitLink run = new AjaxSubmitLink("run") {
+            @Serial
             private static final long serialVersionUID = -3288982013478650146L;
 
             @Override
@@ -93,6 +97,7 @@ public class BulkRunPanel extends Panel {
                     ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                 } else {
                     dialog.showOkCancel(target, new DialogDelegate() {
+                        @Serial
                         private static final long serialVersionUID = -8203963847815744909L;
 
                         @Override
@@ -132,6 +137,7 @@ public class BulkRunPanel extends Panel {
         add(run);
 
         workspace.add(new AjaxFormSubmitBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 3397757222203749030L;
 
             @Override
@@ -142,6 +148,7 @@ public class BulkRunPanel extends Panel {
             }
         });
         configuration.add(new AjaxFormSubmitBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 3397757222203749030L;
 
             @Override
@@ -152,6 +159,7 @@ public class BulkRunPanel extends Panel {
             }
         });
         name.add(new AjaxFormSubmitBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 3397757222203749030L;
 
             @Override

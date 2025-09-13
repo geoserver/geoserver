@@ -54,8 +54,7 @@ public abstract class DescribeLayerResponse extends Response {
     public String getMimeType(Object value, Operation operation) throws ServiceException {
 
         Object op = operation.getParameters()[0];
-        if (op instanceof DescribeLayerRequest) {
-            DescribeLayerRequest dlr = (DescribeLayerRequest) op;
+        if (op instanceof DescribeLayerRequest dlr) {
             return dlr.getOutputFormat();
         }
         throw new ServiceException("Unable to parse incoming operation");

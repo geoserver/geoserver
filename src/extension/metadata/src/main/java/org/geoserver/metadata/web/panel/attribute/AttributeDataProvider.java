@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import org.geotools.util.logging.Logging;
 
 public class AttributeDataProvider extends GeoServerDataProvider<AttributeConfiguration> {
 
+    @Serial
     private static final long serialVersionUID = -4454769618643460913L;
 
     private static final Logger LOGGER = Logging.getLogger(AttributeDataProvider.class);
@@ -30,6 +32,7 @@ public class AttributeDataProvider extends GeoServerDataProvider<AttributeConfig
     public static Property<AttributeConfiguration> NAME = new BeanProperty<>("name", "label");
 
     public static Property<AttributeConfiguration> VALUE = new AbstractProperty<>("value") {
+        @Serial
         private static final long serialVersionUID = -1889227419206718295L;
 
         @Override

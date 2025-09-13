@@ -440,10 +440,10 @@ class GMLTransformer extends TransformerBase {
                         int i = 0;
                         for (Object item : domain) {
                             // gml:id is mandatory for time instant...
-                            if (item instanceof Date) {
-                                encodeDate((Date) item, helper, id + "_td_" + i);
-                            } else if (item instanceof DateRange) {
-                                encodeDateRange((DateRange) item, helper, id + "_td_" + i);
+                            if (item instanceof Date date) {
+                                encodeDate(date, helper, id + "_td_" + i);
+                            } else if (item instanceof DateRange range) {
+                                encodeDateRange(range, helper, id + "_td_" + i);
                             }
                             i++;
                         }
@@ -481,8 +481,7 @@ class GMLTransformer extends TransformerBase {
                         for (Object item : domain) {
                             if (item instanceof Number) {
                                 element(TAG.SINGLE_VALUE, item.toString());
-                            } else if (item instanceof NumberRange) {
-                                NumberRange range = (NumberRange) item;
+                            } else if (item instanceof NumberRange range) {
                                 encodeInterval(
                                         range.getMinValue().toString(),
                                         range.getMaxValue().toString(),
@@ -888,8 +887,8 @@ class GMLTransformer extends TransformerBase {
         public void handleSampleDimensionRange(SampleDimension sd) {
             // look for ranges on the sample dimension
             boolean setRange = false;
-            if (sd instanceof GridSampleDimension) {
-                GridSampleDimension gridSd = ((GridSampleDimension) sd);
+            if (sd instanceof GridSampleDimension dimension) {
+                GridSampleDimension gridSd = dimension;
                 setRange = setRange(gridSd.getRange());
             }
             if (!setRange) {

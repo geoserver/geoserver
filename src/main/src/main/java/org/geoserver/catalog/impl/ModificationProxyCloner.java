@@ -79,9 +79,7 @@ class ModificationProxyCloner {
         }
 
         // is it a catalog info?
-        if (source instanceof CatalogInfo) {
-            // mumble... shouldn't we wrap this one in a modification proxy object?
-            CatalogInfo cis = (CatalogInfo) source;
+        if (source instanceof CatalogInfo cis) {
             return (T) ModificationProxy.create(cis, getDeepestCatalogInfoInterface(cis));
         }
 
@@ -102,16 +100,16 @@ class ModificationProxyCloner {
         }
 
         // to avoid reflective access warnings
-        if (source instanceof TimeZone) {
-            return (T) ((TimeZone) source).clone();
+        if (source instanceof TimeZone zone) {
+            return (T) zone.clone();
         }
 
-        if (source instanceof Map) {
-            return (T) cloneMap((Map<?, ?>) source, true);
+        if (source instanceof Map<?, ?> map) {
+            return (T) cloneMap(map, true);
         }
 
-        if (source instanceof Collection) {
-            return (T) cloneCollection((Collection<?>) source, true);
+        if (source instanceof Collection<?> collection) {
+            return (T) cloneCollection(collection, true);
         }
 
         // is it cloneable?
@@ -142,8 +140,8 @@ class ModificationProxyCloner {
             }
         }
 
-        if (source instanceof Serializable) {
-            return (T) cloneSerializable((Serializable) source);
+        if (source instanceof Serializable serializable) {
+            return (T) cloneSerializable(serializable);
         } else {
             XStreamPersister persister = XSTREAM_PERSISTER_FACTORY.createXMLPersister();
             XStream xs = persister.getXStream();

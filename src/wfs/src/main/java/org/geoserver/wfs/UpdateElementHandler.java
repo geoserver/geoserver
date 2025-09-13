@@ -110,8 +110,8 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
                     String propertyName = property.getName().getLocalPart();
                     AttributeDescriptor attributeType = null;
                     PropertyDescriptor pd = featureType.getDescriptor(propertyName);
-                    if (pd instanceof AttributeDescriptor) {
-                        attributeType = (AttributeDescriptor) pd;
+                    if (pd instanceof AttributeDescriptor descriptor) {
+                        attributeType = descriptor;
                     }
                     if ((attributeType != null) && (attributeType.getMinOccurs() > 0)) {
                         String msg =
@@ -164,15 +164,15 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
         // was it a null? If so, assume valid (already checked for nulls before)
         if (value == null // parsed as null
-                || (value instanceof String && ((String) value).trim().isEmpty()) // as an empty string
-                || (value instanceof Map && ((Map) value).isEmpty()) // or the usual map that the parser creates
+                || (value instanceof String string && string.trim().isEmpty()) // as an empty string
+                || (value instanceof Map map && map.isEmpty()) // or the usual map that the parser creates
         ) {
             return;
         }
 
         // check geometry dimension (as converter is too forgiving for cite tests)
-        if (value != null && value instanceof Geometry) {
-            if (!checkConsistentGeometryDimensions((Geometry) value, binding)) {
+        if (value != null && value instanceof Geometry geometry) {
+            if (!checkConsistentGeometryDimensions(geometry, binding)) {
                 String propertyName = property.getName().getLocalPart();
                 WFSException e = new WFSException(
                         element,
@@ -278,8 +278,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
                 // if geometry, it may be necessary to reproject it to the native CRS before
                 // update
-                if (values[j] instanceof Geometry) {
-                    Geometry geometry = (Geometry) values[j];
+                if (values[j] instanceof Geometry geometry) {
 
                     // get the source crs, check the geometry itself first. If not set, assume
                     // the default one
@@ -293,8 +292,8 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
                     // see if the geometry has a CRS other than the default one
                     CoordinateReferenceSystem target = null;
-                    if (types[j] instanceof GeometryDescriptor) {
-                        target = ((GeometryDescriptor) types[j]).getCoordinateReferenceSystem();
+                    if (types[j] instanceof GeometryDescriptor descriptor) {
+                        target = descriptor.getCoordinateReferenceSystem();
                     }
 
                     if (getInfo().isCiteCompliant())

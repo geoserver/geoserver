@@ -60,8 +60,7 @@ public class MongoTypeFinder {
     }
 
     private Class<?> getFieldType(Object document) {
-        if (document instanceof BasicDBList) {
-            BasicDBList list = (BasicDBList) document;
+        if (document instanceof BasicDBList list) {
             for (int i = 0; i < list.size(); i++) {
                 Object element = list.get(i);
                 if (element != null) {
@@ -69,8 +68,7 @@ public class MongoTypeFinder {
                     if (result != null) return result;
                 }
             }
-        } else if (document instanceof BasicDBObject) {
-            DBObject object = (DBObject) document;
+        } else if (document instanceof DBObject object) {
             Set<String> keys = object.keySet();
             for (String k : keys) {
                 Object value = object.get(k);
@@ -141,14 +139,12 @@ public class MongoTypeFinder {
     }
 
     private String findGeometryPathFromData(Object object, String path) {
-        if (object instanceof BasicDBList) {
-            BasicDBList list = (BasicDBList) object;
+        if (object instanceof BasicDBList list) {
             for (int i = 0; i < list.size(); i++) {
                 String geometryPath = findGeometryPathFromData(list.get(i), addPathPart(path, String.valueOf(i)));
                 if (geometryPath != null) return geometryPath;
             }
-        } else if (object instanceof BasicDBObject) {
-            BasicDBObject dbObject = (BasicDBObject) object;
+        } else if (object instanceof BasicDBObject dbObject) {
             if (MongoSchemalessUtils.isGeometry(dbObject)) return path;
             Set<String> keys = dbObject.keySet();
             for (String k : keys) {

@@ -25,8 +25,7 @@ public class Message {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Message) {
-            Message other = (Message) obj;
+        if (obj instanceof Message other) {
 
             if (message == null) {
                 return other.message == null;

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -16,7 +17,9 @@ import org.apache.wicket.model.IModel;
  */
 public class SimpleExternalLink extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -5857914940426458362L;
+
     ExternalLink link;
     Label label;
 

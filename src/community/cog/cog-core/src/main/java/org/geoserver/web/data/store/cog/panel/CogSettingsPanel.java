@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.data.store.cog.panel;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +53,7 @@ public class CogSettingsPanel<T extends CogSettings> extends FormComponentPanel<
 
         CogSettings object = getSettings(model);
         useCachingStream.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -86,8 +88,7 @@ public class CogSettingsPanel<T extends CogSettings> extends FormComponentPanel<
     @Override
     public void convertInput() {
         IVisitor<Component, Object> formComponentVisitor = (component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
+            if (component instanceof FormComponent<?> formComponent) {
                 formComponent.processInput();
             }
         };

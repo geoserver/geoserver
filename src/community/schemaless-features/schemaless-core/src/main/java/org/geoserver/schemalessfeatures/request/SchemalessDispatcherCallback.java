@@ -90,8 +90,8 @@ public class SchemalessDispatcherCallback extends AbstractDispatcherCallback {
 
     private boolean isSchemalessTypeBeingRequested(Object request, String service, String method) {
         boolean isSchemaless = false;
-        if (request instanceof GetFeatureInfoRequest)
-            isSchemaless = isSchemalessTypeBeingRequested((GetFeatureInfoRequest) request);
+        if (request instanceof GetFeatureInfoRequest infoRequest)
+            isSchemaless = isSchemalessTypeBeingRequested(infoRequest);
         else if (isGetFeatureRequest(service, method))
             isSchemaless = isSchemalessTypeBeingRequested(GetFeatureRequest.adapt(request));
         return isSchemaless;

@@ -80,8 +80,7 @@ public class SpringBeanProcessFactory extends org.geotools.process.factory.Annot
         // register the new process and make the process function factory lookup again the processes
         Processors.addProcessFactory(this);
         for (FunctionFactory ff : CommonFactoryFinder.getFunctionFactories(null)) {
-            if (ff instanceof ProcessFunctionFactory) {
-                ProcessFunctionFactory pff = (ProcessFunctionFactory) ff;
+            if (ff instanceof ProcessFunctionFactory pff) {
                 pff.clear();
             }
         }

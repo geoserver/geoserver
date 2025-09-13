@@ -4,6 +4,7 @@
  */
 package org.geoserver.cluster.impl.web;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.geoserver.cluster.configuration.JMSConfiguration;
@@ -11,6 +12,7 @@ import org.geoserver.cluster.configuration.JMSConfiguration;
 public class NodePanel extends Panel {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 8112885092637425915L;
 
     public NodePanel(String id, final JMSConfiguration configuration) {

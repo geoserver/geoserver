@@ -210,8 +210,7 @@ class ImageReader {
         MathTransform g2w = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
         CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
 
-        if (readFilter != null && reader instanceof StructuredGridCoverage2DReader) {
-            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+        if (readFilter != null && reader instanceof StructuredGridCoverage2DReader sr) {
             String coverageName = reader.getGridCoverageNames()[0];
             GranuleSource granules = sr.getGranules(coverageName, true);
             SimpleFeatureCollection filteredGranules = granules.getGranules(new Query(null, readFilter));
@@ -231,11 +230,10 @@ class ImageReader {
 
     private Filter getReadFilter(GeneralParameterValue[] readParameters) {
         for (GeneralParameterValue readParameter : readParameters) {
-            if (readParameter instanceof ParameterValue
+            if (readParameter instanceof ParameterValue pv
                     && ImageMosaicFormat.FILTER
                             .getName()
                             .equals(readParameter.getDescriptor().getName())) {
-                ParameterValue pv = (ParameterValue) readParameter;
                 Filter filter = (Filter) pv.getValue();
                 if (filter != null) {
                     return (Filter) filter.accept(new SimplifyingFilterVisitor(), null);

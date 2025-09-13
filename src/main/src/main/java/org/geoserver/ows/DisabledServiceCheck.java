@@ -106,8 +106,8 @@ public class DisabledServiceCheck implements DispatcherCallback {
             }
         } catch (Exception e) {
             // TODO: log this
-            if (e instanceof ServiceException) {
-                throw (ServiceException) e;
+            if (e instanceof ServiceException exception) {
+                throw exception;
             }
             throw new ServiceException(e);
         }
@@ -148,7 +148,7 @@ public class DisabledServiceCheck implements DispatcherCallback {
     LayerInfo getLayerByName(String layerName) {
         // We need access to actual catalog, not filtered for current service
         Catalog catalog = geoServer.getCatalog();
-        while (catalog instanceof Wrapper && ((Wrapper) catalog).isWrapperFor(Catalog.class)) {
+        while (catalog instanceof Wrapper w && w.isWrapperFor(Catalog.class)) {
             Catalog unwrapped = ((Wrapper) catalog).unwrap(Catalog.class);
             if (unwrapped == catalog || unwrapped == null) {
                 break;

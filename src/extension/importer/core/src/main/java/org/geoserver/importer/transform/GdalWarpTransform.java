@@ -6,6 +6,7 @@ package org.geoserver.importer.transform;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.geotools.gce.image.WorldImageFormat;
  * @author Andrea Aime - GeoSolutions
  */
 public class GdalWarpTransform extends AbstractCommandLinePreTransform implements RasterTransform {
+    @Serial
     private static final long serialVersionUID = -6241844409161277128L;
 
     /** Checks if gdalwarp is available */
@@ -94,8 +96,7 @@ public class GdalWarpTransform extends AbstractCommandLinePreTransform implement
 
     @Override
     protected File getInputFile(ImportData data) throws IOException {
-        if (data instanceof FileData) {
-            FileData fd = (FileData) data;
+        if (data instanceof FileData fd) {
             return fd.getFile();
         } else {
             throw new IOException("Can run gdalwarp only against file data");

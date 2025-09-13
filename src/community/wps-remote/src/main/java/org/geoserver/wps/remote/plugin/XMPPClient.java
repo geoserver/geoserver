@@ -301,7 +301,7 @@ public class XMPPClient extends RemoteProcessClient {
         // register GeoServer as "manager" to the service channels on the MUC
         // (Multi
         // User Channel) Rooms
-        LOGGER.info(String.format("Initializing connection to server %1$s port %2$d", server, port));
+        LOGGER.info("Initializing connection to server %1$s port %2$d".formatted(server, port));
 
         int packetReplyTimeout = DEFAULT_PACKET_REPLY_TIMEOUT;
         if (getConfiguration().get("xmpp_packet_reply_timeout") != null) {
@@ -558,8 +558,8 @@ public class XMPPClient extends RemoteProcessClient {
             final Object value = entry.getValue();
 
             Object fixedValue = value;
-            if (value instanceof RawData) {
-                fixedValue = IOUtils.toString(((RawData) value).getInputStream(), "UTF-8");
+            if (value instanceof RawData data) {
+                fixedValue = IOUtils.toString(data.getInputStream(), "UTF-8");
             } else if (value instanceof List) {
                 List<Object> values = (List<Object>) value;
 
@@ -671,7 +671,7 @@ public class XMPPClient extends RemoteProcessClient {
 
     /** */
     public void createEntry(String user, String name) throws Exception {
-        LOGGER.fine(String.format("Creating entry for buddy '%1$s' with name %2$s", user, name));
+        LOGGER.fine("Creating entry for buddy '%1$s' with name %2$s".formatted(user, name));
         Roster roster = connection.getRoster();
         roster.createEntry(user, name, null);
     }
@@ -1203,7 +1203,7 @@ public class XMPPClient extends RemoteProcessClient {
             // converting byte array to Hexadecimal String
             StringBuilder sb = new StringBuilder(2 * hash.length);
             for (byte b : hash) {
-                sb.append(String.format("%02x", b & 0xff));
+                sb.append("%02x".formatted(b & 0xff));
             }
             digest = sb.substring(0, 15).toString();
         } catch (UnsupportedEncodingException ex) {
@@ -1362,8 +1362,7 @@ class XMPPPacketListener implements PacketListener {
 
     @Override
     public void processPacket(Packet packet) {
-        if (packet instanceof Presence) {
-            Presence p = (Presence) packet;
+        if (packet instanceof Presence p) {
 
             try {
                 if (p.isAvailable()) {
@@ -1419,8 +1418,7 @@ class XMPPPacketListener implements PacketListener {
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, e.getMessage(), e);
             }
-        } else if (packet instanceof Message) {
-            Message message = (Message) packet;
+        } else if (packet instanceof Message message) {
             String origin = message.getFrom().split("/")[0];
             Chat chat = xmppClient.setupChat(origin);
 

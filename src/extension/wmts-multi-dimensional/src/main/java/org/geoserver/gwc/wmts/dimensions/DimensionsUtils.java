@@ -81,11 +81,11 @@ public final class DimensionsUtils {
             throws OWSException {
         ResourceInfo resourceInfo = layerInfo.getResource();
         List<Dimension> result = new ArrayList<>();
-        if (resourceInfo instanceof FeatureTypeInfo) {
-            result = extractDimensions(wms, layerInfo, (FeatureTypeInfo) resourceInfo);
+        if (resourceInfo instanceof FeatureTypeInfo info) {
+            result = extractDimensions(wms, layerInfo, info);
         }
-        if (resourceInfo instanceof CoverageInfo) {
-            result = extractDimensions(wms, layerInfo, (CoverageInfo) resourceInfo);
+        if (resourceInfo instanceof CoverageInfo info) {
+            result = extractDimensions(wms, layerInfo, info);
         }
         if (requestedDimensions != MultiDimensionalExtension.ALL_DOMAINS) {
             Set<String> availableDimensions =
@@ -181,10 +181,10 @@ public final class DimensionsUtils {
 
     /** Helper method that converts a domain value to string, range will be correctly handled. */
     public static String formatDomainValue(Object value) {
-        if (value instanceof Range) {
+        if (value instanceof Range range) {
             // this domain value is a range, we use the min and max value
-            Object minValue = ((Range) value).getMinValue();
-            Object maxValue = ((Range) value).getMaxValue();
+            Object minValue = range.getMinValue();
+            Object maxValue = range.getMaxValue();
             return formatDomainSimpleValue(minValue) + "/" + formatDomainSimpleValue(maxValue);
         }
         return formatDomainSimpleValue(value);
@@ -206,8 +206,8 @@ public final class DimensionsUtils {
      */
     private static Object getMinValue(List<Comparable> values) {
         Object minValue = values.get(0);
-        if (minValue instanceof Range) {
-            return ((Range) minValue).getMinValue();
+        if (minValue instanceof Range range) {
+            return range.getMinValue();
         }
         return minValue;
     }
@@ -466,8 +466,8 @@ public final class DimensionsUtils {
         try {
             if (resource instanceof FeatureTypeInfo) {
                 return getFeatures(resource).getFeatures(filter).getBounds();
-            } else if (resource instanceof CoverageInfo) {
-                CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
+            } else if (resource instanceof CoverageInfo info) {
+                CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom(info);
                 return reader.getBounds(filter);
             } else {
                 // for all other resource types (WMS/WMTS cascading) we cannot do anything
@@ -515,11 +515,10 @@ public final class DimensionsUtils {
     private static FeatureType getSchemaForResource(ResourceInfo resource)
             throws IOException, TransformException, SchemaException {
         FeatureType schema;
-        if (resource instanceof FeatureTypeInfo) {
-            schema = ((FeatureTypeInfo) resource).getFeatureType();
-        } else if (resource instanceof CoverageInfo) {
-            GridCoverage2DReader reader =
-                    (GridCoverage2DReader) ((CoverageInfo) resource).getGridCoverageReader(null, null);
+        if (resource instanceof FeatureTypeInfo info1) {
+            schema = info1.getFeatureType();
+        } else if (resource instanceof CoverageInfo info) {
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
             schema = FeatureUtilities.wrapGridCoverageReader(reader, null).getSchema();
         } else {
             throw new IllegalArgumentException(
@@ -545,11 +544,8 @@ public final class DimensionsUtils {
     private static String getGeometryPropertyName(ResourceInfo resource) {
         try {
             String geometryName = ""; // the default geometry, unfortunately does not work in some cases
-            if (resource instanceof FeatureTypeInfo) {
-                geometryName = ((FeatureTypeInfo) resource)
-                        .getFeatureType()
-                        .getGeometryDescriptor()
-                        .getLocalName();
+            if (resource instanceof FeatureTypeInfo info) {
+                geometryName = info.getFeatureType().getGeometryDescriptor().getLocalName();
             } else if (resource instanceof CoverageInfo) {
                 return "";
             }
@@ -563,14 +559,13 @@ public final class DimensionsUtils {
         if (resource instanceof FeatureTypeInfo) {
             DimensionInfo di = dimension.getDimensionInfo();
             return Tuple.tuple(di.getAttribute(), di.getEndAttribute());
-        } else if (resource instanceof CoverageInfo) {
-            CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
+        } else if (resource instanceof CoverageInfo info) {
+            CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom(info);
             String dimensionName = dimension.getDimensionName();
             Tuple<String, String> attributes = reader.getDimensionAttributesNames(dimensionName);
             if (attributes.first == null) {
-                throw new RuntimeException(String.format(
-                        "Could not found start attribute name for dimension '%s' in raster '%s'.",
-                        dimensionName, resource.prefixedName()));
+                throw new RuntimeException("Could not found start attribute name for dimension '%s' in raster '%s'."
+                        .formatted(dimensionName, resource.prefixedName()));
             }
             return attributes;
         } else {
@@ -583,9 +578,7 @@ public final class DimensionsUtils {
         @Override
         @SuppressWarnings("unchecked")
         public int compare(Comparable o1, Comparable o2) {
-            if (o1 instanceof ComparableRange && o2 instanceof ComparableRange) {
-                ComparableRange comp1 = (ComparableRange) o1;
-                ComparableRange comp2 = (ComparableRange) o2;
+            if (o1 instanceof ComparableRange comp1 && o2 instanceof ComparableRange comp2) {
                 int result = comp1.getMaxValue().compareTo(comp2.getMaxValue());
                 if (result == 0) result = comp1.getMinValue().compareTo(comp2.getMinValue());
                 return result;
@@ -599,9 +592,7 @@ public final class DimensionsUtils {
         @Override
         @SuppressWarnings("unchecked")
         public int compare(Comparable o1, Comparable o2) {
-            if (o1 instanceof ComparableRange && o2 instanceof ComparableRange) {
-                ComparableRange comp1 = (ComparableRange) o1;
-                ComparableRange comp2 = (ComparableRange) o2;
+            if (o1 instanceof ComparableRange comp1 && o2 instanceof ComparableRange comp2) {
                 int result = comp1.getMinValue().compareTo(comp2.getMinValue());
                 if (result == 0) result = comp1.getMaxValue().compareTo(comp2.getMaxValue());
                 return result;

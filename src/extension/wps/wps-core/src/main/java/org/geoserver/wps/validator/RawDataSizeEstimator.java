@@ -18,14 +18,11 @@ public class RawDataSizeEstimator implements ObjectSizeEstimator {
     @Override
     public long getSizeOf(Object object) {
         // we can estimate selected types of raw
-        if (object instanceof ByteArrayRawData) {
-            ByteArrayRawData raw = (ByteArrayRawData) object;
+        if (object instanceof ByteArrayRawData raw) {
             return raw.getData().length;
-        } else if (object instanceof StringRawData) {
-            StringRawData raw = (StringRawData) object;
+        } else if (object instanceof StringRawData raw) {
             return raw.getData().length() * 2;
-        } else if (object instanceof ResourceRawData) {
-            ResourceRawData raw = (ResourceRawData) object;
+        } else if (object instanceof ResourceRawData raw) {
             return raw.getResource().file().length();
         }
 

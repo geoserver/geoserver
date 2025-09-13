@@ -443,8 +443,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         AccessLimits limits;
         if (info instanceof LayerGroupInfo) {
             limits = buildLayerGroupAccessLimits(accessInfo);
-        } else if (info instanceof ResourceInfo) {
-            limits = buildResourceAccessLimits((ResourceInfo) info, accessInfo, processingResult);
+        } else if (info instanceof ResourceInfo resourceInfo) {
+            limits = buildResourceAccessLimits(resourceInfo, accessInfo, processingResult);
         } else {
             limits = buildResourceAccessLimits(((LayerInfo) info).getResource(), accessInfo, processingResult);
         }
@@ -465,8 +465,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     private AccessLimits buildAdminAccessLimits(CatalogInfo info) {
         AccessLimits accessLimits;
         if (info instanceof LayerGroupInfo) accessLimits = buildLayerGroupAccessLimits(AccessInfo.ALLOW_ALL);
-        else if (info instanceof ResourceInfo)
-            accessLimits = buildResourceAccessLimits((ResourceInfo) info, AccessInfo.ALLOW_ALL, null);
+        else if (info instanceof ResourceInfo resourceInfo)
+            accessLimits = buildResourceAccessLimits(resourceInfo, AccessInfo.ALLOW_ALL, null);
         else accessLimits = buildResourceAccessLimits(((LayerInfo) info).getResource(), AccessInfo.ALLOW_ALL, null);
         return accessLimits;
     }
@@ -481,9 +481,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
     private Collection<LayerGroupContainmentCache.LayerGroupSummary> getGroupSummary(Object resource) {
         Collection<LayerGroupContainmentCache.LayerGroupSummary> summaries;
-        if (resource instanceof ResourceInfo) summaries = groupsCache.getContainerGroupsFor((ResourceInfo) resource);
-        else if (resource instanceof LayerInfo)
-            summaries = groupsCache.getContainerGroupsFor(((LayerInfo) resource).getResource());
+        if (resource instanceof ResourceInfo info1) summaries = groupsCache.getContainerGroupsFor(info1);
+        else if (resource instanceof LayerInfo info) summaries = groupsCache.getContainerGroupsFor(info.getResource());
         else summaries = groupsCache.getContainerGroupsFor((LayerGroupInfo) resource);
         return summaries;
     }
@@ -800,10 +799,10 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             // extract the getmap part
             Object ro = operation.getParameters()[0];
             GetMapRequest getMap;
-            if (ro instanceof GetMapRequest) {
-                getMap = (GetMapRequest) ro;
-            } else if (ro instanceof GetFeatureInfoRequest) {
-                getMap = ((GetFeatureInfoRequest) ro).getGetMapRequest();
+            if (ro instanceof GetMapRequest mapRequest) {
+                getMap = mapRequest;
+            } else if (ro instanceof GetFeatureInfoRequest infoRequest) {
+                getMap = infoRequest.getGetMapRequest();
             } else {
                 throw new ServiceException("Unrecognized request object: " + ro);
             }
@@ -989,9 +988,9 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         List<String> parsedStyles = parseStylesParameter(gsRequest);
         for (Object layer : parseLayersParameter(gsRequest, getMap)) {
             boolean outOfBound = styleIndex >= parsedStyles.size();
-            if (layer instanceof LayerGroupInfo) {
+            if (layer instanceof LayerGroupInfo info) {
                 String styleName = outOfBound ? null : parsedStyles.get(styleIndex);
-                addGroupStyles((LayerGroupInfo) layer, requestedStyles, styleName);
+                addGroupStyles(info, requestedStyles, styleName);
             } else {
                 // the layer is a LayerInfo or MapLayerInfo (if it is a remote layer)
                 if (outOfBound) {

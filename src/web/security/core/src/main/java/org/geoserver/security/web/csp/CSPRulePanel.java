@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.csp;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -32,6 +33,7 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 /** Panel for {@link CSPRule} objects. */
 public class CSPRulePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 6368251831224251873L;
 
     private static final Property<CSPRule> ENABLED = new BeanProperty<>("enabled", "enabled");
@@ -53,6 +55,7 @@ public class CSPRulePanel extends Panel {
         super(id);
         this.policy = policy;
         add(new AjaxLink<Void>("add") {
+            @Serial
             private static final long serialVersionUID = 7028097965705654491L;
 
             @Override
@@ -72,6 +75,7 @@ public class CSPRulePanel extends Panel {
      */
     private static IModel<List<Property<CSPRule>>> getProperties() {
         return new LoadableDetachableModel<>() {
+            @Serial
             private static final long serialVersionUID = 1880449575748893130L;
 
             @Override
@@ -83,6 +87,7 @@ public class CSPRulePanel extends Panel {
 
     private class CSPRuleTablePanel extends ReorderableTablePanel<CSPRule> {
 
+        @Serial
         private static final long serialVersionUID = -4762272059375502701L;
 
         public CSPRuleTablePanel(String id, List<CSPRule> rules) {
@@ -114,6 +119,7 @@ public class CSPRulePanel extends Panel {
 
         private Component editLink(String id, IModel<CSPRule> model, IModel<?> label) {
             return new SimpleAjaxLink<>(id, model, label) {
+                @Serial
                 private static final long serialVersionUID = 1567366293977781250L;
 
                 @Override
@@ -128,6 +134,7 @@ public class CSPRulePanel extends Panel {
         private Component removeLink(String id, CSPRule rule) {
             ImageAjaxLink<Void> link =
                     new ImageAjaxLink<>(id, new PackageResourceReference(getClass(), "../img/icons/silk/delete.png")) {
+                        @Serial
                         private static final long serialVersionUID = -3140594684451087223L;
 
                         @Override

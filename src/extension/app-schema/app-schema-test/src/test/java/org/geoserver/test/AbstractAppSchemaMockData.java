@@ -244,7 +244,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
                 return new FileInputStream(resourceFile);
             } catch (Exception exception) {
                 throw new RuntimeException(
-                        String.format("Error reading file '%s'.", resourceFile.getAbsolutePath()), exception);
+                        "Error reading file '%s'.".formatted(resourceFile.getAbsolutePath()), exception);
             }
         } else {
             // considering the resource to be an app-schema test data resource

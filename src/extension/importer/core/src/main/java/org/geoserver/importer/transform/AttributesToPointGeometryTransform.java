@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import org.apache.commons.lang3.ObjectUtils;
 import org.geoserver.importer.ImportTask;
 import org.geotools.api.data.DataStore;
@@ -19,6 +20,7 @@ import org.locationtech.jts.geom.Point;
 public class AttributesToPointGeometryTransform extends AbstractTransform implements InlineVectorTransform {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     static final String POINT_NAME = "location";
@@ -103,8 +105,8 @@ public class AttributesToPointGeometryTransform extends AbstractTransform implem
         if (value == null) {
             return null;
         }
-        if (value instanceof Double) {
-            return (Double) value;
+        if (value instanceof Double double1) {
+            return double1;
         }
         try {
             return Double.parseDouble(value.toString());

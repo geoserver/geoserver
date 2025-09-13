@@ -36,8 +36,7 @@ public class GSRExceptionHandler implements APIExceptionHandler {
     @Override
     public void handle(Throwable throwable, HttpServletResponse httpServletResponse) {
         Map<String, Object> error = new LinkedHashMap<>();
-        if (throwable instanceof ServiceException) {
-            ServiceException exception = (ServiceException) throwable;
+        if (throwable instanceof ServiceException exception) {
             error.put("error", exception.getError());
         } else {
             error.put(

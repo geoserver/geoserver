@@ -64,8 +64,7 @@ public class CacheConfiguration implements Cloneable, Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CacheConfiguration) {
-            CacheConfiguration other = (CacheConfiguration) obj;
+        if (obj instanceof CacheConfiguration other) {
             return other.enabled == enabled && other.maxEntries == maxEntries && other.maxEntrySize == maxEntrySize;
         }
         return false;

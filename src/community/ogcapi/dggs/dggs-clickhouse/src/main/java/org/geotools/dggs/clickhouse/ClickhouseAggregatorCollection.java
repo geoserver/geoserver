@@ -51,10 +51,10 @@ public class ClickhouseAggregatorCollection extends DecoratingSimpleFeatureColle
 
     @Override
     public void accepts(FeatureVisitor visitor, ProgressListener progress) throws IOException {
-        if (visitor instanceof MatrixAggregate) {
-            if (visit((MatrixAggregate) visitor)) return;
-        } else if (visitor instanceof GroupedMatrixAggregate) {
-            if (visit((GroupedMatrixAggregate) visitor)) return;
+        if (visitor instanceof MatrixAggregate aggregate1) {
+            if (visit(aggregate1)) return;
+        } else if (visitor instanceof GroupedMatrixAggregate aggregate) {
+            if (visit(aggregate)) return;
         }
         delegate.accepts(visitor, progress);
     }
@@ -302,8 +302,8 @@ public class ClickhouseAggregatorCollection extends DecoratingSimpleFeatureColle
             Method g = visitor.getClass().getMethod("getExpression", null);
             if (g != null) {
                 Object result = g.invoke(visitor, null);
-                if (result instanceof Expression) {
-                    return (Expression) result;
+                if (result instanceof Expression expression) {
+                    return expression;
                 }
             }
         } catch (Exception e) {

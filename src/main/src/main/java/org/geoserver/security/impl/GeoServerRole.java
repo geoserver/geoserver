@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.impl;
 
+import java.io.Serial;
 import java.util.Properties;
 import org.geotools.util.SuppressFBWarnings;
 import org.springframework.security.core.GrantedAuthority;
@@ -45,6 +46,7 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
     /** Roles which cannot be assigned to a user or a group */
     public static final GeoServerRole[] UnAssignableRoles = {AUTHENTICATED_ROLE, ANONYMOUS_ROLE};
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected String userName;
@@ -105,8 +107,8 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
             if (obj instanceof GeoServerRole == false) return equalsWithoutUserName(obj);
         }
 
-        if (obj instanceof GeoServerRole) {
-            return compareTo((GeoServerRole) obj) == 0;
+        if (obj instanceof GeoServerRole serverRole) {
+            return compareTo(serverRole) == 0;
         }
         return false;
     }

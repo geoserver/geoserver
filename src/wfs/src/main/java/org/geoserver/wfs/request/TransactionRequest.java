@@ -37,10 +37,10 @@ import org.geotools.api.data.Transaction;
 public abstract class TransactionRequest extends RequestObject {
 
     public static TransactionRequest adapt(Object request) {
-        if (request instanceof TransactionType) {
-            return new WFS11((EObject) request);
-        } else if (request instanceof net.opengis.wfs20.TransactionType) {
-            return new WFS20((EObject) request);
+        if (request instanceof TransactionType type) {
+            return new WFS11(type);
+        } else if (request instanceof net.opengis.wfs20.TransactionType type) {
+            return new WFS20(type);
         }
         return null;
     }
@@ -215,17 +215,17 @@ public abstract class TransactionRequest extends RequestObject {
             tx.setExtendedProperties(request.getExtendedProperties());
 
             for (TransactionElement te : request.getElements()) {
-                if (te instanceof Delete) {
-                    tx.getDelete().add(Delete.WFS11.unadapt((Delete) te));
+                if (te instanceof Delete delete) {
+                    tx.getDelete().add(Delete.WFS11.unadapt(delete));
                 }
-                if (te instanceof Update) {
-                    tx.getUpdate().add(Update.WFS11.unadapt((Update) te));
+                if (te instanceof Update update) {
+                    tx.getUpdate().add(Update.WFS11.unadapt(update));
                 }
-                if (te instanceof Insert) {
-                    tx.getInsert().add(Insert.WFS11.unadapt((Insert) te));
+                if (te instanceof Insert insert) {
+                    tx.getInsert().add(Insert.WFS11.unadapt(insert));
                 }
-                if (te instanceof Native) {
-                    tx.getNative().add(Native.WFS11.unadapt((Native) te));
+                if (te instanceof Native native1) {
+                    tx.getNative().add(Native.WFS11.unadapt(native1));
                 }
             }
 

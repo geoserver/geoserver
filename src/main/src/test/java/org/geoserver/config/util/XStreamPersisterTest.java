@@ -548,11 +548,13 @@ public class XStreamPersisterTest {
 
     @Test
     public void testLegacyStyle() throws Exception {
-        String xml = "<style>\n"
-                + "  <id>StyleInfoImpl--570ae188:124761b8d78:-7fe2</id>\n"
-                + "  <name>raster</name>\n"
-                + "  <filename>raster.sld</filename>\n"
-                + "</style>";
+        String xml =
+                """
+                <style>
+                  <id>StyleInfoImpl--570ae188:124761b8d78:-7fe2</id>
+                  <name>raster</name>
+                  <filename>raster.sld</filename>
+                </style>""";
 
         StyleInfo style =
                 persister.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), StyleInfo.class);
@@ -1036,27 +1038,30 @@ public class XStreamPersisterTest {
 
     @Test
     public void testLegacyLayerGroupWithoutMode() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<layerGroup>\n"
-                + "<name>foo</name>\n"
-                + "<title>foo title</title>\n"
-                + "<abstractTxt>foo abstract</abstractTxt>\n"
-                + "<layers>\n"
-                + "<layer>\n"
-                + "<id>LayerInfoImpl--570ae188:124761b8d78:-7fb0</id>\n"
-                + "</layer>\n"
-                + "</layers>\n"
-                + "<styles>\n"
-                + "<style/>\n"
-                + "</styles>\n"
-                + "<bounds>\n"
-                + "<minx>589425.9342365642</minx>\n"
-                + "<maxx>609518.6719560538</maxx>\n"
-                + "<miny>4913959.224611808</miny>\n"
-                + "<maxy>4928082.949945881</maxy>\n"
-                + "<crs class=\"projected\">EPSG:26713</crs>\n"
-                + "</bounds>\n"
-                + "</layerGroup>\n";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <layerGroup>
+                <name>foo</name>
+                <title>foo title</title>
+                <abstractTxt>foo abstract</abstractTxt>
+                <layers>
+                <layer>
+                <id>LayerInfoImpl--570ae188:124761b8d78:-7fb0</id>
+                </layer>
+                </layers>
+                <styles>
+                <style/>
+                </styles>
+                <bounds>
+                <minx>589425.9342365642</minx>
+                <maxx>609518.6719560538</maxx>
+                <miny>4913959.224611808</miny>
+                <maxy>4928082.949945881</maxy>
+                <crs class="projected">EPSG:26713</crs>
+                </bounds>
+                </layerGroup>
+                """;
 
         LayerGroupInfo group = persister.load(new ByteArrayInputStream(xml.getBytes()), LayerGroupInfo.class);
 
@@ -1497,33 +1502,36 @@ public class XStreamPersisterTest {
 
     @Test
     public void readSettingsMetadataInvalidEntry() throws Exception {
-        String xml = "<global>\n"
-                + "  <settings>\n"
-                + "    <metadata>\n"
-                + "      <map>\n"
-                + "        <entry>\n"
-                + "            <string>key1</string>\n"
-                + "            <string>value1</string>\n"
-                + "        </entry>\n"
-                + "        <entry>\n"
-                + "          <string>NetCDFOutput.Key</string>\n"
-                + "          <netCDFSettings>\n"
-                + "            <compressionLevel>0</compressionLevel>\n"
-                + "            <shuffle>true</shuffle>\n"
-                + "            <copyAttributes>false</copyAttributes>\n"
-                + "            <copyGlobalAttributes>false</copyGlobalAttributes>\n"
-                + "            <dataPacking>NONE</dataPacking>\n"
-                + "          </netCDFSettings>\n"
-                + "        </entry>\n"
-                + "        <entry>\n"
-                + "            <string>key2</string>\n"
-                + "            <string>value2</string>\n"
-                + "        </entry>\n"
-                + "      </map>\n"
-                + "    </metadata>\n"
-                + "    <localWorkspaceIncludesPrefix>true</localWorkspaceIncludesPrefix>\n"
-                + "  </settings>\n"
-                + "</global>\n";
+        String xml =
+                """
+                <global>
+                  <settings>
+                    <metadata>
+                      <map>
+                        <entry>
+                            <string>key1</string>
+                            <string>value1</string>
+                        </entry>
+                        <entry>
+                          <string>NetCDFOutput.Key</string>
+                          <netCDFSettings>
+                            <compressionLevel>0</compressionLevel>
+                            <shuffle>true</shuffle>
+                            <copyAttributes>false</copyAttributes>
+                            <copyGlobalAttributes>false</copyGlobalAttributes>
+                            <dataPacking>NONE</dataPacking>
+                          </netCDFSettings>
+                        </entry>
+                        <entry>
+                            <string>key2</string>
+                            <string>value2</string>
+                        </entry>
+                      </map>
+                    </metadata>
+                    <localWorkspaceIncludesPrefix>true</localWorkspaceIncludesPrefix>
+                  </settings>
+                </global>
+                """;
         GeoServerInfo gs = persister.load(new ByteArrayInputStream(xml.getBytes()), GeoServerInfo.class);
         SettingsInfo settings = gs.getSettings();
         MetadataMap metadata = settings.getMetadata();
@@ -1555,21 +1563,23 @@ public class XStreamPersisterTest {
 
     @Test
     public void readCoverageMetadataInvalidEntry() throws Exception {
-        String xml = "<coverage>\n"
-                + "  <metadata>\n"
-                + "    <entry key=\"key1\">value1</entry>\n"
-                + "    <entry key=\"netcdf\">\n"
-                + "      <netCDFSettings>\n"
-                + "            <compressionLevel>0</compressionLevel>\n"
-                + "            <shuffle>true</shuffle>\n"
-                + "            <copyAttributes>false</copyAttributes>\n"
-                + "            <copyGlobalAttributes>false</copyGlobalAttributes>\n"
-                + "            <dataPacking>NONE</dataPacking>\n"
-                + "      </netCDFSettings>\n"
-                + "    </entry>\n"
-                + "    <entry key=\"key2\">value2</entry>\n"
-                + "  </metadata>\n"
-                + "</coverage>";
+        String xml =
+                """
+                <coverage>
+                  <metadata>
+                    <entry key="key1">value1</entry>
+                    <entry key="netcdf">
+                      <netCDFSettings>
+                            <compressionLevel>0</compressionLevel>
+                            <shuffle>true</shuffle>
+                            <copyAttributes>false</copyAttributes>
+                            <copyGlobalAttributes>false</copyGlobalAttributes>
+                            <dataPacking>NONE</dataPacking>
+                      </netCDFSettings>
+                    </entry>
+                    <entry key="key2">value2</entry>
+                  </metadata>
+                </coverage>""";
         CoverageInfo ci = persister.load(new ByteArrayInputStream(xml.getBytes()), CoverageInfo.class);
         MetadataMap metadata = ci.getMetadata();
         assertEquals(3, metadata.size());
@@ -1583,55 +1593,57 @@ public class XStreamPersisterTest {
         // this test asserts that when expecting a legacy wmsLayer xml tag
         // the converter kicks and sets the default values to ensure integrity
         // and avoid mannually re-saving the layer from GUI
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<wmsLayer>\n"
-                + "   <id>WMSLayerInfoImpl-622caab0:16ff63f5f7a:-7ffc</id>\n"
-                + "   <name>states</name>\n"
-                + "   <nativeName>topp:states</nativeName>\n"
-                + "   <namespace>\n"
-                + "      <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ffc</id>\n"
-                + "   </namespace>\n"
-                + "   <title>USA Population</title>\n"
-                + "   <description>This is some census data on the states.</description>\n"
-                + "   <abstract>This is some census data on the states.</abstract>\n"
-                + "   <keywords>\n"
-                + "      <string>census</string>\n"
-                + "      <string>united</string>\n"
-                + "      <string>boundaries</string>\n"
-                + "      <string>state</string>\n"
-                + "      <string>states</string>\n"
-                + "   </keywords>\n"
-                + "   <nativeCRS>GEOGCS[\"WGS 84\", &#xD;\n"
-                + "  DATUM[\"World Geodetic System 1984\", &#xD;\n"
-                + "    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], &#xD;\n"
-                + "    AUTHORITY[\"EPSG\",\"6326\"]], &#xD;\n"
-                + "  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], &#xD;\n"
-                + "  UNIT[\"degree\", 0.017453292519943295], &#xD;\n"
-                + "  AXIS[\"Geodetic longitude\", EAST], &#xD;\n"
-                + "  AXIS[\"Geodetic latitude\", NORTH], &#xD;\n"
-                + "  AUTHORITY[\"EPSG\",\"4326\"]]</nativeCRS>\n"
-                + "   <srs>EPSG:4326</srs>\n"
-                + "   <nativeBoundingBox>\n"
-                + "      <minx>-124.73142200000001</minx>\n"
-                + "      <maxx>-66.969849</maxx>\n"
-                + "      <miny>24.955967</miny>\n"
-                + "      <maxy>49.371735</maxy>\n"
-                + "      <crs>EPSG:4326</crs>\n"
-                + "   </nativeBoundingBox>\n"
-                + "   <latLonBoundingBox>\n"
-                + "      <minx>-124.731422</minx>\n"
-                + "      <maxx>-66.969849</maxx>\n"
-                + "      <miny>24.955967</miny>\n"
-                + "      <maxy>49.371735</maxy>\n"
-                + "      <crs>EPSG:4326</crs>\n"
-                + "   </latLonBoundingBox>\n"
-                + "   <projectionPolicy>FORCE_DECLARED</projectionPolicy>\n"
-                + "   <enabled>true</enabled>\n"
-                + "   <store class=\"wmsStore\">\n"
-                + "      <id>WMSStoreInfoImpl-622caab0:16ff63f5f7a:-7fff</id>\n"
-                + "   </store>\n"
-                + "   <serviceConfiguration>false</serviceConfiguration>\n"
-                + "</wmsLayer>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <wmsLayer>
+                   <id>WMSLayerInfoImpl-622caab0:16ff63f5f7a:-7ffc</id>
+                   <name>states</name>
+                   <nativeName>topp:states</nativeName>
+                   <namespace>
+                      <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ffc</id>
+                   </namespace>
+                   <title>USA Population</title>
+                   <description>This is some census data on the states.</description>
+                   <abstract>This is some census data on the states.</abstract>
+                   <keywords>
+                      <string>census</string>
+                      <string>united</string>
+                      <string>boundaries</string>
+                      <string>state</string>
+                      <string>states</string>
+                   </keywords>
+                   <nativeCRS>GEOGCS["WGS 84", &#xD;
+                  DATUM["World Geodetic System 1984", &#xD;
+                    SPHEROID["WGS 84", 6378137.0, 298.257223563, AUTHORITY["EPSG","7030"]], &#xD;
+                    AUTHORITY["EPSG","6326"]], &#xD;
+                  PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], &#xD;
+                  UNIT["degree", 0.017453292519943295], &#xD;
+                  AXIS["Geodetic longitude", EAST], &#xD;
+                  AXIS["Geodetic latitude", NORTH], &#xD;
+                  AUTHORITY["EPSG","4326"]]</nativeCRS>
+                   <srs>EPSG:4326</srs>
+                   <nativeBoundingBox>
+                      <minx>-124.73142200000001</minx>
+                      <maxx>-66.969849</maxx>
+                      <miny>24.955967</miny>
+                      <maxy>49.371735</maxy>
+                      <crs>EPSG:4326</crs>
+                   </nativeBoundingBox>
+                   <latLonBoundingBox>
+                      <minx>-124.731422</minx>
+                      <maxx>-66.969849</maxx>
+                      <miny>24.955967</miny>
+                      <maxy>49.371735</maxy>
+                      <crs>EPSG:4326</crs>
+                   </latLonBoundingBox>
+                   <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+                   <enabled>true</enabled>
+                   <store class="wmsStore">
+                      <id>WMSStoreInfoImpl-622caab0:16ff63f5f7a:-7fff</id>
+                   </store>
+                   <serviceConfiguration>false</serviceConfiguration>
+                </wmsLayer>""";
 
         WMSLayerInfo wmsLayerInfo = persister.load(new ByteArrayInputStream(xml.getBytes()), WMSLayerInfo.class);
 

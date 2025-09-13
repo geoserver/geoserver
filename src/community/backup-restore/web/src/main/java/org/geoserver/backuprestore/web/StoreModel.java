@@ -4,6 +4,7 @@
  */
 package org.geoserver.backuprestore.web;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.StoreInfo;
@@ -13,6 +14,7 @@ import org.geoserver.web.GeoServerApplication;
 /** Detachable model for a specific store. */
 public class StoreModel<T extends StoreInfo> extends LoadableDetachableModel<T> {
 
+    @Serial
     private static final long serialVersionUID = -2008934085507417813L;
 
     private ResourceFilePanel resourceFilePanel;

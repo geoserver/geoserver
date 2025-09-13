@@ -151,23 +151,19 @@ public class DownloadLinkHandler {
          */
         private void appendRangeToLink(String key, Object domain, StringBuilder builder) {
             builder.append("&").append(key).append("=");
-            if (domain instanceof DateRange) {
+            if (domain instanceof DateRange dateRange) {
                 // instantiate a new DateFormat instead of using a static one since
                 // it's not thread safe
                 if (dateFormat == null) {
                     dateFormat = new SimpleDateFormat(DATE_FORMAT);
                     dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
                 }
-                DateRange dateRange = (DateRange) domain;
                 builder.append(dateFormat.format(dateRange.getMinValue()))
                         .append("/")
                         .append(dateFormat.format(dateRange.getMaxValue()));
-            } else if (domain instanceof NumberRange) {
-                NumberRange numberRange = (NumberRange) domain;
+            } else if (domain instanceof NumberRange numberRange) {
                 builder.append(numberRange.getMinValue()).append("/").append(numberRange.getMaxValue());
-            } else if (domain instanceof Range) {
-                // Generic range
-                Range range = (Range) domain;
+            } else if (domain instanceof Range range) {
                 builder.append(range.getMinValue()).append("/").append(range.getMaxValue());
             } else {
                 throw new IllegalArgumentException("Domain " + domain + " isn't supported");
@@ -209,8 +205,8 @@ public class DownloadLinkHandler {
         baseURL += LINK;
         baseURL = baseURL.replace("${version}", request.getVersion());
 
-        if (info instanceof CoverageInfo) {
-            return linksFromCoverage(baseURL, (CoverageInfo) info);
+        if (info instanceof CoverageInfo coverageInfo) {
+            return linksFromCoverage(baseURL, coverageInfo);
         } else {
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning("Download link for vectors isn't supported." + " Returning null");
@@ -232,8 +228,7 @@ public class DownloadLinkHandler {
                 throw new IllegalArgumentException("No reader available for the specified coverage: " + name);
             }
             ResourceInfo resourceInfo = reader.getInfo(name);
-            if (resourceInfo instanceof FileResourceInfo) {
-                FileResourceInfo fileResourceInfo = (FileResourceInfo) resourceInfo;
+            if (resourceInfo instanceof FileResourceInfo fileResourceInfo) {
 
                 // Replace the template URL with proper values
                 String baseLink = baseURL.replace(

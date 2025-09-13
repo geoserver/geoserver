@@ -176,8 +176,8 @@ public class CoverageStoreController extends AbstractCatalogController {
 
             final boolean deleteData = deleteType.equalsIgnoreCase("all");
             GridCoverageReader reader = cs.getGridCoverageReader(null, null);
-            if (reader instanceof StructuredGridCoverage2DReader) {
-                ((StructuredGridCoverage2DReader) reader).delete(deleteData);
+            if (reader instanceof StructuredGridCoverage2DReader dReader) {
+                dReader.delete(deleteData);
             }
         }
     }

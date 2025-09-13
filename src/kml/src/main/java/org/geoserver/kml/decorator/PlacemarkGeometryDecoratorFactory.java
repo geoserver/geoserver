@@ -186,9 +186,8 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
                 return null;
             }
 
-            if (geometry instanceof GeometryCollection) {
+            if (geometry instanceof GeometryCollection gc) {
                 MultiGeometry mg = new MultiGeometry();
-                GeometryCollection gc = (GeometryCollection) geometry;
                 if (gc.getNumGeometries() == 1) {
                     return toKmlGeometry(gc.getGeometryN(0));
                 } else {
@@ -200,16 +199,15 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
                 return mg;
             } else if (geometry instanceof Point) {
                 return toKmlPoint(geometry.getCoordinate());
-            } else if (geometry instanceof LinearRing) {
-                return convertLinearRing((LinearRing) geometry);
-            } else if (geometry instanceof LineString) {
+            } else if (geometry instanceof LinearRing ring) {
+                return convertLinearRing(ring);
+            } else if (geometry instanceof LineString string) {
                 de.micromata.opengis.kml.v_2_2_0.LineString kmlLine = new de.micromata.opengis.kml.v_2_2_0.LineString();
                 List<de.micromata.opengis.kml.v_2_2_0.Coordinate> kmlCoordinates =
-                        dumpCoordinateSequence(((LineString) geometry).getCoordinateSequence());
+                        dumpCoordinateSequence(string.getCoordinateSequence());
                 kmlLine.setCoordinates(kmlCoordinates);
                 return kmlLine;
-            } else if (geometry instanceof Polygon) {
-                Polygon polygon = (Polygon) geometry;
+            } else if (geometry instanceof Polygon polygon) {
                 de.micromata.opengis.kml.v_2_2_0.Polygon kmlPolygon = new de.micromata.opengis.kml.v_2_2_0.Polygon();
                 de.micromata.opengis.kml.v_2_2_0.LinearRing kmlOuterRing = convertLinearRing(polygon.getExteriorRing());
                 kmlPolygon.createAndSetOuterBoundaryIs().setLinearRing(kmlOuterRing);
@@ -259,30 +257,21 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
         }
 
         public void applyExtrusion(de.micromata.opengis.kml.v_2_2_0.Geometry kmlGeometry) {
-            if (kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.Polygon) {
-                de.micromata.opengis.kml.v_2_2_0.Polygon polygon =
-                        (de.micromata.opengis.kml.v_2_2_0.Polygon) kmlGeometry;
+            if (kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.Polygon polygon) {
                 polygon.setExtrude(extrudeEnabled);
                 polygon.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-            } else if (kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.LinearRing) {
-                de.micromata.opengis.kml.v_2_2_0.LinearRing ring =
-                        (de.micromata.opengis.kml.v_2_2_0.LinearRing) kmlGeometry;
+            } else if (kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.LinearRing ring) {
                 ring.setExtrude(extrudeEnabled);
                 ring.setTessellate(true);
                 ring.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-            } else if (kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.LineString) {
-                de.micromata.opengis.kml.v_2_2_0.LineString ls =
-                        (de.micromata.opengis.kml.v_2_2_0.LineString) kmlGeometry;
+            } else if (kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.LineString ls) {
                 ls.setExtrude(extrudeEnabled);
                 ls.setTessellate(true);
                 ls.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-            } else if (kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.Point) {
-                de.micromata.opengis.kml.v_2_2_0.Point point = (de.micromata.opengis.kml.v_2_2_0.Point) kmlGeometry;
+            } else if (kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.Point point) {
                 point.setExtrude(extrudeEnabled);
                 point.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-            } else if (kmlGeometry instanceof MultiGeometry) {
-                de.micromata.opengis.kml.v_2_2_0.MultiGeometry mg =
-                        (de.micromata.opengis.kml.v_2_2_0.MultiGeometry) kmlGeometry;
+            } else if (kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.MultiGeometry mg) {
                 for (de.micromata.opengis.kml.v_2_2_0.Geometry g : mg.getGeometry()) {
                     applyExtrusion(g);
                 }

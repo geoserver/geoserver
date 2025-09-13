@@ -541,8 +541,7 @@ public class FeatureService {
             Filter filter;
             if (timeSpec instanceof Date) {
                 filter = FF.equals(property, FF.literal(timeSpec));
-            } else if (timeSpec instanceof DateRange) {
-                DateRange dateRange = (DateRange) timeSpec;
+            } else if (timeSpec instanceof DateRange dateRange) {
                 Literal before = FF.literal(dateRange.getMinValue());
                 Literal after = FF.literal(dateRange.getMaxValue());
                 filter = FF.between(property, before, after);

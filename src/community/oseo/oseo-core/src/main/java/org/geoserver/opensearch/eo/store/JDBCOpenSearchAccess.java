@@ -78,6 +78,7 @@ import org.geotools.feature.SchemaException;
 import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.AttributeExpressionImpl;
+import org.geotools.filter.function.JsonPointerFunction;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.jdbc.JDBCDataStore;
@@ -763,7 +764,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         String indexField;
         if (expression instanceof AttributeExpressionImpl aei) {
             indexField = propertyMapper.getSourceName(aei.getPropertyName());
-        } else if (expression instanceof Function function) {
+        } else if (expression instanceof JsonPointerFunction function) {
             Expression p0 = function.getParameters().get(0);
             if (p0 instanceof PropertyName name) {
                 indexField = propertyMapper.getSourceName(name.getPropertyName());

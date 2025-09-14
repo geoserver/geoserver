@@ -644,11 +644,11 @@ public abstract class FeatureTypeSchemaBuilder {
 
                     // check for duplicated elements and types
 
-                    if (content instanceof XSDNamedComponent declaration) {
+                    if (content instanceof XSDElementDeclaration declaration) {
                         if (contains(declaration, schema.getElementDeclarations())) {
                             i.remove();
                         }
-                    } else if (content instanceof XSDNamedComponent definition) {
+                    } else if (content instanceof XSDTypeDefinition definition) {
                         if (contains(definition, schema.getTypeDefinitions())) {
                             i.remove();
                         }

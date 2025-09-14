@@ -356,8 +356,8 @@ public class TemplateCQLManager {
 
         @Override
         public Object visit(PropertyName expression, Object extraData) {
-            if (expression instanceof Function function) {
-                XpathFunction f = (XpathFunction) visit(function, extraData);
+            if (expression instanceof XpathFunction) {
+                XpathFunction f = (XpathFunction) visit((Function) expression, extraData);
                 f.setNamespaceContext(namespaces);
                 return f;
             }

@@ -170,9 +170,9 @@ public class ElevationParser {
     private void addPeriod(Collection<Object> result, NumberRange<Double> newRange) {
         for (Iterator<Object> it = result.iterator(); it.hasNext(); ) {
             final Object element = it.next();
-            if (element instanceof Number double1) {
+            if (element instanceof Double double1) {
                 // convert
-                if (newRange.contains(double1)) {
+                if (newRange.contains((Number) double1)) {
                     it.remove();
                 }
             } else {

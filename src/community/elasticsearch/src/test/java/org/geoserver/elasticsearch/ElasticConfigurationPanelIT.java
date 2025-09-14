@@ -6,8 +6,8 @@ package org.geoserver.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.list.ListView;
 import org.geoserver.catalog.Catalog;
@@ -50,7 +50,7 @@ public class ElasticConfigurationPanelIT extends ElasticTestSupport {
                 (GSModalWindow) tester.getLastRenderedPage().get("publishedinfo:tabs:panel:theList:2:content:modal");
         // closing the modal window in testing does not trigger the WindowClosedBehavior
         for (Behavior behavior : modal.getBehaviors()) {
-            if (behavior instanceof AbstractAjaxBehavior ajaxBehavior) {
+            if (behavior instanceof AbstractDefaultAjaxBehavior ajaxBehavior) {
                 String name = behavior.getClass().getSimpleName();
                 if (name.startsWith("WindowClosedBehavior")) {
                     tester.executeBehavior(ajaxBehavior);

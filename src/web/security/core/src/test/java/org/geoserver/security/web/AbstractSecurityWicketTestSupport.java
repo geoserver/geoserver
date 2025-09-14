@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.Page;
-import org.apache.wicket.behavior.AbstractAjaxBehavior;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.repeater.Item;
@@ -260,7 +260,7 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
 
     public void executeModalWindowClosedCallback(GSModalWindow modalWindow) {
         for (Behavior behavior : modalWindow.getBehaviors()) {
-            if (behavior instanceof AbstractAjaxBehavior ajaxBehavior) {
+            if (behavior instanceof AbstractDefaultAjaxBehavior ajaxBehavior) {
                 String name = behavior.getClass().getSimpleName();
                 if (name.startsWith("WindowClosedBehavior")) {
                     tester.executeBehavior(ajaxBehavior);
@@ -271,7 +271,7 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
 
     public void executeModalWindowCloseButtonCallback(GSModalWindow modalWindow) {
         for (Behavior behavior : modalWindow.getBehaviors()) {
-            if (behavior instanceof AbstractAjaxBehavior ajaxBehavior) {
+            if (behavior instanceof AbstractDefaultAjaxBehavior ajaxBehavior) {
                 String name = behavior.getClass().getSimpleName();
 
                 if (name.startsWith("CloseButtonBehavior")) {

@@ -15,8 +15,8 @@ import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geotools.api.feature.Attribute;
-import org.geotools.api.feature.ComplexAttribute;
 import org.geotools.api.filter.expression.Expression;
+import org.geotools.feature.ComplexAttributeImpl;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.logging.Logging;
 import org.xml.sax.helpers.NamespaceSupport;
@@ -157,7 +157,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
      * @return true if can write the value else false
      */
     protected boolean canWriteValue(Object value) {
-        if (value instanceof ComplexAttribute impl) {
+        if (value instanceof ComplexAttributeImpl impl) {
             return canWriteValue(impl.getValue());
         } else if (value instanceof Attribute attribute) {
             return canWriteValue(attribute.getValue());

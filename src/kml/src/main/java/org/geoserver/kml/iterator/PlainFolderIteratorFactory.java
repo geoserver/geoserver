@@ -46,11 +46,10 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
         @Override
         protected void encodeFolderContents(Layer layer, Folder folder) {
             // now encode the contents (dynamic bit, it may use the Iterator construct)
-            if (layer instanceof FeatureLayer) {
+            if (layer instanceof FeatureLayer featureLayer) {
                 // do we use a KML placemark dump, or a ground overlay?
                 if (useVectorOutput(context)) {
-                    List<Feature> features =
-                            new IteratorList<>(new FeatureIteratorFactory(context, (FeatureLayer) layer));
+                    List<Feature> features = new IteratorList<>(new FeatureIteratorFactory(context, featureLayer));
                     context.addFeatures(folder, features);
                 } else {
                     addGroundOverlay(folder, layer);

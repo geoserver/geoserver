@@ -186,8 +186,8 @@ public class CoverageUtils {
 
                     if (value == null) {
                         text = null;
-                    } else if (value instanceof String) {
-                        text = (String) value;
+                    } else if (value instanceof String string) {
+                        text = string;
                     } else {
                         text = value.toString();
                     }
@@ -354,8 +354,8 @@ public class CoverageUtils {
                 } else if (key.equalsIgnoreCase("Filter")) {
                     Object sfilter = params.get(key);
                     if (sfilter != null) {
-                        if (sfilter instanceof String) {
-                            value = ECQL.toFilter((String) sfilter);
+                        if (sfilter instanceof String string) {
+                            value = ECQL.toFilter(string);
                         } else if (sfilter instanceof Filter) {
                             value = sfilter;
                         }

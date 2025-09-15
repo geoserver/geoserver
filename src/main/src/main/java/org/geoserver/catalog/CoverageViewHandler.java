@@ -410,8 +410,8 @@ class CoverageViewHandler {
         if (PixelInCell.CELL_CENTER.equals(pixInCell)) return coverageGridToWorld2D;
 
         // we do have to change the pixel datum
-        if (coverageGridToWorld2D instanceof AffineTransform) {
-            final AffineTransform tr = new AffineTransform((AffineTransform) coverageGridToWorld2D);
+        if (coverageGridToWorld2D instanceof AffineTransform transform) {
+            final AffineTransform tr = new AffineTransform(transform);
             tr.concatenate(AffineTransform.getTranslateInstance(-0.5, -0.5));
             return ProjectiveTransform.create(tr);
         }

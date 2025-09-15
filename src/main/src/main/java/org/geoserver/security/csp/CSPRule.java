@@ -8,6 +8,7 @@ import static com.google.common.base.MoreObjects.firstNonNull;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +29,7 @@ import org.geoserver.security.csp.predicate.CSPPredicateProperty;
  */
 public class CSPRule implements CSPPredicate, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 838336921193518382L;
 
     // default values
@@ -170,8 +172,7 @@ public class CSPRule implements CSPPredicate, Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CSPRule) {
-            CSPRule other = (CSPRule) obj;
+        if (obj instanceof CSPRule other) {
             return Objects.equals(this.name, other.name)
                     && Objects.equals(this.description, other.description)
                     && Objects.equals(this.enabled, other.enabled)

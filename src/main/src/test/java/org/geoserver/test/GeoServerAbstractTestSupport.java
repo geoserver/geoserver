@@ -1007,8 +1007,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         Map<String, Object> params = KvpUtils.parseQueryString(path);
         for (String key : params.keySet()) {
             Object value = params.get(key);
-            if (value instanceof String) {
-                request.addParameter(key, (String) value);
+            if (value instanceof String string) {
+                request.addParameter(key, string);
             } else {
                 String[] values = (String[]) value;
                 for (String v : values) {

@@ -6,6 +6,7 @@ package org.geoserver.catalog;
 
 import java.io.IOException;
 import java.io.ObjectStreamException;
+import java.io.Serial;
 import java.io.Serializable;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.EntityResolverProvider;
@@ -19,7 +20,9 @@ import org.xml.sax.SAXException;
  */
 class SerializableEntityResolver implements EntityResolver, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -447221633611119495L;
+
     transient EntityResolver delegate;
 
     public SerializableEntityResolver(EntityResolver delegate) {

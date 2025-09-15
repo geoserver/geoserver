@@ -6,7 +6,10 @@
 
 package org.geoserver.security.validation;
 
+import java.io.Serial;
+
 public class PasswordPolicyException extends AbstractSecurityException {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String IS_NULL = "IS_NULL";

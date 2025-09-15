@@ -6,12 +6,15 @@
 
 package org.geoserver.security.validation;
 
+import java.io.Serial;
+
 /**
  * Exception used for validation errors during security configuration
  *
  * @author christian
  */
 public class SecurityConfigException extends AbstractSecurityException {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String INVALID_PASSWORD_ENCODER_$1 = "INVALID_PASSWORD_ENCODER";

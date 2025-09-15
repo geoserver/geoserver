@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.filter.GeoServerRememberMeAuthenticationFilter;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,5 +21,6 @@ import org.springframework.security.web.authentication.RememberMeServices;
  */
 public class RememberMeAuthenticationFilterConfig extends SecurityFilterConfig implements SecurityAuthFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 }

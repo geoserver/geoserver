@@ -155,8 +155,8 @@ public class LoggingInitializer implements GeoServerInitializer, ApplicationCont
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        if (applicationContext instanceof WebApplicationContext) {
-            servletContext = ((WebApplicationContext) applicationContext).getServletContext();
+        if (applicationContext instanceof WebApplicationContext context) {
+            servletContext = context.getServletContext();
         }
     }
 

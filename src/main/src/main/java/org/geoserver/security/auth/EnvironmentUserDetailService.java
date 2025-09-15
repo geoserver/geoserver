@@ -38,8 +38,7 @@ class EnvironmentUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDetails userDetails = delegate.loadUserByUsername(username);
-        if (userDetails instanceof GeoServerUser) {
-            GeoServerUser user = (GeoServerUser) userDetails;
+        if (userDetails instanceof GeoServerUser user) {
             String password = user.getPassword();
             GeoServerSecurityManager manager = delegate.getSecurityManager();
             List<GeoServerPasswordEncoder> encoders = manager.loadPasswordEncoders(null, true, null);

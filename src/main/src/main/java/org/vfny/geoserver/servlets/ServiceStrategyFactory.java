@@ -87,7 +87,7 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
         }
 
         // TODO: this hack should be removed once modules have their own config
-        if (theStrategy instanceof PartialBufferStrategy2) {
+        if (theStrategy instanceof PartialBufferStrategy2 strategy2) {
             if (partialBufferSize == 0) {
                 String size = getServletContext().getInitParameter("PARTIAL_BUFFER_STRATEGY_SIZE");
 
@@ -114,7 +114,7 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
                 }
             }
 
-            ((PartialBufferStrategy2) theStrategy).setBufferSize(partialBufferSize);
+            strategy2.setBufferSize(partialBufferSize);
         }
 
         return theStrategy;

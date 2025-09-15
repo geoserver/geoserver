@@ -6,6 +6,7 @@
 
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.apache.commons.lang3.SerializationUtils;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
@@ -17,7 +18,9 @@ import org.geoserver.platform.GeoServerExtensions;
  */
 public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private String id;
     private String name;
     private String className;

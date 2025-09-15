@@ -6,11 +6,13 @@
 
 package org.geoserver.security.xml;
 
+import java.io.Serial;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 
 public class XMLUserGroupServiceConfig extends XMLSecurityServiceConfig implements SecurityUserGroupServiceConfig {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     String passwordEncoderName;

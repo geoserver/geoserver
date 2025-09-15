@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.password;
 
+import java.io.Serial;
 import org.geoserver.security.validation.SecurityConfigException;
 
 /**
@@ -15,6 +16,7 @@ import org.geoserver.security.validation.SecurityConfigException;
 public class MasterPasswordProviderException extends SecurityConfigException {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public MasterPasswordProviderException(String errorId, Object... args) {

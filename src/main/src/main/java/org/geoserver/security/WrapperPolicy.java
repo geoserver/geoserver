@@ -5,10 +5,12 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /** The combination of access level granted and response policy (lists only possible cases) */
 public class WrapperPolicy implements Serializable, Comparable<WrapperPolicy> {
+    @Serial
     private static final long serialVersionUID = -7490634837165130290L;
 
     // TODO: turn these into private fields

@@ -311,6 +311,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
                 return new String(output.toByteArray());
             });
         }
+
         ExecutorService executor = Executors.newFixedThreadPool(8);
         try {
             List<Future<String>> futures = executor.invokeAll(tasks);

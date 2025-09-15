@@ -368,4 +368,6 @@
     <constructor-arg value="1000"/>
   </bean>
 
+  <bean id="geoserverTileCache" class="org.geoserver.jai.GeoServerTileCache"/>
+
 </beans>

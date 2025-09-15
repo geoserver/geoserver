@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.security.keycloak;
 
+import java.io.Serial;
 import org.geoserver.security.keycloak.GeoServerKeycloakFilter;
 import org.geoserver.security.keycloak.GeoServerKeycloakFilterConfig;
 import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
@@ -11,6 +12,7 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 public class KeycloakAuthFilterPanelInfo
         extends AuthenticationFilterPanelInfo<GeoServerKeycloakFilterConfig, KeycloakAuthFilterPanel> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public KeycloakAuthFilterPanelInfo() {

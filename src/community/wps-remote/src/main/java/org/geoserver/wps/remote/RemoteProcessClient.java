@@ -312,8 +312,8 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
                             calculateBounds(resource, getGeoServer().getCatalog());
 
                             // WARNING: The Importer Configures Just The First Layer
-                            if (resource instanceof CoverageInfo) {
-                                CoverageInfo ci = ((CoverageInfo) resource);
+                            if (resource instanceof CoverageInfo info) {
+                                CoverageInfo ci = info;
 
                                 GridCoverageReader reader = null;
                                 try {
@@ -327,9 +327,8 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
                                         ci.setNativeCoverageName(nativeCoverageName);
 
                                         // if(type.equals("application/x-netcdf")) Set Dimensions
-                                        if (reader instanceof StructuredGridCoverage2DReader) {
-                                            StructuredGridCoverage2DReader structuredReader =
-                                                    ((StructuredGridCoverage2DReader) reader);
+                                        if (reader instanceof StructuredGridCoverage2DReader dReader) {
+                                            StructuredGridCoverage2DReader structuredReader = dReader;
 
                                             // Getting dimension descriptors
                                             final List<DimensionDescriptor> dimensionDescriptors =

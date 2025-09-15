@@ -48,7 +48,7 @@ public class DataStoresClientIT {
         Assume.assumeTrue(this.support.isAlive());
         this.workspaces = this.support.client().workspaces();
         this.dataStores = this.support.client().dataStores();
-        String wsname = String.format("%s-%d", this.testName.getMethodName(), this.rnd.nextInt((int) 1e6));
+        String wsname = "%s-%d".formatted(this.testName.getMethodName(), this.rnd.nextInt((int) 1e6));
         this.workspaces.create(wsname);
         this.workspace = this.workspaces.findByName(wsname).get();
         this.roadsShapefile = this.support.getRoadsShapefile();

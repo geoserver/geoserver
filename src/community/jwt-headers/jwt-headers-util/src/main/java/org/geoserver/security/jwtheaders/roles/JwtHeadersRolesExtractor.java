@@ -78,14 +78,14 @@ public class JwtHeadersRolesExtractor {
      * @return
      */
     public static List<String> asStringList(Object obj) {
-        if (obj instanceof String) {
-            return Arrays.asList((String) obj);
+        if (obj instanceof String string) {
+            return Arrays.asList(string);
         }
-        if (obj instanceof JSONArray) {
-            return ((JSONArray) obj).stream().map(x -> x.toString()).collect(Collectors.toList());
+        if (obj instanceof JSONArray array) {
+            return array.stream().map(x -> x.toString()).collect(Collectors.toList());
         }
-        if (obj instanceof List) {
-            List<Object> list = ((List) obj);
+        if (obj instanceof List list1) {
+            List<Object> list = list1;
             return list.stream().map(x -> x.toString()).collect(Collectors.toList());
         }
         return null;

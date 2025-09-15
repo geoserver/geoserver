@@ -34,8 +34,8 @@ public class JDBCResourceStoreFactoryBean implements FactoryBean<ResourceStore>,
     }
 
     public void setCache(ResourceCache cache) {
-        if (resourceStore instanceof JDBCResourceStore) {
-            ((JDBCResourceStore) resourceStore).setCache(cache);
+        if (resourceStore instanceof JDBCResourceStore store) {
+            store.setCache(cache);
         }
     }
 
@@ -45,22 +45,22 @@ public class JDBCResourceStoreFactoryBean implements FactoryBean<ResourceStore>,
      * @param lockProvider LockProvider used for Resource#out()
      */
     public void setLockProvider(LockProvider lockProvider) {
-        if (resourceStore instanceof JDBCResourceStore) {
-            ((JDBCResourceStore) resourceStore).setLockProvider(lockProvider);
+        if (resourceStore instanceof JDBCResourceStore store) {
+            store.setLockProvider(lockProvider);
         }
     }
 
     /** Configure ResourceWatcher */
     public void setResourceNotificationDispatcher(ResourceNotificationDispatcher resourceWatcher) {
-        if (resourceStore instanceof JDBCResourceStore) {
-            ((JDBCResourceStore) resourceStore).setResourceNotificationDispatcher(resourceWatcher);
+        if (resourceStore instanceof JDBCResourceStore store) {
+            store.setResourceNotificationDispatcher(resourceWatcher);
         }
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (resourceStore instanceof JDBCResourceStore) {
-            JDBCResourceStore store = ((JDBCResourceStore) resourceStore);
+        if (resourceStore instanceof JDBCResourceStore cResourceStore) {
+            JDBCResourceStore store = cResourceStore;
             LockProvider lockProvider = store.getLockProvider();
             Preconditions.checkState(
                     lockProvider != null,

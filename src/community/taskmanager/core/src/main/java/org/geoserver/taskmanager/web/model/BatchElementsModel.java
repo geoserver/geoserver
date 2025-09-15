@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.model;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class BatchElementsModel extends GeoServerDataProvider<BatchElement> {
 
+    @Serial
     private static final long serialVersionUID = -5237816029300683075L;
 
     public static final Property<BatchElement> INDEX = new BeanProperty<BatchElement>("index", "");

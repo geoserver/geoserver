@@ -236,9 +236,13 @@ public class IntegrationTest extends CatalogRESTTestSupport {
                 long waitedTime = threadInfo2.getWaitedTime();
                 long cpuTime = threadMXBean.getThreadCpuTime(threadInfo2.getThreadId());
                 long userTime = threadMXBean.getThreadUserTime(threadInfo2.getThreadId());
-                String msg = String.format(
-                        "%s: %d ms cpu time, %d ms user time, blocked for %d ms, waited %d ms",
-                        threadInfo2.getThreadName(), cpuTime / 1000000, userTime / 1000000, blockedTime, waitedTime);
+                String msg = "%s: %d ms cpu time, %d ms user time, blocked for %d ms, waited %d ms"
+                        .formatted(
+                                threadInfo2.getThreadName(),
+                                cpuTime / 1000000,
+                                userTime / 1000000,
+                                blockedTime,
+                                waitedTime);
                 System.out.println(msg);
                 assertTrue(waitedTime > 0);
                 break;

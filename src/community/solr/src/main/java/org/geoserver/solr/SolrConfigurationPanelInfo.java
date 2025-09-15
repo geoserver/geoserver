@@ -5,6 +5,7 @@
 
 package org.geoserver.solr;
 
+import java.io.Serial;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.web.data.resource.ResourceConfigurationPanelInfo;
@@ -16,13 +17,13 @@ import org.geoserver.web.data.resource.ResourceConfigurationPanelInfo;
  */
 public class SolrConfigurationPanelInfo extends ResourceConfigurationPanelInfo implements ExtensionPriority {
 
+    @Serial
     private static final long serialVersionUID = 1485404586629946126L;
 
     @Override
     public boolean canHandle(Object obj) {
         boolean canHandle = false;
-        if (obj instanceof FeatureTypeInfo) {
-            FeatureTypeInfo fti = (FeatureTypeInfo) obj;
+        if (obj instanceof FeatureTypeInfo fti) {
             for (String st : getSupportedTypes()) {
                 if (fti.getStore().getType().equals(st)) {
                     canHandle = true;

@@ -339,8 +339,7 @@ public class DbMappings {
     private void createType(Class<? extends Info> clazz, NamedParameterJdbcOperations template) {
 
         final String typeName = clazz.getName();
-        String sql =
-                String.format("INSERT INTO type (typename, oid) VALUES (:typeName, %s)", dialect.nextVal("seq_TYPE"));
+        String sql = "INSERT INTO type (typename, oid) VALUES (:typeName, %s)".formatted(dialect.nextVal("seq_TYPE"));
         Map<String, ?> params = params("typeName", typeName);
         logStatement(sql, params);
         int update = template.update(sql, params);
@@ -643,20 +642,20 @@ public class DbMappings {
         for (PropertyType pt : typeProperties) {
             String propertyName = pt.getPropertyName();
             Object value;
-            if (object instanceof NamespaceInfo && "name".equalsIgnoreCase(propertyName)) {
+            if (object instanceof NamespaceInfo info3 && "name".equalsIgnoreCase(propertyName)) {
                 // HACK for derived property, ModificationProxy evaluates it to the old value
-                value = ((NamespaceInfo) object).getPrefix();
-            } else if (object instanceof LayerInfo && "name".equalsIgnoreCase(propertyName)) {
+                value = info3.getPrefix();
+            } else if (object instanceof LayerInfo info2 && "name".equalsIgnoreCase(propertyName)) {
                 // HACK for derived property, ModificationProxy evaluates it to old value. Remove
                 // when layer name is decoupled from resource name
-                value = ((LayerInfo) object).getResource().getName();
-            } else if (object instanceof LayerInfo && "title".equalsIgnoreCase(propertyName)) {
+                value = info2.getResource().getName();
+            } else if (object instanceof LayerInfo info1 && "title".equalsIgnoreCase(propertyName)) {
                 // HACK for derived property, ModificationProxy evaluates it to old value. Remove
                 // when layer name is decoupled from resource name
-                value = ((LayerInfo) object).getResource().getTitle();
-            } else if (object instanceof PublishedInfo && "prefixedName".equalsIgnoreCase(propertyName)) {
+                value = info1.getResource().getTitle();
+            } else if (object instanceof PublishedInfo info && "prefixedName".equalsIgnoreCase(propertyName)) {
                 // HACK for derived property, it is not a regular javabean property
-                value = ((PublishedInfo) object).prefixedName();
+                value = info.prefixedName();
             } else {
                 // proceed as it should
                 value = ff.property(propertyName).evaluate(object);

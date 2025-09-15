@@ -78,8 +78,8 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
         if (event.getSource() instanceof FeatureTypeInfo) {
             FeatureTypeInfo ft = (FeatureTypeInfo) event.getSource();
             Serializable config = ft.getMetadata().get(SolrLayerConfiguration.KEY);
-            if (config instanceof SolrLayerConfiguration) {
-                updateSolrConfiguration(ft, (SolrLayerConfiguration) config);
+            if (config instanceof SolrLayerConfiguration configuration) {
+                updateSolrConfiguration(ft, configuration);
             }
         }
     }
@@ -90,14 +90,12 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
         if (event.getSource() instanceof FeatureTypeInfo) {
             FeatureTypeInfo ft = (FeatureTypeInfo) event.getSource();
             Serializable config = ft.getMetadata().get(SolrLayerConfiguration.KEY);
-            if (config instanceof SolrLayerConfiguration) {
-                SolrLayerConfiguration slc = (SolrLayerConfiguration) config;
+            if (config instanceof SolrLayerConfiguration slc) {
                 // go directly to the resource pool to avoid security wrappers
                 try {
                     DataAccess<? extends FeatureType, ? extends Feature> dataStore =
                             getCatalog().getResourcePool().getDataStore(ft.getStore());
-                    if (dataStore instanceof SolrDataStore) {
-                        SolrDataStore solr = (SolrDataStore) dataStore;
+                    if (dataStore instanceof SolrDataStore solr) {
                         solr.getSolrConfigurations().remove(slc.getLayerName());
                     }
                 } catch (IOException e) {
@@ -119,8 +117,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
         if (event.getSource() instanceof FeatureTypeInfo) {
             FeatureTypeInfo ft = (FeatureTypeInfo) event.getSource();
             Serializable config = ft.getMetadata().get(SolrLayerConfiguration.KEY);
-            if (config instanceof SolrLayerConfiguration) {
-                SolrLayerConfiguration slc = (SolrLayerConfiguration) config;
+            if (config instanceof SolrLayerConfiguration slc) {
                 if (!ft.getName().equals(slc.getLayerName())) {
                     updateSolrConfiguration(ft, slc);
                 }
@@ -133,8 +130,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
         try {
             DataAccess<? extends FeatureType, ? extends Feature> dataStore =
                     getCatalog().getResourcePool().getDataStore(ft.getStore());
-            if (dataStore instanceof SolrDataStore) {
-                SolrDataStore solr = (SolrDataStore) dataStore;
+            if (dataStore instanceof SolrDataStore solr) {
                 solr.getSolrConfigurations().remove(slc.getLayerName());
                 slc.setLayerName(ft.getName());
                 solr.setSolrConfigurations(slc);

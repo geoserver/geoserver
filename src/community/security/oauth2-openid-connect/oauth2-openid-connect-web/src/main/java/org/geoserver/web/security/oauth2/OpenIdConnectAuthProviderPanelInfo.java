@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.security.oauth2;
 
+import java.io.Serial;
 import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
 import org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
@@ -14,6 +15,7 @@ public class OpenIdConnectAuthProviderPanelInfo
         extends AuthenticationFilterPanelInfo<OpenIdConnectFilterConfig, OpenIdConnectAuthProviderPanel> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -3891569684560944819L;
 
     public OpenIdConnectAuthProviderPanelInfo() {

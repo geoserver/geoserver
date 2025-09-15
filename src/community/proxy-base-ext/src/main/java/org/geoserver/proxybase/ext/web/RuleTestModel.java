@@ -4,12 +4,15 @@
  */
 package org.geoserver.proxybase.ext.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /** A model for the test page. */
 public class RuleTestModel implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private String headers;
     private String input;
     private String output;

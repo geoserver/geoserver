@@ -316,7 +316,7 @@ public class StyleEncoder {
                 .map(re -> re.getRange(filter))
                 .filter(pr -> pr != null)
                 .findFirst();
-        if (!range.isPresent()) {
+        if (range.isEmpty()) {
             return null;
         }
 
@@ -437,22 +437,18 @@ public class StyleEncoder {
         Filter filter = rule.getFilter();
         List<String> values = new ArrayList<>();
         String propertyName = null;
-        if (filter instanceof PropertyIsEqualTo) {
-
-            PropertyIsEqualTo uniqueValueFilter = (PropertyIsEqualTo) filter;
+        if (filter instanceof PropertyIsEqualTo uniqueValueFilter) {
 
             Expression expression1 = uniqueValueFilter.getExpression1();
-            propertyName = expression1 instanceof PropertyName ? ((PropertyName) expression1).getPropertyName() : null;
+            propertyName = expression1 instanceof PropertyName pn ? pn.getPropertyName() : null;
             if (propertyName == null) return null;
 
             Expression expression2 = uniqueValueFilter.getExpression2();
-            String valueAsString = expression2 instanceof Literal
-                    ? ((Literal) expression2).getValue().toString()
-                    : null;
+            String valueAsString =
+                    expression2 instanceof Literal l ? l.getValue().toString() : null;
             if (valueAsString == null) return null;
             values.add(valueAsString);
-        } else if (filter instanceof Or) {
-            Or orFilter = (Or) filter;
+        } else if (filter instanceof Or orFilter) {
             List<Filter> children = flattenOr(orFilter.getChildren());
             if (children == null) return null;
             for (Filter internal : children) {
@@ -461,8 +457,7 @@ public class StyleEncoder {
                 PropertyIsEqualTo uniqueValueFilter = (PropertyIsEqualTo) internal;
 
                 Expression expression1 = uniqueValueFilter.getExpression1();
-                String internalPropertyName =
-                        expression1 instanceof PropertyName ? ((PropertyName) expression1).getPropertyName() : null;
+                String internalPropertyName = expression1 instanceof PropertyName pn ? pn.getPropertyName() : null;
                 if (internalPropertyName == null) return null;
 
                 if (propertyName == null) {
@@ -472,9 +467,8 @@ public class StyleEncoder {
                 }
 
                 Expression expression2 = uniqueValueFilter.getExpression2();
-                String valueAsString = expression2 instanceof Literal
-                        ? ((Literal) expression2).getValue().toString()
-                        : null;
+                String valueAsString =
+                        expression2 instanceof Literal l ? l.getValue().toString() : null;
 
                 values.add(valueAsString);
             }
@@ -500,8 +494,8 @@ public class StyleEncoder {
         for (Filter filter : filters) {
             if (filter instanceof PropertyIsEqualTo) {
                 flat.add(filter);
-            } else if (filter instanceof Or) {
-                List<Filter> children = flattenOr(((Or) filter).getChildren());
+            } else if (filter instanceof Or or) {
+                List<Filter> children = flattenOr(or.getChildren());
                 if (children == null) return null;
                 flat.addAll(children);
             } else {
@@ -590,12 +584,12 @@ public class StyleEncoder {
     }
 
     private static Symbol symbolizerToSymbol(Symbolizer sym) {
-        if (sym instanceof PointSymbolizer) {
-            return pointSymbolizerToMarkSymbol((PointSymbolizer) sym);
-        } else if (sym instanceof LineSymbolizer) {
-            return lineSymbolizerToLineSymbol((LineSymbolizer) sym);
-        } else if (sym instanceof PolygonSymbolizer) {
-            return polygonSymbolizerToFillSymbol((PolygonSymbolizer) sym);
+        if (sym instanceof PointSymbolizer symbolizer2) {
+            return pointSymbolizerToMarkSymbol(symbolizer2);
+        } else if (sym instanceof LineSymbolizer symbolizer1) {
+            return lineSymbolizerToLineSymbol(symbolizer1);
+        } else if (sym instanceof PolygonSymbolizer symbolizer) {
+            return polygonSymbolizerToFillSymbol(symbolizer);
         } else return null; // TODO: Should we throw here?
     }
 
@@ -656,8 +650,7 @@ public class StyleEncoder {
         if (sym.getGraphic() == null) return null;
         if (sym.getGraphic().graphicalSymbols().size() != 1) return null; // REVISIT: should we throw instead?
         GraphicalSymbol symbol = sym.getGraphic().graphicalSymbols().get(0);
-        if (symbol instanceof Mark) {
-            Mark mark = (Mark) symbol;
+        if (symbol instanceof Mark mark) {
             String markName = evaluateWithDefault(mark.getWellKnownName(), "circle");
             final Color color;
             final double opacity;
@@ -696,8 +689,7 @@ public class StyleEncoder {
             }
             return new SimpleMarkerSymbol(
                     equivalentSMS(markName), components(color, opacity), size, angle, xoffset, yoffset, outline);
-        } else if (symbol instanceof ExternalGraphic) {
-            ExternalGraphic exGraphic = (ExternalGraphic) symbol;
+        } else if (symbol instanceof ExternalGraphic exGraphic) {
             URI resourceURI = exGraphic.getOnlineResource().getLinkage();
             byte[] rawData = new byte[4096];
             InputStream stream = null;
@@ -809,24 +801,24 @@ public class StyleEncoder {
 
     public static void encodeStyle(JSONBuilder json, Style style) {
         Symbolizer sym = getSingleSymbolizer(style);
-        if (sym instanceof PointSymbolizer) {
-            encodePointSymbolizer(json, (PointSymbolizer) sym);
-        } else if (sym instanceof LineSymbolizer) {
-            encodeLineSymbolizer(json, (LineSymbolizer) sym);
-        } else if (sym instanceof PolygonSymbolizer) {
-            encodePolygonSymbolizer(json, (PolygonSymbolizer) sym);
+        if (sym instanceof PointSymbolizer symbolizer2) {
+            encodePointSymbolizer(json, symbolizer2);
+        } else if (sym instanceof LineSymbolizer symbolizer1) {
+            encodeLineSymbolizer(json, symbolizer1);
+        } else if (sym instanceof PolygonSymbolizer symbolizer) {
+            encodePolygonSymbolizer(json, symbolizer);
         }
     }
 
     public static void encodeSymbol(JSONBuilder json, Symbol symbol) {
-        if (symbol instanceof SimpleMarkerSymbol) {
-            encodeMarkerSymbol(json, (SimpleMarkerSymbol) symbol);
-        } else if (symbol instanceof PictureMarkerSymbol) {
-            encodePictureMarkerSymbol(json, (PictureMarkerSymbol) symbol);
-        } else if (symbol instanceof SimpleFillSymbol) {
-            encodeFillSymbol(json, (SimpleFillSymbol) symbol);
-        } else if (symbol instanceof SimpleLineSymbol) {
-            encodeLineStyle(json, (SimpleLineSymbol) symbol);
+        if (symbol instanceof SimpleMarkerSymbol markerSymbol1) {
+            encodeMarkerSymbol(json, markerSymbol1);
+        } else if (symbol instanceof PictureMarkerSymbol markerSymbol) {
+            encodePictureMarkerSymbol(json, markerSymbol);
+        } else if (symbol instanceof SimpleFillSymbol fillSymbol) {
+            encodeFillSymbol(json, fillSymbol);
+        } else if (symbol instanceof SimpleLineSymbol lineSymbol) {
+            encodeLineStyle(json, lineSymbol);
         } else {
             json.value(null);
         }
@@ -882,8 +874,8 @@ public class StyleEncoder {
 
     private static void encodePointSymbolizer(JSONBuilder json, PointSymbolizer sym) {
         MarkerSymbol markSymbol = pointSymbolizerToMarkSymbol(sym);
-        if (markSymbol instanceof SimpleMarkerSymbol) {
-            encodeMarkerSymbol(json, (SimpleMarkerSymbol) markSymbol);
+        if (markSymbol instanceof SimpleMarkerSymbol symbol) {
+            encodeMarkerSymbol(json, symbol);
         }
     }
 
@@ -1001,12 +993,12 @@ public class StyleEncoder {
     public static void encodeRenderer(JSONBuilder json, Renderer renderer) {
         if (renderer == null) {
             json.value(null);
-        } else if (renderer instanceof SimpleRenderer) {
-            encodeSimpleRenderer(json, (SimpleRenderer) renderer);
-        } else if (renderer instanceof UniqueValueRenderer) {
-            encodeUniqueValueRenderer(json, (UniqueValueRenderer) renderer);
-        } else if (renderer instanceof ClassBreaksRenderer) {
-            encodeClassBreaksRenderer(json, (ClassBreaksRenderer) renderer);
+        } else if (renderer instanceof SimpleRenderer simpleRenderer) {
+            encodeSimpleRenderer(json, simpleRenderer);
+        } else if (renderer instanceof UniqueValueRenderer valueRenderer) {
+            encodeUniqueValueRenderer(json, valueRenderer);
+        } else if (renderer instanceof ClassBreaksRenderer breaksRenderer) {
+            encodeClassBreaksRenderer(json, breaksRenderer);
         } else throw new IllegalArgumentException("Unhandled renderer " + renderer);
     }
 

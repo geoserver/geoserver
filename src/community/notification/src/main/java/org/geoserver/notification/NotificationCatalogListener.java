@@ -109,11 +109,9 @@ public class NotificationCatalogListener extends NotificationListener implements
                 handleWorkspaceRename(properties, source, changedProperties, oldValues, newValues);
             }
         }
-        if (source instanceof LayerInfo) {
-            final LayerInfo li = (LayerInfo) source;
+        if (source instanceof LayerInfo li) {
             handleLayerInfoChange(properties, changedProperties, oldValues, newValues, li);
-        } else if (source instanceof LayerGroupInfo) {
-            LayerGroupInfo lgInfo = (LayerGroupInfo) source;
+        } else if (source instanceof LayerGroupInfo lgInfo) {
             handleLayerGroupInfoChange(properties, changedProperties, oldValues, newValues, lgInfo);
         }
         return properties;
@@ -204,9 +202,7 @@ public class NotificationCatalogListener extends NotificationListener implements
 
         String oldLayerName;
         String newLayerName;
-        if (source instanceof ResourceInfo) { // covers LayerInfo, CoverageInfo, and WMSLayerInfo
-            // must cover prefix:name
-            final ResourceInfo resourceInfo = (ResourceInfo) source;
+        if (source instanceof ResourceInfo resourceInfo) {
             final NamespaceInfo currNamespace = resourceInfo.getNamespace();
             final NamespaceInfo oldNamespace;
             if (namespaceIndex > -1) {

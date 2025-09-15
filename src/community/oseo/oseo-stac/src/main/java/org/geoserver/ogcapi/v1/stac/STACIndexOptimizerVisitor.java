@@ -109,8 +109,7 @@ public class STACIndexOptimizerVisitor extends DuplicatingFilterVisitor {
     }
 
     private Expression forceDouble(Expression in, Object extraData) {
-        if (in instanceof Literal) {
-            Literal literalExp = (Literal) in;
+        if (in instanceof Literal literalExp) {
             if (literalExp.getValue() instanceof Number) {
                 Number numberLiteral = (Number) literalExp.getValue();
                 double converted = numberLiteral.doubleValue();

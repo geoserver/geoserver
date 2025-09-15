@@ -114,8 +114,8 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
 
     private Catalog unwrapGsCatalog() {
         Catalog gsCatalog = backupFacade.getGeoServer().getCatalog();
-        if (gsCatalog instanceof Wrapper) {
-            gsCatalog = ((Wrapper) gsCatalog).unwrap(Catalog.class);
+        if (gsCatalog instanceof Wrapper wrapper) {
+            gsCatalog = wrapper.unwrap(Catalog.class);
         }
         return gsCatalog;
     }
@@ -129,8 +129,8 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
     /** Synchronizes catalogs content. */
     private void syncCatalogs(CatalogImpl restoreCatalog, Catalog gsCatalog) {
         LOGGER.fine("Synchronizing catalogs items.");
-        if (gsCatalog instanceof CatalogImpl) {
-            restoreCatalog.sync((CatalogImpl) gsCatalog);
+        if (gsCatalog instanceof CatalogImpl impl) {
+            restoreCatalog.sync(impl);
         }
     }
 

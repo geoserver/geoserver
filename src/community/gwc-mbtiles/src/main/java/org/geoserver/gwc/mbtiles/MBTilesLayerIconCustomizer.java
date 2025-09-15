@@ -24,8 +24,7 @@ public class MBTilesLayerIconCustomizer implements GWCTileLayerIconCustomizer {
 
     @Override
     public PackageResourceReference getLayerIcon(TileLayer layer) {
-        if (layer instanceof MBTilesLayer) {
-            MBTilesLayer mbTilesLayer = (MBTilesLayer) layer;
+        if (layer instanceof MBTilesLayer mbTilesLayer) {
             if (mbTilesLayer.isVectorTiles()) {
                 return CatalogIconFactory.GEOMETRY_ICON;
             } else {

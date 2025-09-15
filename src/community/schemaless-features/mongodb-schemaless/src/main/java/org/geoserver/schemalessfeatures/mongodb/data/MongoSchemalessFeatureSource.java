@@ -145,12 +145,12 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
                 keys.put(geometryPath, 1);
             }
             if (LOG.isLoggable(Level.FINE)) {
-                LOG.fine(String.format("find(%s, %s)", query, keys));
+                LOG.fine("find(%s, %s)".formatted(query, keys));
             }
             it = collection.find((BasicDBObject) query).projection((BasicDBObject) keys);
         } else {
             if (LOG.isLoggable(Level.FINE)) {
-                LOG.fine(String.format("find(%s)", query));
+                LOG.fine("find(%s)".formatted(query));
             }
             it = collection.find((BasicDBObject) query);
         }

@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.data.impl;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.hibernate.annotations.FilterDef;
 // batch.removeStamp = 0")
 public class TaskImpl extends BaseImpl implements Task {
 
+    @Serial
     private static final long serialVersionUID = -4050889394621568829L;
 
     @Id

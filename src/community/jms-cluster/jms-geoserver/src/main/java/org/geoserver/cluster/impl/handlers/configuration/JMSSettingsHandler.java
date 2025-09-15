@@ -71,7 +71,7 @@ public class JMSSettingsHandler extends JMSConfigurationHandler<JMSSettingsModif
         // synchronization problem happened
         if (settingsInfo == null) {
             throw new IllegalArgumentException(
-                    String.format("No settings for workspace '%s' found on this instance.", workspace.getName()));
+                    "No settings for workspace '%s' found on this instance.".formatted(workspace.getName()));
         }
         // well let's update our settings updating only the modified properties
         try {
@@ -80,7 +80,7 @@ public class JMSSettingsHandler extends JMSConfigurationHandler<JMSSettingsModif
             String message = workspace == null
                     ? "Error updating GeoServer global settings."
                     : "Error updating workspace '%s' settings.";
-            throw new RuntimeException(String.format(message, workspace), exception);
+            throw new RuntimeException(message.formatted(workspace), exception);
         }
         // save the updated settings
         geoServer.save(settingsInfo);

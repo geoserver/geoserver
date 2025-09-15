@@ -83,8 +83,8 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
         try {
             // check if we may publish also the file
             final CatalogInfo info = event.getSource();
-            if (info instanceof StyleInfo) {
-                final StyleInfo sInfo = ((StyleInfo) info);
+            if (info instanceof StyleInfo styleInfo) {
+                final StyleInfo sInfo = styleInfo;
                 WorkspaceInfo wInfo = sInfo.getWorkspace();
                 Resource styleFile = null;
 
@@ -175,25 +175,24 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
         CatalogInfo info = event.getSource();
 
         // if the modified object was a style we need to send the style file too
-        if (info instanceof StyleInfo) {
+        if (info instanceof StyleInfo styleInfo1) {
             // we need to get the associated resource file, for this we need to look
             // at the final object we use a proxy to preserver the original object
-            StyleInfo styleInfo = ModificationProxy.create((StyleInfo) info, StyleInfo.class);
+            StyleInfo styleInfo = ModificationProxy.create(styleInfo1, StyleInfo.class);
             // updated the proxy object with the new values
             try {
                 BeanUtils.smartUpdate(styleInfo, event.getPropertyNames(), event.getNewValues());
             } catch (Exception exception) {
                 // there is nothing we can do about this
                 throw new RuntimeException(
-                        String.format("Error setting proxy of style '%s' new values.", styleInfo.getName()), exception);
+                        "Error setting proxy of style '%s' new values.".formatted(styleInfo.getName()), exception);
             }
             // get style associated resource
             Resource resource = dataDirectory.get(styleInfo, styleInfo.getFilename());
             if (!resource.file().exists()) {
                 // this should not happen we throw an exception
-                throw new RuntimeException(String.format(
-                        "Style file '%s' for style '%s' could not be found.",
-                        styleInfo.getFilename(), styleInfo.getName()));
+                throw new RuntimeException("Style file '%s' for style '%s' could not be found."
+                        .formatted(styleInfo.getFilename(), styleInfo.getName()));
             }
             try {
                 // read the style file to an array of bytes
@@ -202,9 +201,9 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
                     IOUtils.copy(resource.in(), output);
                 } catch (Exception exception) {
                     throw new RuntimeException(
-                            String.format(
-                                    "Error reading style '%s' file '%s'.",
-                                    styleInfo.getName(), resource.file().getAbsolutePath()),
+                            "Error reading style '%s' file '%s'."
+                                    .formatted(
+                                            styleInfo.getName(), resource.file().getAbsolutePath()),
                             exception);
                 }
                 // publish the style event
@@ -212,8 +211,7 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
                         getTopic(), getJmsTemplate(), options, new StyleModifyEvent(event, output.toByteArray()));
             } catch (Exception exception) {
                 throw new RuntimeException(
-                        String.format("Error publishing file associated with style '%s'.", styleInfo.getName()),
-                        exception);
+                        "Error publishing file associated with style '%s'.".formatted(styleInfo.getName()), exception);
             }
         } else {
             // propagate the catalog modified event
@@ -221,9 +219,8 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
                 jmsPublisher.publish(getTopic(), getJmsTemplate(), options, event);
             } catch (Exception exception) {
                 throw new RuntimeException(
-                        String.format(
-                                "Error publishing catalog modified event of type '%s'.",
-                                info.getClass().getSimpleName()),
+                        "Error publishing catalog modified event of type '%s'."
+                                .formatted(info.getClass().getSimpleName()),
                         exception);
             }
         }

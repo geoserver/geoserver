@@ -303,15 +303,15 @@ class CollectionLayerManager {
     }
 
     private ImageReaderSpi getSpi(Object source) throws IOException {
-        if (source instanceof File) {
-            try (FileImageInputStream fis = new FileImageInputStream((File) source)) {
+        if (source instanceof File file) {
+            try (FileImageInputStream fis = new FileImageInputStream(file)) {
                 ImageReader imageReader = ImageIOExt.getImageioReader(fis);
                 if (imageReader != null) {
                     return imageReader.getOriginatingProvider();
                 }
             }
-        } else if (source instanceof SourceSPIProvider) {
-            return ((SourceSPIProvider) source).getReaderSpi();
+        } else if (source instanceof SourceSPIProvider provider) {
+            return provider.getReaderSpi();
         }
         return null;
     }

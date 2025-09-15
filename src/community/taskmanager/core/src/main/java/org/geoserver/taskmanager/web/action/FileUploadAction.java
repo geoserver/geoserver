@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.action;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
@@ -25,12 +26,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class FileUploadAction implements Action {
 
+    @Serial
     private static final long serialVersionUID = 4996136164811697150L;
 
     private static final String NAME = "FileUpload";
 
     private static class DialogDelegate extends GeoServerDialog.DialogDelegate {
 
+        @Serial
         private static final long serialVersionUID = 7410393012930249966L;
 
         private FileUploadPanel panel;

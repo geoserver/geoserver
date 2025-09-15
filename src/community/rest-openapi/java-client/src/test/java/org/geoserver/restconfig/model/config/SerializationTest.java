@@ -107,7 +107,7 @@ public class SerializationTest {
     }
 
     public @Test void testWMSInfoWrapper() throws IOException {
-        String raw = String.format("{\"wms\":%s}", WMS_INFO);
+        String raw = "{\"wms\":%s}".formatted(WMS_INFO);
         WMSInfoWrapper wrapper = decode(raw, WMSInfoWrapper.class);
         assertNotNull(wrapper);
         assertNotNull(wrapper.getWms());
@@ -152,7 +152,7 @@ public class SerializationTest {
     }
 
     public @Test void testWFSInfoWrapper() throws IOException {
-        String raw = String.format("{\"wfs\":%s}", WFS_INFO);
+        String raw = "{\"wfs\":%s}".formatted(WFS_INFO);
         WFSInfoWrapper wrapper = decode(raw, WFSInfoWrapper.class);
         assertNotNull(wrapper);
         assertNotNull(wrapper.getWfs());

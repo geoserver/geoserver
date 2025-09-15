@@ -108,7 +108,7 @@ public class DGGSResolutionCalculator {
         Optional<Integer> resolutionDelta =
                 viewParams.map(m -> m.get(VP_RESOLUTION_DELTA)).map(n -> safeConvert(n, Integer.class));
         // if not available through the request, try the values coming from the configuration
-        if (!resolutionDelta.isPresent()) {
+        if (resolutionDelta.isEmpty()) {
             resolutionDelta = getIntegerHint(hints, OFFSET_HINTS_KEY);
         }
         int resOffset = resolutionDelta.orElse(0);

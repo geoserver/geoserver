@@ -6,6 +6,7 @@ package org.geoserver.taskmanager.web;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -83,6 +84,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(ConfigurationPage.class);
 
+    @Serial
     private static final long serialVersionUID = 3902645494421966388L;
 
     private IModel<Configuration> originalConfigurationModel;
@@ -177,6 +179,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                 .setVisible(!initMode && configurationModel.getObject().getId() != null));
 
         form.add(new TextField<String>("name", new PropertyModel<String>(configurationModel, "name")) {
+            @Serial
             private static final long serialVersionUID = -3736209422699508894L;
 
             @Override
@@ -205,6 +208,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                         "workspace",
                         new PropertyModel<String>(configurationModel, "workspace"),
                         new ArrayList<String>(workspaces)) {
+                    @Serial
                     private static final long serialVersionUID = -6665795544099616226L;
 
                     @Override
@@ -247,6 +251,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
         batchesPanel.setOutputMarkupId(true);
 
         form.add(new AjaxLink<Object>("cancel") {
+            @Serial
             private static final long serialVersionUID = -6892944747517089296L;
 
             @Override
@@ -305,6 +310,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
     protected AjaxSubmitLink addButton() {
         return new AjaxSubmitLink("addNew") {
 
+            @Serial
             private static final long serialVersionUID = 7320342263365531859L;
 
             @Override
@@ -314,6 +320,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                 dialog.setInitialHeight(225);
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                    @Serial
                     private static final long serialVersionUID = 7410393012930249966L;
 
                     private NewTaskPanel panel;
@@ -384,6 +391,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
 
     protected AjaxSubmitLink removeButton() {
         return new AjaxSubmitLink("removeSelected") {
+            @Serial
             private static final long serialVersionUID = 3581476968062788921L;
 
             @Override
@@ -393,6 +401,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                 dialog.setInitialHeight(175);
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                    @Serial
                     private static final long serialVersionUID = -5552087037163833563L;
 
                     private IModel<Boolean> shouldCleanupModel = new Model<Boolean>(false);
@@ -478,6 +487,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
 
     private ResourceLink<Object> exportButton() {
         return new ResourceLink<Object>("export", new AbstractResource() {
+            @Serial
             private static final long serialVersionUID = 184195260939749675L;
 
             @Override
@@ -508,6 +518,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
     protected GeoServerTablePanel<Task> tasksPanel() {
         return new GeoServerTablePanel<Task>("tasksPanel", tasksModel, true) {
 
+            @Serial
             private static final long serialVersionUID = -8943273843044917552L;
 
             @Override
@@ -524,6 +535,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                     IModel<String> nameModel = (IModel<String>) property.getModel(itemModel);
                     return new SimpleAjaxSubmitLink(id, nameModel) {
 
+                        @Serial
                         private static final long serialVersionUID = 2023797271780630795L;
 
                         @Override
@@ -534,6 +546,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                             dialog.setTitle(new ParamResourceModel("changeTaskName", getPage()));
                             dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                                @Serial
                                 private static final long serialVersionUID = 7410393012930249966L;
 
                                 private NamePanel panel;
@@ -542,6 +555,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                 protected Component getContents(String id) {
                                     panel = new NamePanel(id, nameModel);
                                     panel.getTextField().add(new IValidator<String>() {
+                                        @Serial
                                         private static final long serialVersionUID = 1L;
 
                                         @Override
@@ -585,6 +599,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                     };
                 } else if (property.equals(TasksModel.PARAMETERS)) {
                     return new SimpleAjaxSubmitLink(id, new IModel<String>() {
+                        @Serial
                         private static final long serialVersionUID = 519359570729184717L;
 
                         @Override
@@ -613,6 +628,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                             }
                         }
                     }) {
+                        @Serial
                         private static final long serialVersionUID = 3950104089264630053L;
 
                         @Override
@@ -631,6 +647,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                             + itemModel.getObject().getType()));
                             dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                                @Serial
                                 private static final long serialVersionUID = 7410393012930249966L;
 
                                 @Override
@@ -672,6 +689,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
         domains = TaskManagerBeans.get().getTaskUtil().getDomains(configurationModel.getObject());
         return new GeoServerTablePanel<Attribute>("attributesPanel", attributesModel, true) {
 
+            @Serial
             private static final long serialVersionUID = -8943273843044917552L;
 
             @SuppressWarnings("unchecked")
@@ -705,6 +723,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                                         itemModel.getObject(), configurationModel.getObject()));
                         ddp.getDropDownChoice().add(new AjaxFormSubmitBehavior("change") {
 
+                            @Serial
                             private static final long serialVersionUID = -7698014209707408962L;
 
                             @Override
@@ -727,12 +746,14 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                             .getActionsForAttribute(itemModel.getObject(), configurationModel.getObject());
                     if (!actions.isEmpty()) {
                         return new PanelListPanel<String>(id, actions) {
+                            @Serial
                             private static final long serialVersionUID = -4770841274788269473L;
 
                             @Override
                             protected Panel populateItem(String id, IModel<String> actionModel) {
                                 return new ButtonPanel(
                                         id, new StringResourceModel("Actions." + actionModel.getObject())) {
+                                    @Serial
                                     private static final long serialVersionUID = -2791644626218648013L;
 
                                     @Override
@@ -768,6 +789,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
 
     protected AjaxSubmitLink saveOrApplyButton(final String id, final boolean doReturn) {
         return new AjaxSubmitLink(id) {
+            @Serial
             private static final long serialVersionUID = 3735176778941168701L;
 
             @Override

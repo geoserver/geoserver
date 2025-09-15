@@ -64,8 +64,8 @@ public class ResourceInfoAdditionalResourceWriter implements CatalogAdditionalRe
             for (String template : templates) {
                 final Object ftl = templateLoader.findTemplateSource(template);
 
-                if (ftl != null && ftl instanceof File) {
-                    Resource templateResource = Files.asResource((File) ftl);
+                if (ftl != null && ftl instanceof File file) {
+                    Resource templateResource = Files.asResource(file);
 
                     if (Resources.exists(templateResource)) {
                         final String relative = rootDataDir

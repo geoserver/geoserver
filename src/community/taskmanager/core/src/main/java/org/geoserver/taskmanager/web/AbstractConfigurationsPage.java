@@ -7,6 +7,7 @@ package org.geoserver.taskmanager.web;
 import com.thoughtworks.xstream.XStreamException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +43,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class AbstractConfigurationsPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -6780935404517755471L;
 
     private static final Logger LOGGER = Logging.getLogger(AbstractConfigurationsPage.class);
@@ -74,6 +76,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
         ((GSModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
         add(new AjaxLink<Object>("addNew") {
+            @Serial
             private static final long serialVersionUID = 3581476968062788921L;
 
             @Override
@@ -94,6 +97,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
 
                     dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                        @Serial
                         private static final long serialVersionUID = -5552087037163833563L;
 
                         private DropDownPanel panel;
@@ -145,6 +149,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
         // the removal button
         add(
                 remove = new AjaxLink<Object>("removeSelected") {
+                    @Serial
                     private static final long serialVersionUID = 3581476968062788921L;
 
                     @Override
@@ -186,6 +191,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                             dialog.setTitle(new ParamResourceModel("confirmDeleteDialog.title", getPage()));
                             dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                                @Serial
                                 private static final long serialVersionUID = -5552087037163833563L;
 
                                 private String error = null;
@@ -273,6 +279,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
         // the copy button
         add(
                 copy = new AjaxLink<Object>("copySelected") {
+                    @Serial
                     private static final long serialVersionUID = 3581476968062788921L;
 
                     @Override
@@ -306,6 +313,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
         copy.setEnabled(false);
 
         add(new AjaxLink<Object>("import") {
+            @Serial
             private static final long serialVersionUID = 6122970349448584029L;
 
             @Override
@@ -314,6 +322,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
 
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                    @Serial
                     private static final long serialVersionUID = -5552087037163833563L;
 
                     private ImportPanel panel;
@@ -352,6 +361,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                         new GeoServerTablePanel<Configuration>(
                                 "configurationsPanel", new ConfigurationsModel(templates), true) {
 
+                            @Serial
                             private static final long serialVersionUID = -8943273843044917552L;
 
                             @Override
@@ -378,6 +388,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                                     SimpleAjaxLink<String> link =
                                             new SimpleAjaxLink<String>(
                                                     id, (IModel<String>) property.getModel(itemModel)) {
+                                                @Serial
                                                 private static final long serialVersionUID = -9184383036056499856L;
 
                                                 @Override

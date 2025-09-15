@@ -51,9 +51,9 @@ public class CollectionExtents {
             if (temporal != null) {
                 java.util.Date minValue = temporal.getMinValue();
                 java.util.Date maxValue = temporal.getMaxValue();
-                if (minValue instanceof java.sql.Date) {
+                if (minValue instanceof java.sql.Date date) {
                     return Collections.singletonList(new String[] {
-                        ISO_INSTANT.format(sqlDateToInstant((java.sql.Date) minValue)),
+                        ISO_INSTANT.format(sqlDateToInstant(date)),
                         ISO_INSTANT.format(sqlDateToInstant((java.sql.Date) maxValue))
                     });
                 }

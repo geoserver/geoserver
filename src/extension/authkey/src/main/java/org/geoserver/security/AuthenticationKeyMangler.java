@@ -16,8 +16,7 @@ public class AuthenticationKeyMangler implements URLMangler {
     @Override
     public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof KeyAuthenticationToken) {
-            KeyAuthenticationToken kat = (KeyAuthenticationToken) authentication;
+        if (authentication instanceof KeyAuthenticationToken kat) {
             String key = (String) kat.getCredentials();
             kvp.put(kat.getAuthKeyParamName(), key);
         }

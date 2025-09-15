@@ -4,6 +4,7 @@
  */
 package org.geoserver.csw;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.geoserver.catalog.MetadataMap;
 
@@ -11,6 +12,7 @@ import org.geoserver.catalog.MetadataMap;
 public class DirectDownloadSettings implements Serializable {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String DIRECTDOWNLOAD_KEY = "DirectDownload.Key";

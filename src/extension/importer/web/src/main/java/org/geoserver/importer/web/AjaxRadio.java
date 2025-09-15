@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.web;
 
+import java.io.Serial;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -14,6 +15,7 @@ import org.apache.wicket.model.IModel;
 
 public abstract class AjaxRadio<T> extends Radio<T> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public abstract void onAjaxEvent(AjaxRequestTarget target);
@@ -26,6 +28,7 @@ public abstract class AjaxRadio<T> extends Radio<T> {
 
     private void addAjaxBehavior() {
         add(new AjaxEventBehavior("click") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

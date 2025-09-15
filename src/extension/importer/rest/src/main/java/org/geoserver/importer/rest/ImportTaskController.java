@@ -283,7 +283,7 @@ public class ImportTaskController extends ImportBaseController {
                 long taskId = newTasks.get(0).getId();
                 response.setHeader(
                         "Location",
-                        RequestInfo.get().servletURI(String.format("/imports/%d/tasks/%d", context.getId(), taskId)));
+                        RequestInfo.get().servletURI("/imports/%d/tasks/%d".formatted(context.getId(), taskId)));
             }
             response.setStatus(HttpStatus.CREATED.value());
 
@@ -552,12 +552,12 @@ public class ImportTaskController extends ImportBaseController {
             CatalogBuilder cb = new CatalogBuilder(importer.getCatalog());
 
             StoreInfo clone;
-            if (existing instanceof DataStoreInfo) {
+            if (existing instanceof DataStoreInfo info1) {
                 clone = cb.buildDataStore(existing.getName());
-                cb.updateDataStore((DataStoreInfo) clone, (DataStoreInfo) existing);
-            } else if (existing instanceof CoverageStoreInfo) {
+                cb.updateDataStore((DataStoreInfo) clone, info1);
+            } else if (existing instanceof CoverageStoreInfo info) {
                 clone = cb.buildCoverageStore(existing.getName());
-                cb.updateCoverageStore((CoverageStoreInfo) clone, (CoverageStoreInfo) existing);
+                cb.updateCoverageStore((CoverageStoreInfo) clone, info);
             } else {
                 throw new RestException("Unable to handle existing store: " + update, HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -570,10 +570,10 @@ public class ImportTaskController extends ImportBaseController {
         } else {
             // update the original
             CatalogBuilder cb = new CatalogBuilder(importer.getCatalog());
-            if (orig instanceof DataStoreInfo) {
-                cb.updateDataStore((DataStoreInfo) orig, (DataStoreInfo) update);
-            } else if (orig instanceof CoverageStoreInfo) {
-                cb.updateCoverageStore((CoverageStoreInfo) orig, (CoverageStoreInfo) update);
+            if (orig instanceof DataStoreInfo info1) {
+                cb.updateDataStore(info1, (DataStoreInfo) update);
+            } else if (orig instanceof CoverageStoreInfo info) {
+                cb.updateCoverageStore(info, (CoverageStoreInfo) update);
             } else {
                 throw new RestException("Unable to update store with " + update, HttpStatus.INTERNAL_SERVER_ERROR);
             }

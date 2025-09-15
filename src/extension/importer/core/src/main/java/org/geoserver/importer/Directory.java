@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -37,6 +38,7 @@ public class Directory extends FileData {
 
     private static final Logger LOGGER = Logging.getLogger(Directory.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** list of files contained in directory */
@@ -259,8 +261,7 @@ public class Directory extends FileData {
 
             for (Iterator<FileData> it = dir.getFiles().iterator(); it.hasNext(); ) {
                 FileData f = it.next();
-                if (f instanceof Directory) {
-                    Directory d = (Directory) f;
+                if (f instanceof Directory d) {
                     it.remove();
                     q.addLast(d);
                 }
@@ -451,7 +452,7 @@ public class Directory extends FileData {
                     // nothing, we're totally aborting
                 }
                 output.delete();
-                if (ex instanceof IOException) throw (IOException) ex;
+                if (ex instanceof IOException exception) throw exception;
                 throw (IOException) new IOException("Error archiving").initCause(ex);
             }
         } finally {
@@ -483,8 +484,8 @@ public class Directory extends FileData {
     @Override
     public FileData part(final String name) {
         List<FileData> files = this.files;
-        if (this instanceof Filtered) {
-            files = ((Filtered) this).filter;
+        if (this instanceof Filtered filtered) {
+            files = filtered.filter;
         }
 
         try {

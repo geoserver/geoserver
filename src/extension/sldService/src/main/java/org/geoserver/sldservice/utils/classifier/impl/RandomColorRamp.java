@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import org.geoserver.sldservice.utils.classifier.ColorRamp;
 
 /**
@@ -50,7 +51,9 @@ public class RandomColorRamp implements ColorRamp {
 
     private void createRamp() throws Exception {
         for (int i = 0; i < classNum; i++)
-            colors.add(
-                    new Color((int) (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() * 255)));
+            colors.add(new Color(
+                    (int) (ThreadLocalRandom.current().nextDouble() * 255),
+                    (int) (ThreadLocalRandom.current().nextDouble() * 255),
+                    (int) (ThreadLocalRandom.current().nextDouble() * 255)));
     }
 }

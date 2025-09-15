@@ -82,8 +82,8 @@ class AppSchemaUtils {
         for (Name ename : names) {
             FeatureTypeMapping mapping = appSchemaStore.getMappingByName(ename);
             DataAccess internalStore = mapping.getSource().getDataStore();
-            if (internalStore instanceof MongoDataStore) {
-                mongoStores.add((MongoDataStore) internalStore);
+            if (internalStore instanceof MongoDataStore store) {
+                mongoStores.add(store);
             }
         }
     }

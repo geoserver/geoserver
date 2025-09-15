@@ -152,8 +152,8 @@ public class GeorectifyCoverage implements GeoServerProcess {
             //
             // //
             final Object fileSource = coverage.getProperty(GridCoverage2DReader.FILE_SOURCE_PROPERTY);
-            if (fileSource != null && fileSource instanceof String) {
-                location = (String) fileSource;
+            if (fileSource != null && fileSource instanceof String string) {
+                location = string;
             }
             if (location == null) {
                 RenderedImage image = coverage.getRenderedImage();

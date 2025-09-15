@@ -9,6 +9,7 @@ import static org.geoserver.mapml.MapMLConstants.MAPML_USE_MULTIEXTENTS;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.MapMLLayerConfigurationPanel.getAvailableMimeTypes;
 
+import java.io.Serial;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -30,7 +31,9 @@ import org.geotools.util.logging.Logging;
 public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPanel<LayerGroupInfo> {
     static final Logger LOGGER = Logging.getLogger(MapMLLayerGroupConfigurationPanel.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     public static final String METADATA = "metadata";
 
     DropDownChoice<String> mime;

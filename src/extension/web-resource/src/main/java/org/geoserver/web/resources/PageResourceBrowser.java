@@ -7,6 +7,7 @@ package org.geoserver.web.resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +47,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  */
 public class PageResourceBrowser extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 3979040405548783679L;
 
     /** Behaviour for disabled button */
@@ -233,6 +235,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class UploadButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = -6538820444407766106L;
 
         public UploadButton() {
@@ -244,7 +247,9 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
             dialog.setInitialHeight(225);
 
             dialog.showOkCancel(target, new DialogDelegate() {
+                @Serial
                 private static final long serialVersionUID = 1557172478015946688L;
+
                 private PanelUpload uploadPanel;
 
                 @Override
@@ -289,6 +294,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class NewButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 8112272759002275843L;
 
         public NewButton() {
@@ -300,6 +306,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
             dialog.setInitialHeight(525);
 
             dialog.showOkCancel(target, new DialogDelegate() {
+                @Serial
                 private static final long serialVersionUID = -8898887236980594842L;
 
                 private PanelEdit editPanel;
@@ -366,6 +373,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class DownloadButton extends Link<Void> {
+        @Serial
         private static final long serialVersionUID = 2746429086122117005L;
 
         public DownloadButton() {
@@ -383,6 +391,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class EditButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 6690936054046040647L;
 
         public EditButton() {
@@ -398,6 +407,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                 contents = IOUtils.toString(is, StandardCharsets.UTF_8);
 
                 dialog.showOkCancel(target, new DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = -8898887236980594842L;
 
                     private PanelEdit editPanel;
@@ -436,6 +446,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class PasteButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 2647829118342823975L;
 
         public PasteButton() {
@@ -453,6 +464,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
             final List<TreeNode<Resource>> newSelected = new ArrayList<>();
 
             dialog.showOkCancel(target, new DialogDelegate() {
+                @Serial
                 private static final long serialVersionUID = -8898887236980594842L;
 
                 private PanelPaste pastePanel;
@@ -550,6 +562,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class CopyButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 3883958793500232081L;
 
         public CopyButton() {
@@ -564,7 +577,9 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class CutButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 2647829118342823975L;
+
         private final AjaxLink<Void> btnPaste;
 
         public CutButton(AjaxLink<Void> btnPaste) {
@@ -585,6 +600,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class RenameButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 2647829118342823975L;
 
         public RenameButton() {
@@ -596,6 +612,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
             dialog.setInitialHeight(150);
 
             dialog.showOkCancel(target, new DialogDelegate() {
+                @Serial
                 private static final long serialVersionUID = -8898887236980594842L;
 
                 private PanelRename renamePanel;
@@ -647,6 +664,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class DeleteButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = -7370119488741589880L;
 
         public DeleteButton() {
@@ -663,6 +681,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
             }
 
             dialog.showOkCancel(target, new DialogDelegate() {
+                @Serial
                 private static final long serialVersionUID = 1557172478015946688L;
 
                 @Override

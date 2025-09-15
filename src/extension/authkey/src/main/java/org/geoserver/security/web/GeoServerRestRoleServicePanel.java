@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.GeoServerRestRoleServiceConfig;
@@ -13,6 +14,7 @@ import org.geoserver.security.web.role.RoleServicePanel;
 public class GeoServerRestRoleServicePanel extends RoleServicePanel<GeoServerRestRoleServiceConfig> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -6288298408680657130L;
 
     public GeoServerRestRoleServicePanel(String id, IModel<GeoServerRestRoleServiceConfig> model) {

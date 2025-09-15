@@ -93,9 +93,8 @@ public class ApiConfigurationSupportTest extends OGCApiTestSupport {
         // to the REST API (those do not extend from RestWrapper)
         List<Class<?>> workspaceConverters = getFilteredConverters(c -> {
             // mimic Spring lookup
-            if (c instanceof GenericHttpMessageConverter)
-                return ((GenericHttpMessageConverter<?>) c)
-                        .canRead(WorkspaceInfo.class, WorkspaceController.class, MediaType.APPLICATION_JSON);
+            if (c instanceof GenericHttpMessageConverter<?> converter)
+                return converter.canRead(WorkspaceInfo.class, WorkspaceController.class, MediaType.APPLICATION_JSON);
             else return c.canRead(WorkspaceInfo.class, MediaType.APPLICATION_JSON);
         });
         assertEquals(asList(XStreamJSONMessageConverter.class), workspaceConverters);
@@ -103,9 +102,8 @@ public class ApiConfigurationSupportTest extends OGCApiTestSupport {
         // now try an API controller instead
         List<Class<?>> messageConverters = getFilteredConverters(c -> {
             // mimic Spring lookup
-            if (c instanceof GenericHttpMessageConverter)
-                return ((GenericHttpMessageConverter<?>) c)
-                        .canRead(Message.class, HelloService.class, MediaType.APPLICATION_JSON);
+            if (c instanceof GenericHttpMessageConverter<?> converter)
+                return converter.canRead(Message.class, HelloService.class, MediaType.APPLICATION_JSON);
             else return c.canRead(Message.class, MediaType.APPLICATION_JSON);
         });
         assertEquals(asList(MappingJackson2HttpMessageConverter.class), messageConverters);

@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import org.geotools.util.logging.Logging;
  */
 public abstract class TransformChain<T extends ImportTransform> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 4090734786225748502L;
 
     static Logger LOGGER = Logging.getLogger(TransformChain.class);

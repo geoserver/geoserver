@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps.validator;
 
+import java.io.Serial;
 import org.geotools.util.NumberRange;
 import org.springframework.validation.Errors;
 
@@ -14,6 +15,7 @@ import org.springframework.validation.Errors;
  */
 public class NumberRangeValidator implements WPSInputValidator {
 
+    @Serial
     private static final long serialVersionUID = 1146580888238281822L;
 
     static final String CODE = "OutOfRangeValue";

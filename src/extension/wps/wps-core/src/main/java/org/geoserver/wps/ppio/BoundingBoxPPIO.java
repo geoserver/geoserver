@@ -97,10 +97,8 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
 
         // basic conversion and collect the crs
         CoordinateReferenceSystem crs = null;
-        if (object instanceof Envelope) {
-            Envelope env = (Envelope) object;
-            if (object instanceof ReferencedEnvelope) {
-                ReferencedEnvelope re = (ReferencedEnvelope) object;
+        if (object instanceof Envelope env) {
+            if (object instanceof ReferencedEnvelope re) {
                 crs = re.getCoordinateReferenceSystem();
             }
             bbox.setLowerCorner(Arrays.asList(env.getMinX(), env.getMinY()));

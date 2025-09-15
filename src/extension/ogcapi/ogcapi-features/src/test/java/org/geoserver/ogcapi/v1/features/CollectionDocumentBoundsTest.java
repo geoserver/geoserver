@@ -77,7 +77,7 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
     @Parameters(name = "{0}: numDecimals: {1}")
     public static Collection<Object[]> data() {
         return layersFixture.stream()
-                .map(qn -> format("%s:%s", qn.getPrefix(), qn.getLocalPart()))
+                .map(qn -> "%s:%s".formatted(qn.getPrefix(), qn.getLocalPart()))
                 .map(CollectionDocumentBoundsTest::testParams)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
@@ -123,7 +123,7 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
     public void testCollectionBoundsCoversActualBounds() throws Exception {
         assertEquals(this.numDecimals, getGeoServer().getGlobal().getSettings().getNumDecimals());
 
-        String collectionQuery = format("ogc/features/v1/collections/%s", collectionId);
+        String collectionQuery = "ogc/features/v1/collections/%s".formatted(collectionId);
         DocumentContext json = getAsJSONPath(collectionQuery, 200);
 
         ReferencedEnvelope actualBounds = this.latLonBbox;
@@ -137,11 +137,11 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
     public void testCollectionBoundsCoversItems() throws Exception {
         assertEquals(this.numDecimals, getGeoServer().getGlobal().getSettings().getNumDecimals());
 
-        String collectionQuery = format("ogc/features/v1/collections/%s", collectionId);
+        String collectionQuery = "ogc/features/v1/collections/%s".formatted(collectionId);
         DocumentContext json = getAsJSONPath(collectionQuery, 200);
         final ReferencedEnvelope collectionBounds = parseSpatialExtent(json);
 
-        String itemsQuery = format("ogc/features/v1/collections/%s/items", collectionId);
+        String itemsQuery = "ogc/features/v1/collections/%s/items".formatted(collectionId);
         String fc = super.getAsString(itemsQuery);
         SimpleFeatureCollection parsedFc = GeoJSONReader.parseFeatureCollection(fc);
 

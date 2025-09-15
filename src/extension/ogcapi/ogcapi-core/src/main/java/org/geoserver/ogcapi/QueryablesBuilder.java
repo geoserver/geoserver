@@ -62,7 +62,7 @@ public class QueryablesBuilder {
                         ad -> ad.getName().getLocalPart(),
                         ad -> getSchema(ad),
                         (u, v) -> {
-                            throw new IllegalStateException(String.format("Duplicate key %s", u));
+                            throw new IllegalStateException("Duplicate key %s".formatted(u));
                         },
                         () -> new LinkedHashMap<>()));
         this.queryables.setProperties(properties);

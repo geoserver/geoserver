@@ -102,7 +102,7 @@ public final class RestTest extends GeoServerSystemTestSupport {
         // perform a PUT request, a new H2 data store should be created
         // we also require that all available feature types should be created
         String path =
-                String.format("/rest/workspaces/%s/datastores/%s/file.h2?configure=all", WORKSPACE_NAME, dataStoreName);
+                "/rest/workspaces/%s/datastores/%s/file.h2?configure=all".formatted(WORKSPACE_NAME, dataStoreName);
         MockHttpServletResponse response = putAsServletResponse(path, content, mimeType);
         // we should get a HTTP 201 status code meaning that the data store was created
         assertThat(response.getStatus(), is(201));

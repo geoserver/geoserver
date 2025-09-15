@@ -235,8 +235,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             try {
                 return NetCDFUtilities.getDataset(sourceUrl);
             } catch (Exception e) {
-                LOGGER.info(
-                        String.format("Failed to open source URL %s as NetCDF/GRIB: %s", sourceUrl, e.getMessage()));
+                LOGGER.info("Failed to open source URL %s as NetCDF/GRIB: %s".formatted(sourceUrl, e.getMessage()));
             }
         }
         return null;
@@ -760,7 +759,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                                     + "'%s' in NetCDF/GRIB %s has dimensions '%s'",
                             extra.getSource(), source.getLocation(), sourceVar.getDimensionsString()));
                 } else if (variableAlreadyDefined(writerb, extra.getOutput())) {
-                    LOGGER.info(String.format("Extra variable output '%s' already exists", extra.getOutput()));
+                    LOGGER.info("Extra variable output '%s' already exists".formatted(extra.getOutput()));
                 } else if (extra.getDimensions().split("\\s").length > 1) {
                     LOGGER.info(String.format(
                             "Extra variable output '%s' " + "has too many dimensions '%s'",

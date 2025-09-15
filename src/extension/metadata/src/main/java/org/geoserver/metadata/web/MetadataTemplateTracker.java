@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,6 +22,7 @@ import org.geoserver.web.GeoServerApplication;
  */
 public class MetadataTemplateTracker implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -8043280155829257867L;
 
     private Set<SortedSet<String>> changes = new HashSet<>();

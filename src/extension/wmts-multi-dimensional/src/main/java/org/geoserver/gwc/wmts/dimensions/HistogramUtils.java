@@ -124,9 +124,9 @@ final class HistogramUtils {
     /** Helper method that just founds the histogram type based on domains values. */
     private static HistogramType findHistogramType(List<Comparable> domainValues) {
         Object value = domainValues.get(domainValues.size() - 1);
-        if (value instanceof Range) {
+        if (value instanceof Range range) {
             // this is a range so lets use the min value
-            value = ((Range) value).getMinValue();
+            value = range.getMinValue();
         }
         // let's try to find this histogram type
         if (value instanceof Number) {
@@ -215,7 +215,7 @@ final class HistogramUtils {
                 max = new Date(max.getTime() + resolutionInMs);
             }
         } catch (ParseException e) {
-            throw new RuntimeException(String.format("Error parsing time resolution '%s'.", resolution), e);
+            throw new RuntimeException("Error parsing time resolution '%s'.".formatted(resolution), e);
         }
         Tuple<Date, Date> minMax = Tuple.tuple(min, max);
         Tuple<String, List<Date>> intervalsAndSpec = getDateIntervals(minMax, resolution);
@@ -252,7 +252,7 @@ final class HistogramUtils {
             @SuppressWarnings("unchecked")
             Collection<Object> parsed = timeParser.parse(domainString);
             parsed.forEach(o -> {
-                if (o instanceof Date) intervals.add((Date) o);
+                if (o instanceof Date date) intervals.add(date);
                 else
                     throw new RuntimeException(
                             "Unexpected DateRange specification found, this service can only handle points in time");
@@ -264,7 +264,7 @@ final class HistogramUtils {
             }
             return Tuple.tuple(domainString, intervals);
         } catch (ParseException exception) {
-            throw new RuntimeException(String.format("Error parsing time resolution '%s'.", resolution), exception);
+            throw new RuntimeException("Error parsing time resolution '%s'.".formatted(resolution), exception);
         }
     }
 

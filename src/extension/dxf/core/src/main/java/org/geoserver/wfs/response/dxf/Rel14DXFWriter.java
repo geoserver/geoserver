@@ -368,21 +368,17 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
 
     /** Writes a given geometry. */
     private void writeGeometry(String layer, String ownerHandle, Geometry geom) throws IOException {
-        if (geom instanceof GeometryCollection) {
-            GeometryCollection coll = (GeometryCollection) geom;
+        if (geom instanceof GeometryCollection coll) {
             for (int count = 0; count < coll.getNumGeometries(); count++)
                 writeGeometry(layer, ownerHandle, coll.getGeometryN(count));
-        } else if (geom instanceof Polygon) {
-            Polygon p = (Polygon) geom;
+        } else if (geom instanceof Polygon p) {
             writeGeometry(layer, ownerHandle, p.getExteriorRing());
             for (int count = 0; count < p.getNumInteriorRing(); count++)
                 writeGeometry(layer, ownerHandle, p.getInteriorRingN(count));
-        } else if (geom instanceof LineString) {
-            LineString l = (LineString) geom;
+        } else if (geom instanceof LineString l) {
             Coordinate[] coords = l.getCoordinates();
             writePolylineGeometry(layer, ownerHandle, coords, false);
-        } else if (geom instanceof Point) {
-            Point p = (Point) geom;
+        } else if (geom instanceof Point p) {
             writePointGeometry(layer, ownerHandle, p);
         }
     }

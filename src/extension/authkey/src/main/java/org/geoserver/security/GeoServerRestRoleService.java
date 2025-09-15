@@ -186,10 +186,10 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService i
                                 json, restRoleServiceConfig.getUsersJSONPath().replace("${username}", username));
 
                         for (Object roleObj : rolesString) {
-                            if (roleObj instanceof String) {
-                                populateRoles((String) roleObj, roles);
-                            } else if (roleObj instanceof JSONArray) {
-                                for (Object role : (JSONArray) roleObj) {
+                            if (roleObj instanceof String string) {
+                                populateRoles(string, roles);
+                            } else if (roleObj instanceof JSONArray array) {
+                                for (Object role : array) {
                                     populateRoles((String) role, roles);
                                 }
                             }

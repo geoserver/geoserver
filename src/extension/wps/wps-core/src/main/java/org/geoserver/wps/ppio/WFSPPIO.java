@@ -69,8 +69,7 @@ public class WFSPPIO extends XMLPPIO {
             input = new ByteArrayInputStream(streamBytes);
         }
         Object result = p.parse(input);
-        if (result instanceof FeatureCollectionType) {
-            FeatureCollectionType fct = (FeatureCollectionType) result;
+        if (result instanceof FeatureCollectionType fct) {
             return decode(fct);
         } else {
             if (LOGGER.isLoggable(Level.FINEST)) {
@@ -87,15 +86,14 @@ public class WFSPPIO extends XMLPPIO {
     public Object decode(Object input) throws Exception {
         // xml parsing will most likely return it as parsed already, but if CDATA is used or if
         // it's a KVP parse it will be a string instead
-        if (input instanceof String) {
+        if (input instanceof String string) {
             Parser p = getParser(configuration);
-            input = p.parse(new StringReader((String) input));
+            input = p.parse(new StringReader(string));
         }
 
         SimpleFeatureCollection fc;
         // cast and handle the axis flipping
-        if (input instanceof net.opengis.wfs.FeatureCollectionType) {
-            net.opengis.wfs.FeatureCollectionType fct = (net.opengis.wfs.FeatureCollectionType) input;
+        if (input instanceof net.opengis.wfs.FeatureCollectionType fct) {
             fc = (SimpleFeatureCollection) fct.getFeature().get(0);
         } else {
             // WFS 2.0.0

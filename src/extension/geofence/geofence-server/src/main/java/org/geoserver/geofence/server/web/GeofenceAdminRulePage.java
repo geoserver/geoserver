@@ -5,6 +5,7 @@
 package org.geoserver.geofence.server.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.springframework.dao.DuplicateKeyException;
 
 public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -1652083500548496180L;
 
     protected DropDownChoice<String> userChoice, roleChoice, workspaceChoice;
@@ -51,6 +53,7 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
         form.add(roleChoice = new DropDownChoice<>("roleName", getRoleNames()));
         roleChoice.add(new OnChangeAjaxBehavior() {
 
+            @Serial
             private static final long serialVersionUID = -8846522500239968004L;
 
             @Override
@@ -77,6 +80,7 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
         form.add(new SubmitLink("save") {
 
+            @Serial
             private static final long serialVersionUID = -6524151967046867889L;
 
             @Override
@@ -144,6 +148,7 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
     protected class AdminGrantTypeRenderer extends ChoiceRenderer<AdminGrantType> {
 
+        @Serial
         private static final long serialVersionUID = -7146780173551842734L;
 
         @Override

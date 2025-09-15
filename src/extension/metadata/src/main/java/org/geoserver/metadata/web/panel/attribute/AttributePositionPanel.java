@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
@@ -27,6 +28,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 // TODO WICKET8 - Verify this page works OK
 public class AttributePositionPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = -4645368967597125299L;
 
     public AttributePositionPanel(
@@ -38,6 +40,7 @@ public class AttributePositionPanel extends Panel {
             GeoServerTablePanel<?> tablePanel) {
         super(id, mapModel);
         AjaxSubmitLink upLink = new AjaxSubmitLink("up") {
+            @Serial
             private static final long serialVersionUID = -4165434301439054175L;
 
             @Override
@@ -65,6 +68,7 @@ public class AttributePositionPanel extends Panel {
         add(upLink);
 
         AjaxSubmitLink downLink = new AjaxSubmitLink("down") {
+            @Serial
             private static final long serialVersionUID = -8005026702401617344L;
 
             @Override

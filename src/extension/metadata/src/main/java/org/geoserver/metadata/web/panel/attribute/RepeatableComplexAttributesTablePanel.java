@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.Map;
 import org.apache.wicket.Component;
@@ -36,6 +37,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
  */
 // TODO WICKET8 - Verify this page works OK
 public class RepeatableComplexAttributesTablePanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     private GeoServerTablePanel<ComplexMetadataMap> tablePanel;
@@ -84,6 +86,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
         add(
                 new AjaxSubmitLink("addNew") {
 
+                    @Serial
                     private static final long serialVersionUID = 6840006565079316081L;
 
                     @Override
@@ -104,12 +107,14 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
         add(
                 new AjaxSubmitLink("generate") {
 
+                    @Serial
                     private static final long serialVersionUID = 6840006565079316081L;
 
                     @Override
                     public void onSubmit(AjaxRequestTarget target) {
                         dialog.setInitialHeight(generator.getDialogContentHeight());
                         dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                            @Serial
                             private static final long serialVersionUID = -8716380894588651422L;
 
                             @Override
@@ -158,6 +163,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
             RepeatableComplexAttributeDataProvider dataProvider, Map<String, List<Integer>> derivedAtts) {
 
         tablePanel = new GeoServerTablePanel<>("attributesTablePanel", dataProvider) {
+            @Serial
             private static final long serialVersionUID = 4333335931795175790L;
 
             private IModel<ComplexMetadataMap> disabledValue = null;
@@ -205,6 +211,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                                 tablePanel.get("listContainer").get("items");
                         AjaxSubmitLink deleteAction = new AjaxSubmitLink(id) {
 
+                            @Serial
                             private static final long serialVersionUID = -8829474855848647384L;
 
                             @Override

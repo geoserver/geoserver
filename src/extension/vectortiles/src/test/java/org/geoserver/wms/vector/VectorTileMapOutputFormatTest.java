@@ -137,10 +137,10 @@ public class VectorTileMapOutputFormatTest {
         ds.addFeature(feature(pointType, "point2", "StringProp1_2", 2000, "POINT(2 2)"));
         ds.addFeature(feature(pointType, "point3", "StringProp1_3", 3000, "POINT(3 3)"));
         double bufferBoundary = -180.0 / 256 * 32;
-        ds.addFeature(feature(
-                pointType, "pointNear", "StringProp1_4", 3000, String.format("POINT(3 %s)", bufferBoundary + 0.1)));
-        ds.addFeature(feature(
-                pointType, "pointFar", "StringProp1_5", 3000, String.format("POINT(3 %s)", bufferBoundary - 1.0)));
+        ds.addFeature(
+                feature(pointType, "pointNear", "StringProp1_4", 3000, "POINT(3 %s)".formatted(bufferBoundary + 0.1)));
+        ds.addFeature(
+                feature(pointType, "pointFar", "StringProp1_5", 3000, "POINT(3 %s)".formatted(bufferBoundary - 1.0)));
 
         ds.addFeature(feature(lineType, "line1", "StringProp2_1", 1000, "LINESTRING (1 1, 2 2)"));
         ds.addFeature(feature(lineType, "line1", "StringProp2_2", 2000, "LINESTRING (3 3, 4 4)"));
@@ -557,8 +557,8 @@ public class VectorTileMapOutputFormatTest {
         for (int i = 0; i < values.length; i++) {
             Object value = values[i];
             if (type.getDescriptor(i) instanceof GeometryDescriptor) {
-                if (value instanceof String) {
-                    value = parseGeometry((String) value);
+                if (value instanceof String string) {
+                    value = parseGeometry(string);
                 }
             }
             builder.set(i, value);

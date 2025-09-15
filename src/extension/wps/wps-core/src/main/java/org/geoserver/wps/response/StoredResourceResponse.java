@@ -46,8 +46,7 @@ public class StoredResourceResponse extends Response {
         Object request = operation.getParameters()[0];
         if (request instanceof GetExecutionStatusType) {
             return "text/xml";
-        } else if (request instanceof GetExecutionResultType) {
-            GetExecutionResultType ger = (GetExecutionResultType) request;
+        } else if (request instanceof GetExecutionResultType ger) {
             Resource mimeResource = manager.getOutputResource(ger.getExecutionId(), ger.getOutputId() + ".mime");
             if (mimeResource == null || mimeResource.getType() == Type.UNDEFINED) {
                 throw new WPSException("Unknown output "
@@ -77,8 +76,7 @@ public class StoredResourceResponse extends Response {
         Object request = operation.getParameters()[0];
         if (request instanceof GetExecutionStatusType) {
             return "text/xml";
-        } else if (request instanceof GetExecutionResultType) {
-            GetExecutionResultType ger = (GetExecutionResultType) request;
+        } else if (request instanceof GetExecutionResultType ger) {
             if (ger.getOutputId() != null) {
                 return ger.getOutputId();
             } else {

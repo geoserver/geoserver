@@ -12,6 +12,7 @@ import static com.google.common.base.Preconditions.checkState;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +47,7 @@ public class StyleParameterFilter extends ParameterFilter {
     private String defaultStyle;
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** Check that setLayer has been called */
@@ -106,7 +108,7 @@ public class StyleParameterFilter extends ParameterFilter {
             }
             // no match so fail
             throw new ParameterException(
-                    400, "InvalidParameterValue", "Style", String.format("Style '%s' is invalid.", str));
+                    400, "InvalidParameterValue", "Style", "Style '%s' is invalid.".formatted(str));
         }
     }
 

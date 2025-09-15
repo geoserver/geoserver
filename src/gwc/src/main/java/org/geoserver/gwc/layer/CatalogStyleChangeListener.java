@@ -159,11 +159,9 @@ public class CatalogStyleChangeListener implements CatalogListener {
     @Override
     public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
         Object source = event.getSource();
-        if (source instanceof StyleInfo) {
-            StyleInfo si = (StyleInfo) source;
+        if (source instanceof StyleInfo si) {
             handleStyleChange(si);
-        } else if (source instanceof WorkspaceInfo) {
-            WorkspaceInfo ws = (WorkspaceInfo) source;
+        } else if (source instanceof WorkspaceInfo ws) {
             handleWorkspaceChange(ws);
         }
     }

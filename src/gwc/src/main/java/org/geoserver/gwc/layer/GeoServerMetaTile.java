@@ -52,8 +52,8 @@ public class GeoServerMetaTile extends MetaTile {
 
     public void setWebMap(WebMap webMap) {
         this.metaTileMap = webMap;
-        if (webMap instanceof RenderedImageMap) {
-            setImage(((RenderedImageMap) webMap).getImage());
+        if (webMap instanceof RenderedImageMap map) {
+            setImage(map.getImage());
         }
     }
 
@@ -69,9 +69,9 @@ public class GeoServerMetaTile extends MetaTile {
 
         checkNotNull(metaTileMap, "webMap is not set");
 
-        if (metaTileMap instanceof RawMap) {
+        if (metaTileMap instanceof RawMap map) {
             try (OutputStream outStream = target.getOutputStream()) {
-                ((RawMap) metaTileMap).writeTo(outStream);
+                map.writeTo(outStream);
             }
             return true;
         }
@@ -213,8 +213,8 @@ public class GeoServerMetaTile extends MetaTile {
             metaTileMap = null;
         }
 
-        if (metaTileImage instanceof RenderedImageTimeDecorator) {
-            metaTileImage = ((RenderedImageTimeDecorator) metaTileImage).getDelegate();
+        if (metaTileImage instanceof RenderedImageTimeDecorator decorator) {
+            metaTileImage = decorator.getDelegate();
         }
 
         super.dispose();

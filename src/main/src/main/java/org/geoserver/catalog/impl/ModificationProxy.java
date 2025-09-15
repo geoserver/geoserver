@@ -179,32 +179,32 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     }
 
     private void accept(CatalogInfo proxy, CatalogVisitor visitor) {
-        if (proxy instanceof WorkspaceInfo info12) {
-            visitor.visit(info12);
-        } else if (proxy instanceof NamespaceInfo info11) {
-            visitor.visit(info11);
-        } else if (proxy instanceof CoverageStoreInfo info10) {
-            visitor.visit(info10);
-        } else if (proxy instanceof DataStoreInfo info9) {
-            visitor.visit(info9);
-        } else if (proxy instanceof WMSStoreInfo info8) {
-            visitor.visit(info8);
-        } else if (proxy instanceof WMTSStoreInfo info7) {
-            visitor.visit(info7);
-        } else if (proxy instanceof CoverageInfo info6) {
-            visitor.visit(info6);
-        } else if (proxy instanceof FeatureTypeInfo info5) {
-            visitor.visit(info5);
-        } else if (proxy instanceof WMSLayerInfo info4) {
-            visitor.visit(info4);
-        } else if (proxy instanceof WMTSLayerInfo info3) {
-            visitor.visit(info3);
-        } else if (proxy instanceof LayerInfo info2) {
-            visitor.visit(info2);
-        } else if (proxy instanceof LayerGroupInfo info1) {
-            visitor.visit(info1);
-        } else if (proxy instanceof StyleInfo info) {
-            visitor.visit(info);
+        if (proxy instanceof WorkspaceInfo ws) {
+            visitor.visit(ws);
+        } else if (proxy instanceof NamespaceInfo ns) {
+            visitor.visit(ns);
+        } else if (proxy instanceof CoverageStoreInfo cv) {
+            visitor.visit(cv);
+        } else if (proxy instanceof DataStoreInfo ds) {
+            visitor.visit(ds);
+        } else if (proxy instanceof WMSStoreInfo wmss) {
+            visitor.visit(wmss);
+        } else if (proxy instanceof WMTSStoreInfo wmtss) {
+            visitor.visit(wmtss);
+        } else if (proxy instanceof CoverageInfo ci) {
+            visitor.visit(ci);
+        } else if (proxy instanceof FeatureTypeInfo fti) {
+            visitor.visit(fti);
+        } else if (proxy instanceof WMSLayerInfo wmsi) {
+            visitor.visit(wmsi);
+        } else if (proxy instanceof WMTSLayerInfo wmtsi) {
+            visitor.visit(wmtsi);
+        } else if (proxy instanceof LayerInfo l) {
+            visitor.visit(l);
+        } else if (proxy instanceof LayerGroupInfo lg) {
+            visitor.visit(lg);
+        } else if (proxy instanceof StyleInfo s) {
+            visitor.visit(s);
         }
     }
 

@@ -60,32 +60,32 @@ public class GeoServerConfigPersister implements CatalogListener, ConfigurationL
     public void handleAddEvent(CatalogAddEvent event) {
         Object source = event.getSource();
         try {
-            if (source instanceof WorkspaceInfo info12) {
-                addWorkspace(info12);
-            } else if (source instanceof NamespaceInfo info11) {
-                addNamespace(info11);
-            } else if (source instanceof DataStoreInfo info10) {
-                addDataStore(info10);
-            } else if (source instanceof WMTSStoreInfo info9) {
-                addWMTSStore(info9);
-            } else if (source instanceof WMSStoreInfo info8) {
-                addWMSStore(info8);
-            } else if (source instanceof FeatureTypeInfo info7) {
-                addFeatureType(info7);
-            } else if (source instanceof CoverageStoreInfo info6) {
-                addCoverageStore(info6);
-            } else if (source instanceof CoverageInfo info5) {
-                addCoverage(info5);
-            } else if (source instanceof WMSLayerInfo info4) {
-                addWMSLayer(info4);
-            } else if (source instanceof WMTSLayerInfo info3) {
-                addWMTSLayer(info3);
-            } else if (source instanceof LayerInfo info2) {
-                addLayer(info2);
-            } else if (source instanceof StyleInfo info1) {
-                addStyle(info1);
-            } else if (source instanceof LayerGroupInfo info) {
-                addLayerGroup(info);
+            if (source instanceof WorkspaceInfo ws) {
+                addWorkspace(ws);
+            } else if (source instanceof NamespaceInfo ns) {
+                addNamespace(ns);
+            } else if (source instanceof DataStoreInfo ds) {
+                addDataStore(ds);
+            } else if (source instanceof WMTSStoreInfo wmtss) {
+                addWMTSStore(wmtss);
+            } else if (source instanceof WMSStoreInfo wmss) {
+                addWMSStore(wmss);
+            } else if (source instanceof FeatureTypeInfo fti) {
+                addFeatureType(fti);
+            } else if (source instanceof CoverageStoreInfo csi) {
+                addCoverageStore(csi);
+            } else if (source instanceof CoverageInfo ci) {
+                addCoverage(ci);
+            } else if (source instanceof WMSLayerInfo wmsi) {
+                addWMSLayer(wmsi);
+            } else if (source instanceof WMTSLayerInfo wmtsi) {
+                addWMTSLayer(wmtsi);
+            } else if (source instanceof LayerInfo li) {
+                addLayer(li);
+            } else if (source instanceof StyleInfo si) {
+                addStyle(si);
+            } else if (source instanceof LayerGroupInfo lgi) {
+                addLayerGroup(lgi);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -102,16 +102,16 @@ public class GeoServerConfigPersister implements CatalogListener, ConfigurationL
             if (i > -1) {
                 String newName = (String) event.getNewValues().get(i);
 
-                if (source instanceof WorkspaceInfo info4) {
-                    renameWorkspace(info4, newName);
-                } else if (source instanceof StoreInfo info3) {
-                    renameStore(info3, newName);
-                } else if (source instanceof ResourceInfo info2) {
-                    renameResource(info2, newName);
-                } else if (source instanceof StyleInfo info1) {
-                    renameStyle(info1, newName);
-                } else if (source instanceof LayerGroupInfo info) {
-                    renameLayerGroup(info, newName);
+                if (source instanceof WorkspaceInfo ws) {
+                    renameWorkspace(ws, newName);
+                } else if (source instanceof StoreInfo s) {
+                    renameStore(s, newName);
+                } else if (source instanceof ResourceInfo r) {
+                    renameResource(r, newName);
+                } else if (source instanceof StyleInfo s) {
+                    renameStyle(s, newName);
+                } else if (source instanceof LayerGroupInfo lg) {
+                    renameLayerGroup(lg, newName);
                 }
             }
 
@@ -171,32 +171,32 @@ public class GeoServerConfigPersister implements CatalogListener, ConfigurationL
     public void handlePostModifyEvent(CatalogPostModifyEvent event) {
         Object source = event.getSource();
         try {
-            if (source instanceof WorkspaceInfo info12) {
-                modifyWorkspace(info12);
-            } else if (source instanceof DataStoreInfo info11) {
-                modifyDataStore(info11);
-            } else if (source instanceof WMTSStoreInfo info10) {
-                modifyWMTSStore(info10);
-            } else if (source instanceof WMSStoreInfo info9) {
-                modifyWMSStore(info9);
-            } else if (source instanceof NamespaceInfo info8) {
-                modifyNamespace(info8);
-            } else if (source instanceof FeatureTypeInfo info7) {
-                modifyFeatureType(info7);
-            } else if (source instanceof CoverageStoreInfo info6) {
-                modifyCoverageStore(info6);
-            } else if (source instanceof CoverageInfo info5) {
-                modifyCoverage(info5);
-            } else if (source instanceof WMSLayerInfo info4) {
-                modifyWMSLayer(info4);
-            } else if (source instanceof WMTSLayerInfo info3) {
-                modifyWMTSLayer(info3);
-            } else if (source instanceof LayerInfo info2) {
-                modifyLayer(info2);
-            } else if (source instanceof StyleInfo info1) {
-                modifyStyle(info1);
-            } else if (source instanceof LayerGroupInfo info) {
-                modifyLayerGroup(info);
+            if (source instanceof WorkspaceInfo ws) {
+                modifyWorkspace(ws);
+            } else if (source instanceof DataStoreInfo ds) {
+                modifyDataStore(ds);
+            } else if (source instanceof WMTSStoreInfo wmtss) {
+                modifyWMTSStore(wmtss);
+            } else if (source instanceof WMSStoreInfo wmss) {
+                modifyWMSStore(wmss);
+            } else if (source instanceof NamespaceInfo ns) {
+                modifyNamespace(ns);
+            } else if (source instanceof FeatureTypeInfo fti) {
+                modifyFeatureType(fti);
+            } else if (source instanceof CoverageStoreInfo cs) {
+                modifyCoverageStore(cs);
+            } else if (source instanceof CoverageInfo ci) {
+                modifyCoverage(ci);
+            } else if (source instanceof WMSLayerInfo wmsi) {
+                modifyWMSLayer(wmsi);
+            } else if (source instanceof WMTSLayerInfo wmtsi) {
+                modifyWMTSLayer(wmtsi);
+            } else if (source instanceof LayerInfo li) {
+                modifyLayer(li);
+            } else if (source instanceof StyleInfo si) {
+                modifyStyle(si);
+            } else if (source instanceof LayerGroupInfo lgi) {
+                modifyLayerGroup(lgi);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -207,32 +207,32 @@ public class GeoServerConfigPersister implements CatalogListener, ConfigurationL
     public void handleRemoveEvent(CatalogRemoveEvent event) {
         Object source = event.getSource();
         try {
-            if (source instanceof WorkspaceInfo info12) {
-                removeWorkspace(info12);
-            } else if (source instanceof NamespaceInfo info11) {
-                removeNamespace(info11);
-            } else if (source instanceof DataStoreInfo info10) {
-                removeDataStore(info10);
-            } else if (source instanceof FeatureTypeInfo info9) {
-                removeFeatureType(info9);
-            } else if (source instanceof CoverageStoreInfo info8) {
-                removeCoverageStore(info8);
-            } else if (source instanceof CoverageInfo info7) {
-                removeCoverage(info7);
-            } else if (source instanceof WMTSStoreInfo info6) {
-                removeWMTSStore(info6);
-            } else if (source instanceof WMTSLayerInfo info5) {
-                removeWMTSLayer(info5);
-            } else if (source instanceof WMSStoreInfo info4) {
-                removeWMSStore(info4);
-            } else if (source instanceof WMSLayerInfo info3) {
-                removeWMSLayer(info3);
-            } else if (source instanceof LayerInfo info2) {
-                removeLayer(info2);
-            } else if (source instanceof StyleInfo info1) {
-                removeStyle(info1);
-            } else if (source instanceof LayerGroupInfo info) {
-                removeLayerGroup(info);
+            if (source instanceof WorkspaceInfo ws) {
+                removeWorkspace(ws);
+            } else if (source instanceof NamespaceInfo ns) {
+                removeNamespace(ns);
+            } else if (source instanceof DataStoreInfo ds) {
+                removeDataStore(ds);
+            } else if (source instanceof FeatureTypeInfo fti) {
+                removeFeatureType(fti);
+            } else if (source instanceof CoverageStoreInfo csi) {
+                removeCoverageStore(csi);
+            } else if (source instanceof CoverageInfo ci) {
+                removeCoverage(ci);
+            } else if (source instanceof WMTSStoreInfo wmtss) {
+                removeWMTSStore(wmtss);
+            } else if (source instanceof WMTSLayerInfo wmtsi) {
+                removeWMTSLayer(wmtsi);
+            } else if (source instanceof WMSStoreInfo wmss) {
+                removeWMSStore(wmss);
+            } else if (source instanceof WMSLayerInfo wmsi) {
+                removeWMSLayer(wmsi);
+            } else if (source instanceof LayerInfo li) {
+                removeLayer(li);
+            } else if (source instanceof StyleInfo si) {
+                removeStyle(si);
+            } else if (source instanceof LayerGroupInfo lgi) {
+                removeLayerGroup(lgi);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

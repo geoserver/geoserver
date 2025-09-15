@@ -1698,14 +1698,14 @@ public class XStreamPersister {
         protected void postDoMarshal(Object result, HierarchicalStreamWriter writer, MarshallingContext context) {
 
             StoreInfo store = (StoreInfo) result;
-            if (store instanceof DataStoreInfo info3) {
-                callback.postEncodeDataStore(info3, writer, context);
-            } else if (store instanceof CoverageStoreInfo info2) {
-                callback.postEncodeCoverageStore(info2, writer, context);
-            } else if (store instanceof WMSStoreInfo info1) {
-                callback.postEncodeWMSStore(info1, writer, context);
-            } else if (store instanceof WMTSStoreInfo info) {
-                callback.postEncodeWMTSStore(info, writer, context);
+            if (store instanceof DataStoreInfo ds) {
+                callback.postEncodeDataStore(ds, writer, context);
+            } else if (store instanceof CoverageStoreInfo cv) {
+                callback.postEncodeCoverageStore(cv, writer, context);
+            } else if (store instanceof WMSStoreInfo wms) {
+                callback.postEncodeWMSStore(wms, writer, context);
+            } else if (store instanceof WMTSStoreInfo wmts) {
+                callback.postEncodeWMTSStore(wmts, writer, context);
             } else {
                 throw new IllegalArgumentException("Unknown store type: "
                         + (store == null ? "null" : store.getClass().getName()));

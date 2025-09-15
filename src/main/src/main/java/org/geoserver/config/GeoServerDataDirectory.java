@@ -420,14 +420,14 @@ public class GeoServerDataDirectory {
      */
     private @Nonnull Resource config(StoreInfo si) {
         final Resource r;
-        if (si instanceof DataStoreInfo info3) {
-            r = config(info3);
-        } else if (si instanceof CoverageStoreInfo info2) {
-            r = config(info2);
-        } else if (si instanceof WMTSStoreInfo info1) {
-            r = config(info1);
-        } else if (si instanceof WMSStoreInfo info) {
-            r = config(info);
+        if (si instanceof DataStoreInfo ds) {
+            r = config(ds);
+        } else if (si instanceof CoverageStoreInfo cs) {
+            r = config(cs);
+        } else if (si instanceof WMTSStoreInfo wmtss) {
+            r = config(wmtss);
+        } else if (si instanceof WMSStoreInfo wmss) {
+            r = config(wmss);
         } else {
             // It'd be nice if we could be generic and cover potential future StoreInfo types.
             throw new IllegalArgumentException(
@@ -445,14 +445,14 @@ public class GeoServerDataDirectory {
      */
     private @Nonnull Resource config(ResourceInfo si) {
         final Resource r;
-        if (si instanceof FeatureTypeInfo info3) {
-            r = config(info3);
-        } else if (si instanceof CoverageInfo info2) {
-            r = config(info2);
-        } else if (si instanceof WMTSLayerInfo info1) {
-            r = config(info1);
-        } else if (si instanceof WMSLayerInfo info) {
-            r = config(info);
+        if (si instanceof FeatureTypeInfo ft) {
+            r = config(ft);
+        } else if (si instanceof CoverageInfo cv) {
+            r = config(cv);
+        } else if (si instanceof WMTSLayerInfo wmts) {
+            r = config(wmts);
+        } else if (si instanceof WMSLayerInfo wms) {
+            r = config(wms);
         } else {
             // It'd be nice if we could be generic and cover potential future ResourceInfo types.
             throw new IllegalArgumentException(

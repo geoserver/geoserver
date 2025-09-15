@@ -68,21 +68,23 @@ public class StoredQueryTest extends WFS20TestSupport {
 
     @Test
     public void testCreateUnknownLanguage() throws Exception {
-        String xml = "<CreateStoredQuery xmlns=\"http://www.opengis.net/wfs/2.0\" service=\"WFS\" "
-                + "version=\"2.0.0\">\n"
-                + "  <StoredQueryDefinition xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n"
-                + "                          id=\"urn:example:wfs2-query:InvalidLang\">\n"
-                + "      <Title>GetFeatureByTypeName</Title>\n"
-                + "      <Abstract>Returns feature representations by type name.</Abstract>\n"
-                + "      <Parameter name=\"typeName\" type=\"xsd:QName\">\n"
-                + "         <Abstract>Qualified name of feature type (required).</Abstract>\n"
-                + "      </Parameter>\n"
-                + "      <QueryExpressionText isPrivate=\"false\" language=\"http://qry.example.org\" "
-                + "returnFeatureTypes=\"\">\n"
-                + "         <Query typeNames=\"${typeName}\"/>\n"
-                + "      </QueryExpressionText>\n"
-                + "  </StoredQueryDefinition>\n"
-                + "</CreateStoredQuery>";
+        String xml =
+                """
+                <CreateStoredQuery xmlns="http://www.opengis.net/wfs/2.0" service="WFS" \
+                version="2.0.0">
+                  <StoredQueryDefinition xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                                          id="urn:example:wfs2-query:InvalidLang">
+                      <Title>GetFeatureByTypeName</Title>
+                      <Abstract>Returns feature representations by type name.</Abstract>
+                      <Parameter name="typeName" type="xsd:QName">
+                         <Abstract>Qualified name of feature type (required).</Abstract>
+                      </Parameter>
+                      <QueryExpressionText isPrivate="false" language="http://qry.example.org" \
+                returnFeatureTypes="">
+                         <Query typeNames="${typeName}"/>
+                      </QueryExpressionText>
+                  </StoredQueryDefinition>
+                </CreateStoredQuery>""";
         MockHttpServletResponse response = postAsServletResponse("wfs", xml);
         assertEquals(400, response.getStatus());
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
@@ -395,22 +397,24 @@ public class StoredQueryTest extends WFS20TestSupport {
     @Test
     public void testCreateParametrizedOnTypename() throws Exception {
         // this evil thing comes from the CITE tests
-        String xml = "<CreateStoredQuery xmlns=\"http://www.opengis.net/wfs/2.0\" service=\"WFS\" version=\"2.0.0\">\n"
-                + "  <StoredQueryDefinition xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n"
-                + "                          id=\"urn:example:wfs2-query:GetFeatureByTypeName\">\n"
-                + "      <Title>GetFeatureByTypeName</Title>\n"
-                + "      <Abstract>Returns feature representations by type name.</Abstract>\n"
-                + "      <Parameter name=\"typeName\" type=\"xsd:QName\">\n"
-                + "         <Abstract>Qualified name of feature type (required).</Abstract>\n"
-                + "      </Parameter>\n"
-                + "      <QueryExpressionText isPrivate=\"false\"\n"
-                + "                           "
-                + "language=\"urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression\"\n"
-                + "                           returnFeatureTypes=\"\">\n"
-                + "         <Query typeNames=\"${typeName}\"/>\n"
-                + "      </QueryExpressionText>\n"
-                + "</StoredQueryDefinition>\n"
-                + "</CreateStoredQuery>";
+        String xml =
+                """
+                <CreateStoredQuery xmlns="http://www.opengis.net/wfs/2.0" service="WFS" version="2.0.0">
+                  <StoredQueryDefinition xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                                          id="urn:example:wfs2-query:GetFeatureByTypeName">
+                      <Title>GetFeatureByTypeName</Title>
+                      <Abstract>Returns feature representations by type name.</Abstract>
+                      <Parameter name="typeName" type="xsd:QName">
+                         <Abstract>Qualified name of feature type (required).</Abstract>
+                      </Parameter>
+                      <QueryExpressionText isPrivate="false"
+                                           \
+                language="urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression"
+                                           returnFeatureTypes="">
+                         <Query typeNames="${typeName}"/>
+                      </QueryExpressionText>
+                </StoredQueryDefinition>
+                </CreateStoredQuery>""";
 
         // create
         Document dom = postAsDOM("wfs", xml);
@@ -434,33 +438,35 @@ public class StoredQueryTest extends WFS20TestSupport {
 
     @Test
     public void testCreateWithLocalNamespaceDeclaration() throws Exception {
-        String xml = "<CreateStoredQuery xmlns=\"http://www.opengis.net/wfs/2.0\" service=\"WFS\" "
-                + "version=\"2.0.0\">\n"
-                + "  <StoredQueryDefinition xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n"
-                + "                          id=\"urn:example:wfs2-query:GetFeatureByName\">\n"
-                + "      <Title>GetFeatureByName</Title>\n"
-                + "      <Abstract>Returns feature representations by name. The name value must occur in a gml:name "
-                + "property.</Abstract>\n"
-                + "      <Parameter name=\"name\" type=\"xsd:string\">\n"
-                + "         <Abstract>Name of feature instance (required)</Abstract>\n"
-                + "      </Parameter>\n"
-                + "      <QueryExpressionText xmlns:fes=\"http://www.opengis.net/fes/2.0\"\n"
-                + "                           xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
-                + "                           xmlns:ns42=\"http://cite.opengeospatial.org/gmlsf\"\n"
-                + "                           isPrivate=\"false\"\n"
-                + "                           language=\"urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression\"\n"
-                + "                           returnFeatureTypes=\"ns42:EntitéGénérique\">\n"
-                + "         <Query typeNames=\"ns42:EntitéGénérique\">\n"
-                + "            <fes:Filter>\n"
-                + "               <fes:PropertyIsLike escapeChar=\"\\\" singleChar=\"?\" wildCard=\"*\">\n"
-                + "                  <fes:ValueReference>gml:name</fes:ValueReference>\n"
-                + "                  <fes:Literal>*${name}*</fes:Literal>\n"
-                + "               </fes:PropertyIsLike>\n"
-                + "            </fes:Filter>\n"
-                + "         </Query>\n"
-                + "      </QueryExpressionText>\n"
-                + "  </StoredQueryDefinition>\n"
-                + "</CreateStoredQuery>";
+        String xml =
+                """
+                <CreateStoredQuery xmlns="http://www.opengis.net/wfs/2.0" service="WFS" \
+                version="2.0.0">
+                  <StoredQueryDefinition xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                                          id="urn:example:wfs2-query:GetFeatureByName">
+                      <Title>GetFeatureByName</Title>
+                      <Abstract>Returns feature representations by name. The name value must occur in a gml:name \
+                property.</Abstract>
+                      <Parameter name="name" type="xsd:string">
+                         <Abstract>Name of feature instance (required)</Abstract>
+                      </Parameter>
+                      <QueryExpressionText xmlns:fes="http://www.opengis.net/fes/2.0"
+                                           xmlns:gml="http://www.opengis.net/gml/3.2"
+                                           xmlns:ns42="http://cite.opengeospatial.org/gmlsf"
+                                           isPrivate="false"
+                                           language="urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression"
+                                           returnFeatureTypes="ns42:EntitéGénérique">
+                         <Query typeNames="ns42:EntitéGénérique">
+                            <fes:Filter>
+                               <fes:PropertyIsLike escapeChar="\\" singleChar="?" wildCard="*">
+                                  <fes:ValueReference>gml:name</fes:ValueReference>
+                                  <fes:Literal>*${name}*</fes:Literal>
+                               </fes:PropertyIsLike>
+                            </fes:Filter>
+                         </Query>
+                      </QueryExpressionText>
+                  </StoredQueryDefinition>
+                </CreateStoredQuery>""";
 
         // create
         Document dom = postAsDOM("wfs", xml);

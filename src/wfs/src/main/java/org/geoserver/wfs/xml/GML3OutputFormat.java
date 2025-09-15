@@ -256,8 +256,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements Compl
             StringBuffer typeNames = new StringBuffer();
             for (Iterator m = metas.iterator(); m.hasNext(); ) {
                 ResourceInfo ri = (ResourceInfo) m.next();
-                if (ri instanceof FeatureTypeInfo) {
-                    final FeatureTypeInfo meta = (FeatureTypeInfo) ri;
+                if (ri instanceof FeatureTypeInfo meta) {
                     FeatureType featureType = meta.getFeatureType();
                     Object userSchemaLocation = featureType.getUserData().get("schemaURI");
                     if (userSchemaLocation != null && userSchemaLocation instanceof Map) {
@@ -333,8 +332,8 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements Compl
             Configuration configuration, Map<String, Set<ResourceInfo>> resources, Object request) {
         // reuse the WFS configuration feature builder, otherwise build a new one
         FeatureTypeSchemaBuilder schemaBuilder;
-        if (configuration instanceof WFSConfiguration) {
-            schemaBuilder = ((WFSConfiguration) configuration).getSchemaBuilder();
+        if (configuration instanceof WFSConfiguration sConfiguration) {
+            schemaBuilder = sConfiguration.getSchemaBuilder();
         } else {
             schemaBuilder = new FeatureTypeSchemaBuilder.GML3(geoServer);
         }

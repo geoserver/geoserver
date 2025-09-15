@@ -67,9 +67,9 @@ public class GetGmlObject {
                 throw new WFSException(request, e);
             }
 
-            if (ds instanceof GmlObjectStore) {
+            if (ds instanceof GmlObjectStore store) {
                 try {
-                    Object obj = ((GmlObjectStore) ds).getGmlObject(id, hints);
+                    Object obj = store.getGmlObject(id, hints);
                     if (obj != null) {
                         return obj;
                     }

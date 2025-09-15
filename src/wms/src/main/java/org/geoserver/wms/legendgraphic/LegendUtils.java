@@ -420,8 +420,8 @@ public class LegendUtils {
         final Map<String, Object> legendOptions = req.getLegendOptions();
         if (legendOptions == null) return DEFAULT_BG_COLOR;
         Object clr = legendOptions.get("bgColor");
-        if (clr instanceof Color) {
-            return (Color) clr;
+        if (clr instanceof Color color) {
+            return color;
         } else if (clr == null) {
             // return the default
             return DEFAULT_BG_COLOR;

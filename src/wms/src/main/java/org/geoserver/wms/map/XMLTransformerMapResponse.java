@@ -51,8 +51,8 @@ public class XMLTransformerMapResponse extends AbstractMapResponse {
             // TransformerException do not respect the Exception.getCause() contract
             Throwable cause = e.getCause() != null ? e.getCause() : e.getException();
             // we need to propagate the RuntimeException
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
+            if (cause instanceof RuntimeException exception) {
+                throw exception;
             }
             throw new ServiceException("getmap operation failed.", cause != null ? cause : e);
         } finally {

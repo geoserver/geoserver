@@ -495,8 +495,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             for (String styleName : styleNames) {
                 // if we have a layer group and no style is specified
                 // use the default one for the layer in the current position
-                if (infoObj instanceof LayerGroupInfo) {
-                    LayerGroupInfo layerGroupInfo = (LayerGroupInfo) infoObj;
+                if (infoObj instanceof LayerGroupInfo layerGroupInfo) {
                     boolean groupDefaultStyle = isGroupDefaultStyle(styleName, layerGroupInfo);
                     LayerGroupStyle lgStyle = null;
                     if (!groupDefaultStyle && isSingleOrOpaque(layerGroupInfo)) {
@@ -509,12 +508,11 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     if (style == null) throwNoSuchStyle(styleName);
 
                     sldStyles.add(style);
-                    if (infoObj instanceof LayerInfo) {
+                    if (infoObj instanceof LayerInfo layerInfo) {
                         StyleInfo styleInfo = wms.getCatalog().getStyleByName(styleName);
                         if (styleInfo != null) {
                             LegendInfo legend = resolveLegendInfo(styleInfo.getLegend(), req, styleInfo);
                             if (legend != null) {
-                                LayerInfo layerInfo = (LayerInfo) infoObj;
                                 Name name = layerInfo.getResource().getQualifiedName();
                                 LegendRequest legendRequest = req.getLegend(name);
                                 if (legendRequest != null) {
@@ -529,8 +527,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             }
 
         } else {
-            if (infoObj instanceof LayerInfo) {
-                LayerInfo layerInfo = (LayerInfo) infoObj;
+            if (infoObj instanceof LayerInfo layerInfo) {
                 sldStyles.add(getStyleFromLayer(layerInfo));
 
                 StyleInfo defaultStyle = layerInfo.getDefaultStyle();
@@ -544,8 +541,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                         LOGGER.log(Level.FINE, "Unable to set LegendInfo for " + name);
                     }
                 }
-            } else if (infoObj instanceof LayerGroupInfo) {
-                addLayerGroupStyles(req, (LayerGroupInfo) infoObj, sldStyles, null);
+            } else if (infoObj instanceof LayerGroupInfo info) {
+                addLayerGroupStyles(req, info, sldStyles, null);
             }
         }
 

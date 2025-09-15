@@ -345,7 +345,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         outputFormat.write(fcType, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
-        assertEquals(String.format("Amount: %.2f €", 47.11), result);
+        assertEquals("Amount: %.2f €".formatted(47.11), result);
     }
 
     /** Verifies calls to static methods are disabled by default. */

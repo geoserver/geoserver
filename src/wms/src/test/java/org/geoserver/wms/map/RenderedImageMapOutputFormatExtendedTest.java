@@ -238,8 +238,8 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
         Interpolation interpolation = null;
         for (int i = 0; i < parameterBlock.getNumParameters(); i++) {
             Object param = parameterBlock.getObjectParameter(i);
-            if (param instanceof Interpolation) {
-                interpolation = (Interpolation) param;
+            if (param instanceof Interpolation interpolation1) {
+                interpolation = interpolation1;
                 continue;
             }
         }
@@ -251,8 +251,7 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
         if (destImage != null) {
             Vector<RenderedImage> sources = destImage.getSources();
             for (RenderedImage source : sources) {
-                if (source instanceof RenderedOp) {
-                    RenderedOp op = (RenderedOp) source;
+                if (source instanceof RenderedOp op) {
                     String opName = op.getOperationName();
                     if ("Scale".equalsIgnoreCase(opName)) {
                         return op;

@@ -48,8 +48,7 @@ public abstract class AbstractDefaultValueSelectionStrategy implements Dimension
 
     private String stringRepresentation(Object value) {
         if (value == null) return "";
-        if (value instanceof Date) {
-            Date dateValue = (Date) value;
+        if (value instanceof Date dateValue) {
             return DateUtil.serializeDateTime(dateValue.getTime(), true);
         } else {
             return value.toString();

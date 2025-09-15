@@ -79,8 +79,7 @@ public class UTFGridMap extends RawMap {
     private String getAttributesJson(Feature feature) {
         JSONBuilder builder = new JSONStringer().object();
         builder.key("id").value(feature.getIdentifier().toString());
-        if (feature instanceof SimpleFeature) {
-            SimpleFeature sf = (SimpleFeature) feature;
+        if (feature instanceof SimpleFeature sf) {
             for (AttributeDescriptor ad : sf.getFeatureType().getAttributeDescriptors()) {
                 if (ad instanceof GeometryDescriptor) {
                     continue;
@@ -162,9 +161,9 @@ public class UTFGridMap extends RawMap {
     }
 
     private Raster getData(RenderedImage image) {
-        if (image instanceof BufferedImage) {
+        if (image instanceof BufferedImage bufferedImage) {
             // copy-less version of data access
-            return ((BufferedImage) image).getRaster();
+            return bufferedImage.getRaster();
         } else {
             return image.getData();
         }

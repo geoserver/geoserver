@@ -63,8 +63,8 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
         Iterator<ExternalGraphicFactory> it = DynamicSymbolFactoryFinder.getExternalGraphicFactories();
         while (it.hasNext()) {
             ExternalGraphicFactory egf = it.next();
-            if (egf instanceof GraphicCache) {
-                ((GraphicCache) egf).clearCache();
+            if (egf instanceof GraphicCache cache) {
+                cache.clearCache();
             }
         }
 

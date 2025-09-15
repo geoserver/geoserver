@@ -67,8 +67,8 @@ public class GeoTiffWriterHelper {
     /** Returns the original source file, is present in the metadata, and if the coverage */
     private File getSourceFile(GridCoverage2D coverage) {
         final Object fileSource = coverage.getProperty(AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY);
-        if (fileSource != null && fileSource instanceof String) {
-            File file = new File((String) fileSource);
+        if (fileSource != null && fileSource instanceof String string) {
+            File file = new File(string);
             if (file.exists()) {
                 GeoTiffReader reader = null;
                 try {
@@ -190,8 +190,7 @@ public class GeoTiffWriterHelper {
     /** Returns true if the coverage has not been processed in any way since it has been read */
     private boolean isUnprocessed(GridCoverage2D coverage) {
         RenderedImage ri = coverage.getRenderedImage();
-        if (ri instanceof RenderedOp) {
-            RenderedOp op = (RenderedOp) ri;
+        if (ri instanceof RenderedOp op) {
             return op.getOperationName().startsWith("ImageRead");
         } else if (ri instanceof OpImage) {
             return ri.getClass().getSimpleName().startsWith("ImageRead");

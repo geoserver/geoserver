@@ -8,6 +8,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -88,6 +89,7 @@ public class GranuleStackImpl extends GridCoverage2D /*AbstractGridCoverage*/ im
     }
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -131,8 +133,8 @@ public class GranuleStackImpl extends GridCoverage2D /*AbstractGridCoverage*/ im
         for (GridCoverage2D coverage : coverages) {
             RenderedImage ri = coverage.getRenderedImage();
             disposed &= coverage.dispose(force);
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage planarImage) {
+                ImageUtilities.disposePlanarImageChain(planarImage);
             }
         }
         return disposed;

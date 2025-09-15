@@ -250,8 +250,8 @@ public class RequestUtils {
             return null;
         }
 
-        if (gridToCRS instanceof AffineTransform) {
-            return (AffineTransform) gridToCRS;
+        if (gridToCRS instanceof AffineTransform transform) {
+            return transform;
         }
         return null;
     }

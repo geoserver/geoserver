@@ -7,7 +7,7 @@ package org.geoserver.community.css.web;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -47,14 +47,14 @@ public class StyleEditCssRecoveryTest extends GeoServerWicketTestSupport {
         for (String styleName : testStyleNames) {
             for (String ext : Arrays.asList(".css", ".sld", ".xml")) {
                 testData.copyTo(this.getClass().getResourceAsStream(styleName + ext), "styles/" + styleName + ext);
-                File f = Paths.get(testData.getDataDirectoryRoot().getAbsolutePath(), "styles/" + styleName + ext)
+                File f = Path.of(testData.getDataDirectoryRoot().getAbsolutePath(), "styles/" + styleName + ext)
                         .toFile();
                 f.setLastModified(t0.getTime());
             }
         }
 
         // Make this SLD file appear as if it was edited after being generated from CSS.
-        File manuallyEditedSld = Paths.get(
+        File manuallyEditedSld = Path.of(
                         testData.getDataDirectoryRoot().getAbsolutePath(),
                         "styles/" + oldCssStyleWithSLDManuallyEdited + ".sld")
                 .toFile();

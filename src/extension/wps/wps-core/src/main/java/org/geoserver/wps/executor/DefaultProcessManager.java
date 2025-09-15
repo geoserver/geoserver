@@ -152,10 +152,10 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
             if (e instanceof ExecutionException && e.getCause() instanceof Exception) {
                 e = (Exception) e.getCause();
             }
-            if (e instanceof ProcessException) {
-                throw (ProcessException) e;
-            } else if (e instanceof WPSException) {
-                throw (WPSException) e;
+            if (e instanceof ProcessException exception1) {
+                throw exception1;
+            } else if (e instanceof WPSException exception) {
+                throw exception;
             } else {
                 throw new ProcessException("Process execution " + executionId + " failed", e);
             }

@@ -119,10 +119,10 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
-            File stationsMappings = new File(gmlDirectory, String.format("%s_%s.xml", stationsMappingsName, gmlPrefix));
-            File stationsProperties = new File(gmlDirectory, String.format("stations_%s.properties", gmlPrefix));
-            File stationsSchema = new File(gmlDirectory, String.format("stations_%s.xsd", gmlPrefix));
-            File measurementsSchema = new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
+            File stationsMappings = new File(gmlDirectory, "%s_%s.xml".formatted(stationsMappingsName, gmlPrefix));
+            File stationsProperties = new File(gmlDirectory, "stations_%s.properties".formatted(gmlPrefix));
+            File stationsSchema = new File(gmlDirectory, "stations_%s.xsd".formatted(gmlPrefix));
+            File measurementsSchema = new File(gmlDirectory, "measurements_%s.xsd".formatted(gmlPrefix));
             // perform the parameterization
             substituteParameters("/test-data/stations/" + stationsMappingsPath, parameters, stationsMappings);
             substituteParameters(
@@ -133,7 +133,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             // create station feature type
             addFeatureType(
                     namespacePrefix,
-                    String.format("%s_%s", stationsFeatureType, gmlPrefix),
+                    "%s_%s".formatted(stationsFeatureType, gmlPrefix),
                     stationsMappings.getAbsolutePath(),
                     stationsProperties.getAbsolutePath(),
                     stationsSchema.getAbsolutePath(),
@@ -151,10 +151,9 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
-            File measurementsMappings = new File(gmlDirectory, String.format("%s_%s.xml", mappingsName, gmlPrefix));
-            File measurementsProperties =
-                    new File(gmlDirectory, String.format("measurements_%s.properties", gmlPrefix));
-            File measurementsSchema = new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
+            File measurementsMappings = new File(gmlDirectory, "%s_%s.xml".formatted(mappingsName, gmlPrefix));
+            File measurementsProperties = new File(gmlDirectory, "measurements_%s.properties".formatted(gmlPrefix));
+            File measurementsSchema = new File(gmlDirectory, "measurements_%s.xsd".formatted(gmlPrefix));
             // perform the parameterization
             substituteParameters("/test-data/stations/" + mappingsPath, parameters, measurementsMappings);
             substituteParameters(
@@ -164,7 +163,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             // create measurements feature type
             addFeatureType(
                     namespacePrefix,
-                    String.format("Measurement_%s", gmlPrefix),
+                    "Measurement_%s".formatted(gmlPrefix),
                     measurementsMappings.getAbsolutePath(),
                     measurementsProperties.getAbsolutePath(),
                     measurementsSchema.getAbsolutePath());

@@ -78,7 +78,7 @@ class MapMLGeometryClipper {
         if (original instanceof GeometryCollection || original instanceof Polygon) {
             for (int i = 0; i < clippedGeom.getNumGeometries(); i++) {
                 Geometry g = clippedGeom.getGeometryN(i);
-                if (g instanceof Polygon && !g.isEmpty()) tag((Polygon) g);
+                if (g instanceof Polygon polygon && !g.isEmpty()) tag(polygon);
             }
         }
         return clippedGeom;

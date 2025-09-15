@@ -1383,8 +1383,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1403,8 +1403,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1422,8 +1422,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // yet the image just has one band
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1447,8 +1447,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // the image just has one band
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1480,8 +1480,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // the image just has one band
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1511,8 +1511,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // the image just has one band
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 
@@ -1540,8 +1540,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // the image just has one band
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
         }
     }
 

@@ -6,6 +6,7 @@
 package org.geoserver.importer;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import org.geoserver.importer.job.ProgressMonitor;
 
@@ -17,6 +18,7 @@ import org.geoserver.importer.job.ProgressMonitor;
 public abstract class ImportData implements Serializable {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** the format for this data */

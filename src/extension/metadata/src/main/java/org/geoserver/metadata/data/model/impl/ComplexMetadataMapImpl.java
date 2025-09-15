@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.model.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 
 public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
+    @Serial
     private static final long serialVersionUID = 1857277796433431947L;
 
     private static final String PATH_SEPARATOR = "/";
@@ -237,9 +239,9 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
     }
 
     public static Serializable dimCopy(Serializable source) {
-        if (source instanceof List) {
+        if (source instanceof List<?> list1) {
             ArrayList<Serializable> list = new ArrayList<>();
-            for (Object item : (List<?>) source) {
+            for (Object item : list1) {
                 list.add(dimCopy((Serializable) item));
             }
             return list;

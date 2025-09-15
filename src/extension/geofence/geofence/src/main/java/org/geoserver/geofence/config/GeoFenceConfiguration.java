@@ -5,6 +5,7 @@
 package org.geoserver.geofence.config;
 
 import com.google.common.collect.Lists;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     public static final String URL_INTERNAL = "internal:/";
 
+    @Serial
     private static final long serialVersionUID = 3L;
 
     private String servicesUrl;

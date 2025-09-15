@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web;
 
+import java.io.Serial;
 import org.geoserver.security.GeoServerRestRoleService;
 import org.geoserver.security.GeoServerRestRoleServiceConfig;
 import org.geoserver.security.web.role.RoleServicePanelInfo;
@@ -13,6 +14,7 @@ public class GeoServerRestRoleServicePanelInfo
         extends RoleServicePanelInfo<GeoServerRestRoleServiceConfig, GeoServerRestRoleServicePanel> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1804560200750315834L;
 
     public GeoServerRestRoleServicePanelInfo() {

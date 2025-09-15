@@ -7,6 +7,7 @@ package org.geoserver.importer;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemManager;
@@ -25,6 +26,7 @@ import org.geoserver.security.GeoServerSecurityManager;
  */
 public class RemoteData extends ImportData {
 
+    @Serial
     private static final long serialVersionUID = -1748855285827081507L;
 
     String location;

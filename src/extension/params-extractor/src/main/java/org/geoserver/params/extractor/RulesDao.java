@@ -37,7 +37,7 @@ public final class RulesDao {
     }
 
     public static String getTempRulesPath() {
-        return String.format("params-extractor/%s-extraction-rules.xml", UUID.randomUUID());
+        return "params-extractor/%s-extraction-rules.xml".formatted(UUID.randomUUID());
     }
 
     public static List<Rule> getRules() {

@@ -4,6 +4,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 
@@ -12,6 +13,7 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
         implements SecurityRoleServiceConfig {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -8380244566532287415L;
 
     private static final int defaultCacheConcurrencyLevel = 4;

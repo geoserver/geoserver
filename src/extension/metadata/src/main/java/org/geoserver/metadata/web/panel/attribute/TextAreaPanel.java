@@ -4,12 +4,14 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
 public class TextAreaPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -1821529746678003578L;
 
     public TextAreaPanel(String id, IModel<String> model) {

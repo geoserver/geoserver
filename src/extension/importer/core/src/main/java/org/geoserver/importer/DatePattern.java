@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer;
 
+import java.io.Serial;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,6 +21,7 @@ import java.util.regex.Pattern;
  */
 public class DatePattern implements java.io.Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     final String format;

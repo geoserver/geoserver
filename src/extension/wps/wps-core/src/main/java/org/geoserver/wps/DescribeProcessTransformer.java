@@ -175,9 +175,9 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
                     element("ows:Title", inputIdentifier.title.toString(this.locale));
                     element("ows:Abstract", inputIdentifier.description.toString(this.locale));
                     Transmuter transmuter = this.dataTransformer.getDefaultTransmuter(inputIdentifier.type);
-                    if (transmuter instanceof ComplexTransmuter) {
+                    if (transmuter instanceof ComplexTransmuter complexTransmuter) {
                         start("ComplexData");
-                        this.complexParameter((ComplexTransmuter) transmuter);
+                        this.complexParameter(complexTransmuter);
                         end("ComplexData");
                     } else {
                         this.literalData((LiteralTransmuter) transmuter);
@@ -196,9 +196,9 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
                     element("ows:Title", outputIdentifier.title.toString(this.locale));
                     element("ows:Abstract", outputIdentifier.description.toString(this.locale));
                     Transmuter transmuter = this.dataTransformer.getDefaultTransmuter(outputIdentifier.type);
-                    if (transmuter instanceof ComplexTransmuter) {
+                    if (transmuter instanceof ComplexTransmuter complexTransmuter) {
                         start("ComplexOutput");
-                        this.complexParameter((ComplexTransmuter) transmuter);
+                        this.complexParameter(complexTransmuter);
                         end("ComplexOutput");
                     } else {
                         this.literalData((LiteralTransmuter) transmuter);

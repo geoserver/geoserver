@@ -57,7 +57,7 @@ public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider i
     /** @return a thread factory for the eviction thread */
     private ThreadFactory getThreadFactory() {
         CustomizableThreadFactory tFactory = new CustomizableThreadFactory(
-                String.format("GeoServerAuthenticationKey-%d-", poolCounter.getAndIncrement()));
+                "GeoServerAuthenticationKey-%d-".formatted(poolCounter.getAndIncrement()));
         tFactory.setDaemon(true);
         return tFactory;
     }

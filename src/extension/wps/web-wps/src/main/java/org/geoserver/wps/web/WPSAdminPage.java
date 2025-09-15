@@ -5,6 +5,7 @@
  */
 package org.geoserver.wps.web;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
@@ -107,6 +108,7 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
     /** Validator that checks that the total time is greater than the execution time */
     class TotalTimeValidator extends AbstractFormValidator {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private FormComponent<Integer> totalTime;

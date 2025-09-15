@@ -300,8 +300,8 @@ public class MapMLDocumentBuilder {
 
     private void extractFromLayerGroup(LayerGroupInfo layerGroupInfo, List<RawLayer> rawLayers) {
         for (PublishedInfo publishedInfo : layerGroupInfo.getLayers()) {
-            if (publishedInfo instanceof LayerGroupInfo) {
-                extractFromLayerGroup((LayerGroupInfo) publishedInfo, rawLayers);
+            if (publishedInfo instanceof LayerGroupInfo info) {
+                extractFromLayerGroup(info, rawLayers);
             } else {
                 addToRawLayers(
                         rawLayers,
@@ -846,8 +846,7 @@ public class MapMLDocumentBuilder {
      * @return potentially localized title string
      */
     public String getTitle(PublishedInfo p, String defaultTitle) {
-        if (p instanceof LayerGroupInfo) {
-            LayerGroupInfo li = (LayerGroupInfo) p;
+        if (p instanceof LayerGroupInfo li) {
             if (li.getInternationalTitle() != null
                     && li.getInternationalTitle().toString(request.getLocale()) != null) {
                 // use international title per request or default locale
@@ -1427,10 +1426,10 @@ public class MapMLDocumentBuilder {
         }
         LayerInfo layerInfo = mapMLLayerMetadata.getLayerInfo();
         ResourceInfo resourceInfo = layerInfo.getResource();
-        if (resourceInfo instanceof FeatureTypeInfo) {
-            prepareFeatureExtent((FeatureTypeInfo) resourceInfo, mapMLLayerMetadata, dimension);
-        } else if (resourceInfo instanceof CoverageInfo) {
-            prepareCoverageExtent((CoverageInfo) resourceInfo, mapMLLayerMetadata, dimension);
+        if (resourceInfo instanceof FeatureTypeInfo info1) {
+            prepareFeatureExtent(info1, mapMLLayerMetadata, dimension);
+        } else if (resourceInfo instanceof CoverageInfo info) {
+            prepareCoverageExtent(info, mapMLLayerMetadata, dimension);
         }
     }
 
@@ -2324,8 +2323,7 @@ public class MapMLDocumentBuilder {
      * @return the potentially localized label string for a layer or layer group
      */
     String getLabel(PublishedInfo p, String def, HttpServletRequest request) {
-        if (p instanceof LayerGroupInfo) {
-            LayerGroupInfo li = (LayerGroupInfo) p;
+        if (p instanceof LayerGroupInfo li) {
             if (li.getInternationalTitle() != null
                     && li.getInternationalTitle().toString(request.getLocale()) != null) {
                 // use international title per request or default locale

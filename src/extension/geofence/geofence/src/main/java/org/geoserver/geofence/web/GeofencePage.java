@@ -5,6 +5,7 @@
 package org.geoserver.geofence.web;
 
 import com.google.common.cache.LoadingCache;
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.geoserver.web.wicket.model.ExtPropertyModel;
 // TODO WICKET8 - Verify this page works OK
 public class GeofencePage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 5845823599005718408L;
 
     /** Configuration object. */
@@ -74,6 +76,7 @@ public class GeofencePage extends GeoServerSecuredPage {
 
         form.add(
                 new AjaxSubmitLink("test") {
+                    @Serial
                     private static final long serialVersionUID = -91239899377941223L;
 
                     @Override
@@ -122,6 +125,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(new TextField<>("acceptedRoles", new PropertyModel<>(configModel, "acceptedRoles")));
 
         Button submit = new Button("submit") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -140,6 +144,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(submit);
 
         Button cancel = new Button("cancel") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -168,6 +173,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(
                 new AjaxSubmitLink("invalidate") {
 
+                    @Serial
                     private static final long serialVersionUID = 3847903240475052867L;
 
                     @Override

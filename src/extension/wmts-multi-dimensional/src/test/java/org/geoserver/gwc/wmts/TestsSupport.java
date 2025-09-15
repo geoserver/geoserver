@@ -211,7 +211,7 @@ public abstract class TestsSupport extends WMSTestSupport {
 
     /** Helper method that perform a XPATH count and check the result. */
     protected void checkXpathCount(Document result, String path, String count) throws Exception {
-        String finalPath = String.format("count(/%s)", path);
+        String finalPath = "count(/%s)".formatted(path);
         assertThat(xpath.evaluate(finalPath, result), is(count));
     }
 

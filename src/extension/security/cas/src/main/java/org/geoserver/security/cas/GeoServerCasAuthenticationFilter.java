@@ -304,8 +304,8 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
                     list.stream().map(v -> new GeoServerRole(String.valueOf(v))).collect(Collectors.toList());
             enrichWithRoleCalculator(roles);
             return roles;
-        } else if (value instanceof String) {
-            return Arrays.asList(new GeoServerRole((String) value));
+        } else if (value instanceof String string) {
+            return Arrays.asList(new GeoServerRole(string));
         } else {
             throw new IllegalArgumentException("Unexpected value for custom attribute "
                     + customAttributeName
@@ -329,7 +329,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
             }
         }
 
-        if (assertionMaybe instanceof Assertion) return (Assertion) assertionMaybe;
+        if (assertionMaybe instanceof Assertion assertion) return assertion;
         // should not get here, but play it safe
         return getCASAssertion(request);
     }

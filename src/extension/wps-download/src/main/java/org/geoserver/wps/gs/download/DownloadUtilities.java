@@ -124,8 +124,7 @@ final class DownloadUtilities {
                 LOGGER.log(Level.FINE, "Trying to search for a PPIO for the parameter " + p.getName());
             }
             for (ProcessParameterIO ppio : all) {
-                if (ppio instanceof ComplexPPIO
-                        && ((ComplexPPIO) ppio).getMimeType().equals(mime)) {
+                if (ppio instanceof ComplexPPIO iO && iO.getMimeType().equals(mime)) {
                     return ppio;
                 }
             }

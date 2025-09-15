@@ -79,40 +79,42 @@ public class ClipProcessTest extends WPSTestSupport {
 
     @Test
     public void testClipIAU() throws Exception {
-        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                + "xmlns:ows='http://www.opengis.net/ows/1.1' "
-                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">"
-                + "<ows:Identifier>gs:RectangularClip</ows:Identifier>"
-                + "<wps:DataInputs>"
-                + "<wps:Input>"
-                + "<ows:Identifier>features</ows:Identifier>"
-                + "  <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n"
-                + "    <wps:Body>\n"
-                + "      <wfs:GetFeature service=\"WFS\" version=\"1.0.0\">\n"
-                + "        <wfs:Query typeName=\"iau:MarsPoi\"/>\n"
-                + "      </wfs:GetFeature>\n"
-                + "    </wps:Body>\n"
-                + "  </wps:Reference>\n"
-                + "</wps:Input>"
-                + "<wps:Input>"
-                + "<ows:Identifier>clip</ows:Identifier>"
-                + "<wps:Data>"
-                + "<ows:BoundingBox crs=\"IAU:49900\">"
-                + "<ows:LowerCorner>-37 -40</ows:LowerCorner>"
-                + "<ows:UpperCorner>-36 -20</ows:UpperCorner>"
-                + "</ows:BoundingBox>"
-                + "</wps:Data>"
-                + "</wps:Input>"
-                + "</wps:DataInputs>"
-                + "<wps:ResponseForm>"
-                + "<wps:ResponseDocument storeExecuteResponse='false' lineage='true'>"
-                + "<wps:Output>"
-                + "<ows:Identifier>result</ows:Identifier>"
-                + "</wps:Output>"
-                + "</wps:ResponseDocument>"
-                + "</wps:ResponseForm>"
-                + "</wps:Execute>";
+        String xml =
+                """
+                <wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' \
+                xmlns:ows='http://www.opengis.net/ows/1.1' \
+                xmlns:wfs="http://www.opengis.net/wfs" \
+                xmlns:xlink="http://www.w3.org/1999/xlink">\
+                <ows:Identifier>gs:RectangularClip</ows:Identifier>\
+                <wps:DataInputs>\
+                <wps:Input>\
+                <ows:Identifier>features</ows:Identifier>\
+                  <wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">
+                    <wps:Body>
+                      <wfs:GetFeature service="WFS" version="1.0.0">
+                        <wfs:Query typeName="iau:MarsPoi"/>
+                      </wfs:GetFeature>
+                    </wps:Body>
+                  </wps:Reference>
+                </wps:Input>\
+                <wps:Input>\
+                <ows:Identifier>clip</ows:Identifier>\
+                <wps:Data>\
+                <ows:BoundingBox crs="IAU:49900">\
+                <ows:LowerCorner>-37 -40</ows:LowerCorner>\
+                <ows:UpperCorner>-36 -20</ows:UpperCorner>\
+                </ows:BoundingBox>\
+                </wps:Data>\
+                </wps:Input>\
+                </wps:DataInputs>\
+                <wps:ResponseForm>\
+                <wps:ResponseDocument storeExecuteResponse='false' lineage='true'>\
+                <wps:Output>\
+                <ows:Identifier>result</ows:Identifier>\
+                </wps:Output>\
+                </wps:ResponseDocument>\
+                </wps:ResponseForm>\
+                </wps:Execute>""";
 
         Document dom = postAsDOM(root(), xml);
         print(dom);

@@ -6,6 +6,7 @@
 package org.geoserver.importer.mosaic;
 
 import com.google.common.base.Preconditions;
+import java.io.Serial;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,6 +27,7 @@ import org.geotools.util.logging.Logging;
  */
 public class FilenameTimeHandler extends TimeHandler {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String FILENAME_REGEX = "filenameRegex";

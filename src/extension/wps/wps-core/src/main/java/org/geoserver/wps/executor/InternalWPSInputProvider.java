@@ -85,8 +85,8 @@ public class InternalWPSInputProvider extends AbstractInputProvider {
         }
 
         // make sure we have the process receiving this fail if cancellation triggers
-        if (obj instanceof FeatureCollection) {
-            obj = CancellingFeatureCollectionBuilder.wrap((FeatureCollection) obj, listener);
+        if (obj instanceof FeatureCollection collection) {
+            obj = CancellingFeatureCollectionBuilder.wrap(collection, listener);
         }
 
         return obj;

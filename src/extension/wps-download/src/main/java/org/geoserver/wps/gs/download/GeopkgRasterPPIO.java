@@ -79,8 +79,7 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
                 te.setTableName(coverage.getName().toString());
 
                 // setup the meta information
-                if (coverage instanceof MetaGridCoverage2D) {
-                    MetaGridCoverage2D meta = (MetaGridCoverage2D) coverage;
+                if (coverage instanceof MetaGridCoverage2D meta) {
                     Object resourceInfo = meta.getUserData().get(ResourceInfo.class);
                     setupEntryMetadata(te, resourceInfo);
                 }
@@ -187,8 +186,7 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
         if (cm.getTransparency() == Transparency.OPAQUE && iw.getNoData() == null) return false;
 
         // in case of index color model, there could be a transparent pixel
-        if (cm instanceof IndexColorModel) {
-            IndexColorModel icm = (IndexColorModel) cm;
+        if (cm instanceof IndexColorModel icm) {
             int transparentPixel = icm.getTransparentPixel();
             if (transparentPixel != -1) {
                 // are all pixels equal to the transparent pixel?

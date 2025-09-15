@@ -5,6 +5,7 @@
 package org.geoserver.metadata.data.service.impl;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +48,7 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
 
     private static final Logger LOGGER = Logging.getLogger(GeonetworkXmlParserImpl.class);
 
+    @Serial
     private static final long serialVersionUID = -4931070325217885824L;
 
     @Autowired

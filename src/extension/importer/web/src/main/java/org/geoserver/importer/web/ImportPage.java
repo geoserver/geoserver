@@ -328,8 +328,7 @@ public class ImportPage extends GeoServerSecuredPage {
         @Override
         protected PackageResourceReference load() {
             DataIcon icon = null;
-            if (data instanceof FileData) {
-                FileData df = (FileData) data;
+            if (data instanceof FileData df) {
                 if (data instanceof Directory) {
                     icon = DataIcon.FOLDER;
                 } else {

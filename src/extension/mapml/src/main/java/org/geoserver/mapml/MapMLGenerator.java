@@ -197,36 +197,26 @@ public class MapMLGenerator {
      * @param geometry the geometry
      */
     private void formatGeometry(Object geometry) {
-        if (geometry instanceof org.geoserver.mapml.xml.Point) {
-            org.geoserver.mapml.xml.Point point = (org.geoserver.mapml.xml.Point) geometry;
+        if (geometry instanceof org.geoserver.mapml.xml.Point point) {
             formatCoordinates(point.getCoordinates());
-        } else if (geometry instanceof org.geoserver.mapml.xml.MultiPoint) {
-            org.geoserver.mapml.xml.MultiPoint multiPoint = (org.geoserver.mapml.xml.MultiPoint) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.MultiPoint multiPoint) {
             formatCoordinates(multiPoint.getCoordinates());
-        } else if (geometry instanceof org.geoserver.mapml.xml.LineString) {
-            org.geoserver.mapml.xml.LineString lineString = (org.geoserver.mapml.xml.LineString) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.LineString lineString) {
             formatCoordinates(lineString.getCoordinates());
-        } else if (geometry instanceof org.geoserver.mapml.xml.MultiLineString) {
-            org.geoserver.mapml.xml.MultiLineString multiLineString =
-                    (org.geoserver.mapml.xml.MultiLineString) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.MultiLineString multiLineString) {
             formatCoordinates(multiLineString.getTwoOrMoreCoordinatePairs());
-        } else if (geometry instanceof org.geoserver.mapml.xml.Polygon) {
-            org.geoserver.mapml.xml.Polygon polygon = (org.geoserver.mapml.xml.Polygon) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.Polygon polygon) {
             formatCoordinates(polygon.getThreeOrMoreCoordinatePairs());
-        } else if (geometry instanceof org.geoserver.mapml.xml.MultiPolygon) {
-            org.geoserver.mapml.xml.MultiPolygon multiPolygon = (org.geoserver.mapml.xml.MultiPolygon) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.MultiPolygon multiPolygon) {
             for (org.geoserver.mapml.xml.Polygon polygon : multiPolygon.getPolygon()) {
                 formatCoordinates(polygon.getThreeOrMoreCoordinatePairs());
             }
 
-        } else if (geometry instanceof org.geoserver.mapml.xml.GeometryCollection) {
-            org.geoserver.mapml.xml.GeometryCollection geometryCollection =
-                    (org.geoserver.mapml.xml.GeometryCollection) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.GeometryCollection geometryCollection) {
             for (Object geom : geometryCollection.getPointOrLineStringOrPolygon()) {
                 formatGeometry(geom);
             }
-        } else if (geometry instanceof org.geoserver.mapml.xml.A) {
-            org.geoserver.mapml.xml.A a = (org.geoserver.mapml.xml.A) geometry;
+        } else if (geometry instanceof org.geoserver.mapml.xml.A a) {
             formatGeometry(a.getGeometryContent().getValue());
         }
     }
@@ -240,8 +230,7 @@ public class MapMLGenerator {
         for (Coordinates coords : coordinates) {
             List<Object> coordList = coords.getCoordinates();
             for (Object coord : coordList) {
-                if (coord instanceof Span) {
-                    Span span = (Span) coord;
+                if (coord instanceof Span span) {
                     List<String> spanCoords = span.getCoordinates();
                     for (int i = 0; i < spanCoords.size(); i++) {
                         String[] xyArray = formatCoordStrings(spanCoords.get(i));
@@ -455,26 +444,26 @@ public class MapMLGenerator {
      */
     public GeometryContent buildGeometry(Geometry g) throws IOException {
         GeometryContent geom = new GeometryContent();
-        if (g instanceof Point) {
-            org.geoserver.mapml.xml.Point point = buildPoint((Point) g);
+        if (g instanceof Point point1) {
+            org.geoserver.mapml.xml.Point point = buildPoint(point1);
             geom.setGeometryContent(factory.createPoint(point));
-        } else if (g instanceof MultiPoint) {
-            org.geoserver.mapml.xml.MultiPoint multiPoint = buildMultiPoint((MultiPoint) g);
+        } else if (g instanceof MultiPoint point) {
+            org.geoserver.mapml.xml.MultiPoint multiPoint = buildMultiPoint(point);
             geom.setGeometryContent(factory.createMultiPoint(multiPoint));
-        } else if (g instanceof LineString) {
-            org.geoserver.mapml.xml.LineString lineString = buildLineString((LineString) g);
+        } else if (g instanceof LineString string1) {
+            org.geoserver.mapml.xml.LineString lineString = buildLineString(string1);
             geom.setGeometryContent(factory.createLineString(lineString));
-        } else if (g instanceof MultiLineString) {
-            org.geoserver.mapml.xml.MultiLineString multiLineString = buildMultiLineString((MultiLineString) g);
+        } else if (g instanceof MultiLineString string) {
+            org.geoserver.mapml.xml.MultiLineString multiLineString = buildMultiLineString(string);
             geom.setGeometryContent(factory.createMultiLineString(multiLineString));
-        } else if (g instanceof Polygon) {
-            org.geoserver.mapml.xml.Polygon polygon = buildPolygon((Polygon) g);
+        } else if (g instanceof Polygon polygon1) {
+            org.geoserver.mapml.xml.Polygon polygon = buildPolygon(polygon1);
             geom.setGeometryContent(factory.createPolygon(polygon));
-        } else if (g instanceof MultiPolygon) {
-            org.geoserver.mapml.xml.MultiPolygon multiPolygon = buildMultiPolygon((MultiPolygon) g);
+        } else if (g instanceof MultiPolygon polygon) {
+            org.geoserver.mapml.xml.MultiPolygon multiPolygon = buildMultiPolygon(polygon);
             geom.setGeometryContent(factory.createMultiPolygon(multiPolygon));
-        } else if (g instanceof GeometryCollection) {
-            geom.setGeometryContent(factory.createGeometryCollection(buildGeometryCollection((GeometryCollection) g)));
+        } else if (g instanceof GeometryCollection collection) {
+            geom.setGeometryContent(factory.createGeometryCollection(buildGeometryCollection(collection)));
         } else if (g != null) {
             throw new IOException("Unknown geometry type: " + g.getGeometryType());
         }

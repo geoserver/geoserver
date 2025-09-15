@@ -265,27 +265,24 @@ public class ExecuteResponseBuilder {
         }
 
         try {
-            if (reference && ppio instanceof ComplexPPIO) {
+            if (reference && ppio instanceof ComplexPPIO cppio) {
                 // encode as reference
                 OutputReferenceType outputReference = f.createOutputReferenceType();
                 output.setReference(outputReference);
-
-                ComplexPPIO cppio = (ComplexPPIO) ppio;
                 String name = key + "." + cppio.getFileExtension(o);
                 Resource outputResource = resourceManager.getOutputResource(status.getExecutionId(), name);
 
                 // write out the output, wrapping the output stream and other well known
                 // object in classes that will fail upon cancellation
                 try (OutputStream os = new CancellingOutputStream(outputResource.out(), listener)) {
-                    if (o instanceof FeatureCollection) {
-                        o = CancellingFeatureCollectionBuilder.wrap((FeatureCollection) o, listener);
+                    if (o instanceof FeatureCollection collection) {
+                        o = CancellingFeatureCollectionBuilder.wrap(collection, listener);
                     }
                     cppio.encode(o, os);
                 }
 
                 String mime;
-                if (o instanceof RawData) {
-                    RawData rawData = (RawData) o;
+                if (o instanceof RawData rawData) {
                     mime = rawData.getMimeType();
                 } else {
                     mime = cppio.getMimeType();
@@ -299,19 +296,17 @@ public class ExecuteResponseBuilder {
                 DataType data = f.createDataType();
                 output.setData(data);
 
-                if (ppio instanceof LiteralPPIO) {
+                if (ppio instanceof LiteralPPIO iO4) {
                     LiteralDataType literal = f.createLiteralDataType();
                     data.setLiteralData(literal);
 
-                    literal.setValue(((LiteralPPIO) ppio).encode(o));
-                } else if (ppio instanceof BoundingBoxPPIO) {
-                    BoundingBoxType bbox = ((BoundingBoxPPIO) ppio).encode(o);
+                    literal.setValue(iO4.encode(o));
+                } else if (ppio instanceof BoundingBoxPPIO iO3) {
+                    BoundingBoxType bbox = iO3.encode(o);
                     data.setBoundingBoxData(bbox);
-                } else if (ppio instanceof ComplexPPIO) {
+                } else if (ppio instanceof ComplexPPIO cppio) {
                     ComplexDataType complex = f.createComplexDataType();
                     data.setComplexData(complex);
-
-                    ComplexPPIO cppio = (ComplexPPIO) ppio;
                     complex.setMimeType(cppio.getMimeType());
 
                     if (o == null) {
@@ -321,14 +316,14 @@ public class ExecuteResponseBuilder {
                         complex.setMimeType(rawData.getMimeType());
                         complex.setEncoding("base64");
                         complex.getData().add(new RawDataEncoderDelegate(rawData));
-                    } else if (cppio instanceof XMLPPIO) {
+                    } else if (cppio instanceof XMLPPIO iO2) {
                         // encode directly
-                        complex.getData().add(new XMLEncoderDelegate((XMLPPIO) cppio, o));
-                    } else if (cppio instanceof CDataPPIO) {
-                        complex.getData().add(new CDataEncoderDelegate((CDataPPIO) cppio, o));
-                    } else if (cppio instanceof BinaryPPIO) {
+                        complex.getData().add(new XMLEncoderDelegate(iO2, o));
+                    } else if (cppio instanceof CDataPPIO iO1) {
+                        complex.getData().add(new CDataEncoderDelegate(iO1, o));
+                    } else if (cppio instanceof BinaryPPIO iO) {
                         complex.setEncoding("base64");
-                        complex.getData().add(new BinaryEncoderDelegate((BinaryPPIO) cppio, o));
+                        complex.getData().add(new BinaryEncoderDelegate(iO, o));
                     } else {
                         throw new WPSException("Don't know how to encode an output whose PPIO is " + cppio);
                     }

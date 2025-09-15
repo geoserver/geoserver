@@ -160,10 +160,11 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
     }
 
     String newYSLD() {
-        return "title: valid ysld\n"
-                + "symbolizers:\n"
-                + "- line:\n"
-                + "    stroke-width: 1.0\n"
-                + "    stroke-color: '#FF0000'";
+        return """
+                title: valid ysld
+                symbolizers:
+                - line:
+                    stroke-width: 1.0
+                    stroke-color: '#FF0000'""";
     }
 }

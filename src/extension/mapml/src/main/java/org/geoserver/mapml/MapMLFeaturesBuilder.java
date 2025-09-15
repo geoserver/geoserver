@@ -227,8 +227,7 @@ public class MapMLFeaturesBuilder {
      */
     private int getNumberOfDecimals(ResourceInfo meta) {
         SettingsInfo settings = geoServer.getSettings();
-        if (meta instanceof FeatureTypeInfo) {
-            FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) meta;
+        if (meta instanceof FeatureTypeInfo featureTypeInfo) {
             if (featureTypeInfo.getNumDecimals() > 0) {
                 return featureTypeInfo.getNumDecimals();
             }
@@ -244,8 +243,8 @@ public class MapMLFeaturesBuilder {
      * @return the pad with zeros setting
      */
     private boolean getPadWithZeros(ResourceInfo meta) {
-        if (meta instanceof FeatureTypeInfo) {
-            return ((FeatureTypeInfo) meta).getPadWithZeros();
+        if (meta instanceof FeatureTypeInfo info) {
+            return info.getPadWithZeros();
         }
         return false;
     }
@@ -257,8 +256,8 @@ public class MapMLFeaturesBuilder {
      * @return the forced decimal setting
      */
     private boolean getForcedDecimal(ResourceInfo meta) {
-        if (meta instanceof FeatureTypeInfo) {
-            return ((FeatureTypeInfo) meta).getForcedDecimal();
+        if (meta instanceof FeatureTypeInfo info) {
+            return info.getForcedDecimal();
         }
         return false;
     }

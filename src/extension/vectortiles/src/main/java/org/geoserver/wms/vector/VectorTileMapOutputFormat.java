@@ -211,8 +211,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
         }
         sw.stop();
         if (LOGGER.isLoggable(Level.FINE)) {
-            String msg =
-                    String.format("Added %,d out of %,d features of '%s' in %s", count, total, layer.getTitle(), sw);
+            String msg = "Added %,d out of %,d features of '%s' in %s".formatted(count, total, layer.getTitle(), sw);
             LOGGER.fine(msg);
         }
     }

@@ -174,8 +174,8 @@ class SpatioTemporalCoverageSlicer {
         this.reader = reader;
         this.coverageInfo = coverageInfo;
         this.filter = filter;
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            structuredReader = (StructuredGridCoverage2DReader) reader;
+        if (reader instanceof StructuredGridCoverage2DReader dReader) {
+            structuredReader = dReader;
             try {
                 final String nativeName = coverageInfo.getNativeCoverageName();
                 coverageName =
@@ -336,11 +336,10 @@ class SpatioTemporalCoverageSlicer {
                     }
 
                     private boolean isDimensionComparison(Filter f) {
-                        if (f instanceof BinaryComparisonOperator) {
-                            BinaryComparisonOperator bco = (BinaryComparisonOperator) f;
+                        if (f instanceof BinaryComparisonOperator bco) {
                             Expression expr1 = bco.getExpression1();
-                            if (expr1 instanceof PropertyName) {
-                                String name = ((PropertyName) expr1).getPropertyName();
+                            if (expr1 instanceof PropertyName propertyName) {
+                                String name = propertyName.getPropertyName();
                                 return dimensionNames.contains(name);
                             }
                         }
@@ -541,13 +540,13 @@ class SpatioTemporalCoverageSlicer {
         switch (type) {
             case TIME:
                 Date date;
-                if (raw instanceof Date) {
-                    date = (Date) raw;
-                } else if (raw instanceof java.sql.Timestamp) {
-                    date = new Date(((Timestamp) raw).getTime());
-                } else if (raw instanceof String) {
+                if (raw instanceof Date date1) {
+                    date = date1;
+                } else if (raw instanceof Timestamp timestamp) {
+                    date = new Date(timestamp.getTime());
+                } else if (raw instanceof String string) {
                     try {
-                        date = javax.xml.bind.DatatypeConverter.parseDateTime((String) raw)
+                        date = javax.xml.bind.DatatypeConverter.parseDateTime(string)
                                 .getTime();
                     } catch (Exception e) {
                         throw new IllegalArgumentException("Unable to parse TIME dimension value: " + raw, e);
@@ -559,11 +558,11 @@ class SpatioTemporalCoverageSlicer {
 
             case ELEVATION:
                 Double value;
-                if (raw instanceof Number) {
-                    value = ((Number) raw).doubleValue();
-                } else if (raw instanceof String) {
+                if (raw instanceof Number number) {
+                    value = number.doubleValue();
+                } else if (raw instanceof String string) {
                     try {
-                        value = Double.valueOf((String) raw);
+                        value = Double.valueOf(string);
                     } catch (NumberFormatException e) {
                         throw new IllegalArgumentException("Unable to parse ELEVATION dimension value: " + raw, e);
                     }

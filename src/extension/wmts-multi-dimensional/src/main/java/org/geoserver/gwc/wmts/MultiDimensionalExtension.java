@@ -186,8 +186,8 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
     }
 
     public boolean rethrowException(Exception exception, String s) throws OWSException {
-        if (exception instanceof OWSException) {
-            throw (OWSException) exception;
+        if (exception instanceof OWSException sException) {
+            throw sException;
         }
         throw new OWSException(500, "NoApplicableCode", "", s + exception.getMessage());
     }
@@ -334,7 +334,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             GridSubset gridSubset = tileLayer.getGridSubset(providedTileMatrixSet);
             if (gridSubset == null) {
                 // the provided tile matrix set is not supported by this layer
-                throw new RuntimeException(String.format("Unknown grid set '%s'.", providedTileMatrixSet));
+                throw new RuntimeException("Unknown grid set '%s'.".formatted(providedTileMatrixSet));
             }
             // set bounding box crs base on tile matrix tile set srs
             boundingBox = new ReferencedEnvelope(
@@ -441,9 +441,8 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             Filter filter, String startAttribute, String endAttribute, Object domainRestrictions) {
         DimensionFilterBuilder dimensionFilterBuilder = new DimensionFilterBuilder(filterFactory);
         @SuppressWarnings("unchecked")
-        List<Object> restrictionList = domainRestrictions instanceof Collection
-                ? new ArrayList<>((Collection) domainRestrictions)
-                : Arrays.asList(domainRestrictions);
+        List<Object> restrictionList =
+                domainRestrictions instanceof Collection c ? new ArrayList<>(c) : Arrays.asList(domainRestrictions);
         dimensionFilterBuilder.appendFilters(startAttribute, endAttribute, restrictionList);
         return filterFactory.and(filter, dimensionFilterBuilder.getFilter());
     }

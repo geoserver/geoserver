@@ -5,6 +5,7 @@
  */
 package org.geoserver.monitor.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
@@ -14,11 +15,13 @@ import org.apache.wicket.model.ResourceModel;
 
 public class OWSSummaryPage extends MonitorBasePage {
 
+    @Serial
     private static final long serialVersionUID = -8012730662519508306L;
 
     public OWSSummaryPage() {
         List<AbstractTab> tabs = new ArrayList<>();
         tabs.add(new AbstractTab(new ResourceModel("overview")) {
+            @Serial
             private static final long serialVersionUID = 1037158550051655148L;
 
             @Override
@@ -27,6 +30,7 @@ public class OWSSummaryPage extends MonitorBasePage {
             }
         });
         tabs.add(new AbstractTab(new ResourceModel("wfs")) {
+            @Serial
             private static final long serialVersionUID = -3085421260326720801L;
 
             @Override
@@ -35,6 +39,7 @@ public class OWSSummaryPage extends MonitorBasePage {
             }
         });
         tabs.add(new AbstractTab(new ResourceModel("wms")) {
+            @Serial
             private static final long serialVersionUID = -6494862041051243036L;
 
             @Override
@@ -43,6 +48,7 @@ public class OWSSummaryPage extends MonitorBasePage {
             }
         });
         tabs.add(new AbstractTab(new ResourceModel("wcs")) {
+            @Serial
             private static final long serialVersionUID = 2330074592986120520L;
 
             @Override

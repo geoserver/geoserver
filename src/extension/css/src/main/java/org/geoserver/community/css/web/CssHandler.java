@@ -99,15 +99,11 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
             Object input, Version version, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
         // see if we can use the SLD cache, some conversions are expensive.
-        if (input instanceof File) {
-            // convert to resource, to avoid code duplication (the code for file would be very
-            // similar to the resource one, but unfortunately using an unrelated set of classes
-            File cssFile = (File) input;
+        if (input instanceof File cssFile) {
             input = new FileSystemResourceStore(cssFile.getParentFile()).get(cssFile.getName());
         }
 
-        if (input instanceof Resource) {
-            Resource cssResource = (Resource) input;
+        if (input instanceof Resource cssResource) {
             Resource sldResource = cssResource.parent().get(FilenameUtils.getBaseName(cssResource.name()) + ".sld");
             if (sldResource.getType() != Resource.Type.UNDEFINED
                     && sldResource.lastmodified() > cssResource.lastmodified()) {

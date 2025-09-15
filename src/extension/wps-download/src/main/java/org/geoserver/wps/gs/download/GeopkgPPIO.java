@@ -53,10 +53,9 @@ abstract class GeopkgPPIO extends ComplexPPIO {
     }
 
     protected void setupEntryMetadata(Entry e, Object ri) {
-        if (ri instanceof ResourceInfo) {
-            ResourceInfo meta = (ResourceInfo) ri;
+        if (ri instanceof ResourceInfo meta) {
             // initialize entry metadata
-            e.setTableName(((ResourceInfo) ri).getName());
+            e.setTableName(meta.getName());
             e.setIdentifier(meta.getTitle());
             e.setDescription(abstractOrDescription(meta));
         }

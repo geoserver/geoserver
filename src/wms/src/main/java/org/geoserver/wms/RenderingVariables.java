@@ -8,6 +8,7 @@ package org.geoserver.wms;
 import static org.geotools.util.factory.Hints.VIRTUAL_TABLE_PARAMETERS;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -103,7 +104,7 @@ public class RenderingVariables {
             double maxX = envelope.getMaxX();
             double maxY = envelope.getMaxY();
 
-            return String.format("%.6f,%.6f,%.6f,%.6f", minX, minY, maxX, maxY);
+            return String.format(Locale.ENGLISH, "%.6f,%.6f,%.6f,%.6f", minX, minY, maxX, maxY);
         });
         setValueIfNotPresent(virtualTableParamsMap, localValues, WMS_SRS);
         setValueIfNotPresent(virtualTableParamsMap, localValues, WMS_WIDTH, String::valueOf);

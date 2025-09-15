@@ -259,8 +259,8 @@ class DirectRasterRenderer {
                     Object result = readAndTransform(interpolationHints, coverageCRS, readGG);
                     if (result == null) {
                         coverage = null;
-                    } else if (result instanceof GridCoverage2D) {
-                        coverage = (GridCoverage2D) result;
+                    } else if (result instanceof GridCoverage2D coverage2D) {
+                        coverage = coverage2D;
                         symbolizer = updateSymbolizerForBandSelection(context, symbolizer, bandIndices);
                     } else {
                         // we don't know how to handle this case, we'll let streaming renderer fall
@@ -351,9 +351,8 @@ class DirectRasterRenderer {
 
         // in case of index color model we try to preserve it, so that output
         // formats that can work with it can enjoy its extra compactness
-        if (cm instanceof IndexColorModel) {
+        if (cm instanceof IndexColorModel icm) {
             final ImageWorker worker = new ImageWorker(image);
-            IndexColorModel icm = (IndexColorModel) cm;
             // try to find the index that matches the requested background color
             final int bgColorIndex;
             if (transparent) {
@@ -418,9 +417,7 @@ class DirectRasterRenderer {
 
         // in case of component color model
         boolean noDataTransparencyApplied = false;
-        if (cm instanceof ComponentColorModel) {
-            // convert to RGB if necessary
-            ComponentColorModel ccm = (ComponentColorModel) cm;
+        if (cm instanceof ComponentColorModel ccm) {
             boolean hasAlpha = cm.hasAlpha();
 
             // if we have a grayscale image see if we have to expand to RGB
@@ -740,8 +737,7 @@ class DirectRasterRenderer {
 
     private static boolean isVectorSource(Expression tranformation) {
         // instanceof is sufficient for null check
-        if (tranformation instanceof ProcessFunction) {
-            ProcessFunction processFunction = (ProcessFunction) tranformation;
+        if (tranformation instanceof ProcessFunction processFunction) {
             Name processName = processFunction.getProcessName();
             Map<String, org.geotools.api.data.Parameter<?>> params = Processors.getParameterInfo(processName);
             for (org.geotools.api.data.Parameter<?> param : params.values()) {
@@ -921,8 +917,7 @@ class DirectRasterRenderer {
             Object roiCandidate,
             boolean preProcessedWithTransparency) {
         ROI roi;
-        if (roiCandidate instanceof ROI) {
-            ROI imageROI = (ROI) roiCandidate;
+        if (roiCandidate instanceof ROI imageROI) {
             try {
                 roi = new ROIGeometry(mapRasterArea).intersect(imageROI);
             } catch (IllegalArgumentException e) {
@@ -1041,8 +1036,8 @@ class DirectRasterRenderer {
         // in case of ROI, create an alpha band that is transparent where the ROI is zero,
         // and solid where the ROI is one. The most efficient way is to use a Lookup
         Object roiCandidate = image.getProperty("ROI");
-        if (roiCandidate instanceof ROI) {
-            PlanarImage roiImage = ((ROI) roiCandidate).getAsImage();
+        if (roiCandidate instanceof ROI oI) {
+            PlanarImage roiImage = oI.getAsImage();
             ImageWorker iw = new ImageWorker(roiImage);
             byte[] lookup = new byte[256];
             Arrays.fill(lookup, (byte) 255);

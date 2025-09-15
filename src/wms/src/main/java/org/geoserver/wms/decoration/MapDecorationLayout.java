@@ -444,8 +444,8 @@ public class MapDecorationLayout {
     private static MapDecoration getDecoration(String name) {
         Object o = GeoServerExtensions.bean(name);
 
-        if (o instanceof MapDecoration) {
-            return (MapDecoration) o;
+        if (o instanceof MapDecoration decoration) {
+            return decoration;
         }
 
         return null;

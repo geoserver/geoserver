@@ -89,8 +89,7 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                         if (featuresPrinted < maxfeatures) {
                             writer.println("--------------------------------------------");
 
-                            if (feature instanceof SimpleFeature) {
-                                SimpleFeature f = (SimpleFeature) feature;
+                            if (feature instanceof SimpleFeature f) {
                                 writeSimpleFeature(writer, f);
                             } else {
                                 writer.println(feature.toString());

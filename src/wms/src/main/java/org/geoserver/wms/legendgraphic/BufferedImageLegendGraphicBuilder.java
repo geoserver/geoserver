@@ -515,7 +515,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             scaleHeight -= delta;
         }
         Image result = image.getScaledInstance(scaleWidth, scaleHeight, Image.SCALE_DEFAULT);
-        if (result instanceof BufferedImage) return (BufferedImage) result;
+        if (result instanceof BufferedImage bufferedImage) return bufferedImage;
         else {
             BufferedImage bufResult =
                     new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);

@@ -433,8 +433,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             // placemarks.
             List<Layer> layers = mapContent.layers();
             for (Layer value : layers) {
-                if (value instanceof StyleLayer) {
-                    StyleLayer layer = (StyleLayer) value;
+                if (value instanceof StyleLayer layer) {
                     Style style = layer.getStyle();
                     style.accept(dupVisitor);
                     Style copy = (Style) dupVisitor.getCopy();

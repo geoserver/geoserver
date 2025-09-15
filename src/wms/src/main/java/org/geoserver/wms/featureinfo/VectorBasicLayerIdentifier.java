@@ -121,8 +121,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         Filter rulesFilters = buildRulesFilter(ff, rules);
         if (!(featureSource.getSchema() instanceof SimpleFeatureType)
                 || !(rulesFilters instanceof Or)
-                || (rulesFilters instanceof Or
-                        && ((Or) rulesFilters).getChildren().size() <= 20)) {
+                || (rulesFilters instanceof Or or && or.getChildren().size() <= 20)) {
             getFInfoFilter = ff.and(getFInfoFilter, rulesFilters);
         } else {
             postFilter = rulesFilters;

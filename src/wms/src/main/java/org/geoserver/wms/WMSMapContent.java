@@ -279,11 +279,9 @@ public class WMSMapContent extends MapContent {
         Object obj = getUserData().get("keywords");
         if (obj == null) {
             return new String[0];
-        } else if (obj instanceof String) {
-            String keywords = (String) obj;
+        } else if (obj instanceof String keywords) {
             return keywords.split(",");
-        } else if (obj instanceof String[]) {
-            String[] keywords = (String[]) obj;
+        } else if (obj instanceof String[] keywords) {
             String[] copy = new String[keywords.length];
             System.arraycopy(keywords, 0, copy, 0, keywords.length);
             return copy;

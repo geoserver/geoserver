@@ -59,11 +59,11 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
 
             if (dimensionName.equals(ResourceInfo.TIME)) {
                 Date dateToMatch = null;
-                if (this.toMatch instanceof Date) {
-                    dateToMatch = (Date) this.toMatch;
-                } else if (this.toMatch instanceof Long) {
+                if (this.toMatch instanceof Date date) {
+                    dateToMatch = date;
+                } else if (this.toMatch instanceof Long long1) {
                     // Assume millis time if reference value is given as Long:
-                    dateToMatch = new Date(((Long) this.toMatch).longValue());
+                    dateToMatch = new Date(long1.longValue());
                 } else {
                     try {
                         dateToMatch = new Date(DateUtil.parseDateTime(this.toMatch.toString()));
@@ -76,8 +76,8 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
                 }
                 retval = findNearestTime(dimAccessor, dateToMatch);
             } else if (dimensionName.equals(ResourceInfo.ELEVATION)) {
-                if (this.toMatch instanceof Number) {
-                    Double doubleToMatch = ((Number) this.toMatch).doubleValue();
+                if (this.toMatch instanceof Number number) {
+                    Double doubleToMatch = number.doubleValue();
                     retval = findNearestElevation(dimAccessor, doubleToMatch);
                 } else {
                     throw new ServiceException(
@@ -103,8 +103,7 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
         long shortestDistance = Long.MAX_VALUE;
         long currentDistance = 0;
         for (Object dateOrRange : timeDomain) {
-            if (dateOrRange instanceof Date) {
-                Date d = (Date) dateOrRange;
+            if (dateOrRange instanceof Date d) {
                 if (d.before(toMatch)) {
                     currentDistance = toMatch.getTime() - d.getTime();
                     if (currentDistance < shortestDistance) {
@@ -124,8 +123,7 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
                     candidate = d;
                     break;
                 }
-            } else if (dateOrRange instanceof DateRange) {
-                DateRange d = (DateRange) dateOrRange;
+            } else if (dateOrRange instanceof DateRange d) {
                 if (d.getMaxValue().before(toMatch)) {
                     currentDistance = toMatch.getTime() - d.getMaxValue().getTime();
                     if (currentDistance < shortestDistance) {
@@ -158,8 +156,7 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
         double shortestDistance = Double.MAX_VALUE;
         double currentDistance = 0d;
         for (Object doubleOrRange : elevDomain) {
-            if (doubleOrRange instanceof Double) {
-                Double d = (Double) doubleOrRange;
+            if (doubleOrRange instanceof Double d) {
                 int comp = d.compareTo(toMatch);
                 if (comp < 0) {
                     currentDistance = toMatch.doubleValue() - d.doubleValue();
@@ -180,9 +177,8 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
                     candidate = d;
                     break;
                 }
-            } else if (doubleOrRange instanceof NumberRange<?>) {
+            } else if (doubleOrRange instanceof NumberRange<?> maybeD) {
                 NumberRange<Double> d = null;
-                NumberRange<?> maybeD = (NumberRange<?>) doubleOrRange;
                 if (maybeD.getElementClass().equals(Double.class)) {
                     d = (NumberRange<Double>) maybeD;
                 } else {

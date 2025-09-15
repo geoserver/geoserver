@@ -100,8 +100,8 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         Object stores = ((JSONObject) json).getJSONObject("wmsStores").get("wmsStore");
         assertNotNull(stores);
 
-        if (stores instanceof JSONArray) {
-            assertEquals(catalog.getStoresByWorkspace("sf", WMSStoreInfo.class).size(), ((JSONArray) stores).size());
+        if (stores instanceof JSONArray array) {
+            assertEquals(catalog.getStoresByWorkspace("sf", WMSStoreInfo.class).size(), array.size());
         } else {
             assertEquals(
                     1, catalog.getStoresByWorkspace("sf", WMSStoreInfo.class).size());

@@ -10,6 +10,7 @@ import static org.geoserver.gwc.GWC.tileLayerName;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,6 +78,7 @@ import org.geowebcache.storage.blobstore.memory.CacheProvider;
  */
 class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = 7870938096047218989L;
 
     /**
@@ -140,16 +142,16 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         final PublishedInfo info = layerModel.getObject();
         final GeoServerTileLayerInfo tileLayerInfo = tileLayerModel.getObject();
 
-        if (info instanceof LayerInfo) {
+        if (info instanceof LayerInfo layerInfo) {
             createTileLayerLabelModel = new ResourceModel("createTileLayerForLayer");
-            ResourceInfo resource = ((LayerInfo) info).getResource();
+            ResourceInfo resource = layerInfo.getResource();
             // we need the _current_ name, regardless of it's name is being changed
             resource = ModificationProxy.unwrap(resource);
             originalLayerName = resource.prefixedName();
-        } else if (info instanceof LayerGroupInfo) {
+        } else if (info instanceof LayerGroupInfo groupInfo) {
             createTileLayerLabelModel = new ResourceModel("createTileLayerForLayerGroup");
             // we need the _current_ name, regardless of if it's name is being changed
-            LayerGroupInfo lgi = ModificationProxy.unwrap((LayerGroupInfo) info);
+            LayerGroupInfo lgi = ModificationProxy.unwrap(groupInfo);
             originalLayerName = tileLayerName(lgi);
         } else {
             throw new IllegalArgumentException(
@@ -207,6 +209,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.add(enabled);
 
         ChoiceRenderer<String> blobStoreRenderer = new ChoiceRenderer<>() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             final String defaultStore = getDefaultBlobStoreId();
@@ -233,6 +236,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         blobStoreId.add(new AttributeModifier("title", new ResourceModel("blobStoreId.title")));
 
         add(new IValidator<>() {
+            @Serial
             private static final long serialVersionUID = 5240602030478856537L;
 
             @Override
@@ -282,6 +286,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         mergeExisting(formats, mimeFormatsModel.getObject());
 
         ListView<String> cacheFormatsList = new ListView<>("cacheFormats", formats) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -319,6 +324,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         setValidating(createLayer.getModelObject());
 
         createLayer.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -390,8 +396,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         final String name;
         final GridSetBroker gridsets = gwc.getGridSetBroker();
         GeoServerTileLayer tileLayer;
-        if (layer instanceof LayerGroupInfo) {
-            LayerGroupInfo groupInfo = (LayerGroupInfo) layer;
+        if (layer instanceof LayerGroupInfo groupInfo) {
             name = tileLayerName(groupInfo);
             tileLayer = new GeoServerTileLayer(groupInfo, gridsets, tileLayerInfo);
         } else {
@@ -436,6 +441,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         // if there is something to cancel, let's warn the user about what
         // could go wrong, and if the user accepts, let's delete what's needed
         confirmRemovalDialog.showOkCancel(origTarget, new GeoServerDialog.DialogDelegate() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

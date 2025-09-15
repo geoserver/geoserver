@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 /** Simple detachable model listing all the available LayerGroup modes. */
 public class LayerGroupModeModel extends LoadableDetachableModel<List<LayerGroupInfo.Mode>> {
 
+    @Serial
     private static final long serialVersionUID = 1781202562325730121L;
 
     @Override

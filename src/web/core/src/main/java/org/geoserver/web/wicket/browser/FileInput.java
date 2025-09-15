@@ -6,6 +6,7 @@ package org.geoserver.web.wicket.browser;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
@@ -96,6 +97,7 @@ public class FileInput extends Panel {
     protected Component chooserButton(final String windowTitle) {
         AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
 
+            @Serial
             private static final long serialVersionUID = -6640131658256808053L;
 
             @Override
@@ -113,6 +115,7 @@ public class FileInput extends Panel {
                 }
 
                 GeoServerFileChooser chooser = new GeoServerFileChooser(dialog.getContentId(), new Model<>(file)) {
+                    @Serial
                     private static final long serialVersionUID = -7096642192491726498L;
 
                     @Override

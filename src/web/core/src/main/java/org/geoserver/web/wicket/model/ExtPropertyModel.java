@@ -5,6 +5,7 @@
 
 package org.geoserver.web.wicket.model;
 
+import java.io.Serial;
 import org.apache.wicket.model.PropertyModel;
 
 /**
@@ -16,6 +17,7 @@ import org.apache.wicket.model.PropertyModel;
  */
 public class ExtPropertyModel<T> extends PropertyModel<T> {
 
+    @Serial
     private static final long serialVersionUID = 8377548798715670872L;
 
     private boolean readOnly;

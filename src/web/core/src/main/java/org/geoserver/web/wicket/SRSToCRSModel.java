@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.model.IModel;
@@ -18,7 +19,9 @@ import org.geotools.util.logging.Logging;
  * {@link CoordinateReferenceSystem} and back)
  */
 public class SRSToCRSModel implements IModel<CoordinateReferenceSystem> {
+    @Serial
     private static final long serialVersionUID = 1887687559796645124L;
+
     private static final Logger LOGGER = Logging.getLogger(SRSToCRSModel.class);
     IModel<String> srsModel;
 

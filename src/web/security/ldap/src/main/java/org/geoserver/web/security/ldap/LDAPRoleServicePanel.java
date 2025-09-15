@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.security.ldap;
 
+import java.io.Serial;
 import java.util.Optional;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
@@ -20,6 +21,7 @@ import org.geoserver.security.web.role.RoleServicePanel;
 
 public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig> {
 
+    @Serial
     private static final long serialVersionUID = -67788557484913489L;
 
     private static final String USE_NESTED_PARENT_GROUPS = "useNestedParentGroups";
@@ -30,6 +32,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
     static class LDAPAuthenticationPanel extends FormComponentPanel<String> {
 
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 8919421089437979222L;
 
         public LDAPAuthenticationPanel(String id) {
@@ -62,6 +65,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
         add(rolePrefixField);
         add(new CheckBox("convertToUpperCase"));
         add(new AjaxCheckBox("bindBeforeGroupSearch") {
+            @Serial
             private static final long serialVersionUID = -1675695153498067857L;
 
             @Override
@@ -99,6 +103,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
                 useNestedOpt.map(LDAPRoleServiceConfig::isUseNestedParentGroups).orElse(false);
         nestedSearchFieldsContainer.setVisible(useNestedActivated);
         final AjaxCheckBox useNestedCheckbox = new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

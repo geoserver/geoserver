@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
@@ -13,6 +14,7 @@ import org.apache.wicket.model.IModel;
 /** Serializable collection implementation backed by a String list wicket IModel. */
 class ListModelCollection implements Collection<String>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     IModel<List<String>> markFactoryList;

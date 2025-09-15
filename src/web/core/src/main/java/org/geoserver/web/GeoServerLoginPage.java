@@ -42,8 +42,7 @@ public class GeoServerLoginPage extends GeoServerBasePage {
         try {
             if (parameters.get("error").toBoolean()) {
                 Exception exception = getAuthenticationException();
-                if (exception instanceof ConcurrentAuthenticationException) {
-                    ConcurrentAuthenticationException cae = (ConcurrentAuthenticationException) exception;
+                if (exception instanceof ConcurrentAuthenticationException cae) {
                     error(new ParamResourceModel("concurrentAuthenticationError", this, cae.getCount()).getString());
                 } else {
                     error(new ParamResourceModel("error", this).getString());
@@ -66,8 +65,8 @@ public class GeoServerLoginPage extends GeoServerBasePage {
         }
 
         Object exception = session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-        if (exception instanceof AuthenticationException) {
-            return (AuthenticationException) exception;
+        if (exception instanceof AuthenticationException authenticationException) {
+            return authenticationException;
         } else {
             return null;
         }

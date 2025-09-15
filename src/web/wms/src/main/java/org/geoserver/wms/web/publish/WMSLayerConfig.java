@@ -6,6 +6,7 @@
 package org.geoserver.wms.web.publish;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
     static final Logger LOGGER = Logging.getLogger(WMSLayerConfig.class);
 
+    @Serial
     private static final long serialVersionUID = -2895136226805357532L;
 
     public WMSLayerConfig(String id, IModel<LayerInfo> layerModel) {
@@ -92,6 +94,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new LegendGraphicAjaxUpdater(defStyleImg, defaultStyleModel);
 
         defaultStyle.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = -4098934889965471248L;
 
             @Override
@@ -105,6 +108,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 LiveCollectionModel.set(new PropertyModel<>(layerModel, "styles"));
         Palette<StyleInfo> extraStyles =
                 new Palette<>("extraStyles", stylesModel, styles, new StyleNameRenderer(), 10, false) {
+                    @Serial
                     private static final long serialVersionUID = -3494299396410932090L;
 
                     /** Override otherwise the header is not i18n'ized */
@@ -145,6 +149,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
     private static class InterpolationRenderer extends ChoiceRenderer<WMSInterpolation> {
 
+        @Serial
         private static final long serialVersionUID = 4230274692882585457L;
 
         private Component parent;
@@ -284,6 +289,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     private static class ScalesValidator implements IValidator<Double> {
 
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 1349568700386246273L;
 
         TextField<Double> minScale;

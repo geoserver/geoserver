@@ -5,6 +5,7 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +24,7 @@ import org.geotools.util.Version;
  */
 public class CapabilitiesHomePagePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -102,6 +104,7 @@ public class CapabilitiesHomePagePanel extends Panel {
         });
 
         ListView<CapsInfo> view = new ListView<>("services", capsLinks) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

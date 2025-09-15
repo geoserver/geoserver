@@ -5,6 +5,7 @@
 package org.geoserver.security.web.url;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -52,6 +53,7 @@ public class URLChecksPage extends GeoServerSecuredPage {
     GeoServerTablePanel<AbstractURLCheck> table;
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 5963434654817570467L;
 
     public URLChecksPage() throws Exception {
@@ -175,6 +177,7 @@ public class URLChecksPage extends GeoServerSecuredPage {
                 dialog.setDefaultModel(getDefaultModel());
 
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -254,6 +257,7 @@ public class URLChecksPage extends GeoServerSecuredPage {
         dialog.setDefaultModel(getDefaultModel());
 
         dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

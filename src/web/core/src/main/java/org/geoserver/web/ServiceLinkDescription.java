@@ -4,6 +4,7 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import org.geotools.util.Version;
  * <p>This description is a model object for the {@link ServicesPanel}.
  */
 public class ServiceLinkDescription implements Serializable, Comparable<ServiceLinkDescription> {
+    @Serial
     private static final long serialVersionUID = -5600492358023139816L;
 
     /** Service type, example {@code WMS}, {@code WFS}, {@code Features}, ... */

@@ -6,6 +6,7 @@
 
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,10 +28,12 @@ import org.geowebcache.filter.parameters.IntegerParameterFilter;
  */
 public class IntegerParameterFilterSubform extends AbstractParameterFilterSubform<IntegerParameterFilter> {
 
+    @Serial
     private static final long serialVersionUID = 4625052381807389891L;
 
     private static final IConverter<Integer> INTEGER = new IConverter<>() {
 
+        @Serial
         private static final long serialVersionUID = -998131942023964739L;
 
         @Override
@@ -56,6 +59,7 @@ public class IntegerParameterFilterSubform extends AbstractParameterFilterSubfor
 
     private static final IConverter<List<Integer>> CONVERT = new IConverter<>() {
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -95,6 +99,7 @@ public class IntegerParameterFilterSubform extends AbstractParameterFilterSubfor
         add(defaultValue);
 
         final TextArea<List<Integer>> values = new TextArea<>("values", new PropertyModel<>(model, "values")) {
+            @Serial
             private static final long serialVersionUID = 1397063859210766872L;
 
             @SuppressWarnings("unchecked")
@@ -110,6 +115,7 @@ public class IntegerParameterFilterSubform extends AbstractParameterFilterSubfor
         add(values);
 
         final Component threshold = new TextField<Integer>("threshold", new PropertyModel<>(model, "threshold")) {
+            @Serial
             private static final long serialVersionUID = -3975284862791672686L;
 
             @SuppressWarnings("unchecked")

@@ -12,6 +12,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -62,6 +63,7 @@ import org.geotools.util.logging.Logging;
 // TODO: WICKET 9 test this page
 public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeaderContributor {
 
+    @Serial
     private static final long serialVersionUID = -8742721113748106000L;
 
     static final Logger LOGGER = Logging.getLogger(OpenLayersPreviewPanel.class);
@@ -84,6 +86,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         // Change layer link
         PropertyModel<String> layerNameModel = new PropertyModel<>(parent.getLayerModel(), "prefixedName");
         add(new SimpleAjaxLink<>("change.layer", layerNameModel) {
+            @Serial
             private static final long serialVersionUID = 7341058018479354596L;
 
             @Override

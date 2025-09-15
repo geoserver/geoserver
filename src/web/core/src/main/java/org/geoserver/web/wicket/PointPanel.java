@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
@@ -23,6 +24,7 @@ import org.locationtech.jts.geom.Point;
  * @author Andrea Aime, GeoSolutions
  */
 public class PointPanel extends FormComponentPanel<Point> {
+    @Serial
     private static final long serialVersionUID = -1046819530873258172L;
 
     GeometryFactory gf = new GeometryFactory();

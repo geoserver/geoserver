@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.io.StringReader;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -77,7 +78,9 @@ import org.geotools.util.logging.Logging;
  */
 // TODO WICKET8 - Verify this page works OK
 public class StyleAdminPanel extends StyleEditTabPanel {
+    @Serial
     private static final long serialVersionUID = -2443344473474977026L;
+
     private static final Logger LOGGER = Logging.getLogger(StyleAdminPanel.class);
 
     protected TextField<String> nameTextField;
@@ -176,6 +179,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         formatChoice =
                 new Select2DropDownChoice<>("format", formatBinding, new StyleFormatsModel(), new ChoiceRenderer<>() {
 
+                    @Serial
                     private static final long serialVersionUID = 2064887235303504013L;
 
                     @Override
@@ -190,13 +194,13 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                 });
         formatChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
+            @Serial
             private static final long serialVersionUID = -8372146231225388561L;
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.appendJavaScript(String.format(
-                        "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }",
-                        stylePage.styleHandler().getCodeMirrorEditMode()));
+                target.appendJavaScript("if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }"
+                        .formatted(stylePage.styleHandler().getCodeMirrorEditMode()));
             }
         });
         add(formatChoice);
@@ -224,6 +228,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         templates.setOutputMarkupId(true);
         templates.add(new AjaxFormComponentUpdatingBehavior("change") {
 
+            @Serial
             private static final long serialVersionUID = -6649152103570059645L;
 
             @Override
@@ -244,6 +249,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         styles.setOutputMarkupId(true);
         styles.add(new AjaxFormComponentUpdatingBehavior("change") {
 
+            @Serial
             private static final long serialVersionUID = 8098121930876372129L;
 
             @Override
@@ -274,6 +280,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         add(legendContainer);
         this.legendImg = new Image("legendImg", new AbstractResource() {
 
+            @Serial
             private static final long serialVersionUID = -6932528694575832606L;
 
             @Override
@@ -309,6 +316,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
     protected Component previewLink() {
         return new GeoServerAjaxFormLink("preview", stylePage.styleForm) {
 
+            @Serial
             private static final long serialVersionUID = 7404304424029960594L;
 
             @Override
@@ -399,6 +407,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
     protected AjaxSubmitLink generateLink() {
         return new ConfirmOverwriteSubmitLink("generate") {
 
+            @Serial
             private static final long serialVersionUID = 55921414750155395L;
 
             @Override
@@ -419,9 +428,9 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                                 stylePage.styleHandler(),
                                 template,
                                 getStylePage().getStyleInfo().getName())));
-                        target.appendJavaScript(String.format(
-                                "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }",
-                                stylePage.styleHandler().getCodeMirrorEditMode()));
+                        target.appendJavaScript(
+                                "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }"
+                                        .formatted(stylePage.styleHandler().getCodeMirrorEditMode()));
                         clearFeedbackMessages();
                     } catch (Exception e) {
                         clearFeedbackMessages();
@@ -439,6 +448,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
     protected AjaxSubmitLink copyLink() {
         return new ConfirmOverwriteSubmitLink("copy") {
 
+            @Serial
             private static final long serialVersionUID = -6388040033082157163L;
 
             @Override
@@ -455,9 +465,9 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                         if (formatChoice.isEnabled()) {
                             formatChoice.setModelObject(style.getFormat());
                         }
-                        target.appendJavaScript(String.format(
-                                "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }",
-                                stylePage.styleHandler().getCodeMirrorEditMode()));
+                        target.appendJavaScript(
+                                "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }"
+                                        .formatted(stylePage.styleHandler().getCodeMirrorEditMode()));
                         clearFeedbackMessages();
                     } catch (Exception e) {
                         clearFeedbackMessages();
@@ -473,6 +483,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
     AjaxSubmitLink uploadLink() {
         return new ConfirmOverwriteSubmitLink("upload", stylePage.styleForm) {
 
+            @Serial
             private static final long serialVersionUID = 658341311654601761L;
 
             @Override
@@ -487,9 +498,9 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                     IOUtils.copy(upload.getInputStream(), bout);
                     stylePage.editor.reset();
                     stylePage.setRawStyle(new InputStreamReader(new ByteArrayInputStream(bout.toByteArray()), UTF_8));
-                    target.appendJavaScript(String.format(
-                            "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }",
-                            stylePage.styleHandler().getCodeMirrorEditMode()));
+                    target.appendJavaScript(
+                            "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }"
+                                    .formatted(stylePage.styleHandler().getCodeMirrorEditMode()));
                     clearFeedbackMessages();
                 } catch (IOException e) {
                     throw new WicketRuntimeException(e);
@@ -517,6 +528,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
 
     class ConfirmOverwriteSubmitLink extends AjaxSubmitLink {
 
+        @Serial
         private static final long serialVersionUID = 2673499149884774636L;
 
         public ConfirmOverwriteSubmitLink(String id) {
@@ -532,6 +544,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             super.updateAjaxAttributes(attributes);
             attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                 /** serialVersionUID */
+                @Serial
                 private static final long serialVersionUID = 8637613472102572505L;
 
                 @Override

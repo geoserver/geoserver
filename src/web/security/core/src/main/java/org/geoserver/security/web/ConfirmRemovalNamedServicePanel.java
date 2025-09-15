@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.ows.util.OwsUtils;
@@ -13,6 +14,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 public class ConfirmRemovalNamedServicePanel<T extends SecurityNamedServiceConfig>
         extends AbstractConfirmRemovalPanel<T> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public ConfirmRemovalNamedServicePanel(String id, List<T> roots) {

@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import java.io.Serial;
 import java.util.Arrays;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.wicket.AttributeModifier;
@@ -26,6 +27,7 @@ import org.geowebcache.config.FileBlobStoreInfo;
  */
 public class FileBlobStorePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -8237328668463257329L;
 
     public FileBlobStorePanel(String id, final IModel<FileBlobStoreInfo> configModel) {

@@ -8,6 +8,7 @@ package org.geoserver.web;
 import static org.geoserver.catalog.Predicates.acceptAll;
 
 import com.google.common.base.Stopwatch;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -206,6 +207,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             capsProviders = Model.ofList(new ArrayList<>());
         }
         ListView<CapabilitiesHomePageLinkProvider> capsView = new ListView<>("providedCaps", capsProviders) {
+            @Serial
             private static final long serialVersionUID = -4859682164111586340L;
 
             @Override
@@ -332,6 +334,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
         if (ajax) {
             workspaceField.add(new AjaxFormComponentUpdatingBehavior("change") {
+                @Serial
                 private static final long serialVersionUID = 5871428962450362668L;
 
                 @Override
@@ -347,6 +350,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         layerField.setRequired(false);
         if (ajax) {
             layerField.add(new AjaxFormComponentUpdatingBehavior("change") {
+                @Serial
                 private static final long serialVersionUID = 5871428962450362669L;
 
                 @Override
@@ -470,6 +474,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 getContentProviders(GeoServerHomePageContentProvider.class);
 
         return new ListView<>("contributedContent", contentProviders) {
+            @Serial
             private static final long serialVersionUID = 3756653714268296207L;
 
             @Override
@@ -637,6 +642,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
     private <T> IModel<List<T>> getContentProviders(final Class<T> providerClass) {
         IModel<List<T>> providersModel = new LoadableDetachableModel<>() {
+            @Serial
             private static final long serialVersionUID = 3042209889224234562L;
 
             @Override

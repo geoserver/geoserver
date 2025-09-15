@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import org.geowebcache.locks.LockProvider;
 import org.springframework.context.ApplicationContext;
 
 public class CachingOptionsPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private CheckGroup<String> otherFormatsGroup;
@@ -65,6 +67,7 @@ public class CachingOptionsPanel extends Panel {
         container.add(configs);
 
         autoCacheLayers.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -112,6 +115,7 @@ public class CachingOptionsPanel extends Panel {
             vectorFormatsGroup = new CheckGroup<>("vectorFormatsGroup", vectorFormatsModel);
             configs.add(vectorFormatsGroup);
             ListView<String> formatsList = new ListView<>("vectorFromats", formats) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -132,6 +136,7 @@ public class CachingOptionsPanel extends Panel {
             rasterFormatsGroup = new CheckGroup<>("rasterFormatsGroup", rasterFormatsModel);
             configs.add(rasterFormatsGroup);
             ListView<String> formatsList = new ListView<>("rasterFromats", formats) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -150,6 +155,7 @@ public class CachingOptionsPanel extends Panel {
             otherFormatsGroup = new CheckGroup<>("otherFormatsGroup", otherFormatsModel);
             configs.add(otherFormatsGroup);
             ListView<String> formatsList = new ListView<>("otherFromats", formats) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -176,6 +182,7 @@ public class CachingOptionsPanel extends Panel {
 
         cachedGridsets.add(new IValidator<>() {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -190,6 +197,7 @@ public class CachingOptionsPanel extends Panel {
         });
 
         class FormatsValidator implements IValidator<Collection<String>> {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

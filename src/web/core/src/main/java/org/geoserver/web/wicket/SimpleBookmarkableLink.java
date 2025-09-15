@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -19,7 +20,9 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
  * @author Andrea Aime - OpenGeo
  */
 public class SimpleBookmarkableLink extends Panel {
+    @Serial
     private static final long serialVersionUID = -7688902365198291065L;
+
     BookmarkablePageLink<?> link;
     Label label;
 

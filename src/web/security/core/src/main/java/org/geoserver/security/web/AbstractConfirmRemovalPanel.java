@@ -6,6 +6,7 @@
 package org.geoserver.security.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.apache.wicket.model.Model;
 
 public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     List<T> roots;

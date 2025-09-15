@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -49,6 +50,8 @@ import org.geotools.util.logging.Logging;
 @SuppressWarnings("serial")
 public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
     private static Logger LOGGER = Logging.getLogger(CRSPanel.class);
+
+    @Serial
     private static final long serialVersionUID = -6677103383336166008L;
 
     private static Behavior READ_ONLY = new AttributeModifier("readonly", new Model<>("readonly"));

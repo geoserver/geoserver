@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
@@ -17,11 +18,13 @@ import org.apache.wicket.util.convert.IConverter;
  * @author Jody Garnett (Boundless)
  */
 public class PercentageTextField extends TextField<Double> {
+    @Serial
     private static final long serialVersionUID = -4589385113632745745L;
 
     private int maximumFractionDigits = 1;
 
     private IConverter<Double> percentConverter = new IConverter<>() {
+        @Serial
         private static final long serialVersionUID = -8409029711658542273L;
 
         @Override

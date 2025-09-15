@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.publish;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -22,6 +23,7 @@ import org.geoserver.catalog.PublishedInfo;
  * @author Niels Charlier
  */
 public class PublishedConfigurationPanel<T extends PublishedInfo> extends Panel {
+    @Serial
     private static final long serialVersionUID = 4881474189619124359L;
 
     public PublishedConfigurationPanel(String id, IModel<? extends T> model) {

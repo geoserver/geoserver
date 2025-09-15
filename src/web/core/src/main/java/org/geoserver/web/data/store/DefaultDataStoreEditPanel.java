@@ -7,6 +7,7 @@ package org.geoserver.web.data.store;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ import org.xml.sax.EntityResolver;
 @SuppressWarnings("serial")
 public class DefaultDataStoreEditPanel extends StoreEditPanel {
 
+    @Serial
     private static final long serialVersionUID = -1969433619372747193L;
 
     /**
@@ -116,6 +118,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
         final IModel<Map<String, Serializable>> paramsModel = new PropertyModel<>(model, "connectionParameters");
 
         ListView<String> paramsList = new ListView<>("parameters", keys) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -246,8 +249,8 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
     private boolean isEmpty(Object value) {
         if (value == null) {
             return true;
-        } else if (value instanceof String) {
-            return ((String) value).isEmpty();
+        } else if (value instanceof String string) {
+            return string.isEmpty();
         } else {
             return false;
         }

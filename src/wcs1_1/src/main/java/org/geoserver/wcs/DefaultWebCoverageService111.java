@@ -527,8 +527,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             if (coverage != null) {
                 CoverageCleanerCallback.addCoverages(coverage);
             }
-            if (e instanceof WcsException) {
-                throw (WcsException) e;
+            if (e instanceof WcsException exception) {
+                throw exception;
             } else {
                 throw new WcsException(e);
             }

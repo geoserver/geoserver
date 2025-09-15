@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs2_0.exception;
 
+import java.io.Serial;
 import org.geoserver.platform.OWS20Exception;
 
 /**
@@ -17,6 +18,7 @@ import org.geoserver.platform.OWS20Exception;
  */
 public class WCS20Exception extends OWS20Exception {
     /** */
+    @Serial
     private static final long serialVersionUID = -6110652531274829497L;
 
     public static class WCS20ExceptionCode extends OWS20Exception.OWSExceptionCode {

@@ -177,8 +177,8 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         //
         TimeSequenceType timeSequence = null;
         Object time = kvp.get("TIME");
-        if (time != null && time instanceof TimeSequenceType) {
-            timeSequence = (TimeSequenceType) time;
+        if (time != null && time instanceof TimeSequenceType type) {
+            timeSequence = type;
         } else if (time != null) {
             timeSequence = Wcs10Factory.eINSTANCE.createTimeSequenceType();
             if (time instanceof Collection) {
@@ -209,7 +209,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
             //
 
             // get W and H
-            int width = w instanceof Integer ? ((Integer) w) : Integer.parseInt((String) w);
+            int width = w instanceof Integer i ? i : Integer.parseInt((String) w);
             int height = w instanceof Integer ? ((Integer) h) : Integer.parseInt((String) h);
             grid.getAxisName().add("x");
             grid.getAxisName().add("y");
@@ -346,8 +346,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
             final TimePositionType timePosition = Gml4wcsFactory.eINSTANCE.createTimePositionType();
             timePosition.setValue(tPos);
             timeSequence.getTimePosition().add(timePosition);
-        } else if (tPos instanceof DateRange) {
-            DateRange range = (DateRange) tPos;
+        } else if (tPos instanceof DateRange range) {
             final TimePeriodType timePeriod = Wcs10Factory.eINSTANCE.createTimePeriodType();
             final TimePositionType start = Gml4wcsFactory.eINSTANCE.createTimePositionType();
             start.setValue(range.getMinValue());
@@ -404,8 +403,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
     /** */
     @SuppressWarnings("unchecked")
     private void checkTypeAxisRange(final RangeSubsetType rangeSubset, Object axis, String axisName) {
-        if (axis instanceof String) {
-            String bands = (String) axis;
+        if (axis instanceof String bands) {
             if (bands != null) {
                 if (bands.contains("/")) {
                     List<String> unparsed = KvpUtils.readFlat(bands, new Tokenizer("/"));
@@ -473,12 +471,11 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
             axisSubset.getSingleValue().add(singleValue);
 
             rangeSubset.getAxisSubset().add(axisSubset);
-        } else if (axis instanceof Collection) {
+        } else if (axis instanceof Collection<?> collection) {
             AxisSubsetType axisSubset = Wcs10Factory.eINSTANCE.createAxisSubsetType();
             axisSubset.setName(axisName);
-            for (Object value : (Collection<?>) axis) {
-                if (value instanceof NumberRange) {
-                    NumberRange<?> range = (NumberRange<?>) value;
+            for (Object value : collection) {
+                if (value instanceof NumberRange<?> range) {
                     IntervalType interval = Wcs10Factory.eINSTANCE.createIntervalType();
                     TypedLiteralType min = Wcs10Factory.eINSTANCE.createTypedLiteralType();
                     TypedLiteralType max = Wcs10Factory.eINSTANCE.createTypedLiteralType();

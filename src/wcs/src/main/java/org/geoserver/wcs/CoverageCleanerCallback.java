@@ -30,10 +30,10 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
     public Object operationExecuted(Request request, Operation operation, Object result) {
         // collect the grid coverages that we'll have to dispose of at the
         // end of the request
-        if (result instanceof GridCoverage) {
-            addCoverages((GridCoverage) result);
-        } else if (result instanceof GridCoverage[]) {
-            addCoverages((GridCoverage[]) result);
+        if (result instanceof GridCoverage coverage) {
+            addCoverages(coverage);
+        } else if (result instanceof GridCoverage[] coverages) {
+            addCoverages(coverages);
         }
 
         return result;
@@ -57,11 +57,11 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
     /** Cleans up a coverage and its internal rendered image */
     public static void disposeCoverage(GridCoverage coverage) {
         RenderedImage ri = coverage.getRenderedImage();
-        if (coverage instanceof GridCoverage2D) {
-            ((GridCoverage2D) coverage).dispose(true);
+        if (coverage instanceof GridCoverage2D coverage2D) {
+            coverage2D.dispose(true);
         }
-        if (ri instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+        if (ri instanceof PlanarImage image) {
+            ImageUtilities.disposePlanarImageChain(image);
         }
     }
 

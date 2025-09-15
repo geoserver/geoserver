@@ -102,8 +102,8 @@ public abstract class ServiceDescriptionProvider {
         if (layerInfo != null && !layerInfo.isEnabled()) {
             return false;
         }
-        if (layerInfo instanceof LayerInfo) {
-            ResourceInfo resourceInfo = ((LayerInfo) layerInfo).getResource();
+        if (layerInfo instanceof LayerInfo info) {
+            ResourceInfo resourceInfo = info.getResource();
 
             // check what services are available for this kind of resource
             ServiceResourceProvider provider = GeoServerExtensions.bean(ServiceResourceProvider.class);

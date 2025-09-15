@@ -5,6 +5,7 @@
 package org.geoserver.security.web.url;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -128,6 +129,7 @@ public class RegexCheckPage extends GeoServerSecuredPage {
     private SubmitLink submitLink() {
         return new SubmitLink("submit") {
 
+            @Serial
             private static final long serialVersionUID = -3462848930497720229L;
 
             @Override

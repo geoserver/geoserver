@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
@@ -30,6 +31,7 @@ import org.geowebcache.diskquota.storage.StorageUnit;
 
 public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 75816375328629448L;
 
     public DiskQuotaSettingsPage() throws Exception {
@@ -89,6 +91,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
         form.add(diskQuotaConfigPanel);
 
         form.add(new Button("submit") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -141,6 +144,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
             }
         });
         form.add(new GeoServerAjaxFormLink("cancel") {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

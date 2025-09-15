@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +18,7 @@ import org.apache.wicket.util.convert.IConverter;
  * @author Andrea Aime - GeoSolutions
  */
 public class CommaSeparatedListConverter implements IConverter<List<String>> {
+    @Serial
     private static final long serialVersionUID = -2772030358671687777L;
 
     @Override

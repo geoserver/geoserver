@@ -7,6 +7,7 @@ package org.geoserver.security.web.auth;
 
 import static org.geoserver.security.web.auth.SecurityFilterChainProvider.NAME;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
@@ -83,6 +84,7 @@ public class SecurityFilterChainsPanel extends Panel {
         SecurityFilterChainProvider dataProvider = new SecurityFilterChainProvider(secMgrConfig);
         add(
                 tablePanel = new SecurityFilterChainTablePanel("table", dataProvider) {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     //            @Override
@@ -117,8 +119,7 @@ public class SecurityFilterChainsPanel extends Panel {
      */
     void handleException(Exception e, Component target) {
         Serializable msg = null;
-        if (e instanceof SecurityConfigException) {
-            SecurityConfigException sce = (SecurityConfigException) e;
+        if (e instanceof SecurityConfigException sce) {
             msg = new StringResourceModel("security." + sce.getId())
                     .setParameters(sce.getArgs())
                     .getObject();
@@ -152,9 +153,9 @@ public class SecurityFilterChainsPanel extends Panel {
                             .getRequestChainByName(chainName);
 
                     SecurityFilterChainPage editPage = null;
-                    if (chain instanceof VariableFilterChain)
+                    if (chain instanceof VariableFilterChain filterChain)
                         editPage = new SecurityVariableFilterChainPage(
-                                ((VariableFilterChain) chain), SecurityFilterChainsPanel.this.secMgrConfig, false);
+                                filterChain, SecurityFilterChainsPanel.this.secMgrConfig, false);
                     else
                         editPage =
                                 new SecurityFilterChainPage(chain, SecurityFilterChainsPanel.this.secMgrConfig, false);

@@ -7,6 +7,7 @@ package org.geoserver.gwc.web.gridset;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,6 +44,7 @@ import org.geowebcache.grid.SRS;
 
 public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
 
+    @Serial
     private static final long serialVersionUID = 5098470663723800345L;
 
     private ListView<Grid> grids;
@@ -57,6 +59,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
 
     private static class TileMatrixSetValidator implements IValidator<List<Grid>> {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -139,6 +142,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
         // update the table when this option changes so either the resolutions or scales column is
         // enabled
         resolutionsOrScales.add(new AjaxFormChoiceComponentUpdatingBehavior() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -231,7 +235,9 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
     }
 
     private class TilesModel implements IModel<String> {
+        @Serial
         private static final long serialVersionUID = 1L;
+
         private final TextField<Double> resolution;
 
         public TilesModel(TextField<Double> resolution) {
@@ -271,7 +277,9 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
 
     private class GridLevelsListView extends ListView<Grid> {
 
+        @Serial
         private static final long serialVersionUID = 1L;
+
         private final WebMarkupContainer container;
         private final IModel<Boolean> preserveesolutionsModel;
 
@@ -321,6 +329,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                 removeLink = new Label("removeLink", "");
             } else {
                 removeLink = new ImageAjaxLink<Void>("removeLink", GWCIconFactory.DELETE_ICON) {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -342,6 +351,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
             scale.setEnabled(!isResolutionsPreserved);
 
             resolution.add(new AjaxFormComponentUpdatingBehavior("blur") {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -366,6 +376,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
             });
 
             scale.add(new AjaxFormComponentUpdatingBehavior("blur") {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override

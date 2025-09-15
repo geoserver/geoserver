@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ public class WarningSkipsPanel extends Panel {
 
         final List<WarningType> allWarningSkips = Arrays.asList(WarningType.values());
         ListView<WarningType> warningSkips = new ListView<>("warningSkips", allWarningSkips) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

@@ -9,6 +9,7 @@ import static org.geoserver.gwc.web.layer.UnconfiguredCachedLayersProvider.ENABL
 import static org.geoserver.gwc.web.layer.UnconfiguredCachedLayersProvider.NAME;
 import static org.geoserver.gwc.web.layer.UnconfiguredCachedLayersProvider.TYPE;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -42,6 +43,7 @@ import org.geowebcache.layer.TileLayer;
  */
 public class NewCachedLayerPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 6458510742445385219L;
 
     private UnconfiguredCachedLayersProvider provider = new UnconfiguredCachedLayersProvider();
@@ -58,6 +60,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
 
         table = new GeoServerTablePanel<>("table", provider, true) {
 
+            @Serial
             private static final long serialVersionUID = -5260899839139961722L;
 
             @Override
@@ -143,6 +146,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
      */
     private class BulkCachedLayerConfigurationLink extends AjaxLink<String> {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         public BulkCachedLayerConfigurationLink(String string) {
@@ -168,6 +172,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
             // if there is something to cancel, let's warn the user about what
             // could go wrong, and if the user accepts, let's delete what's needed
             dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override

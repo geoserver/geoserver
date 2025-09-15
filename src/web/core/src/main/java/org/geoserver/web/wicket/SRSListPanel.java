@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -48,7 +49,9 @@ import org.geoserver.web.wicket.SRSProvider.SRS;
  */
 public abstract class SRSListPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 3777350932084160337L;
+
     GeoServerTablePanel<SRS> table;
 
     /** Creates the new SRS list panel. */
@@ -62,6 +65,7 @@ public abstract class SRSListPanel extends Panel {
 
         table = new GeoServerTablePanel<>("table", srsProvider) {
 
+            @Serial
             private static final long serialVersionUID = 6182776235846912573L;
 
             @Override
@@ -106,6 +110,7 @@ public abstract class SRSListPanel extends Panel {
     protected Component createLinkForCode(String linkId, IModel<SRS> itemModel) {
         return new SimpleAjaxLink<>(linkId, (IModel<Object>) SRSProvider.IDENTIFIER.getModel(itemModel)) {
 
+            @Serial
             private static final long serialVersionUID = -1330723116026268069L;
 
             @Override

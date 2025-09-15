@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -18,6 +19,7 @@ import org.apache.wicket.request.resource.ResourceReference;
  */
 public class CachingImage extends Image {
 
+    @Serial
     private static final long serialVersionUID = -5788028224598001515L;
 
     /**

@@ -189,11 +189,11 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
             } else {
                 noAttributeMessage.setVisible(false);
             }
-        } else if (resource instanceof CoverageInfo) {
+        } else if (resource instanceof CoverageInfo info) {
             attContainer.setVisible(false);
             attribute.setRequired(false);
             try {
-                GridCoverageReader reader = ((CoverageInfo) resource).getGridCoverageReader(null, null);
+                GridCoverageReader reader = info.getGridCoverageReader(null, null);
                 if (Number.class.isAssignableFrom(getAttributeType())) {
                     String elev = reader.getMetadataValue(GridCoverage2DReader.HAS_ELEVATION_DOMAIN);
                     if (!Boolean.parseBoolean(elev)) {
@@ -675,9 +675,8 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
     List<String> getAttributesOfType(ResourceInfo resource, Class<?> type) {
         List<String> result = new ArrayList<>();
 
-        if (resource instanceof FeatureTypeInfo) {
+        if (resource instanceof FeatureTypeInfo ft) {
             try {
-                FeatureTypeInfo ft = (FeatureTypeInfo) resource;
                 for (PropertyDescriptor pd : ft.getFeatureType().getDescriptors()) {
                     if (type.isAssignableFrom(pd.getType().getBinding())) {
                         result.add(pd.getName().getLocalPart());
@@ -699,9 +698,8 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
      * @return Class binded to the attribute
      */
     Class<?> getAttributeType(ResourceInfo resource, String name) {
-        if (resource instanceof FeatureTypeInfo) {
+        if (resource instanceof FeatureTypeInfo ft) {
             try {
-                FeatureTypeInfo ft = (FeatureTypeInfo) resource;
                 PropertyDescriptor descriptor = ft.getFeatureType().getDescriptor(name);
                 if (descriptor != null) {
                     return descriptor.getType().getBinding();

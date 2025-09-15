@@ -1,0 +1,68 @@
+name: Linux JDK GitHub CI
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**/src/main/resources/GeoServerApplication_*.properties'
+      - '!**/src/main/resources/GeoServerApplication_fr.properties'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  MAVEN_OPTS: -Xmx1024m -Daether.connector.basic.threads=8 -Daether.metadataResolver.threads=8 -Daether.syncContext.named.time=120 -Daether.syncContext.named.factory=file-lock -Daether.syncContext.named.nameMapper=file-gav -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true -Daether.syncContext.named.time=120 -Daether.syncContext.named.time.unit=SECONDS -Daether.syncContext.named.factory=noop
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        # italian has . and , usage opposite to english, will add more languages as time allows for testing and fixing
+        locale: [it_IT.UTF-8]
+        jdk: [ 17]
+        dist: [ 'temurin' ]
+        os: [ 'ubuntu-22.04' ]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        # 500 commits, set to 0 to get all
+        fetch-depth: 500
+    - name: Set up JDK ${{ matrix.jdk }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ matrix.jdk }}
+        distribution: ${{ matrix.dist }}
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: 3.9.8
+    - name: Maven repository caching
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2/repository
+        key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          gs-${{ runner.os }}-maven-
+    - name: Install locales
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y locales
+        sudo locale-gen en_US.UTF-8 it_IT.UTF-8 tr_TR.UTF-8
+        sudo update-locale
+    - name: Set locale
+      run: |
+        echo "LANG=${{ matrix.locale }}" >> $GITHUB_ENV
+        echo "LC_ALL=${{ matrix.locale }}" >> $GITHUB_ENV
+        echo "LC_NUMERIC=${{ matrix.locale }}" >> $GITHUB_ENV
+        locale
+    - name: Build with Maven
+      run: |
+        mvn --version
+        mvn -B -ntp -U -T1C -fae -Prelease -f src/pom.xml clean install
+    - name: Remove SNAPSHOT jars from repository
+      run: |
+        find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
+

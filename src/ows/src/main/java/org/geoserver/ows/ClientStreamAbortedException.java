@@ -6,6 +6,7 @@ package org.geoserver.ows;
 
 import com.google.common.base.Throwables;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.UncheckedIOException;
 
 /**
@@ -21,6 +22,7 @@ import java.io.UncheckedIOException;
  */
 public final class ClientStreamAbortedException extends IOException {
 
+    @Serial
     private static final long serialVersionUID = -812677957232110980L;
 
     public ClientStreamAbortedException() {

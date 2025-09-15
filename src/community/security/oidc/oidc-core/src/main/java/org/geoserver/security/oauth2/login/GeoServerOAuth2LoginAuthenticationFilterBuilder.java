@@ -78,6 +78,8 @@ import org.springframework.util.Assert;
  */
 public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServerOAuth2ClientRegistrationId {
 
+    public final String DEFAULT_AUTHORIZATION_REQUEST_BASE_URI = "/web/oauth2/authorization";
+
     /** Filter types required for GeoServer */
     private static final List<Class<?>> REQ_FILTER_TYPES = asList(
             OAuth2AuthorizationRequestRedirectFilter.class,
@@ -165,6 +167,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
             oauthConfig.userInfoEndpoint().oidcUserService(getOidcUserService());
             oauthConfig.authorizationEndpoint().authorizationRequestResolver(getAuthorizationRequestResolver());
             oauthConfig.tokenEndpoint().accessTokenResponseClient(getAccessTokenResponseClient());
+            oauthConfig.loginProcessingUrl("/web/login/oauth2/code/*");
         });
 
         httpSecurityCustomizer.accept(http);

@@ -58,7 +58,7 @@
  		<property name="name" value="openidconnect-google" />
  		<property name="icon" value="google.png" />
  		<property name="filterClass" value="org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter" />
- 		<property name="loginPath" value="/oauth2/authorization/google" />
+ 		<property name="loginPath" value="/web/oauth2/authorization/google" />
  		<property name="method" value="GET" />
  		<property name="enabled" value="false" />
  	</bean>
@@ -71,7 +71,7 @@
         <property name="name" value="openidconnect-github" />
         <property name="icon" value="github.png" />
         <property name="filterClass" value="org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter" />
-        <property name="loginPath" value="/oauth2/authorization/gitHub" />
+        <property name="loginPath" value="/web/oauth2/authorization/gitHub" />
         <property name="method" value="GET" />
         <property name="enabled" value="false" />
     </bean>
@@ -84,7 +84,7 @@
         <property name="name" value="openidconnect-microsoft" />
         <property name="icon" value="microsoft.png" />
         <property name="filterClass" value="org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter" />
-        <property name="loginPath" value="/oauth2/authorization/microsoft" />
+        <property name="loginPath" value="/web/oauth2/authorization/microsoft" />
         <property name="method" value="GET" />
         <property name="enabled" value="false" />
     </bean>
@@ -97,7 +97,7 @@
         <property name="name" value="openidconnect-oidc" />
         <property name="icon" value="openid.png" />
         <property name="filterClass" value="org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter" />
-        <property name="loginPath" value="/oauth2/authorization/oidc" />
+        <property name="loginPath" value="/web/oauth2/authorization/oidc" />
         <property name="method" value="GET" />
         <property name="enabled" value="false" />
     </bean>

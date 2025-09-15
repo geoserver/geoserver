@@ -5,6 +5,7 @@
  */
 package org.geoserver.platform;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 public class ServiceException extends RuntimeException {
 
     /** Serial UID */
+    @Serial
     private static final long serialVersionUID = 7254349181794561723L;
 
     public static final String NEW_LINE = System.getProperty("line.separator");

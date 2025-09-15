@@ -23,12 +23,12 @@ public interface ExtensionPriority {
     /** Compares two implementations based on extension priority */
     Comparator<Object> COMPARATOR = (o1, o2) -> {
         int p1 = ExtensionPriority.LOWEST;
-        if (o1 instanceof ExtensionPriority) {
-            p1 = ((ExtensionPriority) o1).getPriority();
+        if (o1 instanceof ExtensionPriority priority) {
+            p1 = priority.getPriority();
         }
         int p2 = ExtensionPriority.LOWEST;
-        if (o2 instanceof ExtensionPriority) {
-            p2 = ((ExtensionPriority) o2).getPriority();
+        if (o2 instanceof ExtensionPriority priority) {
+            p2 = priority.getPriority();
         }
         return p1 - p2;
     };

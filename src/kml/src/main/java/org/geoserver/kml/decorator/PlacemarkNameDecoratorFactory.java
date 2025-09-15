@@ -60,8 +60,8 @@ public class PlacemarkNameDecoratorFactory implements KmlDecoratorFactory {
                 if (context.getCurrentSymbolizers() != null) {
                     StringBuffer label = new StringBuffer();
                     for (Symbolizer sym : context.getCurrentSymbolizers()) {
-                        if (sym instanceof TextSymbolizer) {
-                            Expression e = SLD.textLabel((TextSymbolizer) sym);
+                        if (sym instanceof TextSymbolizer symbolizer) {
+                            Expression e = SLD.textLabel(symbolizer);
                             if (e != null) {
                                 String value = e.evaluate(sf, String.class);
 

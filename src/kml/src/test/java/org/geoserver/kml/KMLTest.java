@@ -301,13 +301,16 @@ public class KMLTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(//kml:Placemark)", doc);
         assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/@id", doc);
         assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/kml:name", doc);
-        String expectedDescription = String.format("<h4>RoadSegments</h4>%n"
-                + "\n"
-                + "<ul class=\"textattributes\">\n"
-                + "  \n"
-                + "  <li><strong><span class=\"atr-name\">FID</span>:</strong> <span class=\"atr-value\">102</span></li>\n"
-                + "  <li><strong><span class=\"atr-name\">NAME</span>:</strong> <span class=\"atr-value\">Route 5</span></li>\n"
-                + "</ul>\n");
+        String expectedDescription =
+                """
+                <h4>RoadSegments</h4>%n
+                <ul class="textattributes">
+                 \s
+                  <li><strong><span class="atr-name">FID</span>:</strong> <span class="atr-value">102</span></li>
+                  <li><strong><span class="atr-name">NAME</span>:</strong> <span class="atr-value">Route 5</span></li>
+                </ul>
+                """
+                        .formatted();
         String actualDescription = xpath.evaluate("//kml:Placemark/kml:description", doc);
         assertEqualsIgnoreNewLineStyle(expectedDescription, actualDescription);
         // check look-at
@@ -834,13 +837,16 @@ public class KMLTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(//kml:Placemark)", doc);
         assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/@id", doc);
         assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/kml:name", doc);
-        String expectedDescription = String.format("<h4>RoadSegments</h4>%n"
-                + "\n"
-                + "<ul class=\"textattributes\">\n"
-                + "  \n"
-                + "  <li><strong><span class=\"atr-name\">FID</span>:</strong> <span class=\"atr-value\">102</span></li>\n"
-                + "  <li><strong><span class=\"atr-name\">NAME</span>:</strong> <span class=\"atr-value\">Route 5</span></li>\n"
-                + "</ul>\n");
+        String expectedDescription =
+                """
+                <h4>RoadSegments</h4>%n
+                <ul class="textattributes">
+                 \s
+                  <li><strong><span class="atr-name">FID</span>:</strong> <span class="atr-value">102</span></li>
+                  <li><strong><span class="atr-name">NAME</span>:</strong> <span class="atr-value">Route 5</span></li>
+                </ul>
+                """
+                        .formatted();
         String actualDescription = xpath.evaluate("//kml:Placemark/kml:description", doc);
         assertEqualsIgnoreNewLineStyle(expectedDescription, actualDescription);
         // check look-at

@@ -13,7 +13,7 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
-import javax.media.jai.RasterFactory;
+import org.eclipse.imagen.RasterFactory;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.CoverageFactoryFinder;

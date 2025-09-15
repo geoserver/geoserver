@@ -15,7 +15,7 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.MessageFormat;
-import javax.media.jai.PlanarImage;
+import org.eclipse.imagen.PlanarImage;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.Response;
 import org.geoserver.wms.WMSMapContent;

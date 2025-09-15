@@ -4,7 +4,6 @@
  */
 package org.geoserver.wcs.responses;
 
-import it.geosolutions.jaiext.range.NoDataContainer;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +26,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.measure.Unit;
-import javax.media.jai.iterator.RandomIter;
-import javax.media.jai.iterator.RandomIterFactory;
+import org.eclipse.imagen.iterator.RandomIter;
+import org.eclipse.imagen.iterator.RandomIterFactory;
+import org.eclipse.imagen.media.range.NoDataContainer;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geoserver.web.netcdf.DataPacking;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;

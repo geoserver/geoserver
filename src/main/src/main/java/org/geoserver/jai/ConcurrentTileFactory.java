@@ -5,7 +5,6 @@
  */
 package org.geoserver.jai;
 
-import com.sun.media.jai.util.DataBufferUtils;
 import java.awt.Point;
 import java.awt.image.ComponentSampleModel;
 import java.awt.image.DataBuffer;
@@ -24,9 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.TileFactory;
-import javax.media.jai.TileRecycler;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.eclipse.imagen.TileFactory;
+import org.eclipse.imagen.TileRecycler;
+import org.eclipse.imagen.media.util.DataBufferUtils;
 import org.geotools.util.logging.Logging;
 
 /**

@@ -19,7 +19,6 @@ import java.awt.image.DataBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
-import javax.imageio.spi.ImageReaderSpi;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -34,7 +33,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geoserver.wms.WMSInfo;
-import org.geotools.image.io.ImageIOExt;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -144,8 +142,6 @@ public class CustomDimensionsTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testGetMap() throws Exception {
-        ImageIOExt.allowNativeCodec("tif", ImageReaderSpi.class, false);
-
         setupRasterDimension(CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
         setExceptionsOnInvalidDimension(false);
 
@@ -194,8 +190,6 @@ public class CustomDimensionsTest extends WMSDimensionsTestSupport {
         wms.setMaxRequestedDimensionValues(2);
         gs.save(wms);
         try {
-            ImageIOExt.allowNativeCodec("tif", ImageReaderSpi.class, false);
-
             // check that we get data when requesting a correct value for custom dimension
             MockHttpServletResponse response = getAsServletResponse("wms?bbox="
                     + BBOX

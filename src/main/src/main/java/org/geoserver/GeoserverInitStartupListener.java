@@ -6,8 +6,6 @@
 package org.geoserver;
 
 import com.google.common.collect.Lists;
-import it.geosolutions.concurrent.ConcurrentTileCacheMultiMap;
-import it.geosolutions.jaiext.ConcurrentOperationRegistry;
 import java.beans.Introspector;
 import java.lang.reflect.Method;
 import java.sql.Driver;
@@ -30,17 +28,18 @@ import javax.imageio.spi.IIOServiceProvider;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageReaderWriterSpi;
 import javax.imageio.spi.ImageWriterSpi;
-import javax.media.jai.JAI;
-import javax.media.jai.OperationRegistry;
-import javax.media.jai.RegistryElementDescriptor;
-import javax.media.jai.RegistryMode;
-import javax.media.jai.remote.SerializableRenderedImage;
-import javax.media.jai.util.ImagingListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.OperationRegistry;
+import org.eclipse.imagen.RegistryElementDescriptor;
+import org.eclipse.imagen.RegistryMode;
+import org.eclipse.imagen.media.ConcurrentOperationRegistry;
+import org.eclipse.imagen.media.cache.ConcurrentTileCacheMultiMap;
+import org.eclipse.imagen.util.ImagingListener;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.logging.LoggingUtils.GeoToolsLoggingRedirection;
@@ -51,7 +50,6 @@ import org.geotools.api.referencing.AuthorityFactory;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.image.io.ImageIOExt;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.factory.AbstractAuthorityFactory;
@@ -77,6 +75,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
     private static final double DEFAULT_COMPARISON_TOLERANCE = 1e-8;
 
     @Override
+    @SuppressWarnings("PMD.CloseResource")
     public void contextInitialized(ServletContextEvent sce) {
         // enable JTS overlay-ng unless otherwise set (first thing, before JTS has a chance
         // to initialize itself)
@@ -161,11 +160,6 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         // IIORegistry leading to imageio plugins not being properly initialized
         ImageIO.scanForPlugins();
 
-        // in any case, the native png reader is worse than the pure java ones, so
-        // let's disable it (the native png writer is on the other side faster)...
-        ImageIOExt.allowNativeCodec("png", ImageReaderSpi.class, false);
-        ImageIOExt.allowNativeCodec("png", ImageWriterSpi.class, true);
-
         // remove the ImageIO JPEG200 readers/writes, they are outdated and not quite working
         // GeoTools has the GDAL and Kakadu ones which do work, removing these avoids the
         // registry russian roulette (one never knows which one comes first, and
@@ -190,6 +184,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
     }
 
     /** Sets a custom ImagingListener used to ignore common warnings */
+    @SuppressWarnings("PMD.CloseResource")
     public static void initJAIDefaultInstance() {
         JAI jaiDef = JAI.getDefaultInstance();
         if (!(jaiDef.getImagingListener() instanceof GeoServerImagingListener)) {
@@ -198,14 +193,12 @@ public class GeoserverInitStartupListener implements ServletContextListener {
     }
 
     private static final class GeoServerImagingListener implements ImagingListener {
-        private static final Logger LOGGER = Logging.getLogger("javax.media.jai");
+        private static final Logger LOGGER = Logging.getLogger("org.eclipse.imagen");
 
         @Override
         public boolean errorOccurred(String message, Throwable thrown, Object where, boolean isRetryable)
                 throws RuntimeException {
-            if (isSerializableRenderedImageFinalization(where, thrown)) {
-                LOGGER.log(Level.FINEST, message, thrown);
-            } else if (message.contains("Continuing in pure Java mode")) {
+            if (message.contains("Continuing in pure Java mode")) {
                 LOGGER.log(Level.FINE, message, thrown);
             } else if (thrown instanceof RuntimeException && !(where instanceof OperationRegistry)) {
                 throw (RuntimeException) thrown;
@@ -213,21 +206,6 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 LOGGER.log(Level.INFO, message, thrown);
             }
             return false; // we are not trying to recover
-        }
-
-        private boolean isSerializableRenderedImageFinalization(Object where, Throwable t) {
-            if (!(where instanceof SerializableRenderedImage)) {
-                return false;
-            }
-
-            // check if it's the finalizer
-            StackTraceElement[] elements = t.getStackTrace();
-            for (StackTraceElement element : elements) {
-                if (element.getMethodName().equals("finalize")
-                        && element.getClassName().endsWith("SerializableRenderedImage")) return true;
-            }
-
-            return false;
         }
     }
 

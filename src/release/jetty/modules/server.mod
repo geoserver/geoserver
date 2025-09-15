@@ -15,8 +15,8 @@ threadpool
 bytebufferpool
 
 [lib]
-# servlet-api and jetty-schemas modified to match versions/artifact ids from maven
-lib/javax.servlet-api-3.1.0.jar
+# servlet-api updated to jetty-servlet-api for Jetty 10.x compatibility  
+lib/jetty-servlet-api-4.0.6.jar
 lib/jetty-schemas-3.1.M0.jar
 lib/jetty-http-${jetty.version}.jar
 lib/jetty-server-${jetty.version}.jar

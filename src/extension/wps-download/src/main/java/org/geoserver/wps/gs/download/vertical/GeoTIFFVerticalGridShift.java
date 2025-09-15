@@ -4,7 +4,6 @@
  */
 package org.geoserver.wps.gs.download.vertical;
 
-import it.geosolutions.jaiext.range.Range;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -12,8 +11,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.PlanarImage;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.media.range.Range;
 import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;

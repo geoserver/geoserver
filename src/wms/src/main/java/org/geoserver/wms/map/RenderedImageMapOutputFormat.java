@@ -5,8 +5,6 @@
  */
 package org.geoserver.wms.map;
 
-import it.geosolutions.jaiext.lookup.LookupTable;
-import it.geosolutions.jaiext.lookup.LookupTableFactory;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -22,13 +20,15 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.Interpolation;
-import javax.media.jai.InterpolationBicubic2;
-import javax.media.jai.InterpolationBilinear;
-import javax.media.jai.InterpolationNearest;
-import javax.media.jai.JAI;
-import javax.media.jai.LookupTableJAI;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.InterpolationBicubic2;
+import org.eclipse.imagen.InterpolationBilinear;
+import org.eclipse.imagen.InterpolationNearest;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.LookupTableJAI;
+import org.eclipse.imagen.media.lookup.LookupTable;
+import org.eclipse.imagen.media.lookup.LookupTableFactory;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;

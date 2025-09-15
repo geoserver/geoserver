@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.media.jai.Interpolation;
+import org.eclipse.imagen.Interpolation;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geotools.api.filter.Filter;

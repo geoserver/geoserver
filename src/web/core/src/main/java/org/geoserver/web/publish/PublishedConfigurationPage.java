@@ -278,6 +278,11 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
             protected void onSubmitInternal(AjaxRequestTarget target) {
                 doSave(false);
             }
+
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
+            }
         };
     }
 

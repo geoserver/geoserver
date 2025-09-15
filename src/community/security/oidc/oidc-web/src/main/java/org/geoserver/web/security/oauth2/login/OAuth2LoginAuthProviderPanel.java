@@ -8,6 +8,10 @@ import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConf
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.IdToken;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.UserInfo;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +20,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -61,6 +67,20 @@ public class OAuth2LoginAuthProviderPanel
     /** Prefix of custom OIDC specific attributes */
     private static final String PREFIX_OIDC = "oidc";
 
+    public static String oidcPanelCSS;
+
+    static {
+        try {
+            oidcPanelCSS = CharStreams.toString(new InputStreamReader(
+                    OAuth2LoginAuthProviderPanel.class.getResourceAsStream(
+                            "/org/geoserver/web/security/oauth2/login/css/oidc.css"),
+                    Charsets.UTF_8));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private class DiscoveryPanel extends Panel {
         private static final long serialVersionUID = 1L;
 
@@ -85,6 +105,14 @@ public class OAuth2LoginAuthProviderPanel
                 }
             });
             add(new HelpLink("oidcDiscoveryUriKeyHelp", this).setDialog(dialog));
+        }
+
+        @Override
+        public void renderHead(IHeaderResponse response) {
+            super.renderHead(response);
+
+            // add css
+            response.render(CssHeaderItem.forCSS(oidcPanelCSS, "oidcPanelCSS"));
         }
 
         private void discover(String discoveryURL, AjaxRequestTarget target) {

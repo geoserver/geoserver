@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.media.jai.PlanarImage;
+import org.eclipse.imagen.PlanarImage;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;

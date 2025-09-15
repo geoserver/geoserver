@@ -4,9 +4,6 @@
  */
 package org.geoserver.wps.gs.download;
 
-import it.geosolutions.jaiext.range.Range;
-import it.geosolutions.jaiext.vectorbin.ROIGeometry;
-import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -18,13 +15,16 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.ROI;
-import javax.media.jai.ROIShape;
-import javax.media.jai.operator.ConstantDescriptor;
-import javax.media.jai.operator.MosaicDescriptor;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.ROI;
+import org.eclipse.imagen.ROIShape;
+import org.eclipse.imagen.media.mosaic.MosaicDescriptor;
+import org.eclipse.imagen.media.range.Range;
+import org.eclipse.imagen.media.vectorbin.ROIGeometry;
+import org.eclipse.imagen.media.viewer.RenderedImageBrowser;
+import org.eclipse.imagen.operator.ConstantDescriptor;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ColorUtilities;

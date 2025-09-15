@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.media.jai.ImageLayout;
+import org.eclipse.imagen.ImageLayout;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
@@ -226,17 +226,13 @@ class CoverageViewHandler {
 
         private ImageLayout layout;
 
-        private boolean canSupportHeterogeneousCoverages = false;
-
-        public CoveragesConsistencyChecker(GridCoverage2DReader reader, boolean canSupportHeterogeneousCoverages)
-                throws IOException {
+        public CoveragesConsistencyChecker(GridCoverage2DReader reader) throws IOException {
             envelope = reader.getOriginalEnvelope();
             gridRange = reader.getOriginalGridRange();
             crs = reader.getCoordinateReferenceSystem();
             metadataNames = reader.getMetadataNames();
             dynamicParameters = reader.getDynamicParameters();
             layout = reader.getImageLayout();
-            this.canSupportHeterogeneousCoverages = canSupportHeterogeneousCoverages;
         }
 
         /** Check whether the coverages associated to the provided reader is consistent with the reference coverage. */
@@ -248,11 +244,6 @@ class CoverageViewHandler {
 
             // Checking envelope equality
             if (!envelope.equals(this.envelope, DELTA, true)) {
-
-                // Throw an exception in case we are not supporting heterogeneous coverages
-                if (!canSupportHeterogeneousCoverages) {
-                    throw new IllegalArgumentException("The coverage envelope must be the same for all coverages");
-                }
 
                 // We won't support coverage views made of coverages having empty intersection
                 if (!envelope.intersects(this.envelope, true)) {
@@ -270,9 +261,6 @@ class CoverageViewHandler {
             final Rectangle thatRectangle =
                     new Rectangle(gridRange.getLow(0), gridRange.getLow(1), gridRange.getSpan(0), gridRange.getSpan(1));
             if (!thisRectangle.equals(thatRectangle)) {
-                if (!canSupportHeterogeneousCoverages) {
-                    throw new IllegalArgumentException("The coverage gridRange should be the same for all coverages");
-                }
                 return false;
             }
 
@@ -335,12 +323,6 @@ class CoverageViewHandler {
     /** specifying whether this view is made of homogeneous coverages or not */
     private boolean homogeneousCoverages = true;
 
-    /**
-     * specifying whether we can support heterogeneous coverages (JAI-EXT's BandMerge is required to support
-     * heterogeneous composition)
-     */
-    boolean supportHeterogeneousCoverages;
-
     /** Checker used to verify constraints are respected */
     private CoveragesConsistencyChecker checker;
 
@@ -351,12 +333,7 @@ class CoverageViewHandler {
 
     private EnvelopeComposer envelopeComposer;
 
-    public CoverageViewHandler(
-            boolean supportHeterogeneousCoverages,
-            GridCoverage2DReader delegate,
-            String referenceName,
-            CoverageView coverageView) {
-        this.supportHeterogeneousCoverages = supportHeterogeneousCoverages;
+    public CoverageViewHandler(GridCoverage2DReader delegate, String referenceName, CoverageView coverageView) {
         this.delegate = delegate;
         this.referenceName = referenceName;
         this.coverageView = coverageView;
@@ -373,7 +350,7 @@ class CoverageViewHandler {
 
             try {
                 if (checker == null) {
-                    checker = new CoveragesConsistencyChecker(reader, supportHeterogeneousCoverages);
+                    checker = new CoveragesConsistencyChecker(reader);
                 } else {
                     homogeneousCoverages &= checker.checkConsistency(reader);
                 }

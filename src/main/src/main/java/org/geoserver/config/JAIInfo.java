@@ -6,8 +6,8 @@
 package org.geoserver.config;
 
 import java.io.Serializable;
-import javax.media.jai.JAI;
-import javax.media.jai.TileCache;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.TileCache;
 
 /**
  * Java Advanced Imaging configuration.
@@ -18,7 +18,6 @@ public interface JAIInfo extends Cloneable, Serializable {
 
     static enum PngEncoderType {
         JDK,
-        NATIVE,
         PNGJ
     }
 
@@ -56,21 +55,6 @@ public interface JAIInfo extends Cloneable, Serializable {
 
     void setPngEncoderType(PngEncoderType type);
 
-    /** Flag controlling native JPEG image processing. */
-    boolean isJpegAcceleration();
-
-    void setJpegAcceleration(boolean jpegAcceleration);
-
-    /** Flag controlling native mosaicing operations. */
-    boolean isAllowNativeMosaic();
-
-    void setAllowNativeMosaic(boolean allowNativeMosaic);
-
-    /** Flag controlling native warping operations. */
-    boolean isAllowNativeWarp();
-
-    void setAllowNativeWarp(boolean allowNativeWarp);
-
     /** The jai instance. */
     JAI getJAI();
 
@@ -80,11 +64,6 @@ public interface JAIInfo extends Cloneable, Serializable {
     TileCache getTileCache();
 
     void setTileCache(TileCache tileCache);
-
-    /** JAI-EXT section */
-    JAIEXTInfo getJAIEXTInfo();
-
-    void setJAIEXTInfo(JAIEXTInfo jaiext);
 
     public JAIInfo clone();
 }

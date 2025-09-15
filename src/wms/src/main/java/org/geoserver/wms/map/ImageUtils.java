@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.TiledImage;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.TiledImage;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geotools.image.ImageWorker;
@@ -49,7 +49,7 @@ public class ImageUtils {
      * various steps on the disk.
      */
     private static boolean DEBUG =
-            Boolean.valueOf(GeoServerExtensions.getProperty("org.geoserver.wms.map.ImageUtils.debug"));
+            Boolean.valueOf(GeoServerExtensions.getProperty("org.geoserver.wms.map.ImageUtilities.debug"));
 
     private static String DEBUG_DIR;
 

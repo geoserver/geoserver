@@ -14,7 +14,7 @@ public class ExtraVariableXStreamInitializer implements XStreamPersisterInitiali
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType("extraVariable", ExtraVariable.class);
+        persister.registerBriefMapComplexType("extraVariable", ExtraVariable.class);
         XStream xs = persister.getXStream();
         xs.alias("extraVariable", ExtraVariable.class);
     }

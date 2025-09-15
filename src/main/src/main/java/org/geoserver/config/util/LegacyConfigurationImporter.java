@@ -121,12 +121,7 @@ public class LegacyConfigurationImporter {
         jai.setMemoryThreshold((Double) value(global.get("JaiMemoryThreshold"), JAIInfoImpl.DEFAULT_MemoryThreshold));
         jai.setTileThreads((Integer) value(global.get("JaiTileThreads"), JAIInfoImpl.DEFAULT_TileThreads));
         jai.setTilePriority((Integer) value(global.get("JaiTilePriority"), JAIInfoImpl.DEFAULT_TilePriority));
-        jai.setJpegAcceleration((Boolean) value(global.get("JaiJPEGNative"), JAIInfoImpl.DEFAULT_JPEGNative));
-        if (Boolean.TRUE.equals(value(global.get("JaiPNGNative"), JAIInfoImpl.DEFAULT_PNGNative))) {
-            jai.setPngEncoderType(JAIInfo.PngEncoderType.NATIVE);
-        }
         jai.setRecycling((Boolean) value(global.get("JaiRecycling"), JAIInfoImpl.DEFAULT_Recycling));
-        jai.setAllowNativeMosaic((Boolean) value(global.get("JaiMosaicNative"), JAIInfoImpl.DEFAULT_MosaicNative));
         info.setJAI(jai);
 
         geoServer.setGlobal(info);

@@ -1,3 +1,5 @@
+.. _rest_filterchains:
+
 Filter Chains
 =============
 
@@ -6,7 +8,7 @@ The REST API allows you to list, create, upload, update, and delete filterChains
 .. note:: Read the :api:`API reference for security/filterChains <filterchains.yaml>`.
 
 View a Filter Chain
------------------------------
+-------------------
 
 *Request*
 

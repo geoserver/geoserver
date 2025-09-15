@@ -20,6 +20,8 @@ import org.xml.sax.EntityResolver;
  */
 public class EntityResolverProvider {
 
+    public static final String ENTITY_RESOLUTION_UNRESTRICTED = "ENTITY_RESOLUTION_UNRESTRICTED";
+
     private static final String ENTITY_RESOLUTION_ALLOWLIST = "ENTITY_RESOLUTION_ALLOWLIST";
 
     /** Allow list configuration from ENTITY_RESOLUTION_ALLOWLIST property. */
@@ -41,10 +43,7 @@ public class EntityResolverProvider {
     /** A entity resolver provider that always disables entity resolution */
     public static final EntityResolverProvider RESOLVE_DISABLED_PROVIDER = new EntityResolverProvider(null);
 
-    private final GeoServer geoServer;
-
     public EntityResolverProvider(GeoServer geoServer) {
-        this.geoServer = geoServer;
         this.ALLOWLIST_ENTITY_RESOLVER = new AllowListEntityResolver(geoServer);
     }
 
@@ -73,18 +72,13 @@ public class EntityResolverProvider {
      * @return EntityResolver, or {@code null} if unrestricted
      */
     public EntityResolver getEntityResolver() {
-        if (geoServer != null) {
-            Boolean externalEntitiesEnabled = geoServer.getGlobal().isXmlExternalEntitiesEnabled();
-            if (externalEntitiesEnabled != null && externalEntitiesEnabled) {
-                // XML parser is unrestricted, and can access any XSD location
-                return null;
-            }
-        }
-        if (entityResolver != null) {
+        if (Boolean.parseBoolean(GeoServerExtensions.getProperty(ENTITY_RESOLUTION_UNRESTRICTED))) {
+            // XML parser is unrestricted, and can access any XSD location
+            return null;
+        } else if (entityResolver != null) {
             // override provided (usually by a test case)
             return entityResolver;
-        }
-        if (ALLOW_LIST != null) {
+        } else if (ALLOW_LIST != null) {
             // External entity resolution limited to those approved for use
             // those built-in to GeoSever, while restricting file access
             return ALLOWLIST_ENTITY_RESOLVER;

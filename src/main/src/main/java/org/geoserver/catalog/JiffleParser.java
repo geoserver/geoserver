@@ -4,16 +4,16 @@
  */
 package org.geoserver.catalog;
 
-import it.geosolutions.jaiext.jiffle.Jiffle;
-import it.geosolutions.jaiext.jiffle.JiffleException;
-import it.geosolutions.jaiext.jiffle.parser.JiffleParserException;
-import it.geosolutions.jaiext.jiffle.parser.node.GetSourceValue;
-import it.geosolutions.jaiext.jiffle.runtime.JiffleIndirectRuntime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.eclipse.imagen.media.jiffle.Jiffle;
+import org.eclipse.imagen.media.jiffle.JiffleException;
+import org.eclipse.imagen.media.jiffle.parser.JiffleParserException;
+import org.eclipse.imagen.media.jiffle.parser.node.GetSourceValue;
+import org.eclipse.imagen.media.jiffle.runtime.JiffleIndirectRuntime;
 
 /**
  * Utility class for parsing Jiffle scripts and extracting metadata about input and output variables.

@@ -108,6 +108,20 @@ Configuration:
 
 For additional information see :ref:`datadir-loader` documentation.
 
+Keystore password link (GeoServer 2.26 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The :guilabel:`Password` page link to :guilabel:`Keystore password forgotten` now :ref:`directly links <security_webadmin_masterpasswordprovider>` to the :ref:`REST API <rest_security_keystore>` endpoint, allowing the value to be read in your browser.
+
+With this change it is no longer necessary to generate a :file:`masterpw.info` when upgrading an older data directory. If this file is present from an earlier upgrade it is still considering a security warning noted on the welcome page.
+
+ENTITY_RESOLUTION_UNRESTRICTED application property (GeoServer 2.26.4 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The global setting :guilabel:`Unrestricted XML External Entity Resolution` has been repalced with the ``ENTITY_RESOLUTION_UNRESTRICTED`` application property.
+
+For more information see :ref:`production_config_external_entities`.
+
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

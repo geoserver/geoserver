@@ -4,17 +4,17 @@
  */
 package org.geoserver.wps.gs.download;
 
-import it.geosolutions.jaiext.utilities.ImageLayout2;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.List;
-import javax.media.jai.Interpolation;
-import javax.media.jai.InterpolationNearest;
-import javax.media.jai.JAI;
-import javax.media.jai.Warp;
-import javax.media.jai.WarpAffine;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.InterpolationNearest;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.Warp;
+import org.eclipse.imagen.WarpAffine;
+import org.eclipse.imagen.media.utilities.ImageLayout2;
 import org.geoserver.data.util.CoverageUtils;
 import org.geotools.api.coverage.processing.Operation;
 import org.geotools.api.geometry.Bounds;

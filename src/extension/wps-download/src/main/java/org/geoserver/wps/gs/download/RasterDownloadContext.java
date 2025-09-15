@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.media.jai.Interpolation;
+import org.eclipse.imagen.Interpolation;
 import org.geoserver.catalog.CoverageInfo;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.parameter.GeneralParameterValue;

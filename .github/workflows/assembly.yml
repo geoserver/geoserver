@@ -47,6 +47,60 @@ jobs:
     - name: Build and package community modules (without tests)
       run: |
         mvn -B -ntp -nsu -U -T1C -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
+    - name: Test binary package startup (Jetty 10.x smoke test)
+      run: |
+        # Extract version from Maven project
+        VERSION=$(mvn -f src/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Testing GeoServer version: $VERSION"
+
+        # Test endpoint URL
+        TEST_URL="http://localhost:8080/geoserver/wms?request=GetCapabilities&version=1.3.0"
+
+        # Create test directory and extract binary package
+        mkdir -p /tmp/geoserver-test
+        cd /tmp/geoserver-test
+        cp $GITHUB_WORKSPACE/src/target/release/geoserver-${VERSION}-bin.zip .
+        unzip -q geoserver-${VERSION}-bin.zip
+
+        # Start GeoServer in background
+        echo "Starting GeoServer..."
+        bin/startup.sh &
+        GEOSERVER_PID=$!
+
+        # Wait for startup (up to 120 seconds)
+        echo "Waiting for GeoServer to start..."
+        for i in {1..60}; do
+          if curl -f -s -o /dev/null "$TEST_URL"; then
+            echo "✅ GeoServer started successfully after $i attempts"
+            curl -I "$TEST_URL"
+            break
+          fi
+          if [ $i -eq 60 ]; then
+            echo "❌ GeoServer failed to start within 120 seconds"
+            # Show startup logs for debugging
+            echo "=== Startup logs ==="
+            if [ -f logs/geoserver.log ]; then cat logs/geoserver.log; fi
+            kill $GEOSERVER_PID || true
+            exit 1
+          fi
+          echo "Attempt $i: GeoServer not ready yet, waiting 2 seconds..."
+          sleep 2
+        done
+
+        # Verify WMS GetCapabilities returns 200 OK
+        RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null "$TEST_URL")
+        if [ "$RESPONSE" = "200" ]; then
+          echo "✅ WMS GetCapabilities returned HTTP 200 - Binary package test PASSED"
+        else
+          echo "❌ WMS GetCapabilities returned HTTP $RESPONSE - Binary package test FAILED"
+          kill $GEOSERVER_PID || true
+          exit 1
+        fi
+
+        # Clean shutdown
+        kill $GEOSERVER_PID || true
+        sleep 5
+        echo "🎉 Binary package smoke test completed successfully"
     - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

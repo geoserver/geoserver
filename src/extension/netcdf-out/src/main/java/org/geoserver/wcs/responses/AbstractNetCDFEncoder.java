@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.measure.UnitConverter;
-import javax.media.jai.iterator.RandomIter;
+import org.eclipse.imagen.iterator.RandomIter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;

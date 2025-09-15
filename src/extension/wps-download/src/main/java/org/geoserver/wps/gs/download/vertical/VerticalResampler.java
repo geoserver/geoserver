@@ -4,9 +4,6 @@
  */
 package org.geoserver.wps.gs.download.vertical;
 
-import it.geosolutions.jaiext.range.NoDataContainer;
-import it.geosolutions.jaiext.range.Range;
-import it.geosolutions.jaiext.range.RangeFactory;
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -19,10 +16,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.JAI;
-import javax.media.jai.OperationRegistry;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.registry.RenderedRegistryMode;
+import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.OperationRegistry;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.media.range.NoDataContainer;
+import org.eclipse.imagen.media.range.Range;
+import org.eclipse.imagen.media.range.RangeFactory;
+import org.eclipse.imagen.registry.RenderedRegistryMode;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wps.WPSException;
@@ -117,7 +117,7 @@ public class VerticalResampler {
         registry.registerFactory(
                 RenderedRegistryMode.MODE_NAME,
                 descriptor.getName(),
-                "it.geosolutions.jaiext",
+                "org.eclipse.imagen.media",
                 new VerticalTransformCRIF());
     }
 

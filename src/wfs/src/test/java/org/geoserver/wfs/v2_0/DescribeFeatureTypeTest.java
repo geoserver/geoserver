@@ -330,6 +330,20 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         assertSchema(doc, CiteTestData.POLYGONS);
     }
 
+    @Test
+    public void testUserSuppliedTypeNameNamespaceWithVirtualService() throws Exception {
+        final QName typeName = LAKES;
+        String path = "gs/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&"
+                + "typeNames=test:"
+                + typeName.getLocalPart()
+                + "&namespaces=xmlns(test,"
+                + URLEncoder.encode(typeName.getNamespaceURI(), "UTF-8")
+                + ")";
+
+        Document doc = getAsDOM(path);
+        assertSchema(doc, CiteTestData.LAKES);
+    }
+
     /** See https://osgeo-org.atlassian.net/browse/GEOS-3306 */
     @Test
     public void testUserSuppliedTypeNameDefaultNamespace() throws Exception {

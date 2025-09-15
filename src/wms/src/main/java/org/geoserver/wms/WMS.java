@@ -455,11 +455,6 @@ public class WMS implements ApplicationContextAware {
         return jaiInfo.getPngEncoderType();
     }
 
-    public Boolean getJPEGNativeAcceleration() {
-        JAIInfo jaiInfo = getJaiInfo();
-        return Boolean.valueOf(jaiInfo.isJpegAcceleration());
-    }
-
     private JAIInfo getJaiInfo() {
         GeoServer geoServer = getGeoServer();
         GeoServerInfo global = geoServer.getGlobal();

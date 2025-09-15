@@ -11,6 +11,8 @@ While many configuration and setup options are available through the Web Adminis
 
 As part of the operating environment GeoServer application properties, unlike settings, cannot be changed at runtime.
 
+For more information see :ref:`production_config`.
+
 GeoServer Property Reference
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -128,6 +130,24 @@ GeoServer Property Reference
    * - GEOSERVER_XSTREAM_WHITELIST
        
        Used to restrict catalogue persistence.
+     - x
+     - x
+     - x
+   * - ENTITY_RESOLUTION_UNRESTRICTED
+       
+       :doc:`/production/config`, default false.
+     - x
+     - x
+     - x
+   * - ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL
+       
+       :doc:`/production/config`, default false.
+     - x
+     - x
+     - x
+   * - ENTITY_RESOLUTION_ALLOWLIST
+       
+       :doc:`/production/config`.
      - x
      - x
      - x
@@ -419,6 +439,12 @@ GeoServer Property Reference
    * - GEOSERVER_FILESYSTEM_SANDBOX
 
        :doc:`/security/sandbox`
+     - x
+     - x
+     - x
+   * - GEOSERVER_ROOT_LOGIN_ENABLED
+
+       :ref:`security_root`
      - x
      - x
      - x

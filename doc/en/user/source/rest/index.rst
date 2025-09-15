@@ -48,6 +48,8 @@ The following links provide direct access to the GeoServer REST API documentatio
 * :api:`/roles <roles.yaml>`
 * :api:`/filterChains <filterchains.yaml>`
 * :api:`/authFilters <authenticationfilterconfiguration.yaml>`
+* :api:`/authProviders <authenticationproviders.yaml>`
+* :api:`/usergroupservices <usergroupservices.yaml>`
 
 * GeoWebCache:
 
@@ -103,7 +105,8 @@ This section contains a number of examples which illustrate some of the most com
    urlchecks
    filterchains
    authenticationfilters
-   
+   authenticationproviders
+   usergroupservices
 
 .. toctree::
    :maxdepth: 1

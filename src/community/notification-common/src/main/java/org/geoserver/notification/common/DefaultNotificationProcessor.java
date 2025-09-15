@@ -5,11 +5,13 @@
 
 package org.geoserver.notification.common;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.geoserver.notification.common.sender.NotificationSender;
 
 public class DefaultNotificationProcessor implements NotificationProcessor, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -981618390262055505L;
 
     private NotificationEncoder encoder;

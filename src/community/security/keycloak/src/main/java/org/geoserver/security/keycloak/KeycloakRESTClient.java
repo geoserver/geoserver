@@ -271,8 +271,8 @@ class KeycloakRESTClient {
     private SortedSet<GeoServerRole> toGeoServerRoles(List<Object> list) {
         SortedSet<GeoServerRole> roles = new TreeSet<>();
         for (Object role : list) {
-            if (role instanceof List) {
-                roles.addAll(toGeoServerRoles((List) role));
+            if (role instanceof List list1) {
+                roles.addAll(toGeoServerRoles(list1));
             } else {
                 GeoServerRole gsRole = toGeoServerRole(role);
                 if (gsRole != null) roles.add(gsRole);
@@ -288,8 +288,7 @@ class KeycloakRESTClient {
     }
 
     private String getIfMap(Object o, String attrName) {
-        if (o instanceof Map) {
-            Map<?, ?> role = (Map<?, ?>) o;
+        if (o instanceof Map<?, ?> role) {
             Object value = role.get(attrName);
             if (value != null) return value.toString();
         }
@@ -300,8 +299,8 @@ class KeycloakRESTClient {
     private SortedSet<String> toUserNames(List<Object> users) {
         SortedSet<String> userNames = new TreeSet<>();
         for (Object o : users) {
-            if (o instanceof List) {
-                userNames.addAll(toUserNames((List) o));
+            if (o instanceof List list) {
+                userNames.addAll(toUserNames(list));
             } else {
                 String userName = toUserName(o);
                 if (userName != null) userNames.add(userName);

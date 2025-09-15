@@ -83,9 +83,7 @@ public class Tileset extends AbstractDocument {
         }
 
         // go for the links
-        this.id = tileLayer instanceof GeoServerTileLayer
-                ? ((GeoServerTileLayer) tileLayer).getContextualName()
-                : tileLayer.getName();
+        this.id = tileLayer instanceof GeoServerTileLayer gstl ? gstl.getContextualName() : tileLayer.getName();
         if (dataType == DataType.vector) {
             addSelfLinks("ogc/tiles/v1/collections/" + id + "/tiles/" + tileMatrixId);
         } else if (dataType == DataType.map) {

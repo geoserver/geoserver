@@ -48,7 +48,7 @@ public class ServiceLinkFunction extends FunctionImpl {
                 .map(v -> v != null ? ResponseUtils.urlEncode(v) : null)
                 .toArray();
 
-        String uri = String.format(template, templateParameters);
+        String uri = template.formatted(templateParameters);
         Map<String, String> kvp = lenientQueryStringParse(uri);
         String path = ResponseUtils.getPath(uri);
 
@@ -65,10 +65,10 @@ public class ServiceLinkFunction extends FunctionImpl {
     private Map<String, String> lenientQueryStringParse(String path) {
         Map<String, String> kvp = new LinkedHashMap<>();
         KvpUtils.parseQueryString(path).forEach((k, v) -> {
-            if (v instanceof String) {
-                kvp.put(k, (String) v);
-            } else if (v instanceof String[]) {
-                kvp.put(k, ((String[]) v)[0]);
+            if (v instanceof String string) {
+                kvp.put(k, string);
+            } else if (v instanceof String[] strings) {
+                kvp.put(k, strings[0]);
             } else if (v != null) {
                 // generic fallback
                 kvp.put(k, v.toString());

@@ -4,7 +4,6 @@
  */
 package org.geoserver.acl.plugin.integration;
 
-import static java.lang.String.format;
 import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
 
 import java.util.HashMap;
@@ -200,13 +199,13 @@ public class AclContainerIntegrationTest extends GeoServerSystemTestSupport {
 
     private void assertWMSCapabilitiesContainsAll(List<String> layers) throws Exception {
         Document wmsCaps = getWmsCapabilities();
-        Function<String, String> xpathBuilder = layer -> format("//wms:Layer/wms:Name[text() = '%s']", layer);
+        Function<String, String> xpathBuilder = layer -> "//wms:Layer/wms:Name[text() = '%s']".formatted(layer);
         assertXpathExists(wmsCaps, xpathBuilder, layers);
     }
 
     private void assertWMSCapabilitiesDoesNotContain(List<String> layers) throws Exception {
         Document wmsCaps = getWmsCapabilities();
-        Function<String, String> xpathBuilder = layer -> format("//wms:Layer/wms:Name[text() = '%s']", layer);
+        Function<String, String> xpathBuilder = layer -> "//wms:Layer/wms:Name[text() = '%s']".formatted(layer);
         assertXpathDoesNotExist(wmsCaps, xpathBuilder, layers);
     }
 
@@ -218,13 +217,13 @@ public class AclContainerIntegrationTest extends GeoServerSystemTestSupport {
 
     private void assertWFSCapabilitiesContainsAll(List<String> layers) throws Exception {
         Document wfsCaps = getWfsCapabilities();
-        Function<String, String> xpathBuilder = layer -> format("//wfs:FeatureType/wfs:Name[text() = '%s']", layer);
+        Function<String, String> xpathBuilder = layer -> "//wfs:FeatureType/wfs:Name[text() = '%s']".formatted(layer);
         assertXpathExists(wfsCaps, xpathBuilder, layers);
     }
 
     private void assertWFSCapabilitiesDoesNotContain(List<String> layers) throws Exception {
         Document wfsCaps = getWfsCapabilities();
-        Function<String, String> xpathBuilder = layer -> format("//wfs:FeatureType/wfs:Name[text() = '%s']", layer);
+        Function<String, String> xpathBuilder = layer -> "//wfs:FeatureType/wfs:Name[text() = '%s']".formatted(layer);
         assertXpathDoesNotExist(wfsCaps, xpathBuilder, layers);
     }
 

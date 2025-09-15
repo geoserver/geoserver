@@ -85,8 +85,8 @@ public class GeneralizedTablesExtension extends GeoPkgExtension {
      */
     public void addTable(GeneralizedTable generalized) throws SQLException {
         // register into the generalized tables
-        String sql = format(
-                "INSERT INTO %s(primary_table, generalized_table, distance, provenance) VALUES(?, ?, ?, ?)", GT_TABLE);
+        String sql = "INSERT INTO %s(primary_table, generalized_table, distance, provenance) VALUES(?, ?, ?, ?)"
+                .formatted(GT_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setString(1, generalized.getPrimaryTable());
@@ -97,13 +97,17 @@ public class GeneralizedTablesExtension extends GeoPkgExtension {
         }
 
         // but also among the extensions
-        sql = format("INSERT INTO gpkg_extensions \n"
-                + "VALUES \n"
-                + "  (\n"
-                + "    ?, null, ?, \n"
-                + "    ?, \n"
-                + "    'read-write'\n"
-                + "  );");
+        sql =
+                """
+                INSERT INTO gpkg_extensions\s
+                VALUES\s
+                  (
+                    ?, null, ?,\s
+                    ?,\s
+                    'read-write'
+                  );\
+                """
+                        .formatted();
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setString(1, generalized.getGeneralizedTable());

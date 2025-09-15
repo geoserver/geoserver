@@ -6,6 +6,7 @@ package org.geoserver.backuprestore.web;
 
 import static org.geoserver.catalog.Predicates.equal;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +22,7 @@ import org.geotools.api.filter.Filter;
 /** Simple detachable model listing all the layers in a specific store. */
 public class BackupRestoreLayersIndexModel extends LoadableDetachableModel<List<LayerInfo>> {
 
+    @Serial
     private static final long serialVersionUID = -2216296970407724704L;
 
     private StoreModel<StoreInfo> storeInfo;

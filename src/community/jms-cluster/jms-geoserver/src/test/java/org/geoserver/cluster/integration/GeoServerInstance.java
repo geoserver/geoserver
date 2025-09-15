@@ -68,9 +68,8 @@ public final class GeoServerInstance {
                 IOUtils.delete(BASE_TEST_DATA.getDataDirectoryRoot());
             } catch (Exception exception) {
                 throw new RuntimeException(
-                        String.format(
-                                "Error deleting base test data directory '%s'.",
-                                BASE_TEST_DATA.getDataDirectoryRoot().getAbsolutePath()),
+                        "Error deleting base test data directory '%s'."
+                                .formatted(BASE_TEST_DATA.getDataDirectoryRoot().getAbsolutePath()),
                         exception);
             }
         }));
@@ -103,9 +102,8 @@ public final class GeoServerInstance {
             IOUtils.copy(GeoServerLoader.class.getResourceAsStream(fileName), new File(stylesDirectory, fileName));
         } catch (Exception exception) {
             throw new RuntimeException(
-                    String.format(
-                            "Error copying default style '%s' to directory '%s'.",
-                            fileName, stylesDirectory.getAbsolutePath()),
+                    "Error copying default style '%s' to directory '%s'."
+                            .formatted(fileName, stylesDirectory.getAbsolutePath()),
                     exception);
         }
         // create GeoServer style object
@@ -151,7 +149,7 @@ public final class GeoServerInstance {
             saveJmsConfiguration();
         } catch (Exception exception) {
             throw new RuntimeException(
-                    String.format("Error instantiating GeoServer instance '%s'.", instanceName), exception);
+                    "Error instantiating GeoServer instance '%s'.".formatted(instanceName), exception);
         }
     }
 
@@ -301,7 +299,7 @@ public final class GeoServerInstance {
             IOUtils.delete(dataDirectory);
         } catch (Exception exception) {
             throw new RuntimeException(
-                    String.format("Error deleting test directory '%s'.", dataDirectory.getAbsolutePath()), exception);
+                    "Error deleting test directory '%s'.".formatted(dataDirectory.getAbsolutePath()), exception);
         }
     }
 }

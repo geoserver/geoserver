@@ -177,8 +177,8 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
     private String findMatchingXpathFromTableName(String pathPart, List<AttributeMapping> mappings) throws IOException {
         String result = null;
         for (AttributeMapping mapping : mappings) {
-            if (mapping instanceof NestedAttributeMapping) {
-                result = findMatchingXpathInNested(pathPart, (NestedAttributeMapping) mapping);
+            if (mapping instanceof NestedAttributeMapping attributeMapping) {
+                result = findMatchingXpathInNested(pathPart, attributeMapping);
             } else {
                 result = findMatchingXpathInJdbcMultipleValue(pathPart, mapping);
             }
@@ -278,8 +278,8 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
         List<MultipleValue> mvList = extractor.getMultipleValues();
         if (result == null && mvList != null && !mvList.isEmpty()) {
             MultipleValue mv = mvList.get(0);
-            if (mv instanceof JdbcMultipleValue) {
-                Expression column = ((JdbcMultipleValue) mv).getTargetValue();
+            if (mv instanceof JdbcMultipleValue value) {
+                Expression column = value.getTargetValue();
                 extractor.clear();
                 column.accept(extractor, null);
                 String[] attrs = extractor.getAttributeNames();
@@ -311,8 +311,8 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
                     return pn;
                 }
             };
-            if (toReplace instanceof Expression) {
-                replacePropertyNamesInExpression((Expression) toReplace, dupVisitor, (DynamicValueBuilder) builder);
+            if (toReplace instanceof Expression expression) {
+                replacePropertyNamesInExpression(expression, dupVisitor, (DynamicValueBuilder) builder);
             } else {
                 replacePropertyNamesInFilter((Filter) toReplace, dupVisitor, builder);
             }

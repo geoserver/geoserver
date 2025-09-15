@@ -5,6 +5,7 @@
 
 package org.geoserver.elasticsearch;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,6 +69,7 @@ import org.locationtech.jts.geom.Polygon;
  */
 abstract class ElasticConfigurationPage extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 5615867383881988931L;
 
     private static final Logger LOGGER = Logging.getLogger(ElasticConfigurationPage.class);

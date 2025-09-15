@@ -152,13 +152,13 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
 
         List<TransactionElement> newElements = new ArrayList<>();
         for (TransactionElement element : request.getElements()) {
-            if (element instanceof Insert) {
+            if (element instanceof Insert insertElement) {
                 List<SimpleFeature> newFeatures = new ArrayList<>();
                 for (Object of : affectedFeatures(element)) {
-                    if (of instanceof SimpleFeature) {
+                    if (of instanceof SimpleFeature feature) {
                         try {
                             LOGGER.fine("Inserting feature: " + of);
-                            SimpleFeature transformed = applyTemplate((SimpleFeature) of);
+                            SimpleFeature transformed = applyTemplate(feature);
                             LOGGER.fine("... transformed: " + transformed);
                             newFeatures.add(transformed);
                         } catch (RuntimeException | IOException e) {
@@ -166,17 +166,15 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                             // AutopopulateTransactionCallback error.
                             // Yell on the logs though
                             LOGGER.log(Level.WARNING, "Error pre computing the transaction's affected attributes", e);
-                            newFeatures.add((SimpleFeature) of);
+                            newFeatures.add(feature);
                         }
                     }
                 }
-                Insert insertElement = (Insert) element;
                 insertElement.setFeatures(newFeatures);
                 newElements.add(element);
-            } else if (element instanceof Update) {
+            } else if (element instanceof Update updateElement) {
                 FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(element.getTypeName()));
                 try {
-                    Update updateElement = (Update) element;
                     SimpleFeature feature = getTransactionFeatureTemplate(updateElement);
                     LOGGER.fine("Updating feature: " + feature);
                     SimpleFeature transformed = applyTemplate(feature);
@@ -239,7 +237,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     private FeatureTypeInfo getFeatureTypeInfo(Name featureTypeName) {
         FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName(featureTypeName);
         if (featureTypeInfo == null) {
-            throw new RuntimeException(String.format("Couldn't find feature type info ''%s.", featureTypeName));
+            throw new RuntimeException("Couldn't find feature type info ''%s.".formatted(featureTypeName));
         }
         return featureTypeInfo;
     }
@@ -295,10 +293,10 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
      * @return List of affected features
      */
     private List affectedFeatures(TransactionElement element) {
-        if (element instanceof Insert) {
-            return ((Insert) element).getFeatures();
-        } else if (element instanceof Replace) {
-            return ((Replace) element).getFeatures();
+        if (element instanceof Insert insert) {
+            return insert.getFeatures();
+        } else if (element instanceof Replace replace) {
+            return replace.getFeatures();
         }
         return new ArrayList<>();
     }

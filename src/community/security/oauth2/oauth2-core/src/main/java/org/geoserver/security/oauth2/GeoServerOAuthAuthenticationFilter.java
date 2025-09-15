@@ -211,8 +211,8 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
     }
 
     protected String getBearerToken(ServletRequest request) {
-        if (request instanceof HttpServletRequest) {
-            Authentication auth = new BearerTokenExtractor().extract((HttpServletRequest) request);
+        if (request instanceof HttpServletRequest servletRequest) {
+            Authentication auth = new BearerTokenExtractor().extract(servletRequest);
             if (auth != null) return SecurityUtils.getUsername(auth.getPrincipal());
         }
 
@@ -407,8 +407,7 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
             // We move it from inside the authentication to directly to a request attributes.
             // This will make it a "peer" with the Access Token (which spring puts on the request as
             // an attribute).
-            if (authentication instanceof OAuth2Authentication) {
-                OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) authentication;
+            if (authentication instanceof OAuth2Authentication oAuth2Authentication) {
                 Object map =
                         oAuth2Authentication.getOAuth2Request().getExtensions().get(OAUTH2_ACCESS_TOKEN_CHECK_KEY);
                 if (map instanceof Map) {

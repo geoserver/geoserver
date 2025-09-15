@@ -5,6 +5,7 @@
 
 package org.geoserver.web.data.store.graticule;
 
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
@@ -64,6 +65,7 @@ public class GraticulePanel extends Panel {
         bounds.setOutputMarkupId(true);
 
         add(new GeoServerAjaxFormLink("generateBoundsFromCRS") {
+            @Serial
             private static final long serialVersionUID = -7907583302556368270L;
 
             @Override

@@ -237,8 +237,8 @@ public class ConfigDatabaseTest {
     private void testSaved(Info info) {
         Info saved = database.save(info);
         assertNotSame(info, saved);
-        if (info instanceof DataStoreInfo) {
-            assertEquals(((DataStoreInfo) info).getWorkspace(), ((DataStoreInfo) saved).getWorkspace());
+        if (info instanceof DataStoreInfo storeInfo) {
+            assertEquals(storeInfo.getWorkspace(), ((DataStoreInfo) saved).getWorkspace());
         }
         assertEquals(info, saved);
     }

@@ -32,8 +32,7 @@ public class ChangeSetLinkCallback implements DocumentCallback {
 
     @Override
     public void apply(Request dr, AbstractDocument document) {
-        if (document instanceof TilesDocument) {
-            TilesDocument tiles = (TilesDocument) document;
+        if (document instanceof TilesDocument tiles) {
             try {
                 CoverageInfo coverage = changesetService.getStructuredCoverageInfo(tiles.getId(), false);
                 if (coverage != null) {

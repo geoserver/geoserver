@@ -6,6 +6,7 @@
 package org.geoserver.elasticsearch;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -45,6 +46,7 @@ import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
 @SuppressWarnings("WeakerAccess")
 public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
 
+    @Serial
     private static final long serialVersionUID = 3382530429105288433L;
 
     private LayerInfo _layerInfo;
@@ -86,6 +88,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
     protected ElasticConfigurationPage getElasticConfigurationPage(
             final String panelId, final IModel<?> model, final GSModalWindow modal, boolean isRefresh) {
         modal.setWindowClosedCallback(new GSModalWindow.WindowClosedCallback() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

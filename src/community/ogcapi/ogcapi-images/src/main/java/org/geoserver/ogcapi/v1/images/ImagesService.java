@@ -219,7 +219,7 @@ public class ImagesService implements ApplicationContextAware {
             Optional<DimensionDescriptor> timeDescriptor = descriptors.stream()
                     .filter(dd -> "time".equalsIgnoreCase(dd.getName()))
                     .findFirst();
-            if (!timeDescriptor.isPresent()) {
+            if (timeDescriptor.isEmpty()) {
                 throw new APIException(
                         APIException.INVALID_PARAMETER,
                         "Time not supported for this image collection",
@@ -289,7 +289,7 @@ public class ImagesService implements ApplicationContextAware {
                     .filter(f -> assetHasher.matches(f, assetId))
                     .findFirst();
         }
-        if (!asset.isPresent()) {
+        if (asset.isEmpty()) {
             throw new APIException(
                     APIException.NOT_FOUND,
                     "Cannot find asset with id " + assetId + " in image  " + imageId + " in collection " + collectionId,
@@ -343,7 +343,7 @@ public class ImagesService implements ApplicationContextAware {
                 })
                 .collect(toList());
         // if there was no time descriptor to use, add a fake one with a fixed date
-        if (!maybeDescriptor.isPresent()) {
+        if (maybeDescriptor.isEmpty()) {
             definitions.add(new Definition("datetime", FF.literal(new Timestamp(0))));
         }
 
@@ -442,12 +442,11 @@ public class ImagesService implements ApplicationContextAware {
 
     public Filter buildBBOXFilter(@RequestParam(name = "bbox", required = false) String bbox) throws Exception {
         Object parsed = bboxParser.parse(bbox);
-        if (parsed instanceof ReferencedEnvelope) {
-            return FF.bbox(FF.property(""), (ReferencedEnvelope) parsed);
-        } else if (parsed instanceof ReferencedEnvelope[]) {
-            List<Filter> filters = Stream.of((ReferencedEnvelope[]) parsed)
-                    .map(e -> FF.bbox(FF.property(""), e))
-                    .collect(toList());
+        if (parsed instanceof ReferencedEnvelope envelope) {
+            return FF.bbox(FF.property(""), envelope);
+        } else if (parsed instanceof ReferencedEnvelope[] envelopes) {
+            List<Filter> filters =
+                    Stream.of(envelopes).map(e -> FF.bbox(FF.property(""), e)).collect(toList());
             return FF.or(filters);
         } else {
             throw new IllegalArgumentException("Could not understand parsed bbox " + parsed);

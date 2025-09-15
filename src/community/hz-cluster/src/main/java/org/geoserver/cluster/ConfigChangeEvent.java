@@ -8,6 +8,7 @@ package org.geoserver.cluster;
 import static com.google.common.base.Objects.equal;
 
 import com.google.common.base.Objects;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -92,6 +93,7 @@ public class ConfigChangeEvent extends Event {
     }
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public enum Type {

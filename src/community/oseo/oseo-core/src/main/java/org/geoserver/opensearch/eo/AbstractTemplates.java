@@ -89,8 +89,7 @@ public abstract class AbstractTemplates {
     }
 
     protected String availableAttributesSuffix(Object ctx, NamespaceSupport ns) {
-        if (ctx instanceof FeatureType) {
-            FeatureType ft = (FeatureType) ctx;
+        if (ctx instanceof FeatureType ft) {
             String values = ft.getDescriptors().stream()
                     .map(ad -> attributeName(ad, ns))
                     .collect(Collectors.joining(", "));

@@ -38,23 +38,29 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 public class PropertySelectionWrappersTest extends DataTestCase {
 
-    private static final String BASE_JSON_NODE = "{\n"
-            + "  \"attr1\":\"${attr1}\",\n"
-            + "  \"attr2\":\"${attr2}\",\n"
-            + "  \"attrE\":\"${attrE}\",\n"
-            + "  \"attr3\":{\n"
-            + "     \"attr4\":\"${attr4}\"\n"
-            + "  }\n"
-            + "   }";
+    private static final String BASE_JSON_NODE =
+            """
+            {
+              "attr1":"${attr1}",
+              "attr2":"${attr2}",
+              "attrE":"${attrE}",
+              "attr3":{
+                 "attr4":"${attr4}"
+              }
+               }\
+            """;
 
-    private static final String JSON_ATTRIBUTE = "{\n"
-            + "  \"attrA\":\"a\",\n"
-            + "  \"attrB\": {\n"
-            + "     \"attrC\":\"c\",\n"
-            + "     \"attrD\":\"d\"\n"
-            + "  },\n"
-            + "  \"attrE\":\"e\"\n"
-            + "}";
+    private static final String JSON_ATTRIBUTE =
+            """
+            {
+              "attrA":"a",
+              "attrB": {
+                 "attrC":"c",
+                 "attrD":"d"
+              },
+              "attrE":"e"
+            }\
+            """;
 
     private String TYPE_NAME = "propertySel";
 

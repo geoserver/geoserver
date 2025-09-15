@@ -121,8 +121,7 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
 
         // quicklook extraction
         Object metadataValue = fi.getAttribute("quicklook");
-        if (metadataValue instanceof SimpleFeature) {
-            SimpleFeature quicklookFeature = (SimpleFeature) metadataValue;
+        if (metadataValue instanceof SimpleFeature quicklookFeature) {
             AttributeBuilder ab = new AttributeBuilder(CommonFactoryFinder.getFeatureFactory(null));
             ab.setDescriptor((AttributeDescriptor) schema.getDescriptor(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME));
             Attribute attribute = ab.buildSimple(null, quicklookFeature.getAttribute("thumb"));

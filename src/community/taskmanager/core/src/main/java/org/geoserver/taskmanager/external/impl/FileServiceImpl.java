@@ -7,13 +7,13 @@ package org.geoserver.taskmanager.external.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -42,6 +42,7 @@ import org.springframework.web.context.ServletContextAware;
  */
 public class FileServiceImpl extends SecuredImpl implements FileService, ServletContextAware {
 
+    @Serial
     private static final long serialVersionUID = -1948411877746516243L;
 
     private static final Logger LOGGER = Logging.getLogger(FileServiceImpl.class);
@@ -72,7 +73,7 @@ public class FileServiceImpl extends SecuredImpl implements FileService, Servlet
     }
 
     public void setRootFolder(String rootFolder) {
-        this.rootFolder = Paths.get(rootFolder);
+        this.rootFolder = Path.of(rootFolder);
     }
 
     @Override
@@ -151,11 +152,11 @@ public class FileServiceImpl extends SecuredImpl implements FileService, Servlet
         ArrayList<String> paths = new ArrayList<>();
         if (folders != null) {
             for (String folder : folders) {
-                paths.add(Paths.get(rootfolder)
-                        .relativize(Paths.get(file.toString(), folder))
+                paths.add(Path.of(rootfolder)
+                        .relativize(Path.of(file.toString(), folder))
                         .toString());
                 paths.addAll(listFolders(
-                        rootfolder, new File(Paths.get(file.toString(), folder).toUri())));
+                        rootfolder, new File(Path.of(file.toString(), folder).toUri())));
             }
         }
         return paths;
@@ -215,14 +216,14 @@ public class FileServiceImpl extends SecuredImpl implements FileService, Servlet
         if (rootFolder == null) {
             throw new IllegalStateException("No rootFolder is not configured in this file service.");
         }
-        return rootFolder.resolve(Paths.get(file));
+        return rootFolder.resolve(Path.of(file));
     }
 
     @Override
     public void setServletContext(ServletContext servletContext) {
         String dataDirectory = GeoServerResourceLoader.lookupGeoServerDataDirectory(servletContext);
         if (dataDirectory != null) {
-            this.dataDirectory = Paths.get(dataDirectory);
+            this.dataDirectory = Path.of(dataDirectory);
         } else {
             throw new IllegalStateException("Unable to determine data directory");
         }

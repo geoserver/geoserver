@@ -86,12 +86,10 @@ public class DGGSFilterTransformer extends DuplicatingFilterVisitor {
         // assuming a single geometry property in the DGGS output type
         if (filter.getExpression1() instanceof PropertyName && filter.getExpression2() instanceof Literal) {
             Geometry geometry = (Geometry) filter.getExpression2().evaluate(Geometry.class);
-            if (geometry instanceof Polygon) {
-                Polygon polygon = (Polygon) geometry;
+            if (geometry instanceof Polygon polygon) {
                 Iterator<Zone> zones = dggs.polygon(polygon, resolution, true);
                 return getFilterFrom(dggs, zones, resolution);
-            } else if (geometry instanceof MultiPolygon) {
-                MultiPolygon multiPolygon = (MultiPolygon) geometry;
+            } else if (geometry instanceof MultiPolygon multiPolygon) {
                 List<Iterator<Zone>> iterators = new ArrayList<>();
                 for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
                     Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);

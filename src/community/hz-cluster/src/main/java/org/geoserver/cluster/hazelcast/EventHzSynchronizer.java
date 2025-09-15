@@ -5,7 +5,6 @@
  */
 package org.geoserver.cluster.hazelcast;
 
-import static java.lang.String.format;
 import static org.geoserver.cluster.hazelcast.HazelcastUtil.addressString;
 import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
 
@@ -80,7 +79,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
     @Override
     protected void dispatch(Event e) {
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(format("%s - Publishing event %s", nodeId(), e));
+            LOGGER.fine("%s - Publishing event %s".formatted(nodeId(), e));
         }
 
         final UUID evendId = e.getUUID();
@@ -118,7 +117,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
                         originAddr = addressString(socketAddress);
                     }
                 }
-                LOGGER.finer(format("%s - Got ack on event %s from %s", nodeId(), eventId, originAddr));
+                LOGGER.finer("%s - Got ack on event %s from %s".formatted(nodeId(), eventId, originAddr));
             }
         }
     }
@@ -126,14 +125,14 @@ public class EventHzSynchronizer extends HzSynchronizer {
     protected final void ack(Event event) {
         UUID uuid = event.getUUID();
         ackTopic.publish(uuid);
-        LOGGER.finer(format("%s - Sent ack for event %s", nodeId(), uuid));
+        LOGGER.finer("%s - Sent ack for event %s".formatted(nodeId(), uuid));
     }
 
     private void waitForAck(Event event) {
         final UUID evendId = event.getUUID();
         final int maxWaitMillis = cluster.getAckTimeoutMillis();
         final int waitInterval = 100;
-        LOGGER.fine(format("%s - Waiting for acks on %s", nodeId(), evendId));
+        LOGGER.fine("%s - Waiting for acks on %s".formatted(nodeId(), evendId));
         final AtomicInteger countDown = ackListener.expectedAckCounters.get(evendId);
         int waited = 0;
         try {
@@ -149,8 +148,8 @@ public class EventHzSynchronizer extends HzSynchronizer {
                     return;
                 }
             }
-            LOGGER.warning(format(
-                    "%s - After %dms, %d acks missing for event %s", nodeId(), maxWaitMillis, countDown.get(), event));
+            LOGGER.warning("%s - After %dms, %d acks missing for event %s"
+                    .formatted(nodeId(), maxWaitMillis, countDown.get(), event));
         } finally {
             ackListener.expectedAckCounters.remove(evendId);
         }
@@ -163,7 +162,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
             return null;
         }
         try {
-            LOGGER.fine(format("%s - Processing event %s", nodeId(), event));
+            LOGGER.fine("%s - Processing event %s".formatted(nodeId(), event));
             ConfigChangeEvent ce = (ConfigChangeEvent) event;
             Class<? extends Info> clazz = ce.getObjectInterface();
             if (CatalogInfo.class.isAssignableFrom(clazz)) {
@@ -172,7 +171,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
                 processGeoServerConfigEvent(ce);
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, format("%s - Error processing event %s", nodeId(), event), e);
+            LOGGER.log(Level.WARNING, "%s - Error processing event %s".formatted(nodeId(), event), e);
         } finally {
             ack(event);
         }
@@ -226,7 +225,8 @@ public class EventHzSynchronizer extends HzSynchronizer {
 
         if (subj == null) { // can't happen if type == DELETE
             if (subj == null) {
-                String message = format("%s - Error processing event %s: object not found in catalog", nodeId(), event);
+                String message =
+                        "%s - Error processing event %s: object not found in catalog".formatted(nodeId(), event);
                 LOGGER.warning(message);
                 return;
             }
@@ -246,7 +246,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
                 }
             }
         } catch (Exception ex) {
-            LOGGER.log(Level.WARNING, format("%s - Event dispatch failed: %s", nodeId(), event), ex);
+            LOGGER.log(Level.WARNING, "%s - Event dispatch failed: %s".formatted(nodeId(), event), ex);
         }
     }
 
@@ -330,7 +330,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
                     }
                 }
             } catch (Exception ex) {
-                LOGGER.log(Level.WARNING, format("%s - Event dispatch failed: %s", nodeId(), ce), ex);
+                LOGGER.log(Level.WARNING, "%s - Event dispatch failed: %s".formatted(nodeId(), ce), ex);
             }
         }
     }

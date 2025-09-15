@@ -93,12 +93,12 @@ public class TiledFeaturesExtension
     @Override
     public void apply(Request dr, AbstractDocument document) {
         if (dr.getService().equals(FEATURES)) {
-            if (document instanceof ConformanceDocument) {
-                extendConformanceClasses((ConformanceDocument) document);
-            } else if (document instanceof CollectionDocument) {
-                extendCollectionDocument((CollectionDocument) document);
-            } else if (document instanceof CollectionsDocument) {
-                extendCollectionsDocument((CollectionsDocument) document);
+            if (document instanceof ConformanceDocument conformanceDocument) {
+                extendConformanceClasses(conformanceDocument);
+            } else if (document instanceof CollectionDocument collectionDocument) {
+                extendCollectionDocument(collectionDocument);
+            } else if (document instanceof CollectionsDocument collectionsDocument) {
+                extendCollectionsDocument(collectionsDocument);
             } else if (document instanceof FeaturesLandingPage) {
                 extendLandingpage(document);
             }

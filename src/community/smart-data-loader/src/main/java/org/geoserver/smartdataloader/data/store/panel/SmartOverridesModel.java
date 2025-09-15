@@ -40,8 +40,8 @@ class SmartOverridesModel implements IModel<Set<SmartOverrideEntry>> {
         Map<String, Serializable> connectionParameters = storeModel.getObject().getConnectionParameters();
         Serializable serializable = connectionParameters.get(SmartDataLoaderDataAccessFactory.SMART_OVERRIDE_PARAM.key);
         String smartOverrides = null;
-        if (serializable instanceof String) {
-            smartOverrides = (String) serializable;
+        if (serializable instanceof String string) {
+            smartOverrides = string;
         }
         if (StringUtils.isBlank(smartOverrides)) {
             return Collections.emptySet();

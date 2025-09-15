@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
+import java.io.Serial;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,6 +24,7 @@ import org.geoserver.taskmanager.data.Run;
 @Table
 public class RunImpl extends BaseImpl implements Run {
 
+    @Serial
     private static final long serialVersionUID = -4539522553695926319L;
 
     @Id

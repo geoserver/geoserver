@@ -5,7 +5,6 @@
  */
 package org.geoserver.cluster.hazelcast;
 
-import static java.lang.String.format;
 import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
 
 import com.codahale.metrics.MetricRegistry;
@@ -96,19 +95,19 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements Me
         if (!isStarted()) {
             // wait for service to be fully started before processing events.
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer(format("Ignoring message: %s. Service is not started.", event));
+                LOGGER.finer("Ignoring message: %s. Service is not started.".formatted(event));
             }
             return;
         }
         incCounter(getClass(), "recieved");
         if (localAddress(cluster.getHz()).equals(event.getSource())) {
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer(format("%s - Skipping message generated locally: %s", nodeId(), event));
+                LOGGER.finer("%s - Skipping message generated locally: %s".formatted(nodeId(), event));
             }
             return;
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(format("%s - Received event %s", nodeId(), event));
+            LOGGER.fine("%s - Received event %s".formatted(nodeId(), event));
         }
 
         // schedule job to process the event with a short delay
@@ -133,7 +132,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements Me
             try {
                 future = processEvent(event);
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, format("%s - Event processing failed", nodeId()), e);
+                LOGGER.log(Level.WARNING, "%s - Event processing failed".formatted(nodeId()), e);
             }
 
             incCounter(getClass(), "reloads");
@@ -167,8 +166,8 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements Me
         if (store != null) {
             ev.setStoreId(store.getId());
         }
-        if (subj instanceof ResourceInfo) {
-            ev.setNativeName(((ResourceInfo) subj).getNativeName());
+        if (subj instanceof ResourceInfo info) {
+            ev.setNativeName(info.getNativeName());
         }
         return ev;
     }
@@ -268,7 +267,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements Me
     }
 
     public void start() {
-        LOGGER.info(format("%s - Enabling processing of configuration change events", nodeId()));
+        LOGGER.info("%s - Enabling processing of configuration change events".formatted(nodeId()));
         this.started = true;
     }
 

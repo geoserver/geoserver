@@ -360,8 +360,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         final SimplifyingFilterVisitor filterSimplifier = new SimplifyingFilterVisitor();
         final Filter simplifiedFilter = (Filter) sqlBuilder.getSupportedFilter().accept(filterSimplifier, null);
-        if (simplifiedFilter instanceof PropertyIsEqualTo) {
-            PropertyIsEqualTo isEqualTo = (PropertyIsEqualTo) simplifiedFilter;
+        if (simplifiedFilter instanceof PropertyIsEqualTo isEqualTo) {
             if (isEqualTo.getExpression1() instanceof PropertyName
                     && isEqualTo.getExpression2() instanceof Literal
                     && ((PropertyName) isEqualTo.getExpression1())
@@ -534,9 +533,8 @@ public class ConfigDatabase implements ApplicationContextAware {
         final Integer typeId = dbMappings.getTypeId(interf);
 
         Map<String, ?> params = params("type_id", typeId, "id", id, "blob", blob);
-        final String statement = String.format(
-                "INSERT INTO object (oid, type_id, id, blob) VALUES (%s, :type_id, :id, :blob)",
-                dialect.nextVal("seq_OBJECT"));
+        final String statement = "INSERT INTO object (oid, type_id, id, blob) VALUES (%s, :type_id, :id, :blob)"
+                .formatted(dialect.nextVal("seq_OBJECT"));
         logStatement(statement, params);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int updateCount =
@@ -703,10 +701,10 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     private List<?> asValueList(final Object value) {
         final List<?> values;
-        if (value instanceof List) {
-            values = (List<?>) value;
-        } else if (value instanceof Collection) {
-            values = Lists.newArrayList((Collection<?>) value);
+        if (value instanceof List<?> list) {
+            values = list;
+        } else if (value instanceof Collection<?> collection) {
+            values = Lists.newArrayList(collection);
         } else {
             values = Lists.newArrayList(value);
         }
@@ -806,20 +804,19 @@ public class ConfigDatabase implements ApplicationContextAware {
         // we're explicitly changing the resourceinfo's layer name property here because
         // LayerInfo.getName() is a derived property. This can be removed once LayerInfo.name become
         // a regular JavaBean property
-        if (info instanceof ResourceInfo) {
+        if (info instanceof ResourceInfo resourceInfo) {
             if (updateResouceLayersName) {
-                updateResourceLayerProperty((ResourceInfo) info, "name", ((ResourceInfo) info).getName());
-                updateResourceLayerProperty((ResourceInfo) info, "prefixedName", ((ResourceInfo) info).prefixedName());
+                updateResourceLayerProperty(resourceInfo, "name", resourceInfo.getName());
+                updateResourceLayerProperty(resourceInfo, "prefixedName", resourceInfo.prefixedName());
             }
             if (updateResouceLayersAdvertised) {
-                updateResourceLayerProperty((ResourceInfo) info, "advertised", ((ResourceInfo) info).isAdvertised());
+                updateResourceLayerProperty(resourceInfo, "advertised", resourceInfo.isAdvertised());
             }
             if (updateResourceLayersEnabled) {
-                updateResourceLayerProperty((ResourceInfo) info, "enabled", ((ResourceInfo) info).isEnabled());
+                updateResourceLayerProperty(resourceInfo, "enabled", resourceInfo.isEnabled());
             }
             if (updateResourceLayersKeywords) {
-                updateResourceLayerProperty(
-                        (ResourceInfo) info, "resource.keywords.value", ((ResourceInfo) info).getKeywords());
+                updateResourceLayerProperty(resourceInfo, "resource.keywords.value", resourceInfo.getKeywords());
             }
         }
         // / </HACK>
@@ -865,10 +862,10 @@ public class ConfigDatabase implements ApplicationContextAware {
                 while (rs.next()) {
                     Integer oid = rs.getInt(1);
                     Info info = mapper.mapRow(rs, rs.getRow());
-                    if (info instanceof CatalogInfo) {
-                        info = resolveCatalog((CatalogInfo) info);
-                    } else if (info instanceof ServiceInfo) {
-                        resolveTransient((ServiceInfo) info);
+                    if (info instanceof CatalogInfo catalogInfo) {
+                        info = resolveCatalog(catalogInfo);
+                    } else if (info instanceof ServiceInfo serviceInfo) {
+                        resolveTransient(serviceInfo);
                     }
                     updateQueryableProperties(info, oid, dbMappings.allProperties(info));
                 }
@@ -1049,10 +1046,10 @@ public class ConfigDatabase implements ApplicationContextAware {
         if (info == null) {
             return null;
         }
-        if (info instanceof CatalogInfo) {
-            info = resolveCatalog((CatalogInfo) info);
-        } else if (info instanceof ServiceInfo) {
-            resolveTransient((ServiceInfo) info);
+        if (info instanceof CatalogInfo catalogInfo) {
+            info = resolveCatalog(catalogInfo);
+        } else if (info instanceof ServiceInfo serviceInfo) {
+            resolveTransient(serviceInfo);
         }
 
         if (type.isAssignableFrom(info.getClass())) {
@@ -1168,10 +1165,9 @@ public class ConfigDatabase implements ApplicationContextAware {
         if (real instanceof StyleInfoImpl || real instanceof StoreInfoImpl || real instanceof ResourceInfoImpl) {
             OwsUtils.set(real, "catalog", catalog);
         }
-        if (real instanceof ResourceInfoImpl) {
-            resolveTransient(((ResourceInfoImpl) real).getStore());
-        } else if (real instanceof LayerInfo) {
-            LayerInfo layer = (LayerInfo) real;
+        if (real instanceof ResourceInfoImpl impl) {
+            resolveTransient(impl.getStore());
+        } else if (real instanceof LayerInfo layer) {
             resolveTransient(layer.getDefaultStyle());
             // avoids concurrent modification exceptions on the list contents
             synchronized (layer) {
@@ -1182,11 +1178,11 @@ public class ConfigDatabase implements ApplicationContextAware {
                 }
             }
             resolveTransient(layer.getResource());
-        } else if (real instanceof LayerGroupInfo) {
-            for (PublishedInfo p : ((LayerGroupInfo) real).getLayers()) {
+        } else if (real instanceof LayerGroupInfo info) {
+            for (PublishedInfo p : info.getLayers()) {
                 resolveTransient(p);
             }
-            for (StyleInfo s : ((LayerGroupInfo) real).getStyles()) {
+            for (StyleInfo s : info.getStyles()) {
                 resolveTransient(s);
             }
         }
@@ -1494,8 +1490,8 @@ public class ConfigDatabase implements ApplicationContextAware {
                 global.setJAI(new JAIInfoImpl());
             }
         }
-        if (info instanceof ServiceInfo) {
-            ((ServiceInfo) info).setGeoServer(geoServer);
+        if (info instanceof ServiceInfo serviceInfo) {
+            serviceInfo.setGeoServer(geoServer);
         }
 
         return info;

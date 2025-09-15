@@ -393,8 +393,8 @@ public class TaskManagerTaskUtil {
 
         @Override
         public boolean equals(Object o) {
-            if (o instanceof AttributeInfo) {
-                return type.equals(((AttributeInfo) o).type) && dependsOn.equals(((AttributeInfo) o).dependsOn);
+            if (o instanceof AttributeInfo info) {
+                return type.equals(info.type) && dependsOn.equals(info.dependsOn);
             }
             return false;
         }

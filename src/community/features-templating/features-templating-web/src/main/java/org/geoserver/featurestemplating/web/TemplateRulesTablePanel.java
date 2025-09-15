@@ -10,6 +10,7 @@ import static org.geoserver.featurestemplating.web.TemplateRuleProvider.OUTPUT_F
 import static org.geoserver.featurestemplating.web.TemplateRuleProvider.PRIORITY;
 import static org.geoserver.featurestemplating.web.TemplateRuleProvider.PROFILE_FILTER;
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.wicket.Component;
@@ -50,6 +51,7 @@ public class TemplateRulesTablePanel extends Panel {
         table.setOutputMarkupId(true);
         add(
                 remove = new AjaxLink<Object>("removeSelected") {
+                    @Serial
                     private static final long serialVersionUID = 2421854498051377608L;
 
                     @Override

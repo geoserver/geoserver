@@ -21,6 +21,12 @@ import org.geoserver.config.JAIInfo;
  */
 public class JAIInitializer implements GeoServerInitializer {
 
+    private final GeoServerTileCache tileCache;
+
+    public JAIInitializer(GeoServerTileCache tileCache) {
+        this.tileCache = tileCache;
+    }
+
     @Override
     public void initialize(GeoServer geoServer) throws Exception {
         initJAI(geoServer.getGlobal().getJAI());
@@ -48,6 +54,13 @@ public class JAIInitializer implements GeoServerInitializer {
 
         // setting JAI wide hints
         jaiDef.setRenderingHint(JAI.KEY_CACHED_TILE_RECYCLING_ENABLED, jai.isRecycling());
+
+        // force the tile cache to be the one provided by GeoServer
+        TileCache oldTileCache = jai.getTileCache();
+        if (oldTileCache != tileCache) {
+            jaiDef.setTileCache(tileCache);
+            oldTileCache.flush();
+        }
 
         // tile factory and recycler
         if (jai.isRecycling() && !(jaiDef.getRenderingHint(JAI.KEY_TILE_FACTORY) instanceof ConcurrentTileFactory)) {

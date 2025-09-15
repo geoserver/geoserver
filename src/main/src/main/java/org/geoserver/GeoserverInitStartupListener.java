@@ -38,7 +38,6 @@ import org.eclipse.imagen.OperationRegistry;
 import org.eclipse.imagen.RegistryElementDescriptor;
 import org.eclipse.imagen.RegistryMode;
 import org.eclipse.imagen.media.ConcurrentOperationRegistry;
-import org.eclipse.imagen.media.cache.ConcurrentTileCacheMultiMap;
 import org.eclipse.imagen.util.ImagingListener;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.logging.LoggingUtils;
@@ -96,11 +95,6 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         JAI jaiDef = JAI.getDefaultInstance();
         if (!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
             jaiDef.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
-        }
-
-        // setup the concurrent tile cache (has proper memory limit handling also for small tiles)
-        if (!(jaiDef.getTileCache() instanceof ConcurrentTileCacheMultiMap)) {
-            jaiDef.setTileCache(new ConcurrentTileCacheMultiMap());
         }
 
         // make sure we remember if GeoServer controls logging or not

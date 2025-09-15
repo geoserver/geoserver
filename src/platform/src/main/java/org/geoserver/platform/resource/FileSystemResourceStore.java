@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -142,9 +143,7 @@ public class FileSystemResourceStore implements ResourceStore {
         try {
             dest.getParentFile().mkdirs(); // Make sure there's somewhere to move to.
             java.nio.file.Files.move(
-                    java.nio.file.Paths.get(file.getAbsolutePath()),
-                    java.nio.file.Paths.get(dest.getAbsolutePath()),
-                    StandardCopyOption.ATOMIC_MOVE);
+                    Path.of(file.getAbsolutePath()), Path.of(dest.getAbsolutePath()), StandardCopyOption.ATOMIC_MOVE);
             return true;
         } catch (IOException e) {
             throw new IllegalStateException("Unable to move " + path + " to " + target, e);
@@ -242,8 +241,8 @@ public class FileSystemResourceStore implements ResourceStore {
                     File tryTemp;
                     do {
                         UUID uuid = UUID.randomUUID();
-                        tryTemp = new File(
-                                actualFile.getParentFile(), String.format("%s.%s.tmp", actualFile.getName(), uuid));
+                        tryTemp =
+                                new File(actualFile.getParentFile(), "%s.%s.tmp".formatted(actualFile.getName(), uuid));
                     } while (tryTemp.exists());
 
                     temp = tryTemp;
@@ -472,10 +471,10 @@ public class FileSystemResourceStore implements ResourceStore {
                 return false;
             }
             try {
-                if (dest instanceof FileSystemResource) {
-                    rename(file, ((FileSystemResource) dest).file);
-                } else if (dest instanceof Files.ResourceAdaptor) {
-                    rename(file, ((Files.ResourceAdaptor) dest).file);
+                if (dest instanceof FileSystemResource resource) {
+                    rename(file, resource.file);
+                } else if (dest instanceof Files.ResourceAdaptor adaptor) {
+                    rename(file, adaptor.file);
                 } else {
                     return Resources.renameByCopy(this, dest);
                 }
@@ -504,8 +503,8 @@ public class FileSystemResourceStore implements ResourceStore {
                     File tryTemp;
                     do {
                         UUID uuid = UUID.randomUUID();
-                        tryTemp = new File(
-                                actualFile.getParentFile(), String.format("%s.%s.tmp", actualFile.getName(), uuid));
+                        tryTemp =
+                                new File(actualFile.getParentFile(), "%s.%s.tmp".formatted(actualFile.getName(), uuid));
                     } while (tryTemp.exists());
 
                     temp = tryTemp;

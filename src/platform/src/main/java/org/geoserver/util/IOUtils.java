@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -176,7 +177,10 @@ public class IOUtils {
         String sysTempDir = dummyTemp.getParentFile().getAbsolutePath();
         dummyTemp.delete();
 
-        File reqTempDir = new File(sysTempDir + File.separator + prefix + Math.random());
+        File reqTempDir = new File(sysTempDir
+                + File.separator
+                + prefix
+                + ThreadLocalRandom.current().nextDouble());
         reqTempDir.mkdir();
 
         return reqTempDir;
@@ -240,8 +244,8 @@ public class IOUtils {
     public static boolean emptyDirectory(File directory, boolean quiet) throws IOException {
         if (!directory.isDirectory()) {
             if (!quiet) {
-                throw new IllegalArgumentException(String.format(
-                        "The provide file '%s' doesn't appear to be a directory.", directory.getAbsolutePath()));
+                throw new IllegalArgumentException("The provide file '%s' doesn't appear to be a directory."
+                        .formatted(directory.getAbsolutePath()));
             }
             // in quiet mode, let's just move on
             return false;
@@ -253,7 +257,7 @@ public class IOUtils {
             if (!quiet) {
                 // unlikely to happen
                 throw new IllegalStateException(
-                        String.format("Not able to list files of '%s'.", directory.getAbsolutePath()));
+                        "Not able to list files of '%s'.".formatted(directory.getAbsolutePath()));
             }
             // in quiet mode, let's just move on
             return false;

@@ -193,8 +193,8 @@ public class GeoServerEnvironment {
      */
     public Object resolveValue(Object value) {
         if (value != null) {
-            if (value instanceof String) {
-                return resolveStringValue((String) value);
+            if (value instanceof String string) {
+                return resolveStringValue(string);
             }
         }
 

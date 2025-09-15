@@ -331,7 +331,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
                     long ellapsedMillis = MILLISECONDS.convert(ellapsedMicros, MICROSECONDS);
                     String unit = ellapsedMillis == 0L ? "us" : "ms";
                     long time = ellapsedMillis == 0L ? ellapsedMicros : ellapsedMillis;
-                    LOGGER.log(level, String.format("delta computed in %,d%s for %s", time, unit, watch.file));
+                    LOGGER.log(level, "delta computed in %,d%s for %s".formatted(time, unit, watch.file));
                 }
                 if (delta != null) {
                     notify(watch, delta);
@@ -341,9 +341,13 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
 
         private void notify(Watch watch, Delta delta) {
             if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.config(String.format(
-                        "Notifying %s change on %s. Created: %,d, removed: %,d, modified: %,d",
-                        delta.kind, delta.context, delta.created.size(), delta.removed.size(), delta.modified.size()));
+                LOGGER.config("Notifying %s change on %s. Created: %,d, removed: %,d, modified: %,d"
+                        .formatted(
+                                delta.kind,
+                                delta.context,
+                                delta.created.size(),
+                                delta.removed.size(),
+                                delta.modified.size()));
             }
             // do not call listeners on the watch thread, they may take a
             // considerable amount of time to process the events

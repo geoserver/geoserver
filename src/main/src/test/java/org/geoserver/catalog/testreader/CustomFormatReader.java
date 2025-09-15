@@ -61,8 +61,8 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
 
     public CustomFormatReader(Object source, Hints hints) throws IOException {
         super(source, hints);
-        if (source instanceof File) {
-            this.dataDirectory = (File) source;
+        if (source instanceof File file) {
+            this.dataDirectory = file;
             initReaderFromFile(hints);
         } else {
             throw new IllegalArgumentException("Invalid source object");
@@ -254,11 +254,10 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
 
     /** Helper for read method. */
     private static List<?> extractValue(GeneralParameterValue param) {
-        if (param instanceof ParameterValue<?>) {
-            final Object paramVal = ((ParameterValue<?>) param).getValue();
+        if (param instanceof ParameterValue<?> value) {
+            final Object paramVal = value.getValue();
             if (paramVal != null) {
-                if (paramVal instanceof List) {
-                    final List<?> list = (List<?>) paramVal;
+                if (paramVal instanceof List<?> list) {
                     return list;
                 } else {
                     throw new UnsupportedOperationException("Custom dimension value must be a list");

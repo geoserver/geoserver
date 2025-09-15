@@ -4,7 +4,6 @@
  */
 package org.geoserver.config.datadir;
 
-import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
@@ -211,18 +210,18 @@ class CatalogLoaderSanitizer {
             if (style.getWorkspace() != null) {
                 String ws = style.getWorkspace().getId();
                 String msg = "Style %s (%s) is expected to have no workspace but has workspace %s. Style ignored.";
-                LOGGER.severe(format(msg, style.getName(), style.getId(), ws));
+                LOGGER.severe(msg.formatted(style.getName(), style.getId(), ws));
                 return false;
             }
         } else {
             if (style.getWorkspace() == null) {
                 String msg = "Style %s[%s] should have workspace %s but has no workspace. Style ignored.";
-                LOGGER.severe(format(msg, style.getName(), style.getId(), expectedWorkspace.getName()));
+                LOGGER.severe(msg.formatted(style.getName(), style.getId(), expectedWorkspace.getName()));
                 return false;
             } else if (!expectedWorkspace.getId().equals(style.getWorkspace().getId())) {
                 String ws = style.getWorkspace().getId();
                 String msg = "Style %s[%s] should have workspace %s but has workspace %s. Style ignored.";
-                LOGGER.severe(format(msg, style.getName(), style.getId(), expectedWorkspace.getName(), ws));
+                LOGGER.severe(msg.formatted(style.getName(), style.getId(), expectedWorkspace.getName(), ws));
                 return false;
             }
         }
@@ -235,8 +234,8 @@ class CatalogLoaderSanitizer {
         catalog.resolve(info); // only ensures collection properties are initialized if null
         ResolvingProxyResolver.resolve(info, catalog); // resolves proxies
 
-        if (info instanceof LayerInfo) {
-            sanitize(catalog, (LayerInfo) info);
+        if (info instanceof LayerInfo layerInfo) {
+            sanitize(catalog, layerInfo);
         }
     }
 
@@ -253,8 +252,8 @@ class CatalogLoaderSanitizer {
      */
     private void sanitize(CatalogImpl catalog, LayerInfo layer) {
         if (layer.getDefaultStyle() == null) {
-            LOGGER.warning(() ->
-                    format("Layer %s is missing the default style, assigning one automatically", layer.prefixedName()));
+            LOGGER.warning(() -> "Layer %s is missing the default style, assigning one automatically"
+                    .formatted(layer.prefixedName()));
             ResourceInfo resource = layer.getResource();
             String styleName;
             if (resource instanceof FeatureTypeInfo) {

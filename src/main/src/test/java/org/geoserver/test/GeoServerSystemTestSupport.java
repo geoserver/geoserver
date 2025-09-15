@@ -1679,8 +1679,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         Map<String, Object> params = KvpUtils.parseQueryString(path);
         for (String key : params.keySet()) {
             Object value = params.get(key);
-            if (value instanceof String) {
-                request.addParameter(key, (String) value);
+            if (value instanceof String string) {
+                request.addParameter(key, string);
             } else {
                 String[] values = (String[]) value;
                 request.addParameter(key, values);
@@ -2542,7 +2542,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(layerGroupName);
         if (layerGroup == null) {
             // targeted layer group doesn't exists
-            throw new RuntimeException(String.format("Layer group '%s' doesn't exists.", layerGroupName));
+            throw new RuntimeException("Layer group '%s' doesn't exists.".formatted(layerGroupName));
         }
         layerGroup.getKeywords().addAll(keywords);
         getCatalog().save(layerGroup);
@@ -2570,7 +2570,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         LayerInfo originalLayerInfo = catalog.getLayerByName(layerName);
         if (originalLayerInfo == null) {
             // layer don't exists
-            throw new RuntimeException(String.format("Could not retrieve a layer for name '%s'.", layerName));
+            throw new RuntimeException("Could not retrieve a layer for name '%s'.".formatted(layerName));
         }
         FeatureTypeInfo originalFeatureTypeInfo = (FeatureTypeInfo) originalLayerInfo.getResource();
         DataStoreInfo originalStoreInfo = originalFeatureTypeInfo.getStore();

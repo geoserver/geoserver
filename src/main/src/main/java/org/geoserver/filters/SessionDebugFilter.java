@@ -43,8 +43,7 @@ public class SessionDebugFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
-        if (req instanceof HttpServletRequest) {
-            HttpServletRequest request = (HttpServletRequest) req;
+        if (req instanceof HttpServletRequest request) {
             chain.doFilter(new SessionDebugWrapper(request), res);
         } else {
             chain.doFilter(req, res);

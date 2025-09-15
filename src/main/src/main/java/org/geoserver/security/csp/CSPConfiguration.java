@@ -7,6 +7,7 @@ package org.geoserver.security.csp;
 import static com.google.common.base.MoreObjects.firstNonNull;
 
 import com.google.common.base.Preconditions;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.geoserver.platform.GeoServerExtensions;
 /** Contains the configuration the setting Content-Security-Policy response header. */
 public class CSPConfiguration implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 975607551448404268L;
 
     // default values
@@ -263,8 +265,7 @@ public class CSPConfiguration implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CSPConfiguration) {
-            CSPConfiguration other = (CSPConfiguration) obj;
+        if (obj instanceof CSPConfiguration other) {
             return Objects.equals(this.enabled, other.enabled)
                     && Objects.equals(this.reportOnly, other.reportOnly)
                     && Objects.equals(this.allowOverride, other.allowOverride)

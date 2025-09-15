@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.util.Objects;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
@@ -19,6 +20,7 @@ import org.geoserver.catalog.DimensionPresentation;
 public class DimensionInfoImpl implements DimensionInfo {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -2978192474130857785L;
 
     boolean enabled;

@@ -80,11 +80,11 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
      */
     public Object getProperty(final Object input, final String propertyName) throws IllegalArgumentException {
 
-        if (input instanceof Info && Predicates.ANY_TEXT.getPropertyName().equals(propertyName)) {
-            return getAnyText((Info) input);
+        if (input instanceof Info info && Predicates.ANY_TEXT.getPropertyName().equals(propertyName)) {
+            return getAnyText(info);
         }
-        if (input instanceof Info && "id".equals(propertyName)) {
-            return ((Info) input).getId();
+        if (input instanceof Info info && "id".equals(propertyName)) {
+            return info.getId();
         }
 
         String[] propertyNames = propertyName.split("\\.");
@@ -152,19 +152,19 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         }
 
         Object value;
-        if (input instanceof Map) {
-            if (!((Map<?, ?>) input).containsKey(propName)) {
+        if (input instanceof Map<?, ?> map) {
+            if (!map.containsKey(propName)) {
                 throw new IllegalArgumentException("Property "
                         + propName
                         + " does not exist in Map property "
                         + (offset > 0 ? propertyNames[offset - 1] : ""));
             }
-            value = ((Map<?, ?>) input).get(propName);
+            value = map.get(propName);
         } else {
             // special case for ResourceInfo bounding box, used the derived property
-            if ("boundingBox".equalsIgnoreCase(propName) && input instanceof ResourceInfo) {
+            if ("boundingBox".equalsIgnoreCase(propName) && input instanceof ResourceInfo info) {
                 try {
-                    value = ((ResourceInfo) input).boundingBox();
+                    value = info.boundingBox();
                 } catch (Exception e) {
                     throw new IllegalArgumentException(e);
                 }
@@ -221,8 +221,8 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
 
     private Collection<Object> getCollectionProperty(Object input, String colPropName) {
         Object colProp;
-        if (input instanceof Map) {
-            colProp = ((Map<?, ?>) input).get(colPropName);
+        if (input instanceof Map<?, ?> map) {
+            colProp = map.get(colPropName);
         } else {
             try {
                 colProp = OwsUtils.get(input, colPropName);

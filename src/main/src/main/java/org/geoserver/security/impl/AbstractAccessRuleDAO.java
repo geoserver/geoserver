@@ -143,7 +143,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
             // avoid unnecessary reloads, the file just got fully written
             if (watcher != null) watcher.setKnownLastModified(lastModified);
         } catch (Exception e) {
-            if (e instanceof IOException) throw (IOException) e;
+            if (e instanceof IOException exception) throw exception;
             else throw new IOException("Could not write rules to " + propertyFileName, e);
         }
     }

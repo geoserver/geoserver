@@ -445,23 +445,23 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
     @SuppressWarnings("unchecked")
     protected <T extends CatalogInfo> T checkAccess(T info) {
-        if (info instanceof WorkspaceInfo) {
-            return (T) checkAccess((WorkspaceInfo) info);
+        if (info instanceof WorkspaceInfo workspaceInfo) {
+            return (T) checkAccess(workspaceInfo);
         }
-        if (info instanceof NamespaceInfo) {
-            return (T) checkAccess((NamespaceInfo) info);
+        if (info instanceof NamespaceInfo namespaceInfo) {
+            return (T) checkAccess(namespaceInfo);
         }
-        if (info instanceof StoreInfo) {
-            return (T) checkAccess((StoreInfo) info);
+        if (info instanceof StoreInfo storeInfo) {
+            return (T) checkAccess(storeInfo);
         }
-        if (info instanceof ResourceInfo) {
-            return (T) checkAccess((ResourceInfo) info);
+        if (info instanceof ResourceInfo resourceInfo) {
+            return (T) checkAccess(resourceInfo);
         }
-        if (info instanceof LayerInfo) {
-            return (T) checkAccess((LayerInfo) info);
+        if (info instanceof LayerInfo layerInfo) {
+            return (T) checkAccess(layerInfo);
         }
-        if (info instanceof LayerGroupInfo) {
-            return (T) checkAccess((LayerGroupInfo) info);
+        if (info instanceof LayerGroupInfo groupInfo) {
+            return (T) checkAccess(groupInfo);
         }
 
         return info;

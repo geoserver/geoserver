@@ -74,7 +74,7 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
 
     @Override
     protected Authentication createSuccessfulAuthentication(HttpServletRequest request, UserDetails user) {
-        if (user instanceof RememberMeUserDetails) user = ((RememberMeUserDetails) user).getWrappedObject();
+        if (user instanceof RememberMeUserDetails details) user = details.getWrappedObject();
 
         Collection<GrantedAuthority> roles = new HashSet<>();
         if (user.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE)) {

@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
+
 /**
  * Security service configuration object that is persisted in a file.
  *
@@ -12,7 +14,9 @@ package org.geoserver.security.config;
  */
 public class FileBasedSecurityServiceConfig extends BaseSecurityNamedServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private String fileName;
     private long checkInterval;
 

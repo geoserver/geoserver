@@ -66,8 +66,7 @@ public abstract class NearestMatchFinder {
             AcceptableRange acceptableRange =
                     AcceptableRange.getAcceptableRange(dimensionInfo.getAcceptableInterval(), dataType);
             NearestFailBehavior nearestFailBehavior = dimensionInfo.getNearestFailBehavior();
-            if (info instanceof FeatureTypeInfo) {
-                FeatureTypeInfo featureType = (FeatureTypeInfo) info;
+            if (info instanceof FeatureTypeInfo featureType) {
                 return new Vector(
                         featureType,
                         dimensionInfo.getAttribute(),
@@ -75,10 +74,9 @@ public abstract class NearestMatchFinder {
                         acceptableRange,
                         nearestFailBehavior,
                         dataType);
-            } else if (info instanceof CoverageInfo) {
-                GridCoverageReader reader = ((CoverageInfo) info).getGridCoverageReader(null, null);
-                if (reader instanceof StructuredGridCoverage2DReader && ENABLE_STRUCTURED_READER_SUPPORT) {
-                    StructuredGridCoverage2DReader structured = (StructuredGridCoverage2DReader) reader;
+            } else if (info instanceof CoverageInfo coverageInfo) {
+                GridCoverageReader reader = coverageInfo.getGridCoverageReader(null, null);
+                if (reader instanceof StructuredGridCoverage2DReader structured && ENABLE_STRUCTURED_READER_SUPPORT) {
                     DimensionDescriptor dd = getDimensionDescriptor(structured, dimensionName);
                     return new StructuredReader(
                             structured,
@@ -87,13 +85,8 @@ public abstract class NearestMatchFinder {
                             acceptableRange,
                             nearestFailBehavior,
                             dataType);
-                } else if (reader instanceof GridCoverage2DReader) {
-                    return new Reader(
-                            (GridCoverage2DReader) reader,
-                            acceptableRange,
-                            nearestFailBehavior,
-                            dimensionName,
-                            dataType);
+                } else if (reader instanceof GridCoverage2DReader dReader) {
+                    return new Reader(dReader, acceptableRange, nearestFailBehavior, dimensionName, dataType);
                 }
             }
         } catch (ParseException e) {
@@ -167,7 +160,7 @@ public abstract class NearestMatchFinder {
         // simple point vs point comparison?
         if (endAttribute == null
                 && (!(value instanceof Range) || ((Range) value).getMinValue().equals(((Range) value).getMaxValue()))) {
-            Date date = (Date) (value instanceof Range ? ((Range) value).getMinValue() : value);
+            Date date = (Date) (value instanceof Range r ? r.getMinValue() : value);
             NearestVisitor visitor = new NearestVisitor(attribute, date);
             Filter filter = Filter.INCLUDE;
             if (acceptableRange != null) {
@@ -203,11 +196,11 @@ public abstract class NearestMatchFinder {
 
     protected Object closest(Object value, Object maxOfSmallers, Object minOfGreater) {
         // normalize ranges to significant instants
-        if (maxOfSmallers instanceof Range) {
-            maxOfSmallers = ((Range) maxOfSmallers).getMaxValue();
+        if (maxOfSmallers instanceof Range range) {
+            maxOfSmallers = range.getMaxValue();
         }
-        if (minOfGreater instanceof Range) {
-            minOfGreater = ((Range) minOfGreater).getMinValue();
+        if (minOfGreater instanceof Range range) {
+            minOfGreater = range.getMinValue();
         }
 
         Object result;
@@ -223,8 +216,7 @@ public abstract class NearestMatchFinder {
             if (minOfGreater == null) {
                 result = maxOfSmallers;
             } else {
-                if (value instanceof Range) {
-                    Range range = (Range) value;
+                if (value instanceof Range range) {
                     Object min = range.getMinValue();
                     Object max = range.getMaxValue();
                     double distanceBelow = distance(min, maxOfSmallers);
@@ -238,11 +230,11 @@ public abstract class NearestMatchFinder {
             }
         }
 
-        if (result instanceof Range) {
+        if (result instanceof Range range) {
             if (result == minOfGreater) {
-                return ((Range) result).getMaxValue();
+                return range.getMaxValue();
             } else {
-                return ((Range) result).getMinValue();
+                return range.getMinValue();
             }
         } else {
             return result;
@@ -264,8 +256,7 @@ public abstract class NearestMatchFinder {
     }
 
     protected Filter buildComparisonFilter(Object value, FilterDirection direction) {
-        if (value instanceof Range) {
-            Range range = (Range) value;
+        if (value instanceof Range range) {
             Literal qlower = FF.literal(range.getMinValue());
             Literal qupper = FF.literal(range.getMaxValue());
             return buildComparisonFilter(direction, qlower, qupper);
@@ -465,8 +456,8 @@ public abstract class NearestMatchFinder {
             if (rangeFilter == null) {
                 return true;
             }
-            if (domainValue instanceof Range) {
-                return rangeFilter.intersects((Range) domainValue);
+            if (domainValue instanceof Range range) {
+                return rangeFilter.intersects(range);
             } else {
                 return rangeFilter.contains((Comparable) domainValue);
             }
@@ -482,9 +473,8 @@ public abstract class NearestMatchFinder {
                     return compare((Range) b, a) * -1;
                 }
             } else if (a instanceof Range) {
-                if (b instanceof Range) {
+                if (b instanceof Range rb) {
                     Range ra = (Range) a;
-                    Range rb = (Range) b;
 
                     if (ra.intersects(rb)) {
                         return 0;

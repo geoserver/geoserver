@@ -67,11 +67,9 @@ public class Styles {
         for (int i = 0; i < sld.getStyledLayers().length; i++) {
             Style[] styles = null;
 
-            if (sld.getStyledLayers()[i] instanceof NamedLayer) {
-                NamedLayer layer = (NamedLayer) sld.getStyledLayers()[i];
+            if (sld.getStyledLayers()[i] instanceof NamedLayer layer) {
                 styles = layer.getStyles();
-            } else if (sld.getStyledLayers()[i] instanceof UserLayer) {
-                UserLayer layer = (UserLayer) sld.getStyledLayers()[i];
+            } else if (sld.getStyledLayers()[i] instanceof UserLayer layer) {
                 styles = layer.getUserStyles();
             }
 

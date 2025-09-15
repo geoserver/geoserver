@@ -5,6 +5,7 @@
  */
 package org.geoserver.config.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.eclipse.imagen.JAI;
 import org.eclipse.imagen.TileCache;
@@ -14,6 +15,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
 
     public static final String KEY = "jai.info";
 
+    @Serial
     private static final long serialVersionUID = 7121137497699361776L;
 
     boolean allowInterpolation;

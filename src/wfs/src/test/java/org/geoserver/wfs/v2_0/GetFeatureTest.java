@@ -1168,13 +1168,16 @@ public class GetFeatureTest extends WFS20TestSupport {
     @Test
     public void testDefaultStoredQueryPost() throws Exception {
         // this one has a lowercase id, as specification requires
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<wfs:GetFeature xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" service=\"WFS\" startIndex=\"0\" "
-                + "version=\"2.0.0\">\n"
-                + "\t<wfs:StoredQuery id=\"urn:ogc:def:query:OGC-WFS::GetFeatureById\">\n"
-                + "\t\t<wfs:Parameter name=\"id\">PrimitiveGeoFeature.f001</wfs:Parameter>\n"
-                + "\t</wfs:StoredQuery>\n"
-                + "</wfs:GetFeature>\n";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" service="WFS" startIndex="0" \
+                version="2.0.0">
+                	<wfs:StoredQuery id="urn:ogc:def:query:OGC-WFS::GetFeatureById">
+                		<wfs:Parameter name="id">PrimitiveGeoFeature.f001</wfs:Parameter>
+                	</wfs:StoredQuery>
+                </wfs:GetFeature>
+                """;
 
         Document dom = postAsDOM("wfs", xml);
 

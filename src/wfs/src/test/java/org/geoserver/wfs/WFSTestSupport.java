@@ -138,7 +138,7 @@ public abstract class WFSTestSupport extends GeoServerSystemTestSupport {
         if (featureTypeInfo == null) {
             // ouch, feature type not found
             throw new RuntimeException(
-                    String.format("No feature type matching the provided name '%s' found.", featureTypeName));
+                    "No feature type matching the provided name '%s' found.".formatted(featureTypeName));
         }
         // set encode measures and save
         featureTypeInfo.setEncodeMeasures(encodeMeasures);

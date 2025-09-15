@@ -116,14 +116,13 @@ public class WFSException extends ServiceException {
         // default to name of operation, use the request object class name to determine the
         // operation
         String className = request.getClass().getSimpleName();
-        if (request instanceof RequestObject) {
+        if (request instanceof RequestObject requestObject) {
             // request object adapter
 
             className = request.getClass().getSuperclass().getSimpleName();
             if (className.endsWith("Request")) {
                 return className.substring(0, className.length() - "Request".length());
             }
-            RequestObject requestObject = (RequestObject) request;
             EObject adaptee = requestObject.getAdaptee();
             if (adaptee.getClass().getName().contains("wfs20")) {
                 // locator only for WFS20, implementation package is currently net.opengis.wfs20

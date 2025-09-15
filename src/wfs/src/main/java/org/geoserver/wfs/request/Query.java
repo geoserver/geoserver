@@ -25,10 +25,10 @@ import org.geotools.api.filter.sort.SortBy;
 public abstract class Query extends RequestObject {
 
     public static Query adapt(Object query) {
-        if (query instanceof QueryType) {
-            return new WFS11((EObject) query);
-        } else if (query instanceof net.opengis.wfs20.QueryType) {
-            return new WFS20((EObject) query);
+        if (query instanceof QueryType type) {
+            return new WFS11(type);
+        } else if (query instanceof net.opengis.wfs20.QueryType type) {
+            return new WFS20(type);
         }
         return null;
     }

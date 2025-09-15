@@ -53,8 +53,8 @@ public class ApplicationSchemaXSD1 extends XSD {
         for (Map.Entry<String, Set<ResourceInfo>> entry : resources.entrySet()) {
             Set<FeatureTypeInfo> fts = new HashSet<>();
             for (ResourceInfo ri : entry.getValue()) {
-                if (ri instanceof FeatureTypeInfo) {
-                    fts.add((FeatureTypeInfo) ri);
+                if (ri instanceof FeatureTypeInfo info) {
+                    fts.add(info);
                 }
             }
 

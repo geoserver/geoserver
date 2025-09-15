@@ -100,8 +100,7 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
             Object associated = association.getValue();
 
             // check for feature
-            if (associated instanceof SimpleFeature) {
-                SimpleFeature feature = (SimpleFeature) associated;
+            if (associated instanceof SimpleFeature feature) {
                 Name typeName = feature.getType().getName();
                 QName name = new QName(typeName.getNamespaceURI(), typeName.getLocalPart());
 

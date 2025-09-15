@@ -24,8 +24,7 @@ public class FilterTypeBinding extends org.geotools.filter.v1_1.FilterTypeBindin
         Filter filter = (Filter) super.parse(instance, node, value);
 
         // some checks, these should perhaps be made part of the Filter binding
-        if (filter instanceof Id) {
-            Id idFilter = (Id) filter;
+        if (filter instanceof Id idFilter) {
 
             if (idFilter.getIdentifiers().size() > 1) {
                 // there should only be one type of id specified

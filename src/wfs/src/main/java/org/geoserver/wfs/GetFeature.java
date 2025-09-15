@@ -925,13 +925,11 @@ public class GetFeature {
         boolean foundGetFeatureById = false;
         for (int i = 0; i < queries.size(); i++) {
             Object obj = queries.get(i);
-            if (obj instanceof StoredQueryType) {
+            if (obj instanceof StoredQueryType sq) {
 
                 if (storedQueryProvider == null) {
                     throw new WFSException(request, "Stored query not supported");
                 }
-
-                StoredQueryType sq = (StoredQueryType) obj;
 
                 // look up the store query
                 String storedQueryId = sq.getId();
@@ -1007,7 +1005,7 @@ public class GetFeature {
                         e -> e.getKey(),
                         e -> (String) e.getValue(),
                         (u, v) -> {
-                            throw new IllegalStateException(String.format("Duplicate key %s", u));
+                            throw new IllegalStateException("Duplicate key %s".formatted(u));
                         },
                         () -> new KvpMap<>()));
     }
@@ -1564,11 +1562,11 @@ public class GetFeature {
                 protected Object visit(BinaryComparisonOperator filter, Object data) {
                     Expression ex1 = filter.getExpression1();
                     Expression ex2 = filter.getExpression2();
-                    if (ex1 instanceof PropertyName) {
-                        checkNonSpatial((PropertyName) ex1);
+                    if (ex1 instanceof PropertyName name) {
+                        checkNonSpatial(name);
                     }
-                    if (ex2 instanceof PropertyName) {
-                        checkNonSpatial((PropertyName) ex2);
+                    if (ex2 instanceof PropertyName name) {
+                        checkNonSpatial(name);
                     }
 
                     return super.visit(filter, data);
@@ -1748,7 +1746,7 @@ public class GetFeature {
             // used we
             // need to switch to an intersects filter
             Expression expression1 = filter.getExpression1();
-            if (expression1 instanceof PropertyName && isGmlBoundedBy((PropertyName) expression1)) {
+            if (expression1 instanceof PropertyName name && isGmlBoundedBy(name)) {
                 ReferencedEnvelope bounds = ReferencedEnvelope.reference(filter.getBounds());
                 Polygon polygon = JTS.toGeometry(bounds);
                 Function boundedBy = filterFactory.function("boundedBy", filterFactory.property(""));

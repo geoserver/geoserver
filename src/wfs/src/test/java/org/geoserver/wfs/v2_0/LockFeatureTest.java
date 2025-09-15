@@ -155,12 +155,14 @@ public class LockFeatureTest extends WFS20TestSupport {
     }
 
     public void lockWithStoredQuery(String path) throws Exception {
-        String xml = "<wfs:LockFeature xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" expiry=\"1\" service=\"WFS\"\n"
-                + "                 version=\"2.0.0\">\n"
-                + "   <wfs:StoredQuery id=\"urn:ogc:def:query:OGC-WFS::GetFeatureById\">\n"
-                + "      <wfs:Parameter name=\"id\">AggregateGeoFeature.f005</wfs:Parameter>\n"
-                + "   </wfs:StoredQuery>\n"
-                + "</wfs:LockFeature>";
+        String xml =
+                """
+                <wfs:LockFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" expiry="1" service="WFS"
+                                 version="2.0.0">
+                   <wfs:StoredQuery id="urn:ogc:def:query:OGC-WFS::GetFeatureById">
+                      <wfs:Parameter name="id">AggregateGeoFeature.f005</wfs:Parameter>
+                   </wfs:StoredQuery>
+                </wfs:LockFeature>""";
 
         Document dom = postAsDOM(path, xml);
         assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());

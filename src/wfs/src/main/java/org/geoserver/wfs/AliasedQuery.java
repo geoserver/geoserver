@@ -136,8 +136,8 @@ class AliasedQuery extends Query {
         }
 
         private Expression visitBinaryChild(Expression ex, Object extraData, int idx) {
-            if (ex instanceof PropertyName) {
-                String name = ((PropertyName) ex).getPropertyName();
+            if (ex instanceof PropertyName propertyName) {
+                String name = propertyName.getPropertyName();
                 String renamed = rename(aliases.get(idx), name);
                 return ff.property(renamed);
             } else {

@@ -17,7 +17,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
-import junit.framework.TestCase;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.rest.RestBaseController;
@@ -64,20 +63,22 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
 
     /** Minimal XML config for XMLUserGroupService (fileName is REQUIRED). */
     private static String xmlServiceXml(String name) {
-        return "<org.geoserver.security.xml.XMLUserGroupServiceConfig>" + "  <name>"
-                + name + "</name>" + "  <className>org.geoserver.security.xml.XMLUserGroupService</className>"
-                + "  <fileName>"
-                + name + ".xml</fileName>" + "  <passwordEncoderName>plainTextPasswordEncoder</passwordEncoderName>"
+        return "<org.geoserver.security.xml.XMLUserGroupServiceConfig>"
+                + "  <name>" + name + "</name>"
+                + "  <className>org.geoserver.security.xml.XMLUserGroupService</className>"
+                + "  <fileName>" + name + ".xml</fileName>"
+                + "  <passwordEncoderName>plainTextPasswordEncoder</passwordEncoderName>"
                 + "  <passwordPolicyName>default</passwordPolicyName>"
                 + "</org.geoserver.security.xml.XMLUserGroupServiceConfig>";
     }
 
     /** Minimal JSON config (XStream-friendly element-style keys). */
     private static String xmlServiceJson(String name) {
-        return "{ \"org.geoserver.security.xml.XMLUserGroupServiceConfig\": {" + "  \"name\": \""
-                + name + "\"," + "  \"className\": \"org.geoserver.security.xml.XMLUserGroupService\","
-                + "  \"fileName\": \""
-                + name + ".xml\"," + "  \"passwordEncoderName\": \"plainTextPasswordEncoder\","
+        return "{ \"org.geoserver.security.xml.XMLUserGroupServiceConfig\": {"
+                + "  \"name\": \"" + name + "\","
+                + "  \"className\": \"org.geoserver.security.xml.XMLUserGroupService\","
+                + "  \"fileName\": \"" + name + ".xml\","
+                + "  \"passwordEncoderName\": \"plainTextPasswordEncoder\","
                 + "  \"passwordPolicyName\": \"default\""
                 + "} }";
     }
@@ -246,8 +247,8 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
 
     @Test
     public void testView_Unknown_404_XML_and_JSON() throws Exception {
-        TestCase.assertEquals(404, doGet(BASE + "/does-not-exist", CT_XML).getStatus());
-        TestCase.assertEquals(404, doGet(BASE + "/does-not-exist", CT_JSON).getStatus());
+        assertEquals(404, doGet(BASE + "/does-not-exist", CT_XML).getStatus());
+        assertEquals(404, doGet(BASE + "/does-not-exist", CT_JSON).getStatus());
     }
 
     // ----------------- create -----------------
@@ -309,20 +310,17 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
     public void testPost_BadPayload_400_XML_and_JSON() throws Exception {
         // XML: missing required name
         String badXmlMissingName = xmlServiceXml("X").replace("<name>X</name>", "");
-        TestCase.assertEquals(
-                400, doPost(BASE, badXmlMissingName, CT_XML, CT_XML).getStatus());
+        assertEquals(400, doPost(BASE, badXmlMissingName, CT_XML, CT_XML).getStatus());
 
         // XML: missing required fileName for XML service
         String badXmlMissingFile = xmlServiceXml("Y").replace("<fileName>Y.xml</fileName>", "");
-        TestCase.assertEquals(
-                400, doPost(BASE, badXmlMissingFile, CT_XML, CT_XML).getStatus());
+        assertEquals(400, doPost(BASE, badXmlMissingFile, CT_XML, CT_XML).getStatus());
 
-        // JSON: force validator error by providing an empty fileName (controller defaults only when missing)
+        // JSON: force validator error by providing a bogus class
         String badJsonBadClass = xmlServiceJson("Z")
                 .replace("org.geoserver.security.xml.XMLUserGroupService", "com.example.DoesNotExist");
 
-        TestCase.assertEquals(
-                500, doPost(BASE, badJsonBadClass, CT_JSON, CT_JSON).getStatus());
+        assertEquals(500, doPost(BASE, badJsonBadClass, CT_JSON, CT_JSON).getStatus());
     }
 
     // ----------------- update -----------------
@@ -338,7 +336,7 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
                     .replace(
                             "<passwordEncoderName>plainTextPasswordEncoder</passwordEncoderName>",
                             "<passwordEncoderName>digestPasswordEncoder</passwordEncoderName>");
-            TestCase.assertEquals(
+            assertEquals(
                     200, doPut(BASE + "/" + name, updatedXml, CT_XML, CT_XML).getStatus());
 
             // verify XML view changed
@@ -350,7 +348,7 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
 
             // switch back via JSON
             String updatedJson = xmlServiceJson(name); // plainTextPasswordEncoder
-            TestCase.assertEquals(
+            assertEquals(
                     200, doPut(BASE + "/" + name, updatedJson, CT_JSON, CT_JSON).getStatus());
 
             JsonNode found = findFirstService(
@@ -370,9 +368,9 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
         try {
             assertTrue(doPost(BASE, xmlServiceXml(a), CT_XML, CT_XML).getStatus() < 300);
 
-            TestCase.assertEquals(
+            assertEquals(
                     400, doPut(BASE + "/" + a, xmlServiceXml(b), CT_XML, CT_XML).getStatus());
-            TestCase.assertEquals(
+            assertEquals(
                     400,
                     doPut(BASE + "/" + a, xmlServiceJson(b), CT_JSON, CT_JSON).getStatus());
         } finally {
@@ -384,11 +382,11 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
     @Test
     public void testPut_NotFound_400_XML_and_JSON() throws Exception {
         String x = newName();
-        TestCase.assertEquals(
+        assertEquals(
                 400,
                 doPut(BASE + "/does-not-exist", xmlServiceXml(x), CT_XML, CT_XML)
                         .getStatus());
-        TestCase.assertEquals(
+        assertEquals(
                 400,
                 doPut(BASE + "/does-not-exist", xmlServiceJson(x), CT_JSON, CT_JSON)
                         .getStatus());
@@ -400,12 +398,12 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
     public void testDelete_200_and_View404_XML_and_JSON() throws Exception {
         String a = newName();
         assertTrue(doPost(BASE, xmlServiceXml(a), CT_XML, CT_XML).getStatus() < 300);
-        TestCase.assertEquals(200, doDelete(BASE + "/" + a, CT_XML).getStatus());
-        TestCase.assertEquals(404, doGet(BASE + "/" + a, CT_XML).getStatus());
+        assertEquals(200, doDelete(BASE + "/" + a, CT_XML).getStatus());
+        assertEquals(404, doGet(BASE + "/" + a, CT_XML).getStatus());
 
         String b = newName();
         assertTrue(doPost(BASE, xmlServiceJson(b), CT_JSON, CT_JSON).getStatus() < 300);
-        TestCase.assertEquals(200, doDelete(BASE + "/" + b, CT_JSON).getStatus());
-        TestCase.assertEquals(404, doGet(BASE + "/" + b, CT_JSON).getStatus());
+        assertEquals(200, doDelete(BASE + "/" + b, CT_JSON).getStatus());
+        assertEquals(404, doGet(BASE + "/" + b, CT_JSON).getStatus());
     }
 }

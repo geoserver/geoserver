@@ -155,12 +155,12 @@ public class KvpRequestReader {
             // check for repeated parameters
             if (!hasRepeatedParameters) {
                 Object rawValue = rawKvp.get(property);
-                if (rawValue instanceof String[]) {
+                if (rawValue instanceof String[] strings) {
                     throw new ServiceException(
                             "Found multiple, inconsistent values for parameter "
                                     + property
                                     + ": "
-                                    + Arrays.toString((String[]) rawValue),
+                                    + Arrays.toString(strings),
                             ServiceException.INVALID_PARAMETER_VALUE,
                             property);
                 }
@@ -216,8 +216,7 @@ public class KvpRequestReader {
     /** Equals override, equality is based on {@link #getRequestBean()} */
     @Override
     public final boolean equals(Object obj) {
-        if (obj instanceof KvpRequestReader) {
-            KvpRequestReader other = (KvpRequestReader) obj;
+        if (obj instanceof KvpRequestReader other) {
 
             return requestBean == other.requestBean;
         }

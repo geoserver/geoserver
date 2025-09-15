@@ -155,9 +155,7 @@ public class ElevationParser {
 
     private boolean addValue(Collection<Double> result, Double step) {
         for (final Object element : result) {
-            if (element instanceof Double) {
-                // convert
-                final Double local = (Double) element;
+            if (element instanceof Double local) {
                 if (local.equals(step)) return false;
             } else {
                 // convert
@@ -172,9 +170,9 @@ public class ElevationParser {
     private void addPeriod(Collection<Object> result, NumberRange<Double> newRange) {
         for (Iterator<Object> it = result.iterator(); it.hasNext(); ) {
             final Object element = it.next();
-            if (element instanceof Double) {
+            if (element instanceof Double double1) {
                 // convert
-                if (newRange.contains((Number) element)) {
+                if (newRange.contains((Number) double1)) {
                     it.remove();
                 }
             } else {

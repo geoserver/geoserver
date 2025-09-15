@@ -254,10 +254,12 @@ public class DispatcherTest {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
-            String dtdExternal = "<!DOCTYPE foo [\n"
-                    + "        <!ENTITY % external SYSTEM \"invalid.xsd\">\n"
-                    + "        %external;\n"
-                    + "        ]>";
+            String dtdExternal =
+                    """
+                    <!DOCTYPE foo [
+                            <!ENTITY % external SYSTEM "invalid.xsd">
+                            %external;
+                            ]>""";
             String body = dtdExternal + "\n<Hello service=\"hello\"/>";
 
             try (FileOutputStream output = new FileOutputStream(file)) {

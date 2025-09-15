@@ -567,38 +567,41 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPutContactAsJSONInternationalValues() throws Exception {
         initContact();
-        String inputJson = "{\n"
-                + "    \"contact\": {\n"
-                + "        \"internationalAddress\": {\n"
-                + "            \"ar-EG\": \"Avenida Atlantica 15\",\n"
-                + "            \"de\": \"via di Sotterra 13\"\n"
-                + "        },\n"
-                + "        \"internationalAddressCity\": {\n"
-                + "            \"ar-EG\": \"Alexandria\",\n"
-                + "            \"de\": \"Berlin\"\n"
-                + "        },\n"
-                + "        \"internationalAddressCountry\": {\n"
-                + "            \"ar-EG\": \"Egypt\",\n"
-                + "            \"de\": \"Germany\"\n"
-                + "        },\n"
-                + "        \"internationalAddressDeliveryPoint\": {\n"
-                + "            \"ar-EG\": \"EG delivery point\",\n"
-                + "            \"de\": \"DE delivery point\"\n"
-                + "        },\n"
-                + "        \"internationalAddressPostalCode\": {\n"
-                + "            \"ar-EG\": 111110000011111,\n"
-                + "            \"de\": \"000001111110000\"\n"
-                + "        },\n"
-                + "        \"internationalContactEmail\": {\n"
-                + "            \"ar-EG\": \"claudius.ptolomaeus@gmail.com\",\n"
-                + "            \"de\": \"alexander.von.humboldt@erdkunde.com\"\n"
-                + "        },\n"
-                + "        \"internationalContactPerson\": {\n"
-                + "            \"ar-EG\": \"Claudius Ptolomaeus\",\n"
-                + "            \"de\": \"Alexander von Humboldt\"\n"
-                + "        },\n"
-                + "    }\n"
-                + "}";
+        String inputJson =
+                """
+                {
+                    "contact": {
+                        "internationalAddress": {
+                            "ar-EG": "Avenida Atlantica 15",
+                            "de": "via di Sotterra 13"
+                        },
+                        "internationalAddressCity": {
+                            "ar-EG": "Alexandria",
+                            "de": "Berlin"
+                        },
+                        "internationalAddressCountry": {
+                            "ar-EG": "Egypt",
+                            "de": "Germany"
+                        },
+                        "internationalAddressDeliveryPoint": {
+                            "ar-EG": "EG delivery point",
+                            "de": "DE delivery point"
+                        },
+                        "internationalAddressPostalCode": {
+                            "ar-EG": 111110000011111,
+                            "de": "000001111110000"
+                        },
+                        "internationalContactEmail": {
+                            "ar-EG": "claudius.ptolomaeus@gmail.com",
+                            "de": "alexander.von.humboldt@erdkunde.com"
+                        },
+                        "internationalContactPerson": {
+                            "ar-EG": "Claudius Ptolomaeus",
+                            "de": "Alexander von Humboldt"
+                        },
+                    }
+                }\
+                """;
         MockHttpServletResponse response =
                 putAsServletResponse(RestBaseController.ROOT_PATH + "/settings/contact", inputJson, "text/json");
         assertEquals(200, response.getStatus());

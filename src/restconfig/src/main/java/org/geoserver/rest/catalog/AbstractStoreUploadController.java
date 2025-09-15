@@ -78,8 +78,8 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
                 throw new RestException("Unrecognized file upload method: " + method, HttpStatus.BAD_REQUEST);
             }
         } catch (Throwable t) {
-            if (t instanceof RestException) {
-                throw (RestException) t;
+            if (t instanceof RestException exception) {
+                throw exception;
             } else {
                 throw new RestException("Error while storing uploaded file:", HttpStatus.INTERNAL_SERVER_ERROR, t);
             }

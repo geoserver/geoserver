@@ -71,8 +71,7 @@ public class RuleMapXMLConverter extends MapXMLConverter {
         NodeList children = elem.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node n = children.item(i);
-            if (n instanceof Element) {
-                Element ruleElement = (Element) n;
+            if (n instanceof Element ruleElement) {
                 String resource = ruleElement.getAttribute(RESOURCEATTR);
                 ruleMap.put(resource, ruleElement.getTextContent());
             }

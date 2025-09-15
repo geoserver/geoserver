@@ -25,8 +25,8 @@ public class HttpTestUtils {
 
             @Override
             public boolean matches(Object item) {
-                if (item instanceof HttpServletResponse) {
-                    HttpStatus value = HttpStatus.valueOf(((HttpServletResponse) item).getStatus());
+                if (item instanceof HttpServletResponse response) {
+                    HttpStatus value = HttpStatus.valueOf(response.getStatus());
                     return value == expectedStatus;
                 } else {
                     return false;
@@ -44,8 +44,8 @@ public class HttpTestUtils {
 
             @Override
             public void describeMismatch(Object item, Description description) {
-                if (item instanceof HttpServletResponse) {
-                    HttpStatus value = HttpStatus.valueOf(((HttpServletResponse) item).getStatus());
+                if (item instanceof HttpServletResponse response) {
+                    HttpStatus value = HttpStatus.valueOf(response.getStatus());
                     description
                             .appendText("status was ")
                             .appendValue(value.value())
@@ -63,8 +63,8 @@ public class HttpTestUtils {
 
             @Override
             public boolean matches(Object item) {
-                if (item instanceof HttpServletResponse) {
-                    String value = ((HttpServletResponse) item).getHeader(name);
+                if (item instanceof HttpServletResponse response) {
+                    String value = response.getHeader(name);
                     return !Objects.isNull(value) && valueMatcher.matches(value);
                 } else {
                     return false;
@@ -82,8 +82,8 @@ public class HttpTestUtils {
 
             @Override
             public void describeMismatch(Object item, Description description) {
-                if (item instanceof HttpServletResponse) {
-                    String value = ((HttpServletResponse) item).getHeader(name);
+                if (item instanceof HttpServletResponse response) {
+                    String value = response.getHeader(name);
                     if (Objects.isNull(value)) {
                         description.appendText("did not have header ").appendValue("name");
                     } else {

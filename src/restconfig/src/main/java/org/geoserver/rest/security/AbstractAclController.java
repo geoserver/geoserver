@@ -288,8 +288,8 @@ public abstract class AbstractAclController<R extends Comparable<R>, DAO extends
     }
 
     protected RestException createRestException(Exception ex) {
-        if (ex instanceof RestException) {
-            return (RestException) ex; // do nothing
+        if (ex instanceof RestException exception) {
+            return exception; // do nothing
         } else {
             return new RestException("", HttpStatus.INTERNAL_SERVER_ERROR, ex);
         }

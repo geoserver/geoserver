@@ -97,8 +97,8 @@ public class AboutStatusController extends RestBaseController {
         BeansWrapper temp = new BeansWrapper(FM_VERSION) {
             @Override
             public TemplateModel wrap(Object object) throws TemplateModelException {
-                if (object instanceof ModuleStatus) {
-                    return wrapModuleStatus((ModuleStatus) object);
+                if (object instanceof ModuleStatus status) {
+                    return wrapModuleStatus(status);
                 }
                 return super.wrap(object);
             }
@@ -107,8 +107,7 @@ public class AboutStatusController extends RestBaseController {
         BeansWrapper outer = new BeansWrapper(FM_VERSION) {
             @Override
             public TemplateModel wrap(Object obj) throws TemplateModelException {
-                if (obj instanceof List) { // we expect List of ModuleStatus
-                    List<?> list = (List<?>) obj;
+                if (obj instanceof List<?> list) {
                     SimpleHash hash = new SimpleHash(wrapper);
                     CollectionModel valuesModel = new CollectionModel(list, inner);
                     hash.put("values", valuesModel);

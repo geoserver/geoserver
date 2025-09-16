@@ -82,6 +82,6 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         tester.assertRenderedPage(AuthenticationPage.class);
         TagTester logoutform = tester.getTagByWicketId("logoutform");
         // used to be http://localhost/j_spring_security_logout
-        assertEquals("http://localhost/context/j_spring_security_logout", logoutform.getAttribute("action"));
+        assertEquals("http://localhost/context/j_spring_security_logout", logoutform.getAttribute("href"));
     }
 }

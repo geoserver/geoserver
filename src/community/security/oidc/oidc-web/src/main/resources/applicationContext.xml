@@ -61,7 +61,8 @@
  		<property name="loginPath" value="/web/oauth2/authorization/google" />
  		<property name="method" value="GET" />
  		<property name="enabled" value="false" />
- 	</bean>
+        <property name="justUseExternalLink" value="true" />
+    </bean>
  	  <bean id="openIdConnectGitHubLoginButton" class="org.geoserver.web.LoginFormInfo">
  	  <!-- id must contain Spring oauthClient registrationId for enablement to work -->
         <property name="id" value="openIdConnectGitHubLoginButton" />
@@ -74,8 +75,9 @@
         <property name="loginPath" value="/web/oauth2/authorization/gitHub" />
         <property name="method" value="GET" />
         <property name="enabled" value="false" />
-    </bean>
-          <bean id="openIdConnectMicrosoftLoginButton" class="org.geoserver.web.LoginFormInfo">
+        <property name="justUseExternalLink" value="true" />
+      </bean>
+      <bean id="openIdConnectMicrosoftLoginButton" class="org.geoserver.web.LoginFormInfo">
       <!-- id must contain Spring oauthClient registrationId for enablement to work -->
         <property name="id" value="openIdConnectMicrosoftLoginButton" />
         <property name="titleKey" value="" />
@@ -87,7 +89,8 @@
         <property name="loginPath" value="/web/oauth2/authorization/microsoft" />
         <property name="method" value="GET" />
         <property name="enabled" value="false" />
-    </bean>
+        <property name="justUseExternalLink" value="true" />
+          </bean>
     <bean id="openIdConnectOidcLoginButton" class="org.geoserver.web.LoginFormInfo">
         <!-- id must contain Spring oauthClient registrationId for enablement to work -->
         <property name="id" value="openIdConnectOidcLoginButton" />
@@ -100,6 +103,7 @@
         <property name="loginPath" value="/web/oauth2/authorization/oidc" />
         <property name="method" value="GET" />
         <property name="enabled" value="false" />
+        <property name="justUseExternalLink" value="true" />
     </bean>
     <bean id="oauth2LoginButtonManager" class="org.geoserver.web.security.oauth2.login.OAuth2LoginButtonManager" lazy-init="false">
         <property name="loginFormInfos">

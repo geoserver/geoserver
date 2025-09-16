@@ -19,7 +19,7 @@ public class DynamicDefaultXStreamInitializer implements XStreamPersisterInitial
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBriefMapComplexType(
+        persister.registerBreifMapComplexType(
                 "DynamicDefaultValues", DefaultValueConfigurations.class);
         XStream xs = persister.getXStream();
         xs.alias("configuration", DefaultValueConfiguration.class);

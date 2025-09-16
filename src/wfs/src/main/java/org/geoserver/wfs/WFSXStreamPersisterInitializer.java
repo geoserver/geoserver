@@ -34,6 +34,6 @@ public class WFSXStreamPersisterInitializer implements XStreamPersisterInitializ
             ParameterMappingBlockValue.class
         });
 
-        persister.registerBriefMapComplexType("storedQueryConfiguration", StoredQueryConfiguration.class);
+        persister.registerBreifMapComplexType("storedQueryConfiguration", StoredQueryConfiguration.class);
     }
 }

@@ -21,7 +21,7 @@ public class XStreamPersisterTest {
         XStreamPersisterFactory factory = new XStreamPersisterFactory();
         XStreamPersister xp = factory.createXMLPersister();
         // Register number type
-        xp.registerBriefMapComplexType("number", Number.class);
+        xp.registerBreifMapComplexType("number", Number.class);
         // Set Integer to be ignored by XStream type lookup
         xp.addBackwardsBriefIgnored(Integer.class);
 
@@ -42,7 +42,7 @@ public class XStreamPersisterTest {
         XStreamPersisterFactory factory = new XStreamPersisterFactory();
         XStreamPersister xp = factory.createXMLPersister();
         // Register number type
-        xp.registerBriefMapComplexType("number", Number.class);
+        xp.registerBreifMapComplexType("number", Number.class);
 
         DataStoreInfoImpl dataStoreInfo = new DataStoreInfoImpl(null);
         MetadataMap metadata = dataStoreInfo.getMetadata();

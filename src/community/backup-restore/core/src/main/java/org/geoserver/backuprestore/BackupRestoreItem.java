@@ -217,7 +217,7 @@ public abstract class BackupRestoreItem<T> {
                 String concatenatedPasswordTokens = jobParameters.getString(Backup.PARAM_PASSWORD_TOKENS);
                 Map<String, String> passwordTokens = parseConcatenatedPasswordTokens(concatenatedPasswordTokens);
                 this.xp.registerConverter(new TokenizedFieldConverter(passwordTokens));
-                xstream.registerBriefMapComplexType("tokenizedPassword", BackupRestoreItem.class);
+                xstream.registerBreifMapComplexType("tokenizedPassword", BackupRestoreItem.class);
             }
         }
 
@@ -347,7 +347,7 @@ public abstract class BackupRestoreItem<T> {
     }
 
     private MapConverter createParameterizingMapConverter(XStreamPersister xstream) {
-        return xstream.new BriefMapConverter() {
+        return xstream.new BreifMapConverter() {
             @Override
             public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
                 ParameterizedFieldsHolder fieldsToParametrize =

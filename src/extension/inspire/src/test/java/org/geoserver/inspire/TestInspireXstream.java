@@ -22,7 +22,7 @@ public class TestInspireXstream {
         XStreamPersisterFactory factory = new XStreamPersisterFactory();
         XStreamPersister xp = factory.createXMLPersister();
         // Register list type
-        xp.registerBriefMapComplexType("list", List.class);
+        xp.registerBreifMapComplexType("list", List.class);
         // Set UniqueResourceIdentifiers to be ignored by XStream type lookup
         xp.addBackwardsBriefIgnored(UniqueResourceIdentifiers.class);
 
@@ -42,7 +42,7 @@ public class TestInspireXstream {
         XStreamPersisterFactory factory = new XStreamPersisterFactory();
         XStreamPersister xp = factory.createXMLPersister();
         // Register list type
-        xp.registerBriefMapComplexType("list", List.class);
+        xp.registerBreifMapComplexType("list", List.class);
 
         WFSInfoImpl wfsInfo = new WFSInfoImpl();
         MetadataMap metadata = wfsInfo.getMetadata();

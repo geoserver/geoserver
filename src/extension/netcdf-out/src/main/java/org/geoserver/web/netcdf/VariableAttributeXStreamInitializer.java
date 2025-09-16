@@ -14,7 +14,7 @@ public class VariableAttributeXStreamInitializer implements XStreamPersisterInit
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBriefMapComplexType("variableAttribute", VariableAttribute.class);
+        persister.registerBreifMapComplexType("variableAttribute", VariableAttribute.class);
         XStream xs = persister.getXStream();
         xs.alias("variableAttribute", VariableAttribute.class);
     }

@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.AttributeModifier;
@@ -156,9 +157,19 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         final Authentication user = GeoServerSession.get().getAuthentication();
         final boolean anonymous = user == null || user instanceof AnonymousAuthenticationToken;
 
-        // login forms
-        List<LoginFormInfo> loginforms = filterByAuth(getGeoServerApplication().getBeansOfType(LoginFormInfo.class));
+        // login forms that are actual forms
+        List<LoginFormInfo> loginforms =
+                filterByAuth(getGeoServerApplication().getBeansOfType(LoginFormInfo.class)).stream()
+                        .filter(lf -> !lf.isJustUseExternalLink())
+                        .collect(Collectors.toList());
 
+        // login forms that are just external links
+        List<LoginFormInfo> loginExternalLinks =
+                filterByAuth(getGeoServerApplication().getBeansOfType(LoginFormInfo.class)).stream()
+                        .filter(lf -> lf.isJustUseExternalLink())
+                        .collect(Collectors.toList());
+
+        // setup form-based login form
         add(new ListView<>("loginforms", loginforms) {
             @Override
             public void populateItem(ListItem<LoginFormInfo> item) {
@@ -213,6 +224,50 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
             }
         });
 
+        // setup external-link-based login form
+        add(new ListView<>("loginExternalLinks", loginExternalLinks) {
+            @Override
+            public void populateItem(ListItem<LoginFormInfo> item) {
+                LoginFormInfo info = item.getModelObject();
+
+                WebMarkupContainer loginForm = new WebMarkupContainer("loginform") {
+                    @Override
+                    protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
+                        tag.put("href", getResourcePath(info.getLoginPath()));
+                    }
+                };
+
+                Image image;
+                if (info.getIcon() != null) {
+                    image = new Image(
+                            "link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
+                } else {
+                    image = new Image(
+                            "link.icon",
+                            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/door-in.png"));
+                }
+
+                loginForm.add(image);
+                if (info.getTitleKey() != null && !info.getTitleKey().isEmpty()) {
+                    loginForm.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
+                    image.add(AttributeModifier.replace("alt", new ParamResourceModel(info.getTitleKey(), null)));
+                } else {
+                    loginForm.add(new Label("link.label", ""));
+                }
+
+                item.add(loginForm);
+
+                boolean filterInChain = false;
+                for (String filterClassName : securityFilterClassNames) {
+                    if (filterClassName.equals(info.getFilterClass().getName())) {
+                        filterInChain = true;
+                        break;
+                    }
+                }
+                loginForm.setVisible(anonymous && filterInChain && info.isEnabled());
+            }
+        });
+
         // logout form
         WebMarkupContainer loggedInAsForm = new WebMarkupContainer("loggedinasform");
         loggedInAsForm.add(new Label("loggedInUsername", GeoServerSession.get().getUsername()));
@@ -223,7 +278,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
             @Override
             protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
                 String logoutPath = getResourcePath("j_spring_security_logout");
-                tag.put("action", logoutPath);
+                tag.put("href", logoutPath);
             }
         };
         add(logoutForm);

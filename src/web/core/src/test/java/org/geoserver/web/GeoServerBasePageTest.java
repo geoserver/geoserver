@@ -38,8 +38,8 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
         assertEquals(1, loginForms.getList().size());
         Component logoutforms = tester.getLastRenderedPage().get("logoutform");
         String responseTxt = ComponentRenderer.renderComponent(logoutforms).toString();
-        TagTester tagTester = TagTester.createTagByName(responseTxt, "form");
-        assertEquals("http://localhost/context/j_spring_security_logout", tagTester.getAttribute("action"));
+        TagTester tagTester = TagTester.createTagByName(responseTxt, "a");
+        assertEquals("http://localhost/context/j_spring_security_logout", tagTester.getAttribute("href"));
     }
 
     @Test

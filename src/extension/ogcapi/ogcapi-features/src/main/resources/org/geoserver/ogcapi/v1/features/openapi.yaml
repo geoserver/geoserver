@@ -168,6 +168,8 @@ paths:
         - $ref: '#/components/parameters/ids'
         - $ref: '#/components/parameters/crs'
         - $ref: '#/components/parameters/bbox-crs'
+        - $ref: '#/components/parameters/properties'
+        - $ref: '#/components/parameters/exclude-properties'
         - $ref: '#/components/parameters/otherParameters'
       responses:
         '200':
@@ -221,6 +223,8 @@ paths:
         - $ref: '#/components/parameters/collectionId'
         - $ref: '#/components/parameters/featureId'
         - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/properties'
+        - $ref: '#/components/parameters/exclude-properties'
         - $ref: '#/components/parameters/otherParameters'
       responses:
         '200':
@@ -410,6 +414,26 @@ components:
         format: uri
       style: form
       explode: false
+    properties:
+      name: properties
+      in: query
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+    exclude-properties:
+      name: exclude-properties
+      in: query
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
   schemas:
     queryables:
       type: object

@@ -71,6 +71,7 @@ public class KmlCentroidBuilder {
             // simple case
             return g.getCoordinate();
         } else if (g instanceof LineString line) {
+            // make sure the point we return is actually on the line
             LengthIndexedLine lil = new LengthIndexedLine(line);
             return lil.extractPoint(line.getLength() / 2.0);
         } else if (g instanceof Polygon polygon) {

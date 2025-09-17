@@ -84,6 +84,8 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
         if (fc != null) {
             if (limitedAttributeSize > 0 && fc.getSchema().getDescriptors().size() > limitedAttributeSize) {
                 if (fc instanceof SimpleFeatureCollection sfc) {
+                    // the datastore did not honour the query properties?? It's broken, but we can
+                    // fix it
                     SimpleFeatureType target =
                             SimpleFeatureTypeBuilder.retype(sfc.getSchema(), mixed.getPropertyNames());
                     @SuppressWarnings("unchecked")

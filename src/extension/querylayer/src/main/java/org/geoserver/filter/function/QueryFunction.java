@@ -115,6 +115,8 @@ public class QueryFunction extends FunctionImpl {
                     Feature f = fi.next();
                     Object value = f.getProperty(attribute).getValue();
                     if (value instanceof Geometry geom && crs != null) {
+                        // if the crs is not associated with the geometry do so, this
+                        // way other code will get to know the crs (e.g. for reprojection purposes)
                         geom.apply(new GeometryCRSFilter(crs));
                     }
                     results.add(value);

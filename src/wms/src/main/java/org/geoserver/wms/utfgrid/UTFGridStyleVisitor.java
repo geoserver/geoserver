@@ -168,6 +168,8 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
                             ff.literal("square"), null, sf.createFill(colorFunction), sizeCopy, Expression.NIL);
                     symbolsCopy.add(mark);
                 } else {
+                    // it's using the default size, compute it if possible (might be using dynamic
+                    // symbolizers...)
                     Literal sizeExpression = estimateGraphicSize(eg);
                     Mark mark = sf.createMark(
                             ff.literal("square"), null, sf.createFill(colorFunction), sizeExpression, Expression.NIL);

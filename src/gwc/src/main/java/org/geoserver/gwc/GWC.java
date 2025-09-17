@@ -2149,6 +2149,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 }
 
                 if (layerInfo instanceof SecuredLayerInfo securedLayerInfo) {
+                    // test layer bbox limits
                     WrapperPolicy policy = securedLayerInfo.getWrapperPolicy();
                     AccessLimits limits = policy.getLimits();
 

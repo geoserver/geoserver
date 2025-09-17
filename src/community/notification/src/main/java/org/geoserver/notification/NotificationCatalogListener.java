@@ -203,6 +203,7 @@ public class NotificationCatalogListener extends NotificationListener implements
         String oldLayerName;
         String newLayerName;
         if (source instanceof ResourceInfo resourceInfo) {
+            // must cover prefix:name
             final NamespaceInfo currNamespace = resourceInfo.getNamespace();
             final NamespaceInfo oldNamespace;
             if (namespaceIndex > -1) {

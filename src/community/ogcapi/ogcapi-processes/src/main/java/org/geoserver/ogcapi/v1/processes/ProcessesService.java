@@ -370,7 +370,10 @@ public class ProcessesService {
             FeatureCollection<?, ?> fc =
                     (FeatureCollection<?, ?>) fct.getFeature().get(0);
             writeXMLOutput(generator, new XMLEncoderDelegate(new WFSPPIO.WFS10(), fc));
-        } else if (result instanceof net.opengis.wfs20.FeatureCollectionType fct) {
+        } else if (result
+                instanceof
+                net.opengis.wfs20.FeatureCollectionType
+                fct) { // these input happen while deserializing an async response
             FeatureCollection<?, ?> fc =
                     (FeatureCollection<?, ?>) fct.getMember().get(0);
             writeXMLOutput(generator, new XMLEncoderDelegate(new WFSPPIO.WFS20(), fc));
@@ -444,6 +447,7 @@ public class ProcessesService {
                 httpResponse.setContentType(binaryDelegate.getPPIO().getMimeType());
                 binaryDelegate.encode(httpResponse.getOutputStream());
             } else if (rawResult instanceof String result) {
+                // this is an already encoded string (async execution stored), just write it out
                 httpResponse.setContentType(complexData.getMimeType());
                 httpResponse.getWriter().print(result);
             } else {

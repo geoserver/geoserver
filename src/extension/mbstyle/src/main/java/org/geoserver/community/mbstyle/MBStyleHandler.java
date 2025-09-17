@@ -72,6 +72,7 @@ public class MBStyleHandler extends StyleHandler {
             throws IOException {
         // see if we can use the style cache, some conversions are expensive.
         if (input instanceof File jsonFile) {
+            // convert to resource, to avoid code duplication
             input = new FileSystemResourceStore(jsonFile.getParentFile()).get(jsonFile.getName());
         }
 

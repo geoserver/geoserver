@@ -469,7 +469,9 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             }
             return geometries.createMultiLineString(lines);
         } else if (geometry instanceof Polygon pg) {
-
+            // A Polygon can have multiple outer rings, there is no notion of multipolygon
+            // See https://developers.arcgis.com/documentation/common-data-types/geometry-objects
+            // .htm#POLYGON
             Number[][][] rings = pg.getRings();
             if (rings.length < 1) {
                 throw new JSONException("Polygon must have at least one ring");

@@ -315,6 +315,9 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "The resource to work on is a raster layer");
                 }
+                //
+                // RASTER
+                //
                 // convert/reproject/crop if needed the coverage
                 internalOutput = new RasterDownload(limits, resourceManager, context, catalog)
                         .execute(

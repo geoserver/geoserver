@@ -80,6 +80,7 @@ class ModificationProxyCloner {
 
         // is it a catalog info?
         if (source instanceof CatalogInfo cis) {
+            // mumble... shouldn't we wrap this one in a modification proxy object?
             return (T) ModificationProxy.create(cis, getDeepestCatalogInfoInterface(cis));
         }
 

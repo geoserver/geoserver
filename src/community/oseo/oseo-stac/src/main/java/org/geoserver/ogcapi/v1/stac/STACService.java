@@ -677,6 +677,7 @@ public class STACService {
             // range containment
             return FF.between(FF.literal(timeSpec), FF.property("timeStart"), FF.property("timeEnd"));
         } else if (timeSpec instanceof DateRange dateRange) {
+            // range overlap filter
             Literal before = FF.literal(dateRange.getMinValue());
             Literal after = FF.literal(dateRange.getMaxValue());
             Filter lower = FF.lessOrEqual(FF.property("timeStart"), after);

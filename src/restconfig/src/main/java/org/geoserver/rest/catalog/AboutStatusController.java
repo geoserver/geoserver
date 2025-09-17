@@ -107,7 +107,7 @@ public class AboutStatusController extends RestBaseController {
         BeansWrapper outer = new BeansWrapper(FM_VERSION) {
             @Override
             public TemplateModel wrap(Object obj) throws TemplateModelException {
-                if (obj instanceof List<?> list) {
+                if (obj instanceof List<?> list) { // we expect List of ModuleStatus
                     SimpleHash hash = new SimpleHash(wrapper);
                     CollectionModel valuesModel = new CollectionModel(list, inner);
                     hash.put("values", valuesModel);

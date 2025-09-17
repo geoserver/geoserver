@@ -96,6 +96,7 @@ public class ZipArchivePPIO extends BinaryPPIO {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Zipping the collection");
                 }
+                // create temp dir
                 for (Object obj : collection) {
                     if (obj instanceof File file1) {
                         // convert to file and add to zip

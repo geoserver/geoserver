@@ -913,7 +913,8 @@ public class Dispatcher extends AbstractController {
 
     String lookupRequestBeanProperty(Object requestBean, String property, boolean allowDefaultValues) {
         if (requestBean instanceof EObject eObject && EMFUtils.has(eObject, property)) {
-
+            // special case hack for eObject, we should move
+            // this out into an extension point
             if (allowDefaultValues || EMFUtils.isSet(eObject, property)) {
                 return normalize((String) EMFUtils.get(eObject, property));
             }

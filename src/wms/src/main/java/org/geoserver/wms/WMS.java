@@ -400,6 +400,8 @@ public class WMS implements ApplicationContextAware {
                                 queryFeatureTypeElevations(mapLayerInfo.getFeature(), range, maxDimensionsToTest + 1));
                     }
                 } else if (elevation instanceof Double elevationSingle) {
+                    // The queryElevations calls that check ranges are populating the treeset with
+                    // integers, so we need to convert the double to an integer for this check
                     treeSet.add(elevationSingle.intValue());
                 } else {
                     treeSet.add(elevation);
@@ -1063,6 +1065,7 @@ public class WMS implements ApplicationContextAware {
         if (layerGroup instanceof AdvertisedCatalog.AdvertisedLayerGroup wrapper) {
             layerGroup = wrapper.unwrap();
         } else if (layerGroup instanceof Wrapper wrapper) {
+            // hidden inside some other wrapper?
             if (wrapper.isWrapperFor(AdvertisedCatalog.AdvertisedLayerGroup.class)) {
                 wrapper.unwrap(AdvertisedCatalog.AdvertisedLayerGroup.class);
                 AdvertisedCatalog.AdvertisedLayerGroup alg = (AdvertisedCatalog.AdvertisedLayerGroup) layerGroup;

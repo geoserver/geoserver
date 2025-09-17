@@ -561,6 +561,8 @@ public class CatalogBuilder {
             }
 
         } else if (rinfo instanceof CoverageInfo cinfo) {
+            // the coverage bounds computation path is a bit more linear, the
+            // readers always return the bounds and in the proper CRS (afaik)
             GridCoverage2DReader reader = null;
             if (data instanceof GridCoverage2DReader dReader) {
                 reader = dReader;

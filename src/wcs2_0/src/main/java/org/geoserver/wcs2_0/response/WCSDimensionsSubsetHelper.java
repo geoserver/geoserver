@@ -304,6 +304,7 @@ public class WCSDimensionsSubsetHelper {
             // now decide what to do
             //            final String CRS= dim.getCRS();// TODO HOW DO WE USE THIS???
             if (dim instanceof DimensionTrimType trim) {
+                // TRIMMING
                 final double low = Double.parseDouble(trim.getTrimLow());
                 final double high = Double.parseDouble(trim.getTrimHigh());
 
@@ -324,6 +325,8 @@ public class WCSDimensionsSubsetHelper {
                 // notice how we choose the order of the axes
                 subsettingEnvelope.setRange(axisIndex, low, high);
             } else if (dim instanceof DimensionSliceType slicing) {
+
+                // SLICING
                 final String slicePointS = slicing.getSlicePoint();
                 final double slicePoint = Double.parseDouble(slicePointS);
 
@@ -427,6 +430,7 @@ public class WCSDimensionsSubsetHelper {
     private DateRange parseTimeSubset(DimensionSubsetType dim) {
         try {
             if (dim instanceof DimensionTrimType trim) {
+                // TRIMMING
                 final Date low = PARSER.parseDateTime(trim.getTrimLow());
                 final Date high = PARSER.parseDateTime(trim.getTrimHigh());
 
@@ -440,6 +444,7 @@ public class WCSDimensionsSubsetHelper {
 
                 return new DateRange(low, high);
             } else if (dim instanceof DimensionSliceType slicing) {
+                // SLICING
                 final String slicePointS = slicing.getSlicePoint();
                 final Date slicePoint = PARSER.parseDateTime(slicePointS);
                 return new DateRange(slicePoint, slicePoint);
@@ -502,6 +507,7 @@ public class WCSDimensionsSubsetHelper {
                 }
             }
         } else if (slicePoint instanceof Number sliceNumber) {
+            // TODO: Should we check for other data types?
             for (Object curr : domain) {
                 if (curr instanceof Number) {
                     Double num = (Double) curr;
@@ -550,6 +556,7 @@ public class WCSDimensionsSubsetHelper {
 
                 // now decide what to do
                 if (dim instanceof DimensionTrimType trim) {
+                    // TRIMMING
                     final Double low = PARSER.parseDouble(trim.getTrimLow());
                     final Double high = PARSER.parseDouble(trim.getTrimHigh());
 
@@ -563,6 +570,7 @@ public class WCSDimensionsSubsetHelper {
 
                     elevationSubset = new NumberRange<>(Double.class, low, high);
                 } else if (dim instanceof DimensionSliceType slicing) {
+                    // SLICING
                     final String slicePointS = slicing.getSlicePoint();
                     final Double slicePoint = PARSER.parseDouble(slicePointS);
 
@@ -653,9 +661,11 @@ public class WCSDimensionsSubsetHelper {
 
                     // now decide what to do
                     if (dim instanceof DimensionTrimType trim) {
+                        // TRIMMING
                         setSubsetRangeValue(dimension, trim.getTrimLow(), trim.getTrimHigh(), selectedValues);
 
                     } else if (dim instanceof DimensionSliceType slicing) {
+                        // SLICING
                         setSubsetValue(dimension, slicing.getSlicePoint(), selectedValues);
 
                     } else {

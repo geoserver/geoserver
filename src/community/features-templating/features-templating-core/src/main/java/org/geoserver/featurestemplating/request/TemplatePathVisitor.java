@@ -119,6 +119,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         TemplateBuilder jb = findBuilder(builder, pathElements);
         if (jb != null) {
             if (jb instanceof IteratingBuilder itb && index != 0) {
+                // retrieve the builder based on the position
                 jb = getChildFromIterating(itb, index - 1);
             }
 

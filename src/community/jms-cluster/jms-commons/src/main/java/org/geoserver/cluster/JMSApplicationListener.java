@@ -76,6 +76,7 @@ public class JMSApplicationListener implements ApplicationListener<ApplicationEv
         }
 
         if (event instanceof ToggleEvent tEv) {
+            // enable/disable the producer
             if (tEv.getType().equals(this.type)) {
                 setStatus(tEv.toggleTo());
             }

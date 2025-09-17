@@ -57,4 +57,8 @@ public class ConformanceClass {
     public static final String CQL2_PROPERTY_PROPERTY = "http://www.opengis.net/spec/cql2/1.0/req/property-property";
     public static final String CQL2_FUNCTIONS = "http://www.opengis.net/spec/cql2/1.0/req/functions";
     public static final String CQL2_ARITHMETIC = "http://www.opengis.net/spec/cql2/1.0/req/arithmetic";
+
+    /** Property selection */
+    public static final String PROPERTY_SELECTION =
+            "http://www.opengis.net/spec/ogcapi-features-6/1.0/conf/properties-features";
 }

@@ -28,6 +28,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -49,30 +50,27 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        FeatureConformance features = FeatureConformance.configuration(wfs);
-        features.setIDs(true); // enable
-        getGeoServer().save(wfs);
-        try {
-            MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/v1/openapi", 200);
-            validateJSONAPI(response);
-        } finally {
-            features.setIDs(null); // default
-            getGeoServer().save(wfs);
-        }
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/v1/openapi", 200);
+        validateJSONAPI(response);
     }
 
     @Test
     public void testApiJsonExtension() throws Exception {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         FeatureConformance features = FeatureConformance.configuration(wfs);
-        features.setIDs(true); // enable
+        // enable a few optional extensions
+        features.setIDs(true);
+        features.setSortBy(true);
+        features.setPropertySelection(true);
         getGeoServer().save(wfs);
         try {
             MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/v1/openapi.json", 200);
             validateJSONAPI(response);
         } finally {
-            features.setIDs(null); // default
+            // restore defaults
+            features.setIDs(null);
+            features.setSortBy(null);
+            features.setPropertySelection(null);
             getGeoServer().save(wfs);
         }
     }
@@ -234,21 +232,27 @@ public class ApiTest extends FeaturesTestSupport {
         List<Parameter> parameters = itemsGet.getParameters();
         List<String> itemGetParamNames =
                 parameters.stream().map(p -> p.get$ref()).collect(Collectors.toList());
-        assertThat(
-                itemGetParamNames,
-                containsInAnyOrder(
-                        "#/components/parameters/collectionId",
-                        "#/components/parameters/limit",
-                        "#/components/parameters/bbox",
-                        "#/components/parameters/datetime",
-                        "#/components/parameters/filter",
-                        "#/components/parameters/filter-lang",
-                        "#/components/parameters/filter-crs",
-                        "#/components/parameters/sortby",
-                        "#/components/parameters/crs",
-                        "#/components/parameters/bbox-crs",
-                        "#/components/parameters/otherParameters",
-                        "#/components/parameters/ids"));
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        List<String> expectedItemsParams = new ArrayList<>(Arrays.asList(
+                "#/components/parameters/collectionId",
+                "#/components/parameters/limit",
+                "#/components/parameters/bbox",
+                "#/components/parameters/datetime",
+                "#/components/parameters/filter",
+                "#/components/parameters/filter-lang",
+                "#/components/parameters/filter-crs",
+                "#/components/parameters/crs",
+                "#/components/parameters/bbox-crs",
+                "#/components/parameters/otherParameters"));
+        if (features.sortBy(wfs)) expectedItemsParams.add("#/components/parameters/sortby");
+        if (features.ids(wfs)) expectedItemsParams.add("#/components/parameters/ids");
+        if (features.propertySelection(wfs)) {
+            expectedItemsParams.add("#/components/parameters/properties");
+            expectedItemsParams.add("#/components/parameters/exclude-properties");
+        }
+
+        assertThat(itemGetParamNames, containsInAnyOrder(expectedItemsParams.toArray(String[]::new)));
 
         // filter languages
         Parameter langs = api.getComponents().getParameters().get("filter-lang");
@@ -275,7 +279,6 @@ public class ApiTest extends FeaturesTestSupport {
         Parameter limit = params.get("limit");
         Schema limitSchema = limit.getSchema();
         Assert.assertEquals(BigDecimal.valueOf(1), limitSchema.getMinimum());
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         Assert.assertEquals(wfs.getMaxFeatures(), limitSchema.getMaximum().intValue());
         assertEquals(wfs.getMaxFeatures(), ((Number) limitSchema.getDefault()).intValue());
     }

@@ -56,6 +56,8 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     public static final APIConformance IDS = new APIConformance(ConformanceClass.IDS, DRAFT_STANDARD);
     public static final APIConformance SEARCH = new APIConformance(ConformanceClass.SEARCH, DRAFT_STANDARD);
     public static final APIConformance SORTBY = new APIConformance(ConformanceClass.SORTBY, DRAFT_STANDARD, "sortBy");
+    public static final APIConformance PROPERTY_SELECTION =
+            new APIConformance(ConformanceClass.PROPERTY_SELECTION, DRAFT_STANDARD, "propertySelection");
 
     private Boolean core = null;
     private Boolean gml321 = null;
@@ -68,6 +70,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     private Boolean queryables = null;
     private Boolean ids = null;
     private Boolean sortBy = null;
+    private Boolean propertySelection = null;
 
     /** Configuration for OGCAPI Features. */
     public FeatureConformance() {}
@@ -117,6 +120,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
         conformance.add(IDS);
         conformance.add(SEARCH);
         conformance.add(SORTBY);
+        conformance.add(PROPERTY_SELECTION);
 
         return conformance;
     }
@@ -173,6 +177,9 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
             }
             if (sortBy(serviceInfo)) {
                 conformance.add(FeatureConformance.SORTBY);
+            }
+            if (propertySelection(serviceInfo)) {
+                conformance.add(FeatureConformance.PROPERTY_SELECTION);
             }
         }
         return conformance;
@@ -493,6 +500,34 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
         sortBy = enabled;
     }
 
+    /**
+     * PROPERTY_SELECTION conformance enabled by configuration.
+     *
+     * @return PROPERTY_SELECTION conformance enabled, or <code>null</code> for default.
+     */
+    public Boolean isPropertySelection() {
+        return propertySelection;
+    }
+
+    /**
+     * PROPERTY_SELECTION conformance enabled by configuration or default.
+     *
+     * @param serviceInfo WFSService configuration used to determine default
+     * @return <code>true</code> if PROPERTY_SELECTION conformance enabled
+     */
+    public boolean propertySelection(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo, propertySelection, PROPERTY_SELECTION);
+    }
+
+    /**
+     * PROPERTY_SELECTION conformance enablement.
+     *
+     * @param enabled PROPERTY_SELECTION conformance enabled, or <code>null</code> for default.
+     */
+    public void setPropertySelection(Boolean enabled) {
+        propertySelection = enabled;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("FeatureConformance");
@@ -507,6 +542,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
         sb.append(", queryables=").append(queryables);
         sb.append(", search=").append(search);
         sb.append(", sortBy=").append(sortBy);
+        sb.append(", propertySelection=").append(propertySelection);
         sb.append('}');
         return sb.toString();
     }

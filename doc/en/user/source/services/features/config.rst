@@ -1,3 +1,5 @@
+.. _ogcapi-features-config:
+
 Configuration of OGC API - Features module
 ------------------------------------------
 

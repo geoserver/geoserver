@@ -51,6 +51,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.rest.RestException;
+import org.geoserver.util.SortedPropertiesWriter;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.Feature;
@@ -266,8 +267,10 @@ class CollectionLayerManager {
             }
             Resource propertyResource = mosaicDirectory.get(band + ".properties");
             try (OutputStream os = propertyResource.out()) {
-                mosaicConfig.store(
-                        os, "DataStore configuration for collection '" + collection + "' and band '" + band + "'");
+                SortedPropertiesWriter.storeSorted(
+                        mosaicConfig,
+                        os,
+                        "DataStore configuration for collection '" + collection + "' and band '" + band + "'");
             }
 
             // create the sample image
@@ -522,7 +525,7 @@ class CollectionLayerManager {
         setCogConfig(indexer, layerConfiguration, true);
         Resource resource = mosaic.get("indexer.properties");
         try (OutputStream os = resource.out()) {
-            indexer.store(os, "Indexer for collection: " + collection);
+            SortedPropertiesWriter.storeSorted(indexer, os, "Indexer for collection: " + collection);
         }
     }
 
@@ -626,7 +629,7 @@ class CollectionLayerManager {
         datastore.put("StoreName", prefixedName(this.accessProvider.getDataStoreInfo()));
         Resource datastoreResource = mosaic.get("datastore.properties");
         try (OutputStream os = datastoreResource.out()) {
-            datastore.store(os, "DataStore configuration for collection: " + collection);
+            SortedPropertiesWriter.storeSorted(datastore, os, "DataStore configuration for collection: " + collection);
         }
     }
 

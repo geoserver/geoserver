@@ -427,7 +427,7 @@ class ComplexGeoJsonWriter {
 
     private void encodeProperty(String attributeName, Property property, Map<NameImpl, Object> attributes) {
         if (property instanceof ComplexAttribute complexAttribute) {
-
+            // check if we have a simple content
             if (isSimpleContent(complexAttribute.getType())) {
                 Object value = getSimpleContentValue(complexAttribute);
                 if (value != null || (attributes != null && !attributes.isEmpty())) {

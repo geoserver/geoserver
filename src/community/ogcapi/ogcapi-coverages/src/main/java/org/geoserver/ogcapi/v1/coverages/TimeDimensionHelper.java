@@ -118,6 +118,7 @@ class TimeDimensionHelper {
         if (time instanceof Date date) {
             return format(date);
         } else if (time instanceof DateRange range) {
+            // hack, we should probably look into description of partitioned coverages? or report the mid time?
             return timeStampFormatter.format(range.getMinValue())
                     + "/"
                     + timeStampFormatter.format(range.getMaxValue());

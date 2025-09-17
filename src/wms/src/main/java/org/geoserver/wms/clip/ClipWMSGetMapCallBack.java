@@ -47,7 +47,7 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
         if (wktGeom.covers(bboxGeom)) return layer;
         try {
             if (layer instanceof FeatureLayer fl) {
-
+                // wrap around
                 FeatureSource<?, ?> clippedFS = new ClippedFeatureSource<>(layer.getFeatureSource(), wktGeom);
                 FeatureLayer clippedLayer = new FeatureLayer(clippedFS, fl.getStyle(), fl.getTitle());
                 BeanUtilsBean2.getInstance().copyProperties(clippedLayer, fl);

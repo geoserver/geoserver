@@ -100,6 +100,8 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
             throws IOException {
         // see if we can use the SLD cache, some conversions are expensive.
         if (input instanceof File cssFile) {
+            // convert to resource, to avoid code duplication (the code for file would be very
+            // similar to the resource one, but unfortunately using an unrelated set of classes
             input = new FileSystemResourceStore(cssFile.getParentFile()).get(cssFile.getName());
         }
 

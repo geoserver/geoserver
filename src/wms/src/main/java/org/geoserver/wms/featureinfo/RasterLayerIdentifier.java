@@ -144,6 +144,8 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             if (info instanceof GridCoverage2D coverage) {
                 result.addAll(toFeatures(cinfo, reader, coverage, position, requestParams));
             } else if (info instanceof FeatureCollection fc) {
+                // the read used the whole WMS GetMap area (an RT may need more space than just the
+                // queried pixel to produce correct results), need to filter down the results
                 result.add((filterCollection(fc, requestParams)));
             } else {
                 if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Unable to load raster data for this request.");

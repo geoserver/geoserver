@@ -223,6 +223,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
             String key = entry.getKey();
             Serializable md = entry.getValue();
             if (md instanceof DimensionInfo di) {
+                // skip disabled dimensions
                 if (!di.isEnabled()) {
                     continue;
                 }

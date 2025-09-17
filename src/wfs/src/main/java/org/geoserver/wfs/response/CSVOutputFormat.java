@@ -133,6 +133,8 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                     String elName = att.getName().toString();
                     Object xsd = att.getUserData().get(XSDElementDeclaration.class);
                     if (xsd instanceof XSDElementDeclaration xsdEl) {
+                        // get the prefixed name if possible
+                        // otherwise defaults to the full name with namespace URI
                         elName = xsdEl.getQName();
                     }
                     elName = resolveNamespacePrefixName(elName);

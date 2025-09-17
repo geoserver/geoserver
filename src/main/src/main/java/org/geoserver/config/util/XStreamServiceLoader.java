@@ -94,6 +94,7 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
      */
     protected T initialize(T service) {
         if (service instanceof ServiceInfoImpl impl) {
+            // initialize all collections to
             if (impl.getClientProperties() == null) {
                 impl.setClientProperties(new HashMap<>());
             }

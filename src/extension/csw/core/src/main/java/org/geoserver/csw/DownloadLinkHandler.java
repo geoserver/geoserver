@@ -164,6 +164,7 @@ public class DownloadLinkHandler {
             } else if (domain instanceof NumberRange numberRange) {
                 builder.append(numberRange.getMinValue()).append("/").append(numberRange.getMaxValue());
             } else if (domain instanceof Range range) {
+                // Generic range
                 builder.append(range.getMinValue()).append("/").append(range.getMaxValue());
             } else {
                 throw new IllegalArgumentException("Domain " + domain + " isn't supported");

@@ -156,6 +156,7 @@ public class ElevationParser {
     private boolean addValue(Collection<Double> result, Double step) {
         for (final Object element : result) {
             if (element instanceof Double local) {
+                // convert
                 if (local.equals(step)) return false;
             } else {
                 // convert

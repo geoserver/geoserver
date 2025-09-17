@@ -569,6 +569,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         // 3 features, one invalid
         String body =
+                // valid
                 """
                 [
                   {
@@ -582,6 +583,10 @@ public class FeatureLayerControllerTest extends ControllerTest {
                       "id" : "t0001",
                     }
                   },
+                """
+                        +
+                        // invalid - missing attribute
+                        """
                   {
                   "geometry" : {\
                       "geometryType":"esriGeometryPolyline", \
@@ -592,6 +597,10 @@ public class FeatureLayerControllerTest extends ControllerTest {
                       "objectid" : 2
                     }
                   },
+                """
+                        +
+                        // valid
+                        """
                   {
                   "geometry" : {\
                       "geometryType":"esriGeometryPolyline", \
@@ -631,6 +640,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         // 3 features, one invalid
         String body =
+                // valid
                 """
                 [
                   {
@@ -644,6 +654,10 @@ public class FeatureLayerControllerTest extends ControllerTest {
                       "id" : "t0001",
                     }
                   },
+                 """
+                        +
+                        // invalid - missing attribute
+                        """
                   {
                   "geometry" : {\
                       "geometryType":"esriGeometryPolyline", \
@@ -654,6 +668,10 @@ public class FeatureLayerControllerTest extends ControllerTest {
                       "objectid" : 2
                     }
                   },
+                  """
+                        +
+                        // valid
+                        """
                   {
                   "geometry" : {\
                       "geometryType":"esriGeometryPolyline", \

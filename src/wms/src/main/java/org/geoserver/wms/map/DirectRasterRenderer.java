@@ -418,6 +418,7 @@ class DirectRasterRenderer {
         // in case of component color model
         boolean noDataTransparencyApplied = false;
         if (cm instanceof ComponentColorModel ccm) {
+            // convert to RGB if necessary
             boolean hasAlpha = cm.hasAlpha();
 
             // if we have a grayscale image see if we have to expand to RGB

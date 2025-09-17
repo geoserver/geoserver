@@ -101,6 +101,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         super.initializeFromConfig(config);
 
         if (config instanceof OpenIdConnectFilterConfig idConfig) {
+            // in case cache authentication got disabled, clear the cache
             if (!idConfig.isCacheAuthentication()) {
                 AuthenticationCache cache = getSecurityManager().getAuthenticationCache();
                 if (cache != null) cache.removeAll(getName());

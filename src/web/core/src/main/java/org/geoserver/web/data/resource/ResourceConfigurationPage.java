@@ -208,6 +208,8 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
         if (isNew) {
             // updating grid if is a coverage
             if (resourceInfo instanceof CoverageInfo cinfo) {
+                // the coverage bounds computation path is a bit more linear, the
+                // readers always return the bounds and in the proper CRS (afaik)
                 GridCoverage2DReader reader =
                         (GridCoverage2DReader) cinfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
 

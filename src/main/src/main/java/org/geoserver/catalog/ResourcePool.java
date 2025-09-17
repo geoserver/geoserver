@@ -2504,6 +2504,9 @@ public class ResourcePool {
         protected void dispose(String key, WebMapServer server) {
             HTTPClient client = server.getHTTPClient();
             if (client instanceof Closeable closeable) {
+                // dispose the client, and the connection pool hosted into it as a consequence
+                // the connection pool additionally holds a few threads that are also getting
+                // disposed with this call
                 try {
                     closeable.close();
                 } catch (IOException e) {
@@ -2520,6 +2523,9 @@ public class ResourcePool {
         protected void dispose(String key, WebMapTileServer server) {
             HTTPClient client = server.getHTTPClient();
             if (client instanceof Closeable closeable) {
+                // dispose the client, and the connection pool hosted into it as a consequence
+                // the connection pool additionally holds a few threads that are also getting
+                // disposed with this call
                 try {
                     closeable.close();
                 } catch (IOException e) {

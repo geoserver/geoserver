@@ -358,6 +358,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             // copy the data into the target
             if (!targetDataStoreFormat.equals(sourceDataStoreFormat)
                     && (source instanceof DataStore sourceDataStore && ds instanceof DataStore targetDataStore)) {
+                // copy over the feature types
                 for (String featureTypeName : sourceDataStore.getTypeNames()) {
 
                     // does the feature type already exist in the target?

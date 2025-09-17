@@ -217,6 +217,8 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                     for (Property prop : properties) {
                         Object value = prop.getValue();
                         if (value instanceof Geometry geom) {
+                            // use wkt writer to convert geometry to string, so third dimension can be supported if
+                            // present.
                             value = new WKTWriter(
                                             Double.isNaN(geom.getCoordinate().getZ()) ? 2 : 3)
                                     .write(geom);

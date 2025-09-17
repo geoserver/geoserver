@@ -962,6 +962,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     public void syncTo(CatalogFacade dao) {
         dao = ProxyUtils.unwrap(dao, LockingCatalogFacade.class);
         if (dao instanceof DefaultCatalogFacade other) {
+            // do an optimized sync
 
             other.stores = stores.setCatalog(catalog);
             other.defaultStores = defaultStores;

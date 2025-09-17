@@ -566,7 +566,8 @@ public class CatalogLayerEventListener implements CatalogListener {
 
         String oldLayerName;
         String newLayerName;
-        if (source instanceof ResourceInfo resourceInfo) {
+        if (source instanceof ResourceInfo resourceInfo) { // covers LayerInfo, CoverageInfo, and WMSLayerInfo
+            // must cover prefix:name
             final NamespaceInfo currNamespace = resourceInfo.getNamespace();
             final NamespaceInfo oldNamespace;
             if (namespaceIndex > -1) {

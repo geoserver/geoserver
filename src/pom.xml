@@ -119,7 +119,7 @@
     <jmh.version>1.37</jmh.version>
     <joda-time.version>2.8.1</joda-time.version>
     <marlin.version>0.9.4.8</marlin.version>
-    <mf.version>2.3.3</mf.version>
+    <mf.version>2.4-SNAPSHOT</mf.version>
     <mockito.version>5.15.2</mockito.version>
     <opengeo-geodb.version>0.9</opengeo-geodb.version>
     <pmd.version>7.14.0</pmd.version>

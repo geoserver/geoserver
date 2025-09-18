@@ -12,6 +12,7 @@
     <div class="wrap">
       <h2><a wicket:id="home" class="pngfix" href="#"></a></h2>
       <div class="button-group selfclear">
+
 	      <span wicket:id="loginforms">
 	      	<form class="d-inline-block" wicket:id="loginform" method="post" action="../j_spring_security_check">
 	      		<span wicket:id="login.include"></span>
@@ -20,13 +21,18 @@
 	      		</button>
 	      	</form>
 	      </span>
+
+        <span wicket:id="loginExternalLinks">
+           <a class="d-inline-block" wicket:id="loginform" >
+              <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
+           </a>
+	      </span>
+
 	      
 	      <span wicket:id="loggedinasform" class="username"><wicket:message key="loggedInAs">Logged in as</wicket:message> <span wicket:id="loggedInUsername">User von Testenheimer</span>.</span>
-            <form class="d-inline-block" wicket:id="logoutform" method="post" action="j_spring_security_logout">
-                <button class="positive icon" type="submit">
+            <a class="d-inline-block" wicket:id="logoutform">
                     <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
-                </button>
-            </form>
+            </a>
         <span id="localeSwitcher"><wicket:link><img src="img/icons/globe.png"/></wicket:link> <select  wicket:id="localeSwitcher"></select></span>
       </div>
     </div><!-- /.wrap -->

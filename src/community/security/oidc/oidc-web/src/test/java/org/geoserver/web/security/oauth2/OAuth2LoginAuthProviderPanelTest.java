@@ -131,14 +131,14 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertEquals("googleClientId", lConfig.getGoogleClientId());
         assertEquals("googleClientSecret", lConfig.getGoogleClientSecret());
         assertEquals("googleUserNameAttribute", lConfig.getGoogleUserNameAttribute());
-        assertEquals("https://localhost:9090/geoserver/login/oauth2/code/google", lConfig.getGoogleRedirectUri());
+        assertEquals("https://localhost:9090/geoserver/web/login/oauth2/code/google", lConfig.getGoogleRedirectUri());
 
         // gitHub
         assertEquals(Boolean.TRUE, lConfig.isGitHubEnabled());
         assertEquals("gitHubClientId", lConfig.getGitHubClientId());
         assertEquals("gitHubClientSecret", lConfig.getGitHubClientSecret());
         assertEquals("gitHubUserNameAttribute", lConfig.getGitHubUserNameAttribute());
-        assertEquals("https://localhost:9090/geoserver/login/oauth2/code/gitHub", lConfig.getGitHubRedirectUri());
+        assertEquals("https://localhost:9090/geoserver/web/login/oauth2/code/gitHub", lConfig.getGitHubRedirectUri());
 
         // MS
         assertEquals(Boolean.TRUE, lConfig.isMsEnabled());
@@ -146,7 +146,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertEquals("msClientSecret", lConfig.getMsClientSecret());
         assertEquals("msUserNameAttribute", lConfig.getMsUserNameAttribute());
         assertEquals("msScopes", lConfig.getMsScopes());
-        assertEquals("https://localhost:9090/geoserver/login/oauth2/code/microsoft", lConfig.getMsRedirectUri());
+        assertEquals("https://localhost:9090/geoserver/web/login/oauth2/code/microsoft", lConfig.getMsRedirectUri());
 
         // OIDC
         assertEquals(Boolean.TRUE, lConfig.isOidcEnabled());
@@ -154,7 +154,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertEquals("oidcClientSecret", lConfig.getOidcClientSecret());
         assertEquals("oidcUserNameAttribute", lConfig.getOidcUserNameAttribute());
         assertEquals("oidcScopes", lConfig.getOidcScopes());
-        assertEquals("https://localhost:9090/geoserver/login/oauth2/code/oidc", lConfig.getOidcRedirectUri());
+        assertEquals("https://localhost:9090/geoserver/web/login/oauth2/code/oidc", lConfig.getOidcRedirectUri());
 
         assertTrue(lConfig.getOidcForceAuthorizationUriHttps());
         assertTrue(lConfig.isOidcEnforceTokenValidation());

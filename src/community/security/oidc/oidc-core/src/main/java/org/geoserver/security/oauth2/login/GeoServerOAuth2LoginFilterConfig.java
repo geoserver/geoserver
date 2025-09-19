@@ -121,7 +121,7 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
 
     private String redirectUri(String pRegId) {
         String lBase = baseRedirectUriNormalized();
-        return lBase + "login/oauth2/code/" + pRegId;
+        return lBase + "web/login/oauth2/code/" + pRegId;
     }
 
     private String createPostLogoutRedirectUri() {
@@ -157,7 +157,7 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
             return null;
         }
         String lBase = baseRedirectUriNormalized();
-        return lBase + "oauth2/authorization/" + lRegIds.get(0);
+        return lBase + "web/oauth2/authorization/" + lRegIds.get(0);
     }
 
     /**

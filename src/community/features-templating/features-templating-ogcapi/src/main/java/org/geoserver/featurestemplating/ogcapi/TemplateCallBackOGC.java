@@ -135,7 +135,7 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
         return featureType;
     }
 
-    private TemplateIdentifier getTemplateIdentifier(Request request) {
+    static TemplateIdentifier getTemplateIdentifier(Request request) {
         String accept = request.getHttpRequest().getHeader(HttpHeaders.ACCEPT);
         String format = request.getKvp() != null ? (String) request.getKvp().get("f") : null;
         TemplateIdentifier identifier = null;
@@ -154,7 +154,7 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
      * @param accept the accept header value
      * @return the template identifier or null if not found
      */
-    private TemplateIdentifier getTemplateIdentifierFromAcceptString(String accept) {
+    private static TemplateIdentifier getTemplateIdentifierFromAcceptString(String accept) {
         if (StringUtils.isBlank(accept)) return null;
         String[] split = accept.split(",");
         for (String s : split) {

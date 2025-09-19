@@ -9,6 +9,8 @@ import java.awt.Point;
 import java.awt.image.ComponentSampleModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferDouble;
+import java.awt.image.DataBufferFloat;
 import java.awt.image.DataBufferInt;
 import java.awt.image.DataBufferShort;
 import java.awt.image.DataBufferUShort;
@@ -26,7 +28,6 @@ import java.util.logging.Logger;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.eclipse.imagen.TileFactory;
 import org.eclipse.imagen.TileRecycler;
-import org.eclipse.imagen.media.util.DataBufferUtils;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -218,7 +219,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
                             for (int i = 0; i < numBanks; i++) {
                                 Arrays.fill(bankData[i], 0.0F);
                             }
-                            db = DataBufferUtils.createDataBufferFloat(bankData, (int) size);
+                            db = new DataBufferFloat(bankData, (int) size);
                         }
                         break;
                     case DataBuffer.TYPE_DOUBLE:
@@ -227,7 +228,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
                             for (int i = 0; i < numBanks; i++) {
                                 Arrays.fill(bankData[i], 0.0);
                             }
-                            db = DataBufferUtils.createDataBufferDouble(bankData, (int) size);
+                            db = new DataBufferDouble(bankData, (int) size);
                         }
                         break;
                     default:

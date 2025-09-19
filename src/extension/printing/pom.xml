@@ -45,6 +45,10 @@
       <artifactId>print-lib</artifactId>
       <exclusions>
         <exclusion>
+          <artifactId>imagen-legacy-codec-core</artifactId>
+          <groupId>org.eclipse.imagen</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>xml-apis</artifactId>
           <groupId>xml-apis</groupId>
         </exclusion>
@@ -64,7 +68,6 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>RELEASE</version>
       <scope>test</scope>
     </dependency>
     <dependency>

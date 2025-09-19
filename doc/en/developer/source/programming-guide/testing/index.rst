@@ -511,6 +511,24 @@ Once the set up code has run you can request the layer as a WMS or WFS request u
 
   Document dom = getAsDOM("wfs?request=GetFeature&typenames=gs:tasmania_roads&version=2.0.0&service=wfs");
 
+
+Other Support Classes
+^^^^^^^^^^^^^^^^^^^^^
+
+GeoServer also has several other test support classes the support specific parts of the project
+such as ``GeoServerSecurityTestSupport`` and ``GeoServerWicketTestSupport.java``. These classes extend the
+``GeoServerTestSupport`` class to provide additional set or methods related the thing they are testing.
+For example, the wicket class (which is used to test GUI elements) provides a ``login`` and ``logout`` method,
+and methods for interacting with web page components (``ComponentContentFinder``). 
+
+If you are writing a new module you may want to consider creating a new support class for your module that
+extends one of the extended support classes. In general it is worth looking for a test that does something
+similar to the thing you want to test and using that as a template for your work.
+
+Handling Logging
+----------------
+
+GeoServer has a lot of log handling built in but in a default system much of the logging is surpressed 
 Writing Mock Tests
 ------------------
 

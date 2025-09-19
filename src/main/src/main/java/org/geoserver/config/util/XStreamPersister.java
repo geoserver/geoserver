@@ -10,6 +10,7 @@ import com.google.common.collect.Multimap;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.ConverterLookup;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
 import com.thoughtworks.xstream.converters.SingleValueConverterWrapper;
@@ -424,9 +425,6 @@ public class XStreamPersister {
         // For compatibility with JTS 1.15 and older bindings
         bindingAliasingMapper.addPackageAlias("com.vividsolutions.jts.geom", "org.locationtech.jts.geom");
 
-        xs.registerLocalConverter(impl(AttributeTypeInfo.class), "binding", (SingleValueConverter)
-                new SingleValueConverterWrapper(new JavaClassConverter(bindingAliasingMapper) {}));
-
         // CoverageInfo
         xs.registerLocalConverter(
                 impl(CoverageInfo.class), "supportedFormats", new LaxCollectionConverter(xs.getMapper()));
@@ -446,7 +444,12 @@ public class XStreamPersister {
         // AttributeTypeInfo
         xs.omitField(impl(AttributeTypeInfo.class), "featureType");
         xs.omitField(impl(AttributeTypeInfo.class), "attribute");
+        xs.registerLocalConverter(impl(AttributeTypeInfo.class), "binding", (SingleValueConverter)
+                new SingleValueConverterWrapper(new JavaClassConverter(bindingAliasingMapper) {}));
         xs.registerLocalConverter(impl(AttributeTypeInfo.class), "description", new InternationalStringConverter());
+        xs.registerLocalConverter(impl(AttributeTypeInfo.class), "range", new NumberRangeConverter());
+        xs.registerConverter(
+                new AttributeTypeInfoConverter(xs.getMapper(), xs.getReflectionProvider(), xs.getConverterLookup()));
 
         // LayerInfo
         // xs.omitField( LayerInfo.class), "resource");
@@ -540,6 +543,7 @@ public class XStreamPersister {
         xs.allowTypeHierarchy(Multimap.class);
         xs.allowTypeHierarchy(JAIInfo.class);
         xs.allowTypeHierarchy(CoverageAccessInfo.class);
+        xs.allowTypeHierarchy(NumberRange.class);
         xs.allowTypes(new Class[] {DynamicProxyMapper.DynamicProxy.class});
         xs.allowTypes(new String[] {"java.util.Collections$SingletonList"});
         xs.allowTypesByWildcard(new String[] {"org.geoserver.catalog.**"});
@@ -2738,6 +2742,59 @@ public class XStreamPersister {
 
             groupStyleName.setName(reader.getValue());
             return groupStyleName;
+        }
+    }
+
+    static class AttributeTypeInfoConverter extends ReflectionConverter {
+
+        private final ConverterLookup converterLookup;
+
+        public AttributeTypeInfoConverter(
+                Mapper mapper, ReflectionProvider reflectionProvider, ConverterLookup converterLookup) {
+            super(mapper, reflectionProvider);
+            this.converterLookup = converterLookup;
+        }
+
+        @Override
+        public boolean canConvert(Class type) {
+            return AttributeTypeInfo.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public void marshal(Object original, HierarchicalStreamWriter writer, MarshallingContext context) {
+
+            AttributeTypeInfo attributeTypeInfo = (AttributeTypeInfo) original;
+            List<Object> options = attributeTypeInfo.getOptions();
+
+            if (options != null && !options.isEmpty()) {
+                Class<?> binding = attributeTypeInfo.getBinding();
+                attributeTypeInfo.setOptions(convertOptionsToBinding(options, binding));
+            }
+
+            super.marshal(original, writer, context);
+        }
+
+        private List<Object> convertOptionsToBinding(List<Object> options, Class<?> binding) {
+            Converter typeConverter = converterLookup.lookupConverterForType(binding);
+            if (!(typeConverter instanceof SingleValueConverter)) {
+                throw new ConversionException("converter for " + binding.getSimpleName() + " not found");
+            }
+            SingleValueConverter singleValueConverter = (SingleValueConverter) typeConverter;
+
+            List<Object> typedOptions = new ArrayList<>();
+            for (Object option : options) {
+                try {
+                    Object convertedOption = singleValueConverter.fromString(String.valueOf(option));
+                    typedOptions.add(convertedOption);
+                } catch (Exception e) {
+                    throw new ConversionException(
+                            String.format(
+                                    "option '%s' cannot be converted to attribute binding %s",
+                                    option, binding.getSimpleName()),
+                            e);
+                }
+            }
+            return typedOptions;
         }
     }
 }

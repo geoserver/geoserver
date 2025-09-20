@@ -195,7 +195,7 @@ public abstract class AbstractAclController<R extends Comparable<R>, DAO extends
     protected abstract String keyFor(R rule);
 
     /**
-     * Validate a rule, return an error message or <code>null</code> if the rule is ok
+     * Validate a rule, return an error message or {@code null} if the rule is ok
      *
      * @param ruleKey ,ruleValue
      */

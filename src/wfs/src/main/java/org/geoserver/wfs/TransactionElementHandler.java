@@ -7,7 +7,6 @@ package org.geoserver.wfs;
 
 import java.util.Map;
 import javax.xml.namespace.QName;
-import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
@@ -15,7 +14,7 @@ import org.geoserver.wfs.request.TransactionResponse;
 import org.geotools.api.data.FeatureStore;
 
 /**
- * Transaction elements are an open ended set, both thanks to the Native element type, and to the XSD sustitution group
+ * Transaction elements are an open ended set, both thanks to the Native element type, and to the XSD substitution group
  * concept (xsd inheritance). Element handlers know how to process a certain element in a wfs transaction request.
  *
  * @author Andrea Aime - TOPP
@@ -32,7 +31,7 @@ public interface TransactionElementHandler {
      *
      * @param element the transaction element we're checking
      * @param featureTypeInfos a map from {@link QName} to {@link FeatureTypeInfo}, where the keys contain all the
-     *     feature type names reported by {@link #getTypeNames(EObject)}
+     *     feature type names reported by {@link TransactionElement#getTypeNames()}.
      */
     void checkValidity(TransactionElement element, Map<QName, FeatureTypeInfo> featureTypeInfos)
             throws WFSTransactionException;
@@ -40,10 +39,10 @@ public interface TransactionElementHandler {
     /**
      * Executes the element against the provided feature sources
      *
-     * @param element the tranaction element to be executed
+     * @param element the transaction element to be executed
      * @param request the transaction request
      * @param featureStores map from {@link QName} to {@link FeatureStore}, where the keys do contain all the feature
-     *     type names reported by {@link #getTypeNames(EObject)}
+     *     type names reported by {@link TransactionElement#getTypeNames()}
      * @param response the transaction response, that the element will update according to the processing done
      * @param listener a transaction listener that will be called before and after each change performed against the
      *     data stores

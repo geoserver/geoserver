@@ -45,7 +45,7 @@ import org.geoserver.platform.resource.Resources;
  *
  * <ol>
  *   <li>The path relative to '<data_dir>/featureTypes/[featureType]' given that a feature (
- *       {@link #setFeatureType(String)} ) has been set
+ *       {@link #setFeatureType(FeatureTypeInfo)} has been set
  *   <li>The path relative to '<data_dir>/featureTypes'
  *   <li>The path relative to '<data_dir>/templates'
  *   <li>The path relative to the calling class with {@link Class#getResource(String)}.
@@ -79,7 +79,7 @@ public class GeoServerTemplateLoader implements TemplateLoader {
      * Constructs the template loader.
      *
      * @param caller The "calling" class, used to look up templates based with {@link Class#getResource(String)}, may be
-     *     <code>null</code>
+     *     {@code null}
      * @param rl The geoserver resource loader
      */
     public GeoServerTemplateLoader(Class<?> caller, GeoServerResourceLoader rl) throws IOException {

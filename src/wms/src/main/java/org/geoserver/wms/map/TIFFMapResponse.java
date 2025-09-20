@@ -56,7 +56,7 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
     private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, true, true);
 
     /**
-     * Creates a {@link GetMapProducer} to encode the {@link RenderedImage} generated in <code>
+     * Creates a {@link RenderedImageMapResponse} to encode the {@link RenderedImage} generated in <code>
      * outputFormat</code> format.
      *
      * @param wms service facade

@@ -39,7 +39,6 @@ import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
  *
  * @author Gabriel Roldan
  * @author Simone Giannecchini, GeoSolutions S.A.S.
- * @version $Id$
  */
 public class ImageUtils {
     private static final Logger LOGGER =

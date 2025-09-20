@@ -27,8 +27,8 @@ public interface CoverageReaderInputObjectConverter<T> {
      * {@link Optional}.
      *
      * @param input The input object.
-     * @param coverageInfo The grid coverage metadata, may be <code>null</code>.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param coverageInfo The grid coverage metadata, may be {@code null}.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @return an {@link Optional} containing the converted value.
      */
     Optional<T> convert(Object input, @Nullable CoverageInfo coverageInfo, @Nullable Hints hints);
@@ -40,9 +40,9 @@ public interface CoverageReaderInputObjectConverter<T> {
      * {@link Optional}.
      *
      * @param input The input object.
-     * @param coverageInfo The grid coverage metadata, may be <code>null</code>.
-     * @param coverageStoreInfo The grid coverage store metadata, may be <code>null</code>.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param coverageInfo The grid coverage metadata, may be {@code null}.
+     * @param coverageStoreInfo The grid coverage store metadata, may be {@code null}.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @return an {@link Optional} containing the converted value.
      */
     Optional<T> convert(

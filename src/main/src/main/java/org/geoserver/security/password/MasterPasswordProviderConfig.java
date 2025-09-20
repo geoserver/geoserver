@@ -8,7 +8,7 @@ package org.geoserver.security.password;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 
 /**
- * Base class for configuration for {@link MasterPasswordProvider} implementations.
+ * Base class for configuration for {@link MasterPasswordProviderConfig} implementations.
  *
  * @author Justin Deoliveira, OpenGeo
  */

@@ -49,7 +49,6 @@ import org.geotools.api.style.ResourceLocator;
 import org.geotools.api.style.SelectedChannelType;
 import org.geotools.api.style.Style;
 import org.geotools.api.style.StyledLayerDescriptor;
-import org.geotools.data.DataUtilities;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.util.URLs;
@@ -182,23 +181,20 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist null will be
-     * returned.
+     * Returns a directory under the {@link #root()} directory, if the directory does not exist null will be returned.
      */
     public File findDataDir(String... location) throws IOException {
         Resource resource = get(Paths.path("data", Paths.path(location)));
         return Resources.directory(resource);
     }
 
-    /**
-     * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist it will be created.
-     */
+    /** Returns a directory under the {@link #root()} directory, if the directory does not exist it will be created. */
     public File findOrCreateDataDir(String... location) throws IOException {
         Resource resource = get(Paths.path("data", Paths.path(location)));
         return resource.dir();
     }
 
-    /** Returns a file under the {@link #dataRoot()} directory, if the file does not exist null is returned. */
+    /** Returns a file under the {@link #root()} directory, if the file does not exist null is returned. */
     public File findDataFile(String... location) throws IOException {
         Resource resource = get(Paths.path("data", Paths.path(location)));
         return Resources.file(resource);
@@ -892,7 +888,7 @@ public class GeoServerDataDirectory {
         return resources;
     }
 
-    /** Wrapper for {@link DataUtilities#fileToURL} that unescapes braces used to delimit CQL templates. */
+    /** Wrapper for {@link URLs#fileToUrl(File)} that unescapes braces used to delimit CQL templates. */
     public static URL fileToUrlPreservingCqlTemplates(File file) {
         URL url = URLs.fileToUrl(file);
         if (!file.getPath().contains("${")) {

@@ -15,22 +15,22 @@ class PackagedUtils {
     private PackagedUtils() {}
 
     /**
-     * Ensures that the provided argument is not <code>null</code>.
+     * Ensures that the provided argument is not {@code null}.
      *
-     * <p>If it <code>null</code> it must throw a {@link NullPointerException}.
+     * <p>If it {@code null} it must throw a {@link NullPointerException}.
      *
-     * @param argument argument to check for <code>null</code>.
+     * @param argument argument to check for {@code null}.
      */
     static void ensureNotNull(final Object argument) {
         ensureNotNull(argument, "Argument cannot be null");
     }
 
     /**
-     * Ensures that the provided argument is not <code>null</code>.
+     * Ensures that the provided argument is not {@code null}.
      *
-     * <p>If it <code>null</code> it must throw a {@link NullPointerException}.
+     * <p>If it {@code null} it must throw a {@link NullPointerException}.
      *
-     * @param argument argument to check for <code>null</code>.
+     * @param argument argument to check for {@code null}.
      * @param message leading message to print out in case the test fails.
      */
     static void ensureNotNull(final Object argument, final String message) {

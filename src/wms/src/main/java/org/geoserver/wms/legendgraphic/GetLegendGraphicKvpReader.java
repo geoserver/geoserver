@@ -71,9 +71,9 @@ import org.xml.sax.EntityResolver;
 
 /**
  * Key/Value pair set parsed for a GetLegendGraphic request. When calling <code>getRequest</code> produces a
- * {@linkPlain org.vfny.geoserver.requests.wms.GetLegendGraphicRequest}
+ * {@linkPlain GetLegendGraphicRequest}
  *
- * <p>See {@linkplain org.org.geoserver.wms.GetLegendGraphicRequest} for a complete list of expected request parameters.
+ * <p>See {@linkplain GetLegendGraphicRequest} for a complete list of expected request parameters.
  *
  * <p>This class is responsible for looking up all the required information for
  * {@link BufferedImageLegendGraphicBuilder} (titles, styles and legend graphics used). If requested information (such
@@ -82,8 +82,7 @@ import org.xml.sax.EntityResolver;
  * BufferedImageLegendGraphicBuilder, RasterLayerLegendHelper and similar.
  *
  * @author Gabriel Roldan
- * @version $Id$
- * @see org.org.geoserver.wms.GetLegendGraphicRequest
+ * @see GetLegendGraphicRequest
  */
 public class GetLegendGraphicKvpReader extends KvpRequestReader {
 
@@ -643,8 +642,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     /**
      * Finds the Style named <code>styleName</code> in <code>styles</code>.
      *
-     * @param styleName name of style to search for in the list of styles. If <code>null</code>, it is assumed the
-     *     request is made in literal mode and the user has requested the first style.
+     * @param styleName name of style to search for in the list of styles. If {@code null}, it is assumed the request is
+     *     made in literal mode and the user has requested the first style.
      * @param styles non null, non empty, list of styles
      * @throws NoSuchElementException if no style named <code>styleName</code> is found in <code>
      *     styles</code>

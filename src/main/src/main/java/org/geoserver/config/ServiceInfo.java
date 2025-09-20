@@ -60,7 +60,7 @@ public interface ServiceInfo extends Info {
      */
     void setName(String name);
 
-    /** The workspace the service is specific or local to, or <code>null</code> if the service is global. */
+    /** The workspace the service is specific or local to, or {@code null} if the service is global. */
     WorkspaceInfo getWorkspace();
 
     /** Sets the workspace the service is specific or local to. */

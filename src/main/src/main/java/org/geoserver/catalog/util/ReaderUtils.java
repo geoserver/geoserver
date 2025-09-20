@@ -28,7 +28,6 @@ import org.xml.sax.InputSource;
  * <p>
  *
  * @author dzwiers, Refractions Research, Inc.
- * @version $Id$
  * @see XMLConfigReader
  */
 public class ReaderUtils {

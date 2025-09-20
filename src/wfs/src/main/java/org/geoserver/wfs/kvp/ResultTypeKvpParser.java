@@ -9,7 +9,7 @@ import net.opengis.wfs.ResultTypeType;
 import org.geoserver.ows.KvpParser;
 
 /**
- * Parses a kvp of the form resultType=<hits|results>.
+ * Parses a kvp of the form {@code resultType=<hits|results>}.
  *
  * <p>Allowable values are "hits", and "results", which get parsed into the following respectivley.
  *

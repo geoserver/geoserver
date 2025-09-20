@@ -26,7 +26,6 @@ import org.springframework.util.Assert;
  * OWS {@link Response} that encodes a {@link BufferedImageLegendGraphic} to the image/png MIME Type
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
 

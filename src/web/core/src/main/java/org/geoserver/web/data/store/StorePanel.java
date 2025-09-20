@@ -41,7 +41,6 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
  *
  * @author Justin Deoliveira
  * @author Gabriel Roldan
- * @version $Id$
  * @see StorePage
  * @see StoreProvider
  */

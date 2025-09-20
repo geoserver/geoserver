@@ -17,7 +17,6 @@ import org.geotools.util.DateTimeParser;
  * @author Martin Desruisseaux
  * @author Simone Giannecchini, GeoSolutions SAS
  * @author Jonathan Meyer, Applied Information Sciences, jon@gisjedi.com
- * @version $Id$
  */
 public class TimeParser extends DateTimeParser {
 

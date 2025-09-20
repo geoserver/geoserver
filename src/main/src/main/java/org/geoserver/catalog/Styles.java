@@ -42,7 +42,7 @@ public class Styles {
      *
      * @param sld The sld to encode.
      * @param handler The handler to use to encode.
-     * @param ver Version of the style to encode, may be <code>null</code>.
+     * @param ver Version of the style to encode, may be {@code null}.
      * @param pretty Whether to format the style.
      * @return The encoded style.
      */
@@ -61,7 +61,7 @@ public class Styles {
      * <p>This method will return the first UserStyle it encounters in the StyledLayerDescriptor tree.
      *
      * @param sld The StyledLayerDescriptor object.
-     * @return The UserStyle, or <code>null</code> if no such style could be found.
+     * @return The UserStyle, or {@code null} if no such style could be found.
      */
     public static Style style(StyledLayerDescriptor sld) {
         for (int i = 0; i < sld.getStyledLayers().length; i++) {

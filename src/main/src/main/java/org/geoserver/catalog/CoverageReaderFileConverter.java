@@ -35,8 +35,8 @@ public class CoverageReaderFileConverter implements CoverageReaderInputObjectCon
      * to a File, an empty {@link Optional} will be returned.
      *
      * @param input The input object.
-     * @param coverageInfo The grid coverage metadata, may be <code>null</code>.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param coverageInfo The grid coverage metadata, may be {@code null}.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @return
      */
     @Override
@@ -49,9 +49,9 @@ public class CoverageReaderFileConverter implements CoverageReaderInputObjectCon
      * to a File, an empty {@link Optional} will be returned.
      *
      * @param input The input object.
-     * @param coverageInfo The grid coverage metadata, may be <code>null</code>.
-     * @param coverageStoreInfo The grid coverage store metadata, may be <code>null</code>.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param coverageInfo The grid coverage metadata, may be {@code null}.
+     * @param coverageStoreInfo The grid coverage store metadata, may be {@code null}.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @return
      */
     @Override

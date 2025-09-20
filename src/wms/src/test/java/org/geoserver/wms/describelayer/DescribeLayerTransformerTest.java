@@ -37,7 +37,6 @@ import org.w3c.dom.Element;
  * Unit test suite for {@link DescribeLayerTransformer}
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class DescribeLayerTransformerTest {
 

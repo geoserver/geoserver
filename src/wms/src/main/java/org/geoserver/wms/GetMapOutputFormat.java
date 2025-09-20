@@ -14,7 +14,7 @@ import org.geoserver.platform.ServiceException;
  * Produces and maps for an specific output format.
  *
  * <p>A GetMapOutputFormat implementation is meant to produce one and only one type of content, whose normative
- * MIME-Type is advertised through the {@link #getContentType()} method. Yet, the {@link #getOutputFormatNames()} method
+ * MIME-Type is advertised through the {@link #getMimeType()}} method. Yet, the {@link #getOutputFormatNames()} method
  * is meant to advertise the map format in the capabilities document and may or may not match the MIME-Type.
  *
  * <p>To incorporate a new producer specialized in a given output format, there must be a {@code GetMapOutputFormat}
@@ -29,7 +29,6 @@ import org.geoserver.platform.ServiceException;
  *
  * @author Gabriel Roldan
  * @author Simone Giannecchini, GeoSolutions
- * @version $Id$
  */
 public interface GetMapOutputFormat {
     /**
@@ -44,8 +43,8 @@ public interface GetMapOutputFormat {
      * Returns the list of content type aliases for this output format, that are the ones to be used as Format elements
      * in the GetCapabilities document.
      *
-     * <p>Aliases are used to easy the task of writing a GetMap request, (for example, to type &outputformat=svg instead
-     * of the full &outputformat=image/svg+xml)
+     * <p>Aliases are used to easy the task of writing a GetMap request, (for example, to type {@code outputformat=svg}
+     * instead of the full {@code outputformat=image/svg+xml}).
      *
      * @return the aliases a map of the content type this map producer creates content type can be asked by through a
      *     GetMap request.

@@ -29,7 +29,6 @@ import org.geotools.util.Version;
  * <p>Request parameters:
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GetFeatureInfoKvpReader extends KvpRequestReader {
 

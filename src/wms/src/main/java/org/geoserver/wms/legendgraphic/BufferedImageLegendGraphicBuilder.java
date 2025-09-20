@@ -70,7 +70,6 @@ import org.springframework.util.StringUtils;
  *
  * @author Gabriel Roldan
  * @author Simone Giannecchini, GeoSolutions SAS
- * @version $Id$
  */
 public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
     Logger LOGGER = Logger.getLogger("org.geoserver.wms.legendgraphic");

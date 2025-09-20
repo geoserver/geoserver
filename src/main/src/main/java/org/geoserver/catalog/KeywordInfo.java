@@ -20,13 +20,13 @@ public interface KeywordInfo {
     /** The keyword value. */
     String getValue();
 
-    /** The language of the keyword, <code>null</code> if no language. */
+    /** The language of the keyword, {@code null} if no language. */
     String getLanguage();
 
     /** Sets the language of the keyword. */
     void setLanguage(String language);
 
-    /** The vocabulary of the keyword, <code>null</code> if no vocabulary. */
+    /** The vocabulary of the keyword, {@code null} if no vocabulary. */
     String getVocabulary();
 
     /** Sets the vocabulary of the keyword. */

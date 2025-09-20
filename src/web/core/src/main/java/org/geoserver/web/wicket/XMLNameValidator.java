@@ -11,7 +11,8 @@ import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 
 /**
- * Checks a string conforms to the XML Name production as declared at {@link http ://www.w3.org/TR/REC-xml/#NT-Name}
+ * Checks a string conforms to the XML Name production as declared at <a
+ * href="https://www.w3.org/TR/REC-xml/#NT-Name">Extensible Markup Language (XML) 1.0</a>.
  *
  * @author aaime
  */

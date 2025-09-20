@@ -17,7 +17,6 @@ import org.geoserver.catalog.Catalog;
  * Web Feature Service ListStoredQueries operation.
  *
  * @author Justin Deoliveira, OpenGeo
- * @version $Id$
  */
 public class ListStoredQueries {
 

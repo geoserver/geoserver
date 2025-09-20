@@ -18,7 +18,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.KeyStoreProvider;
 
 /**
- * Locking wrapper for {@link KeyStoreProviderImpl}
+ * Locking wrapper for {@link KeyStoreProvider}
  *
  * @author christian
  */

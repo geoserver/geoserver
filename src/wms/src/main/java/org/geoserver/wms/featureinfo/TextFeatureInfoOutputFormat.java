@@ -33,7 +33,6 @@ import org.locationtech.jts.geom.Geometry;
  * rest.
  *
  * @author James Macgill, PSU
- * @version $Id$
  */
 public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 

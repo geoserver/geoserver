@@ -947,7 +947,7 @@ public class SystemTestData extends CiteTestData {
      * original state.
      *
      * @param serviceClass The class of the service
-     * @param workspace The optional workspace for the service, may be <code>null</code>
+     * @param workspace The optional workspace for the service, may be {@code null}
      * @param geoServer The GeoServer configuration object.
      */
     public <T extends ServiceInfo> void addService(Class<T> serviceClass, String workspace, GeoServer geoServer) {
@@ -990,7 +990,7 @@ public class SystemTestData extends CiteTestData {
      * Adds a settings configuration to the test setup. If the settings object already exists it is simply reverted to
      * its original state.
      *
-     * @param workspace The optional workspace for the settings, may be <code>null</code>
+     * @param workspace The optional workspace for the settings, may be {@code null}
      * @param geoServer The GeoServer configuration object.
      */
     public void addSettings(String workspace, GeoServer geoServer) {

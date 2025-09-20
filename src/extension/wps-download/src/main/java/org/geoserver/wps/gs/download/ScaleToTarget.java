@@ -73,7 +73,7 @@ class ScaleToTarget {
      * Two-args constructor.
      *
      * @param reader the coverage reader to use for reading metadata
-     * @param envelope the envelope of the ROI we want to scale (if <code>null</code>, the envelope of the whole
+     * @param envelope the envelope of the ROI we want to scale (if {@code null}, the envelope of the whole
      *     coverage is used)
      */
     ScaleToTarget(GridCoverage2DReader reader, Bounds envelope) {

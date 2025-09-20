@@ -48,7 +48,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
 
     protected AbstractJDBCService() {}
 
-    /** initialize a {@link DataSource} form a {@link JdbcSecurityServiceConfig} object */
+    /** initialize a {@link DataSource} form a {@link JDBCSecurityServiceConfig} object */
     public void initializeDSFromConfig(SecurityNamedServiceConfig namedConfig) throws IOException {
         JDBCSecurityServiceConfig config = (JDBCSecurityServiceConfig) namedConfig;
         if (config.isJndi()) {
@@ -216,7 +216,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         }
     }
 
-    /** drops tables, ignore SQLExceptions */
+    // /** drops tables, ignore SQLExceptions */
     //    public void dropExistingTables() throws IOException {
     //        Connection con = null;
     //        PreparedStatement ps = null;

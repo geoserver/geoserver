@@ -685,7 +685,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * <p>This method is intended to be called after system startup. Typically from {@link #onSetUp(SystemTestData)} or
      * a {@literal @}Before hook.
      *
-     * @param workspaceName The optional workspace of the style, may be <code>null</code>.
+     * @param workspaceName The optional workspace of the style, may be {@code null}.
      * @param name Name of the style.
      */
     protected void removeStyle(String workspaceName, String name) throws IOException {
@@ -716,7 +716,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * <p>This method is intended to be called after system startup. Typically from {@link #onSetUp(SystemTestData)} or
      * a {@literal @}Before hook.
      *
-     * @param workspaceName The optional workspace of the layer group, may be <code>null</code>.
+     * @param workspaceName The optional workspace of the layer group, may be {@code null}.
      * @param name Name of the layer group.
      */
     protected void removeLayerGroup(String workspaceName, String name) {

@@ -71,7 +71,6 @@ import org.xml.sax.SAXParseException;
  *
  * @author Rob Hranac, TOPP
  * @author Chris Holmes, TOPP
- * @version $Id$
  */
 public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 

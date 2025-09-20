@@ -22,7 +22,6 @@ import org.springframework.util.Assert;
  *
  * @author Gabriel Roldan
  * @author Carlo Cancellieri
- * @version $Id$
  */
 public abstract class DescribeLayerResponse extends Response {
 

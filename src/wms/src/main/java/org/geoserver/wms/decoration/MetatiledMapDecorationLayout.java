@@ -14,7 +14,7 @@ import org.geoserver.wms.WMSMapContent;
  * that is, maps that are rendered with the intent of being divided up into smaller image segments. Basically, it
  * divided the map up into a grid and repeats the layout and rendering process for each section of the grid.
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 public class MetatiledMapDecorationLayout extends MapDecorationLayout {
     private int tileSize = 3;

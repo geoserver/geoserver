@@ -25,7 +25,6 @@ import org.geotools.styling.visitor.DuplicatingStyleVisitor;
  * DescribeLayer WMs operation.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GetStyles {
 

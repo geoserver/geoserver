@@ -16,15 +16,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * access.
  */
 public interface FileAccessManager {
-    /**
-     * Returns the file system roots available for the current user (or <code>null</code> if there are no restrictions)
-     */
+    /** Returns the file system roots available for the current user (or {@code null} if there are no restrictions) */
     public List<File> getAvailableRoots();
 
     /**
-     * Returns the sandbox root directory, if there is one, or <code>null</code> if there is none (i.e., the user can
-     * access the whole file system). This is used by the REST API to automatically prepend the sandbox root to the
-     * uploaded file paths.
+     * Returns the sandbox root directory, if there is one, or {@code null} if there is none (i.e., the user can access
+     * the whole file system). This is used by the REST API to automatically prepend the sandbox root to the uploaded
+     * file paths.
      */
     public File getSandbox();
 

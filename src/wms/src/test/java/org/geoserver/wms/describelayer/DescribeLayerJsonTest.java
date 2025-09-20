@@ -22,7 +22,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
  * Unit test suite for {@link JSONDescribeLayerResponse}
  *
  * @author Carlo Cancellieri - GeoSolutions
- * @version $Id$
  */
 public class DescribeLayerJsonTest extends WMSTestSupport {
 

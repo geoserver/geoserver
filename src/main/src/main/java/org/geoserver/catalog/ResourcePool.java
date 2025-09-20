@@ -1541,7 +1541,7 @@ public class ResourcePool {
      * Returns a coverage reader, caching the result.
      *
      * @param info The coverage metadata.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @throws IOException Any errors that occur loading the reader.
      */
     public GridCoverageReader getGridCoverageReader(CoverageStoreInfo info, Hints hints) throws IOException {
@@ -1552,7 +1552,7 @@ public class ResourcePool {
      * Returns a coverage reader, caching the result.
      *
      * @param storeInfo The coverage metadata.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @throws IOException Any errors that occur loading the reader.
      */
     public GridCoverageReader getGridCoverageReader(CoverageStoreInfo storeInfo, String coverageName, Hints hints)
@@ -1564,7 +1564,7 @@ public class ResourcePool {
      * Returns a coverage reader, caching the result.
      *
      * @param info The coverage metadata.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @throws IOException Any errors that occur loading the reader.
      */
     private GridCoverageReader getGridCoverageReader(

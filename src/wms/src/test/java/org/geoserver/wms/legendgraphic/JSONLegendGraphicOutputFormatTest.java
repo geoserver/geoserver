@@ -74,7 +74,6 @@ import org.w3c.dom.Document;
  * Test the functioning of the abstract legend producer for JSON format,
  *
  * @author Ian Turton
- * @version $Id$
  */
 public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegendGraphicBuilder> {
 

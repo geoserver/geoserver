@@ -32,30 +32,25 @@ public class FilePaths {
     static final Pattern WINDOWS_DRIVE_LETTER = Pattern.compile("^\\w\\:/.*$");
 
     /**
-     * File Path components listed into absolute prefix, directory names, and final file name or
-     * directory name.
+     * File Path components listed into absolute prefix, directory names, and final file name or directory name.
      *
-     * <p><b>Relative</b>: Relative paths are represented in a straight forward fashion with: {@code
-     * Paths.names("data/tasmania/roads.shp"} --> {"data","tasmania","roads.shp"}}.
+     * <p><b>Relative</b>: Relative paths are represented in a straight forward fashion with:
+     * {@code Paths.names("data/tasmania/roads.shp"} --> {"data","tasmania","roads.shp"}}.
      *
-     * <p><b>Absolute path</b>: When working with an absolute path the list starts with a special
-     * marker.
+     * <p><b>Absolute path</b>: When working with an absolute path the list starts with a special marker.
      *
      * <p>Linux absolute paths are start with leading slash character ({@code / } ). <br>
-     * {@code convert("/srv/gis/cadaster/district.geopkg") --> "/srv/gis/cadaster/district.geopkg" <br>
-     * {@code names("/srv/gis/cadaster/district.geopkg) --> {"/", "srv","gis", "cadaster",
-     * "district.geopkg"}}. <br>
-     * This agrees with URL representation of
-     * {@code file:///srv/gis/cadaster/district.geopkg}.
+     * {@code convert("/srv/gis/cadaster/district.geopkg") --> "/srv/gis/cadaster/district.geopkg"} <br>
+     * {@code names("/srv/gis/cadaster/district.geopkg) --> {"/", "srv","gis", "cadaster", "district.geopkg"}}. <br>
+     * This agrees with URL representation of {@code file:///srv/gis/cadaster/district.geopkg}.
      *
      * <p>Windows absolute drive letter and slash ( {@code C:\ } ). <br>
-     * {@code names("D:\\gis\cadaster\district.geopkg") --> {"D:", "gis", "cadaster",
-     * "district.geopkg"}}. This agrees with URL representation of
-     * {@code file:///D:/gis/cadaster/district.geopkg}.
+     * {@code names("D:\\gis\cadaster\district.geopkg") --> {"D:", "gis", "cadaster", "district.geopkg"}}. This agrees
+     * with URL representation of {@code file:///D:/gis/cadaster/district.geopkg}.
      *
      * @param path Path used for reference lookup
-     * @return List of path components divided into absolute prefix, directory names, and final file
-     *     name or directory name.
+     * @return List of path components divided into absolute prefix, directory names, and final file name or directory
+     *     name.
      */
     public static List<String> names(String path) {
         if (path == null || path.isEmpty()) {

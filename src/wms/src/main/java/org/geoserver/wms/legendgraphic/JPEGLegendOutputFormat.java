@@ -16,7 +16,6 @@ import org.geoserver.wms.GetLegendGraphicRequest;
  * {@code image/jpeg}.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class JPEGLegendOutputFormat implements GetLegendGraphicOutputFormat {
 

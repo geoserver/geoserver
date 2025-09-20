@@ -30,7 +30,6 @@ import org.geotools.util.logging.Logging;
  * @author Rob Hranac, TOPP
  * @author Chris Holmes, TOPP
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- * @version $Id$
  */
 public class DescribeFeatureType {
     /** Catalog reference */

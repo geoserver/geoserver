@@ -17,7 +17,6 @@ import org.geoserver.platform.ServiceException;
  * in the GeoServer application context.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public interface GetLegendGraphicOutputFormat {
     /**

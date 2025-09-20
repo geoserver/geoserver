@@ -51,7 +51,7 @@ public interface FeatureTypeInfo extends ResourceInfo {
     /**
      * A filter which should be applied to all queries of the dataset represented by the feature type.
      *
-     * @return A filter, or <code>null</code> if one not set.
+     * @return A filter, or {@code null} if one not set.
      * @uml.property name="filter"
      */
     Filter filter();
@@ -139,8 +139,8 @@ public interface FeatureTypeInfo extends ResourceInfo {
      * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> may be used to report the progress of
      * loading the feature source and also to report any errors or warnings that occur.
      *
-     * @param listener A progress listener, may be <code>null</code>.
-     * @param hints Hints to use while loading the featuer source, may be <code>null</code>.
+     * @param listener A progress listener, may be {@code null}.
+     * @param hints Hints to use while loading the featuer source, may be {@code null}.
      * @return The feature source.
      * @throws IOException Any I/O problems.
      */

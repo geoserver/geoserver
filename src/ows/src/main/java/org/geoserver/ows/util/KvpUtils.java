@@ -34,7 +34,6 @@ import org.geoserver.platform.ServiceException;
  * @author Gabriel Rold?n, Axios
  * @author Justin Deoliveira, TOPP
  * @author Carlo Cancellieri Geo-Solutions SAS
- * @version $Id$
  */
 public class KvpUtils {
     /** Class logger */

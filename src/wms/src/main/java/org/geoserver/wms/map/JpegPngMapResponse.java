@@ -43,7 +43,7 @@ public class JpegPngMapResponse extends RenderedImageMapResponse {
     /**
      * Transforms the rendered image into the appropriate format, streaming to the output stream.
      *
-     * @see RasterMapOutputFormat#formatImageOutputStream(RenderedImage, OutputStream)
+     * @see RenderedImageMapResponse#formatImageOutputStream(RenderedImage, OutputStream, WMSMapContent)
      */
     @Override
     public void formatImageOutputStream(RenderedImage image, OutputStream outStream, WMSMapContent mapContent)

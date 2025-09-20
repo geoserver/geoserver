@@ -26,7 +26,7 @@ import org.locationtech.jts.geom.Point;
  *
  * This is applied ONLY when the regionating strategy is 'auto' and no strategy is set by the admin.
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 public class BestGuessRegionatingStrategy implements RegionatingStrategy {
 

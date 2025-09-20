@@ -107,7 +107,7 @@ public abstract class StyleHandler {
      * Parses a style resource.
      *
      * @param input The style input, see {@link #toReader(Object)} for accepted inputs.
-     * @param version Optional version of the format, maybe <code>null</code>
+     * @param version Optional version of the format, maybe {@code null}
      * @param resourceLocator Optional locator for resources (icons, etc...) referenced by the style, may be <code>null
      *     </code>.
      * @param entityResolver Optional entity resolver for XML based formats, may be <code>null
@@ -123,7 +123,7 @@ public abstract class StyleHandler {
      * <p>Handlers that don't support encoding should throw {@link java.lang.UnsupportedOperationException}.
      *
      * @param sld The style to encode.
-     * @param version The version of the format to use to encode the style, may be <code>null</code> .
+     * @param version The version of the format to use to encode the style, may be {@code null} .
      * @param pretty Flag controlling whether or not the style should be encoded in pretty form.
      * @param output The stream to write the encoded style to.
      */

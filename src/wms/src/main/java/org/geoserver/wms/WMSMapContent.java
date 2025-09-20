@@ -37,7 +37,6 @@ import org.geotools.renderer.lite.StreamingRenderer;
  *
  * @author Gabriel Roldan
  * @author Simone Giannecchini - GeoSolutions SAS
- * @version $Id$
  */
 public class WMSMapContent extends MapContent {
     /** requested map image width in output units (pixels) */

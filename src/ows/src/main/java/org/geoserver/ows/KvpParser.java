@@ -108,7 +108,7 @@ public abstract class KvpParser {
         return binding;
     }
 
-    /** @return The service to bind to, may be <code>null</code>. */
+    /** @return The service to bind to, may be {@code null}. */
     public final String getService() {
         return service;
     }
@@ -118,7 +118,7 @@ public abstract class KvpParser {
         this.service = service;
     }
 
-    /** @return The version to bind to, or <code>null</code>. */
+    /** @return The version to bind to, or {@code null}. */
     public final Version getVersion() {
         return version;
     }
@@ -133,7 +133,7 @@ public abstract class KvpParser {
         this.request = request;
     }
 
-    /** @return The request to bind to, or <code>null</code>. */
+    /** @return The request to bind to, or {@code null}. */
     public String getRequest() {
         return request;
     }

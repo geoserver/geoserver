@@ -16,7 +16,6 @@ import org.geoserver.wms.WMSMapContent;
  * Handles a GetMap request that expects a map in SVG format.
  *
  * @author Gabriel Roldan
- * @version $Id$
  * @see StreamingSVGMap
  * @see SVGStreamingMapResponse
  */

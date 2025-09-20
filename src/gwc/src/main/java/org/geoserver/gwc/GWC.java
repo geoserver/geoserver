@@ -169,7 +169,6 @@ import org.springframework.context.ApplicationContextAware;
  * worry about complexities nor API changes in either.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GWC implements DisposableBean, InitializingBean, ApplicationContextAware {
 

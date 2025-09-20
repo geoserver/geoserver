@@ -85,7 +85,7 @@ final class DownloadUtilities {
      *
      * @param mime the mime-type for which we are searching for a {@link ProcessParameterIO}
      * @param lenient whether or not trying to be lenient when returning a suitable {@link ProcessParameterIO}.
-     * @return either <code>null</code> or the found
+     * @return either {@code null} or the found
      */
     static final ProcessParameterIO find(Parameter<?> p, ApplicationContext context, String mime, boolean lenient) {
         //

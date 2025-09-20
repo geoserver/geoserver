@@ -30,7 +30,7 @@ public interface GeoServerRoleConverter {
     public abstract Collection<GeoServerRole> convertRolesFromString(String rolesString, String userName);
 
     /**
-     * Creates a {@link GeoServerRole} from a string May return <code>null</code> if rolesString is null or empty
+     * Creates a {@link GeoServerRole} from a string May return {@code null} if rolesString is null or empty
      *
      * <p>The userName may be null and should only be passed if the role has personalized role parameters
      */

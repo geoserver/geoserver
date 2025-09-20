@@ -116,8 +116,8 @@ class RasterAttributeTableVisitor extends RasterSymbolizerVisitor {
     }
 
     /**
-     * Returns PAMRasterBand, ensuring it has a valid index, or <code>null</code>, if the channel name does not resolve
-     * to a valid band index, or if the band does not have a valid RAT.
+     * Returns PAMRasterBand, ensuring it has a valid index, or {@code null}, if the channel name does not resolve to a
+     * valid band index, or if the band does not have a valid RAT.
      */
     private static PAMRasterBand getBandWithRAT(Expression channelName, List<PAMRasterBand> pamRasterBands) {
         Integer bandIdx = channelName.evaluate(null, Integer.class);

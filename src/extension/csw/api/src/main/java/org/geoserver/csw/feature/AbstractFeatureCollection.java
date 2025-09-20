@@ -106,7 +106,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
      *
      * <p>Subclass must call super.close( close ) to allow the list of open iterators to be adjusted.
      *
-     * @param close Iterator, will not be <code>null</code>
+     * @param close Iterator, will not be {@code null}
      */
     protected abstract void closeIterator(Iterator<F> close);
 

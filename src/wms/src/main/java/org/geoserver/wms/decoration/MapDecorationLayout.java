@@ -48,7 +48,7 @@ import org.xml.sax.InputSource;
  * collection of MapDecoration objects and the configuration associated with each, and delegates the actual rendering
  * operations to the decorations.
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 public class MapDecorationLayout {
 

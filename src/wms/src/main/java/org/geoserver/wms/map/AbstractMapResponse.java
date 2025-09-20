@@ -79,7 +79,7 @@ public abstract class AbstractMapResponse extends Response {
 
     /**
      * Evaluates whether this response can handle the given operation by checking if the operation's request is a
-     * {@link GetMapRequest} and the requested output format is contained in {@link #getOutputFormatNames()}.
+     * {@link GetMapRequest} and the requested output format is contained in {@link #getOutputFormats()}.
      *
      * <p>NOTE: requested MIME Types may come with parameters, like, for example: {@code image/png;param1=value1}. This
      * default canHandle implementation performs and exact match check against the requested and supported format names.

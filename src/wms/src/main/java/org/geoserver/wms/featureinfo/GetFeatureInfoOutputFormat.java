@@ -44,7 +44,6 @@ import org.geotools.util.logging.Logging;
  *
  * @author Gabriel Roldan
  * @author Chris Holmes
- * @version $Id$
  */
 public abstract class GetFeatureInfoOutputFormat {
 

@@ -6,7 +6,7 @@
 package org.geoserver.security.config;
 
 /**
- * RoleSource interface for {@link PreAuthenticaticatedUserNameFilterConfig}
+ * RoleSource interface for {@link PreAuthenticatedUserNameFilterConfig}.
  *
  * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
  */

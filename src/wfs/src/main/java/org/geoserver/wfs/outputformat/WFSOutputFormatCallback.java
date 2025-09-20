@@ -15,7 +15,8 @@ import org.geoserver.wfs.WFSInfo;
 import org.geotools.util.logging.Logging;
 
 /**
- * A callback that will filter the {@link WFSGetFeatureOutputFormat} based on {@link WFSInfo#getGetFeatureOutputTypes()}
+ * A callback that will filter the {@link org.geoserver.wfs.WFSGetFeatureOutputFormat} based on
+ * {@link WFSInfo#getGetFeatureOutputTypes()}
  */
 public class WFSOutputFormatCallback extends AbstractDispatcherCallback {
     private static final Logger LOGGER = Logging.getLogger(WFSOutputFormatCallback.class);

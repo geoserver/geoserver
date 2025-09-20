@@ -29,7 +29,6 @@ import java.util.Set;
  *
  * @author dzwiers, Refractions Research, Inc.
  * @author $Author: dmzwiers $ (last modification)
- * @version $Id$
  */
 public abstract class NameSpaceTranslator {
     /** the prefix for this translator instance */

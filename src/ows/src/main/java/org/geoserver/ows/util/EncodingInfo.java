@@ -20,9 +20,9 @@ public class EncodingInfo {
 
     /**
      * Contains info about detected byte order (or endian-ness) of the incoming data. <code>true
-     * </code> if order is big-endian, <code>false</code> for little-endian, and <code>null</code> if byte order is not
-     * relevant for this encoding scheme. This is a "three-state" switch (third is <code>null</code>), so it can't be
-     * just plain <code>boolean</code> type.
+     * </code> if order is big-endian, <code>false</code> for little-endian, and {@code null} if byte order is not
+     * relevant for this encoding scheme. This is a "three-state" switch (third is {@code null}), so it can't be just
+     * plain <code>boolean</code> type.
      */
     private Boolean fIsBigEndian = null;
 
@@ -45,7 +45,7 @@ public class EncodingInfo {
      *
      * @param encoding Name of the autodetected encoding scheme.
      *     <p>Detected byte order of the data. <code>true</code> if order is big-endian, <code>false
-     *     </code> if little-endian, and <code>null</code> if byte order is not relevant for this encoding scheme.
+     *     </code> if little-endian, and {@code null} if byte order is not relevant for this encoding scheme.
      */
     public EncodingInfo(String encoding, Boolean isBigEndian) {
         fEncoding = encoding;
@@ -59,7 +59,7 @@ public class EncodingInfo {
      *
      * @param encoding Name of the autodetected encoding scheme.
      *     <p>Detected byte order of the data. <code>true</code> if order is big-endian, <code>false
-     *     </code> if little-endian, and <code>null</code> if byte order is not relevant for this encoding scheme.
+     *     </code> if little-endian, and {@code null} if byte order is not relevant for this encoding scheme.
      * @param hasBOM <code>true</code> if BOM is present, <code>false</code> otherwise.
      */
     public EncodingInfo(String encoding, Boolean isBigEndian, boolean hasBOM) {

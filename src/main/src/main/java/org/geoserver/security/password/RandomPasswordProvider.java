@@ -50,7 +50,7 @@ public class RandomPasswordProvider {
      */
     SecureRandom random = new SecureRandom();
 
-    /** Creates a random password of the specified length, if length <=0, return <code>null</code> */
+    /** Creates a random password of the specified length, if length &lt;= 0, return {@code null} */
     public char[] getRandomPassword(int length) {
         if (length <= 0) return null;
         char[] buff = new char[length];

@@ -170,7 +170,7 @@ public class ColorMapLegendCreator {
          * legend.
          *
          * @param cEntry a {@link ColorMapEntry} element for this builder so that it can take it into account for
-         *     building the legend. It must be not <code>null</code>.
+         *     building the legend. It must be not {@code null}.
          */
         public ColorMapEntryLegendBuilder addColorMapEntry(final ColorMapEntry cEntry) {
             PackagedUtils.ensureNotNull(cEntry, "cEntry");

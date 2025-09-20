@@ -47,9 +47,9 @@ public class CoverageReaderCogInputObjectConverter implements CoverageReaderInpu
      * to convert the input to that, an empty {@link Optional} will be returned.
      *
      * @param input The input object.
-     * @param coverageInfo The grid coverage metadata, may be <code>null</code>.
+     * @param coverageInfo The grid coverage metadata, may be {@code null}.
      * @param coverageStoreInfo The grid coverage store
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @return
      */
     @Override

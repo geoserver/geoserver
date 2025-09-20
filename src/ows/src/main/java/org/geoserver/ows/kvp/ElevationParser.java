@@ -23,7 +23,6 @@ import org.geotools.util.logging.Logging;
  *
  * @author Ariel Nunez, GeoSolutions S.A.S.
  * @author Simone Giannecchini, GeoSolutions S.A.S.
- * @version $Id$
  */
 public class ElevationParser {
 

@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Rob Hranac, Vision for New York
  * @author Chris Holmes, TOPP
- * @version $Id$
  */
 public class FreefsLog extends HttpServlet {
 

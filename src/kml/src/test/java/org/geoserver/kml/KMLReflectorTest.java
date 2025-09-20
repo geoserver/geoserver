@@ -103,7 +103,6 @@ import org.xml.sax.InputSource;
  * @author David Winslow (OpenGeo)
  * @author Gabriel Roldan (OpenGeo)
  * @author Markus Innerebner (EURAC Research)
- * @version $Id$
  */
 public class KMLReflectorTest extends WMSTestSupport {
 

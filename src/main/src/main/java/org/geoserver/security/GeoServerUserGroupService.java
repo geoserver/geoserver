@@ -11,6 +11,8 @@ import org.geoserver.security.event.UserGroupLoadedEvent;
 import org.geoserver.security.event.UserGroupLoadedListener;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
+import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
+import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.PasswordValidator;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -90,7 +92,7 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService, Use
 
     /**
      * @return the Spring name of the {@link GeoServerPasswordEncoder} object. mandatory, default is
-     *     {@link GeoServerDigestPasswordEncoder#BeanName}.
+     *     {@link GeoServerDigestPasswordEncoder#name}.
      */
     String getPasswordEncoderName();
 

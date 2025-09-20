@@ -12,6 +12,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Wrapper class for a {@link GeoServerUserGroupService} object decoding the passwords.
@@ -41,9 +42,7 @@ public class DecodingUserDetailsService implements UserDetailsService {
      */
     protected DecodingUserDetailsService() {}
 
-    /**
-     * sets the wrapped {@link GeoServerUserGroupService} objects and prepares the {@link GeoServerUserPasswordEncoder}
-     */
+    /** Sets the wrapped {@link GeoServerUserGroupService} objects and prepares the {@link PasswordEncoder} */
     public void setGeoserverUserGroupService(GeoServerUserGroupService service) throws IOException {
         this.service = service;
         encoder = new GeoServerMultiplexingPasswordEncoder(service.getSecurityManager(), service);

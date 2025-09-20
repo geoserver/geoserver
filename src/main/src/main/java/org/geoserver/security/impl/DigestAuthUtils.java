@@ -148,9 +148,9 @@ public class DigestAuthUtils {
      * @param array the array to process
      * @param delimiter to split each element using (typically the equals symbol)
      * @param removeCharacters one or more characters to remove from each element prior to attempting the split
-     *     operation (typically the quotation mark symbol) or <code>null</code> if no removal should occur
-     * @return a <code>Map</code> representing the array contents, or <code>null</code> if the array to process was null
-     *     or empty
+     *     operation (typically the quotation mark symbol) or {@code null} if no removal should occur
+     * @return a <code>Map</code> representing the array contents, or {@code null} if the array to process was null or
+     *     empty
      */
     public static Map<String, String> splitEachArrayElementAndCreateMap(
             String[] array, String delimiter, String removeCharacters) {

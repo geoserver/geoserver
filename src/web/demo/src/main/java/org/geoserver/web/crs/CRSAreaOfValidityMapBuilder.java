@@ -59,7 +59,6 @@ import org.locationtech.jts.geom.Polygon;
  * {@link CoordinateReferenceSystem coordinate reference system}.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 class CRSAreaOfValidityMapBuilder {
 

@@ -32,7 +32,6 @@ import org.locationtech.jts.geom.Point;
  * Streaming SVG encoder (does not support styling)
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class StreamingSVGMap extends WebMap {
 

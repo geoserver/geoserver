@@ -14,7 +14,6 @@ import org.geoserver.platform.ServiceException;
  *
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author Simone Giannecchini, GeoSolutions SAS
- * @version $Id$
  */
 public class WcsException extends ServiceException {
     /** */

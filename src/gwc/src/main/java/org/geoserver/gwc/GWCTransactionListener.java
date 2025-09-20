@@ -47,7 +47,6 @@ import org.geowebcache.GeoWebCacheException;
  *
  * @author Arne Kepp
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GWCTransactionListener implements TransactionCallback {
 
@@ -70,9 +69,9 @@ public class GWCTransactionListener implements TransactionCallback {
     }
 
     /**
-     * Not used, we're interested in the {@link #dataStoreChange} and {@link #afterTransaction} hooks
+     * Not used, we're interested in the {@link #dataStoreChange} and {@link #afterTransaction} hooks.
      *
-     * @see org.geoserver.wfs.TransactionPlugin#beforeCommit(net.opengis.wfs.TransactionRequest)
+     * @see TransactionCallback#beforeCommit(TransactionRequest)
      */
     @Override
     public void beforeCommit(TransactionRequest request) throws WFSException {
@@ -82,7 +81,7 @@ public class GWCTransactionListener implements TransactionCallback {
     /**
      * If transaction's succeeded then truncate the affected layers at the transaction affected bounds
      *
-     * @see org.geoserver.wfs.TransactionPlugin#afterTransaction
+     * @see TransactionCallback#afterTransaction(TransactionRequest, TransactionResponse, boolean)
      */
     @Override
     public void afterTransaction(final TransactionRequest request, TransactionResponse result, boolean committed) {
@@ -146,7 +145,7 @@ public class GWCTransactionListener implements TransactionCallback {
 
     /**
      * @return {@code 0}, we don't need any special treatment
-     * @see org.geoserver.wfs.TransactionPlugin#getPriority()
+     * @see TransactionCallback#getPriority().
      */
     @Override
     public int getPriority() {

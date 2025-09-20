@@ -37,7 +37,6 @@ import org.w3c.dom.Document;
  * Unit test suite for {@link GetCapabilitiesResponse}
  *
  * @author Simone Giannecchini - GeoSolutions
- * @version $Id$
  */
 public class GetCapabilitiesReponseTest extends WMSTestSupport {
 

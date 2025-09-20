@@ -70,7 +70,6 @@ import org.geotools.renderer.lite.StreamingRenderer;
  * @author Simone Giannecchini, GeoSolutions
  * @author Andrea Aime
  * @author Gabriel Roldan
- * @version $Id$
  * @see RenderedImageMapOutputFormat
  * @see PNGMapResponse
  * @see GIFMapResponse

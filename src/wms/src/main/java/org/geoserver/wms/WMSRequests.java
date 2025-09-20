@@ -44,17 +44,17 @@ public class WMSRequests {
      * <p>The tile cache location is determined from {@link GeoServer#getTileCache()}. If the above method returns null
      * this method falls back to the behaviour of {@link #getGetMapUrl(WMSMapContent, Layer, Envelope, String[])}.
      *
-     * <p>If the <tt>layer</tt> argument is <code>null</code>, the request is made including all layers in the
+     * <p>If the <tt>layer</tt> argument is {@code null}, the request is made including all layers in the
      * <tt>mapContexT</tt>.
      *
-     * <p>If the <tt>bbox</tt> argument is <code>null</code>. {@link WMSMapContent#getAreaOfInterest()} is used for the
-     * bbox parameter.
+     * <p>If the <tt>bbox</tt> argument is {@code null}. {@link WMSMapContent#getAreaOfInterest()} is used for the bbox
+     * parameter.
      *
      * @param req The getMap request.
-     * @param layer The Map layer, may be <code>null</code>.
+     * @param layer The Map layer, may be {@code null}.
      * @param layerIndex The index of the layer in the request
-     * @param bbox The bounding box of the request, may be <code>null</code>.
-     * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
+     * @param bbox The bounding box of the request, may be {@code null}.
+     * @param kvp Additional or overidding kvp parameters, may be {@code null}
      * @return The full url for a getMap request.
      */
     public static String getTiledGetMapUrl(
@@ -80,7 +80,7 @@ public class WMSRequests {
      *
      * @param req The request.
      * @param geoServer The geoserver configuration.
-     * @return The url to the tile cache, or <code>null</code> if no tile cache set.
+     * @return The url to the tile cache, or {@code null} if no tile cache set.
      */
     private static String getTileCacheBaseUrl(GetMapRequest req, GeoServer geoServer) {
         // first check if tile cache set
@@ -118,17 +118,17 @@ public class WMSRequests {
     /**
      * Encodes the url of a GetMap request.
      *
-     * <p>If the <tt>layer</tt> argument is <code>null</code>, the request is made including all layers in the
+     * <p>If the <tt>layer</tt> argument is {@code null}, the request is made including all layers in the
      * <tt>mapContexT</tt>.
      *
-     * <p>If the <tt>bbox</tt> argument is <code>null</code>. {@link WMSMapContent#getAreaOfInterest()} is used for the
-     * bbox parameter.
+     * <p>If the <tt>bbox</tt> argument is {@code null}. {@link WMSMapContent#getAreaOfInterest()} is used for the bbox
+     * parameter.
      *
      * @param req The getMap request
-     * @param layer The Map layer, may be <code>null</code>.
+     * @param layer The Map layer, may be {@code null}.
      * @param layerIndex The index of the layer in the request
-     * @param bbox The bounding box of the request, may be <code>null</code>.
-     * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
+     * @param bbox The bounding box of the request, may be {@code null}.
+     * @param kvp Additional or overidding kvp parameters, may be {@code null}
      * @return The full url for a getMap request.
      */
     public static String getGetMapUrl(GetMapRequest req, Layer layer, int layerIndex, Envelope bbox, String[] kvp) {
@@ -143,21 +143,21 @@ public class WMSRequests {
     /**
      * Encodes the url of a GetMap request.
      *
-     * <p>If the <tt>layer</tt> argument is <code>null</code>, the request is made including all layers in the
+     * <p>If the <tt>layer</tt> argument is {@code null}, the request is made including all layers in the
      * <tt>mapContexT</tt>.
      *
-     * <p>If the <tt>style</tt> argument is not <code>null</code> and the <tt>layer</tt> argument is <code>null</code>,
-     * then the default style for that layer is used.
+     * <p>If the <tt>style</tt> argument is not {@code null} and the <tt>layer</tt> argument is {@code null}, then the
+     * default style for that layer is used.
      *
-     * <p>If the <tt>bbox</tt> argument is <code>null</code>. {@link WMSMapContent#getAreaOfInterest()} is used for the
-     * bbox parameter.
+     * <p>If the <tt>bbox</tt> argument is {@code null}. {@link WMSMapContent#getAreaOfInterest()} is used for the bbox
+     * parameter.
      *
      * @param req The getMap request
-     * @param layer The layer name, may be <code>null</code>.
+     * @param layer The layer name, may be {@code null}.
      * @param layerIndex The index of the layer in the request.
-     * @param style The style name, may be <code>null</code>
-     * @param bbox The bounding box of the request, may be <code>null</code>.
-     * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
+     * @param style The style name, may be {@code null}
+     * @param bbox The bounding box of the request, may be {@code null}.
+     * @param kvp Additional or overidding kvp parameters, may be {@code null}
      * @return The full url for a getMap request.
      */
     public static String getGetMapUrl(
@@ -170,8 +170,8 @@ public class WMSRequests {
      * Encodes the url of a GetLegendGraphic request.
      *
      * @param req The wms request.
-     * @param layers The layers, may not be <code>null</code>.
-     * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
+     * @param layers The layers, may not be {@code null}.
+     * @param kvp Additional or overidding kvp parameters, may be {@code null}
      * @return The full url for a getMap request.
      */
     public static String getGetLegendGraphicUrl(WMSRequest req, Layer[] layers, String[] kvp) {

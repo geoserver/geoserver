@@ -16,12 +16,11 @@ import org.geoserver.wms.WMS;
 import org.geotools.feature.FeatureCollection;
 
 /**
- * Produces a FeatureInfo response in HTML. Relies on {@link AbstractFeatureInfoResponse} and the feature delegate to do
- * most of the work, just implements an HTML based writeTo method.
+ * Produces a FeatureInfo response in HTML. Relies on {@link GetFeatureInfoResponse} and the feature delegate to do most
+ * of the work, just implements an HTML based writeTo method.
  *
  * @author James Macgill, PSU
  * @author Andrea Aime, TOPP
- * @version $Id$
  */
 public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 

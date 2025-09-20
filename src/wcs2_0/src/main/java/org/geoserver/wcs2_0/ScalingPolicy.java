@@ -466,7 +466,7 @@ enum ScalingPolicy {
      *
      * @param sourceGC the {@link GridCoverage2D} to scale.
      * @param scaling the instance of {@link ScalingType} that contains he type of scaling to perform.
-     * @param interpolation the {@link Interpolation} to use. In case it is <code>null</code> we will use the
+     * @param interpolation the {@link Interpolation} to use. In case it is {@code null} we will use the
      *     {@link InterpolationPolicy} default value.
      * @param hints {@link Hints} to use during this operation.
      * @param wcsinfo the current instance of {@link WCSInfo} that contains wcs config for GeoServer

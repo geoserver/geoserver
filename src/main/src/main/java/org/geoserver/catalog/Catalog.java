@@ -187,7 +187,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param id The id of the store.
      * @param clazz The class of the store to return.
-     * @return The store matching id, or <code>null</code> if no such store exists.
+     * @return The store matching id, or {@code null} if no such store exists.
      */
     <T extends StoreInfo> T getStore(String id, Class<T> clazz);
 
@@ -206,7 +206,7 @@ public interface Catalog extends CatalogInfo {
      * @param name The name of the store. The name can be {@code null} or {@link #DEFAULT} to retrieve the default store
      *     in the default workspace.
      * @param clazz The class of the store to return.
-     * @return The store matching name, or <code>null</code> if no such store exists.
+     * @return The store matching name, or {@code null} if no such store exists.
      */
     <T extends StoreInfo> T getStoreByName(String name, Class<T> clazz);
 
@@ -229,7 +229,7 @@ public interface Catalog extends CatalogInfo {
      * @param name The name of the store. The name can be {@code null} or {@link #DEFAULT} to retrieve the default store
      *     in the specified workspace.
      * @param clazz The class of store to return.
-     * @return The store matching name, or <code>null</code> if no such store e xists.
+     * @return The store matching name, or {@code null} if no such store e xists.
      */
     <T extends StoreInfo> T getStoreByName(String workspaceName, String name, Class<T> clazz);
 
@@ -252,7 +252,7 @@ public interface Catalog extends CatalogInfo {
      * @param name The name of the store. The name can be {@code null} or {@link #DEFAULT} to retrieve the default store
      *     in the default workspace.
      * @param clazz The class of store to return.
-     * @return The store matching name, or <code>null</code> if no such store exists.
+     * @return The store matching name, or {@code null} if no such store exists.
      */
     <T extends StoreInfo> T getStoreByName(WorkspaceInfo workspace, String name, Class<T> clazz);
 
@@ -308,7 +308,7 @@ public interface Catalog extends CatalogInfo {
     <T extends StoreInfo> List<T> getStoresByWorkspace(String workspaceName, Class<T> clazz);
 
     /**
-     * Returns a WMS store matching a particular id, or <code>null</code> if no such data store could be found.
+     * Returns a WMS store matching a particular id, or {@code null} if no such data store could be found.
      *
      * <p>This method is convenience for:
      *
@@ -331,7 +331,7 @@ public interface Catalog extends CatalogInfo {
     WMSStoreInfo getWMSStoreByName(String name);
 
     /**
-     * Returns a WMTS store matching a particular id, or <code>null</code> if no such data store could be found.
+     * Returns a WMTS store matching a particular id, or {@code null} if no such data store could be found.
      *
      * <p>This method is convenience for:
      *
@@ -354,7 +354,7 @@ public interface Catalog extends CatalogInfo {
     WMTSStoreInfo getWMTSStoreByName(String name);
 
     /**
-     * Returns a datastore matching a particular id, or <code>null</code> if no such data store could be found.
+     * Returns a datastore matching a particular id, or {@code null} if no such data store could be found.
      *
      * <p>This method is convenience for:
      *
@@ -446,7 +446,7 @@ public interface Catalog extends CatalogInfo {
     void setDefaultDataStore(WorkspaceInfo workspace, DataStoreInfo defaultStore);
 
     /**
-     * Returns a coverage store matching a particular id, or <code>null</code> if no such coverage store could be found.
+     * Returns a coverage store matching a particular id, or {@code null} if no such coverage store could be found.
      *
      * <p>This method is convenience for:
      *
@@ -457,8 +457,7 @@ public interface Catalog extends CatalogInfo {
     CoverageStoreInfo getCoverageStore(String id);
 
     /**
-     * Returns a coverage store matching a particular name, or <code>null</code> if no such coverage store could be
-     * found.
+     * Returns a coverage store matching a particular name, or {@code null} if no such coverage store could be found.
      *
      * <p>This method is a convenience for: <code>
      *   <pre>
@@ -491,7 +490,7 @@ public interface Catalog extends CatalogInfo {
      * null</code> if no such coverageStore could be found.
      *
      * @param name The name of the coverageStore.
-     * @param workspace The workspace containing the coverageStore, may be <code>null</code> to specify the default
+     * @param workspace The workspace containing the coverageStore, may be {@code null} to specify the default
      *     workspace.
      * @return The store matching the name, or null if no such store could be found.
      */
@@ -545,7 +544,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param id The id of the resource.
      * @param clazz The class of the resource to return.
-     * @return The resource matching id, or <code>null</code> if no such resource exists.
+     * @return The resource matching id, or {@code null} if no such resource exists.
      */
     <T extends ResourceInfo> T getResource(String id, Class<T> clazz);
 
@@ -556,10 +555,10 @@ public interface Catalog extends CatalogInfo {
      *
      * <p><tt>clazz</td> is used to determine the implementation of ResourceInfo which should be returned.
      *
-     * @param ns The prefix or uri to which the resource belongs, may be <code>null</code>.
+     * @param ns The prefix or uri to which the resource belongs, may be {@code null}.
      * @param name The name of the resource.
      * @param clazz The class of the resource.
-     * @return The resource matching the name, or <code>null</code> if no such resource exists.
+     * @return The resource matching the name, or {@code null} if no such resource exists.
      */
     <T extends ResourceInfo> T getResourceByName(String ns, String name, Class<T> clazz);
 
@@ -568,10 +567,10 @@ public interface Catalog extends CatalogInfo {
      *
      * <p><tt>clazz</td> is used to determine the implementation of ResourceInfo which should be returned.
      *
-     * @param ns The namespace to which the resource belongs, may be <code>null</code> to specify the default namespace.
+     * @param ns The namespace to which the resource belongs, may be {@code null} to specify the default namespace.
      * @param name The name of the resource.
      * @param clazz The class of the resource.
-     * @return The resource matching the name, or <code>null</code> if no such resource exists.
+     * @return The resource matching the name, or {@code null} if no such resource exists.
      */
     <T extends ResourceInfo> T getResourceByName(NamespaceInfo ns, String name, Class<T> clazz);
 
@@ -701,7 +700,7 @@ public interface Catalog extends CatalogInfo {
     <T extends ResourceInfo> List<T> getResourcesByStore(StoreInfo store, Class<T> clazz);
 
     /**
-     * Returns the feature type matching a particular id, or <code>null</code> if no such feature type could be found.
+     * Returns the feature type matching a particular id, or {@code null} if no such feature type could be found.
      *
      * <p>This method is convenience for:
      *
@@ -709,7 +708,7 @@ public interface Catalog extends CatalogInfo {
      * getResource( id, FeatureTypeInfo.class );
      * </pre>
      *
-     * @return The feature type matching the id, or <code>null</code> if no such resource exists.
+     * @return The feature type matching the id, or {@code null} if no such resource exists.
      */
     FeatureTypeInfo getFeatureType(String id);
 
@@ -724,10 +723,10 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName( ns, name, FeatureTypeInfo.class );
      * </pre>
      *
-     * @param ns The prefix or uri to which the feature type belongs, may be <code>null</code> to specify the default
+     * @param ns The prefix or uri to which the feature type belongs, may be {@code null} to specify the default
      *     namespace.
      * @param name The name of the feature type.
-     * @return The feature type matching the name, or <code>null</code> if no such resource exists.
+     * @return The feature type matching the name, or {@code null} if no such resource exists.
      */
     FeatureTypeInfo getFeatureTypeByName(String ns, String name);
 
@@ -740,10 +739,9 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName( ns, name, FeatureTypeInfo.class );
      * </pre>
      *
-     * @param ns The namespace to which the feature type belongs, may be <code>null</code> to specify the default
-     *     namespace.
+     * @param ns The namespace to which the feature type belongs, may be {@code null} to specify the default namespace.
      * @param name The name of the feature type.
-     * @return The feature type matching the name, or <code>null</code> if no such resource exists.
+     * @return The feature type matching the name, or {@code null} if no such resource exists.
      */
     FeatureTypeInfo getFeatureTypeByName(NamespaceInfo ns, String name);
 
@@ -776,8 +774,8 @@ public interface Catalog extends CatalogInfo {
      * Care should be taken when using this method, use of {@link #getFeatureTypeByName(String, String)} is preferred.
      *
      * @param name The name of the feature type.
-     * @return The single feature type matching the specified name, or <code>null</code> if either none could be found
-     *     or multiple were found.
+     * @return The single feature type matching the specified name, or {@code null} if either none could be found or
+     *     multiple were found.
      */
     FeatureTypeInfo getFeatureTypeByName(String name);
 
@@ -822,7 +820,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param dataStore The data store.
      * @param name The feature type name.
-     * @return The feature type, or <code>null</code> if no such feature type e xists.
+     * @return The feature type, or {@code null} if no such feature type e xists.
      */
     FeatureTypeInfo getFeatureTypeByDataStore(DataStoreInfo dataStore, String name);
 
@@ -835,7 +833,7 @@ public interface Catalog extends CatalogInfo {
     List<FeatureTypeInfo> getFeatureTypesByDataStore(DataStoreInfo store);
 
     /**
-     * Returns the coverage matching a particular id, or <code>null</code> if no such coverage could be found.
+     * Returns the coverage matching a particular id, or {@code null} if no such coverage could be found.
      *
      * <p>This method is a convenience for:
      *
@@ -858,9 +856,9 @@ public interface Catalog extends CatalogInfo {
      *
      * Isolated workspaces content will be ignored unless in the context of a matching virtual service.
      *
-     * @param ns The prefix or uri to which the coverage belongs, may be <code>null</code>.
+     * @param ns The prefix or uri to which the coverage belongs, may be {@code null}.
      * @param name The name of the coverage.
-     * @return The coverage matching the name, or <code>null</code> if no such resource exists.
+     * @return The coverage matching the name, or {@code null} if no such resource exists.
      */
     CoverageInfo getCoverageByName(String ns, String name);
 
@@ -873,9 +871,9 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName(ns,name,CoverageInfo.class);
      * </pre>
      *
-     * @param ns The namespace to which the coverage belongs, may be <code>null</code>.
+     * @param ns The namespace to which the coverage belongs, may be {@code null}.
      * @param name The name of the coverage.
-     * @return The coverage matching the name, or <code>null</code> if no such resource exists.
+     * @return The coverage matching the name, or {@code null} if no such resource exists.
      */
     CoverageInfo getCoverageByName(NamespaceInfo ns, String name);
 
@@ -907,7 +905,7 @@ public interface Catalog extends CatalogInfo {
      * Care should be taken when using this method, use of {@link #getCoverageByName(String, String)} is preferred.
      *
      * @param name The name of the coverage.
-     * @return The single coverage matching the specified name, or <code>null</code> if either none could be found or
+     * @return The single coverage matching the specified name, or {@code null} if either none could be found or
      *     multiple were found.
      */
     CoverageInfo getCoverageByName(String name);
@@ -953,7 +951,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param coverageStore The coverage store.
      * @param name The coverage name.
-     * @return The coverage, or <code>null</code> if no such coverage exists.
+     * @return The coverage, or {@code null} if no such coverage exists.
      */
     CoverageInfo getCoverageByCoverageStore(CoverageStoreInfo coverageStore, String name);
 
@@ -996,10 +994,10 @@ public interface Catalog extends CatalogInfo {
     /** All coverages which are part of the specified store. */
     List<CoverageInfo> getCoveragesByStore(CoverageStoreInfo store);
 
-    /** Returns the layer matching a particular id, or <code>null</code> if no such layer could be found. */
+    /** Returns the layer matching a particular id, or {@code null} if no such layer could be found. */
     LayerInfo getLayer(String id);
 
-    /** Returns the layer matching a particular name, or <code>null</code> if no such layer could be found. */
+    /** Returns the layer matching a particular name, or {@code null} if no such layer could be found. */
     LayerInfo getLayerByName(String name);
 
     /**
@@ -1060,10 +1058,10 @@ public interface Catalog extends CatalogInfo {
      */
     List<MapInfo> getMaps();
 
-    /** Returns the map matching a particular id, or <code>null</code> if no such map could be found. */
+    /** Returns the map matching a particular id, or {@code null} if no such map could be found. */
     MapInfo getMap(String id);
 
-    /** Returns the map matching a particular name, or <code>null</code> if no such map could be found. */
+    /** Returns the map matching a particular name, or {@code null} if no such map could be found. */
     MapInfo getMapByName(String name);
 
     /** Adds a layer group to the catalog. */
@@ -1111,18 +1109,18 @@ public interface Catalog extends CatalogInfo {
      */
     List<LayerGroupInfo> getLayerGroupsByWorkspace(WorkspaceInfo workspace);
 
-    /** Returns the layer group matching a particular id, or <code>null</code> if no such group could be found. */
+    /** Returns the layer group matching a particular id, or {@code null} if no such group could be found. */
     LayerGroupInfo getLayerGroup(String id);
 
     /**
-     * Returns the global layer group matching a particular name, or <code>null</code> if no such style could be found.
+     * Returns the global layer group matching a particular name, or {@code null} if no such style could be found.
      *
      * <p>If {@code prefixedName} contains a workspace name prefix (like in {@code topp:tasmania}, the layer group will
      * be looked up on that specific workspace ({@code topp}), otherwise it is assumed a global (with no workspace)
      * layer group.
      *
      * @param name the name of the layer group, may include a workspace name prefix or not.
-     * @return the global layer group matching a particular name, or <code>null</code> if no such group could be found.
+     * @return the global layer group matching a particular name, or {@code null} if no such group could be found.
      */
     LayerGroupInfo getLayerGroupByName(String name);
 
@@ -1174,12 +1172,12 @@ public interface Catalog extends CatalogInfo {
      */
     StyleInfo detach(StyleInfo style);
 
-    /** Returns the style matching a particular id, or <code>null</code> if no such style could be found. */
+    /** Returns the style matching a particular id, or {@code null} if no such style could be found. */
     StyleInfo getStyle(String id);
 
     /**
-     * Returns the style matching a particular name in the specified workspace, or <code>null</code> if no such style
-     * could be found.
+     * Returns the style matching a particular name in the specified workspace, or {@code null} if no such style could
+     * be found.
      *
      * @param workspaceName The name of the workspace containing the style, {@code null} stands for a global style.
      * @param name The name of the style to return.
@@ -1187,8 +1185,8 @@ public interface Catalog extends CatalogInfo {
     StyleInfo getStyleByName(String workspaceName, String name);
 
     /**
-     * Returns the style matching a particular name in the specified workspace, or <code>null</code> if no such style
-     * could be found.
+     * Returns the style matching a particular name in the specified workspace, or {@code null} if no such style could
+     * be found.
      *
      * @param workspace The workspace containing the style, {@code null} stands for a global style.
      * @param name The name of the style to return.
@@ -1196,7 +1194,7 @@ public interface Catalog extends CatalogInfo {
     StyleInfo getStyleByName(WorkspaceInfo workspace, String name);
 
     /**
-     * Returns the global style matching a particular name, or <code>null</code> if no such style could be found.
+     * Returns the global style matching a particular name, or {@code null} if no such style could be found.
      *
      * <p>Note this is a convenient method for {@link #getStyleByName(WorkspaceInfo, String)} with a {@code null}
      * workspace argument.
@@ -1333,11 +1331,11 @@ public interface Catalog extends CatalogInfo {
      */
     List<WorkspaceInfo> getWorkspaces();
 
-    /** Returns a workspace by id, or <code>null</code> if no such workspace exists. */
+    /** Returns a workspace by id, or {@code null} if no such workspace exists. */
     WorkspaceInfo getWorkspace(String id);
 
     /**
-     * Returns a workspace by name, or <code>null</code> if no such workspace exists.
+     * Returns a workspace by name, or {@code null} if no such workspace exists.
      *
      * @param name The name of the store, or {@code null} or {@link #DEFAULT} to get the default workspace
      */

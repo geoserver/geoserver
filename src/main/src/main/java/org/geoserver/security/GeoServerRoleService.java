@@ -122,14 +122,14 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
             throws IOException;
 
     /**
-     * @return the local role having the same privileges as {@link GeoserverRole#ADMIN_ROLE} or <code>null</code> if no
-     *     such role exists
+     * @return the local role having the same privileges as {@link GeoServerRole#ADMIN_ROLE} or {@code null} if no such
+     *     role exists
      */
     GeoServerRole getAdminRole();
 
     /**
-     * @return the local role having the same privileges {@link GeoServerRole#GROUP_ADMIN_ROLE} or <code>null</code> if
-     *     no such role exists
+     * @return the local role having the same privileges {@link GeoServerRole#GROUP_ADMIN_ROLE} or @code null} if no
+     *     such role exists
      */
     GeoServerRole getGroupAdminRole();
 

@@ -712,7 +712,7 @@ public class GetMap {
      * <p>If <code>requestFilters != null</code>, it shall contain the same number of elements than <code>layers</code>,
      * as filters are requested one per layer.
      *
-     * @param requestFilters the list of filters sent by the user, or <code>null</code>
+     * @param requestFilters the list of filters sent by the user, or {@code null}
      * @param layers the layers requested in the GetMap request, where to get the per layer definition filters from.
      * @return a list of filters, one per layer, resulting of anding the user requested filter and the layer definition
      *     filter

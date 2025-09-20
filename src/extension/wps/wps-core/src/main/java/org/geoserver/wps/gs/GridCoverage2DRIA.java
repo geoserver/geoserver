@@ -345,7 +345,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
      *     </code> if the bounding box is unknown.
      * @throws IllegalArgumentException if <code>sourceIndex</code> is negative or greater than the index of the last
      *     source.
-     * @throws IllegalArgumentException if <code>sourceRect</code> is <code>null</code>.
+     * @throws IllegalArgumentException if <code>sourceRect</code> is {@code null}.
      */
     @Override
     protected Rectangle forwardMapRect(Rectangle pxRect, int i) {
@@ -457,11 +457,11 @@ public class GridCoverage2DRIA extends GeometricOpImage {
      *
      * @param destRect the <code>Rectangle</code> in destination coordinates.
      * @param sourceIndex the index of the source image.
-     * @return a <code>Rectangle</code> indicating the source bounding box, or <code>null</code> if the bounding box is
+     * @return a <code>Rectangle</code> indicating the source bounding box, or {@code null} if the bounding box is
      *     unknown.
      * @throws IllegalArgumentException if <code>sourceIndex</code> is negative or greater than the index of the last
      *     source.
-     * @throws IllegalArgumentException if <code>destRect</code> is <code>null</code>.
+     * @throws IllegalArgumentException if <code>destRect</code> is {@code null}.
      */
     @Override
     protected Rectangle backwardMapRect(Rectangle destRect, int sourceIndex) {
@@ -1157,9 +1157,9 @@ public class GridCoverage2DRIA extends GeometricOpImage {
      * @param periodY The vertical sampling period.
      * @param destRect A <code>float</code> array containing at least <code>
      *     2*((width+periodX-1)/periodX)*
-     *                ((height+periodY-1)/periodY)</code> elements, or <code>null</code>. If <code>
+     *                ((height+periodY-1)/periodY)</code> elements, or {@code null}. If <code>
      *     null</code>, a new array will be constructed.
-     * @return A reference to the <code>destRect</code> parameter if it is non-<code>null</code>, or a new <code>float
+     * @return A reference to the <code>destRect</code> parameter if it is non-{@code null}, or a new <code>float
      *     </code> array otherwise.
      */
     public float[] warpSparseRect(int x0, int y0, int width, int height, int periodX, int periodY, float[] destRect) {

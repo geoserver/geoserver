@@ -392,7 +392,7 @@ public class FeatureWrapper extends BeansWrapper {
      *   <li>name: String holding the attribute name
      *   <li>type: String with the java class name bound to the attribute type
      *   <li>value: String representation of the attribute value suitable to be used directly in a template expression.
-     *       <code>null</code> values are returned as the empty string, non String values as per
+     *       {@code null} values are returned as the empty string, non String values as per
      *       {@link FeatureWrapper#valueToString(Object)}
      *   <li>rawValue: the actual attribute value as it is in the Feature
      *   <li>isGeometry: Boolean indicating whether the attribute is of a geometric type

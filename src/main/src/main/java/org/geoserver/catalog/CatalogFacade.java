@@ -72,7 +72,7 @@ public interface CatalogFacade {
      *
      * @param id The unique identifier of the store
      * @param clazz The class of the store.
-     * @return The store, or <code>null</code> if no such store exists.
+     * @return The store, or {@code null} if no such store exists.
      */
     <T extends StoreInfo> T getStore(String id, Class<T> clazz);
 
@@ -86,7 +86,7 @@ public interface CatalogFacade {
      * @param workspace THe containing workspace of the store.
      * @param name The name of the store.
      * @param clazz The class of the store.
-     * @return The store, or <code>null</code> if no such store exists.
+     * @return The store, or {@code null} if no such store exists.
      */
     <T extends StoreInfo> T getStoreByName(WorkspaceInfo workspace, String name, Class<T> clazz);
 
@@ -170,7 +170,7 @@ public interface CatalogFacade {
      *
      * @param id The unique identifier of the resource
      * @param clazz The class of the resource.
-     * @return The resource, or <code>null</code> if no such store exists.
+     * @return The resource, or {@code null} if no such store exists.
      */
     <T extends ResourceInfo> T getResource(String id, Class<T> clazz);
 
@@ -184,7 +184,7 @@ public interface CatalogFacade {
      * @param namespace The namespace of the resource
      * @param name The local name of the resource
      * @param clazz The class of the resource
-     * @return The resource, or <code>null</code> if no such store exists.
+     * @return The resource, or {@code null} if no such store exists.
      */
     <T extends ResourceInfo> T getResourceByName(NamespaceInfo namespace, String name, Class<T> clazz);
 
@@ -221,7 +221,7 @@ public interface CatalogFacade {
      * @param store The containing store
      * @param name The local name of the resource
      * @param clazz The class of the resource
-     * @return The resource, or <code>null</code> if no such store exists.
+     * @return The resource, or {@code null} if no such store exists.
      */
     <T extends ResourceInfo> T getResourceByStore(StoreInfo store, String name, Class<T> clazz);
 
@@ -269,7 +269,7 @@ public interface CatalogFacade {
      * Loads a layer from persistent storage by specifying its identifier.
      *
      * @param id The unique identifier of the layer
-     * @return The layer, or <code>null</code> if no such layer exists.
+     * @return The layer, or {@code null} if no such layer exists.
      */
     LayerInfo getLayer(String id);
 
@@ -277,7 +277,7 @@ public interface CatalogFacade {
      * Loads a layer from persistent storage by specifying its name.
      *
      * @param name The name of the layer
-     * @return The layer, or <code>null</code> if no such layer exists.
+     * @return The layer, or {@code null} if no such layer exists.
      */
     LayerInfo getLayerByName(String name);
 
@@ -336,7 +336,7 @@ public interface CatalogFacade {
      * Loads a map from persistent storage by its identifier.
      *
      * @param id The unique identifier of the map
-     * @return The map, or <code>null</code> if no such map exists
+     * @return The map, or {@code null} if no such map exists
      */
     MapInfo getMap(String id);
 
@@ -344,7 +344,7 @@ public interface CatalogFacade {
      * Loads a map from persistent storage by its name.
      *
      * @param name The name of the map
-     * @return The map, or <code>null</code> if no such map exists
+     * @return The map, or {@code null} if no such map exists
      */
     MapInfo getMapByName(String name);
 
@@ -387,7 +387,7 @@ public interface CatalogFacade {
      * Loads a layer group from persistent storage by specifying its identifier.
      *
      * @param id The unique identifier for the layer group
-     * @return The layer group, or <code>null</code> if it does not exist
+     * @return The layer group, or {@code null} if it does not exist
      */
     LayerGroupInfo getLayerGroup(String id);
 
@@ -456,7 +456,7 @@ public interface CatalogFacade {
     /**
      * Loads the default namespace from persistent storage.
      *
-     * @return The namespace, or <code>null</code> if there is no default namespace set
+     * @return The namespace, or {@code null} if there is no default namespace set
      */
     NamespaceInfo getDefaultNamespace();
 
@@ -473,7 +473,7 @@ public interface CatalogFacade {
      * Loads a namespace from persistent storage by specifying its identifier.
      *
      * @param id The unique identifier of the namespace.
-     * @return The namespace, or <code>null</code> if no such namespace exists
+     * @return The namespace, or {@code null} if no such namespace exists
      */
     NamespaceInfo getNamespace(String id);
 
@@ -481,7 +481,7 @@ public interface CatalogFacade {
      * Loads a namespace from persistent storage by specifying its prefix.
      *
      * @param prefix The prefix of the namespace.
-     * @return The namespace, or <code>null</code> if no such namespace exists
+     * @return The namespace, or {@code null} if no such namespace exists
      */
     NamespaceInfo getNamespaceByPrefix(String prefix);
 
@@ -489,7 +489,7 @@ public interface CatalogFacade {
      * Loads the first namespace from persistent storage that matches the provided id.
      *
      * @param uri The uri of the namespace.
-     * @return The namespace, or <code>null</code> if no such namespace exists
+     * @return The namespace, or {@code null} if no such namespace exists
      */
     NamespaceInfo getNamespaceByURI(String uri);
 
@@ -497,7 +497,7 @@ public interface CatalogFacade {
      * Loads all namespaces from persistent storage that match the provided uri.
      *
      * @param uri The uri of the namespace.
-     * @return The namespace, or <code>null</code> if no such namespace exists
+     * @return The namespace, or {@code null} if no such namespace exists
      */
     default List<NamespaceInfo> getNamespacesByURI(String uri) {
         return getNamespaces().stream()
@@ -543,7 +543,7 @@ public interface CatalogFacade {
     /**
      * Loads the default workspace from persistent storage.
      *
-     * @return The workspace, or <code>null</code> if there is no default workspace set
+     * @return The workspace, or {@code null} if there is no default workspace set
      */
     WorkspaceInfo getDefaultWorkspace();
 
@@ -560,7 +560,7 @@ public interface CatalogFacade {
      * Loads a workspace from persistent storage by specifying its identifier.
      *
      * @param id The unique identifier of the workspace.
-     * @return THe workspace, or <code>null</code> if no such workspace exists.
+     * @return THe workspace, or {@code null} if no such workspace exists.
      */
     WorkspaceInfo getWorkspace(String id);
 
@@ -568,7 +568,7 @@ public interface CatalogFacade {
      * Loads a workspace from persistent storage by specifying its name.
      *
      * @param name The name of the workspace.
-     * @return THe workspace, or <code>null</code> if no such workspace exists.
+     * @return THe workspace, or {@code null} if no such workspace exists.
      */
     WorkspaceInfo getWorkspaceByName(String name);
 
@@ -611,7 +611,7 @@ public interface CatalogFacade {
      * Loads a style from persistent storage by specifying its identifier.
      *
      * @param id The unique identifier of the style.
-     * @return The style, or <code>null</code> if no such style exists
+     * @return The style, or {@code null} if no such style exists
      */
     StyleInfo getStyle(String id);
 
@@ -621,13 +621,13 @@ public interface CatalogFacade {
      * <p>This only checks the global styles directory.
      *
      * @param name The name of the style.
-     * @return The style, or <code>null</code> if no such style exists
+     * @return The style, or {@code null} if no such style exists
      */
     StyleInfo getStyleByName(String name);
 
     /**
-     * Returns the style matching a particular name in the specified workspace, or <code>null</code> if no such style
-     * could be found.
+     * Returns the style matching a particular name in the specified workspace, or {@code null} if no such style could
+     * be found.
      *
      * @param workspace The workspace containing the style; non {@code null}, use {@value #ANY_WORKSPACE} or
      *     {@link #NO_WORKSPACE} as appropriate.

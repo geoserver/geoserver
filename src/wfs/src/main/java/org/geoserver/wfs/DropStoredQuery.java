@@ -14,7 +14,6 @@ import org.geoserver.platform.ServiceException;
  * Web Feature Service DropStoredQuery operation.
  *
  * @author Justin Deoliveira, OpenGeo
- * @version $Id$
  */
 public class DropStoredQuery {
 

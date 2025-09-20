@@ -40,7 +40,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * <p>
  *
  * @author dzwiers, Refractions Research, Inc.
- * @version $Id$
  */
 public class ReaderUtils {
     /** Used internally to create log information to detect errors. */
@@ -533,7 +532,7 @@ public class ReaderUtils {
      *
      * @param xml The document.
      * @param errorHandler The validation error handler.
-     * @param targetNamespace The target namespace of the schema, may be <code>null</code>
+     * @param targetNamespace The target namespace of the schema, may be {@code null}
      * @param schemaLocation The location of the schema to validate against, may be <code>null
      *     </code>
      * @throws RuntimeException If reader failed to parse properly.
@@ -558,7 +557,7 @@ public class ReaderUtils {
      *
      * @param xml Reader representing xml stream to parse.
      * @param errorHandler The validation error handler.
-     * @param targetNamespace The target namespace of the schema, may be <code>null</code>
+     * @param targetNamespace The target namespace of the schema, may be {@code null}
      * @param schemaLocation The location of the schema to validate against, may be <code>null
      *     </code>
      * @throws RuntimeException If reader failed to parse properly.

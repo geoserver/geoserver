@@ -11,7 +11,7 @@ import org.geotools.api.feature.simple.SimpleFeature;
 /**
  * Template supporting height values for features.
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 public class FeatureHeightTemplate {
 

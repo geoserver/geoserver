@@ -28,23 +28,37 @@
     </dependency>
 
     <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.geoserver.community.security</groupId>
       <artifactId>gs-sec-oidc-core</artifactId>
       <version>${project.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-main</artifactId>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver</groupId>-->
+    <!--      <artifactId>gs-main</artifactId>-->
+    <!--    </dependency>-->
 
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver</groupId>-->
+    <!--      <artifactId>gs-main</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--      <classifier>tests</classifier>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
+
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver.web</groupId>-->
+    <!--      <artifactId>gs-web-core</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--      <classifier>tests</classifier>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
 
     <dependency>
       <groupId>org.geoserver.security</groupId>
@@ -54,6 +68,7 @@
       <scope>test</scope>
     </dependency>
 
+    <!--    thisone-->
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-sec-core</artifactId>
@@ -63,15 +78,55 @@
     </dependency>
 
     <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-jwt</artifactId>
-      <version>1.0.11.RELEASE</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
+      <groupId>com.github.dasniko</groupId>
+      <artifactId>testcontainers-keycloak</artifactId>
+      <version>3.8.0</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>junit</artifactId>
+          <groupId>junit</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>quarkus-junit4-mock</artifactId>
+          <groupId>io.quarkus</groupId>
+        </exclusion>
+
+        <exclusion>
+          <artifactId>keycloak-admin-client</artifactId>
+          <groupId>org.keycloak</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!--      <dependency>-->
+    <!--        <groupId>org.geoserver.web</groupId>-->
+    <!--        <artifactId>gs-web-core</artifactId>-->
+    <!--        <version>${gs.version}</version>-->
+    <!--        <type>test-jar</type>-->
+    <!--        <scope>test</scope>-->
+    <!--      </dependency>-->
+
+    <!-- this one -->
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${gs.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
 

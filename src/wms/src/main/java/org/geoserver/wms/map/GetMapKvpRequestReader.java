@@ -1214,8 +1214,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     }
 
     /**
-     * @return the configured style named <code>currStyleName</code> or <code>null</code> if such a style does not exist
-     *     on this server.
+     * @return the configured style named <code>currStyleName</code> or {@code null} if such a style does not exist on
+     *     this server.
      */
     private static Style findStyle(final WMS wms, GetMapRequest request, String currStyleName) throws IOException {
         // Style currStyle;

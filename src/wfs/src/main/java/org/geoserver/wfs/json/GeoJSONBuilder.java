@@ -29,7 +29,6 @@ import org.locationtech.jts.geom.Polygon;
  * of the spec on http://geojson.org
  *
  * @author Chris Holmes, The Open Planning Project
- * @version $Id$
  */
 public class GeoJSONBuilder extends JSONBuilder {
 

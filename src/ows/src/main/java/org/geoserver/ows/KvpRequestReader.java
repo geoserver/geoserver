@@ -73,7 +73,7 @@ public class KvpRequestReader {
     /**
      * Creats the new kvp request reader.
      *
-     * @param requestBean The type of the request read, not <code>null</code>
+     * @param requestBean The type of the request read, not {@code null}
      */
     public KvpRequestReader(Class<?> requestBean) {
         if (requestBean == null) {

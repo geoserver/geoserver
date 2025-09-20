@@ -19,7 +19,6 @@ import org.geotools.util.Version;
  *
  * @author Rob Hranac, TOPP
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class CapabilitiesKvpReader extends KvpRequestReader {
 

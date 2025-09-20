@@ -82,8 +82,8 @@ public class StyleController extends AbstractCatalogController {
     static final String SLD_TEMP_PREFIX = "_sld";
     /**
      * Used by tests to store the controller temporary files (to avoid issues with concurrent builds all changing the
-     * contents of the temp directory), defaults to <code>null</code>, in that case it's going to use the temporary
-     * directory provided by the system.
+     * contents of the temp directory), defaults to {@code null}, in that case it's going to use the temporary directory
+     * provided by the system.
      */
     static Path TEMP_DIR_ROOT = null;
 

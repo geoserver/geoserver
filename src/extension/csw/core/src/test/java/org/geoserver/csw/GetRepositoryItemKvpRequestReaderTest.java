@@ -22,7 +22,6 @@ import org.junit.Test;
 /**
  * Unit test suite for {@link GetRepositoryItemKvpRequestReader}
  *
- * @version $Id$
  */
 public class GetRepositoryItemKvpRequestReaderTest {
 

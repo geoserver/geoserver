@@ -5,7 +5,6 @@
  */
 package org.geoserver.security.jdbc;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -90,7 +89,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
 
     /**
      * Uses {@link #initializeDSFromConfig(SecurityNamedServiceConfig)} and
-     * {@link #checkORCreateJDBCPropertyFile(String, File, String)} for initializing
+     * {@link #checkORCreateJDBCPropertyFile(String, Resource, String)} for initializing
      *
      * @see
      *     org.geoserver.security.GeoServerUserGroupService#initializeFromConfig(org.geoserver.security.config.SecurityNamedServiceConfig)
@@ -444,8 +443,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /**
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupService#registerUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
+     * @see org.geoserver.security.GeoServerUserGroupService#registerUserGroupLoadedListener(UserGroupLoadedListener)
      */
     @Override
     public void registerUserGroupLoadedListener(UserGroupLoadedListener listener) {
@@ -453,8 +451,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /**
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupService#unregisterUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
+     * @see org.geoserver.security.GeoServerUserGroupService#unregisterUserGroupLoadedListener(UserGroupLoadedListener)
      */
     @Override
     public void unregisterUserGroupLoadedListener(UserGroupLoadedListener listener) {

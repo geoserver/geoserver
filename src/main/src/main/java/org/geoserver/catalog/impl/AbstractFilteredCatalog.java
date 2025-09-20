@@ -476,7 +476,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     /**
      * Given a {@link StyleInfo}, returns it back if the user can access it.
      *
-     * @return <code>null</code> if the user can't acess the style, otherwise the original style.
+     * @return {@code null} if the user can't acess the style, otherwise the original style.
      */
     protected abstract StyleInfo checkAccess(StyleInfo style);
 

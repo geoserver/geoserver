@@ -16,7 +16,6 @@ import org.geoserver.ows.Dispatcher;
  * @author Gabriel Roldan
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author $Author: Simone Giannecchini (simboss1@gmail.com) $ (last modification)
- * @version $Id$
  */
 public abstract class WMSRequest {
 

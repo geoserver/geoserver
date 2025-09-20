@@ -29,7 +29,7 @@ public abstract class WFSDescribeFeatureTypeOutputFormat extends WFSResponse imp
     /**
      * Constructor which sets the outputFormat.
      *
-     * @param outputFormat The well-known name of the format, not <code>null</code>
+     * @param outputFormat The well-known name of the format, not {@code null}
      */
     public WFSDescribeFeatureTypeOutputFormat(GeoServer gs, String outputFormat) {
         super(gs, FeatureTypeInfo[].class, outputFormat);
@@ -38,7 +38,7 @@ public abstract class WFSDescribeFeatureTypeOutputFormat extends WFSResponse imp
     /**
      * Constructor which sets multiple outputFormats.
      *
-     * @param outputFormats The well-known name of the format, not <code>null</code>
+     * @param outputFormats The well-known name of the format, not {@code null}
      */
     public WFSDescribeFeatureTypeOutputFormat(GeoServer gs, Set<String> outputFormats) {
         super(gs, FeatureTypeInfo[].class, outputFormats);

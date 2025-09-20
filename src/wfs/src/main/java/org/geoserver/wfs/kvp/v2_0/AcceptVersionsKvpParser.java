@@ -11,7 +11,7 @@ import org.eclipse.emf.ecore.EObject;
 
 /**
  * Parses a kvp of the form "acceptVersions=version1,version2,...,versionN" into an instance of
- * {@link net.opengis.ows.v1_1_0.AcceptVersionsType}.
+ * {@link net.opengis.ows11.AcceptVersionsType}.
  *
  * @author Justin Deoliveira, OpenGeo
  */

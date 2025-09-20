@@ -19,7 +19,6 @@ import org.geoserver.wms.kvp.MapLayerInfoKvpParser;
  * "LAYER"</code> parameter.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class DescribeLayerKvpRequestReader extends KvpRequestReader {
 

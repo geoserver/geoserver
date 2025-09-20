@@ -65,9 +65,9 @@ public class XMLSecurityProvider extends GeoServerSecurityProvider {
 
     /**
      * Returns the specific class of the password validator created by
-     * {@link #createPasswordValidator(PasswordPolicyConfig)}.
+     * {@link #createPasswordValidator(PasswordPolicyConfig, GeoServerSecurityManager)}.
      *
-     * <p>If the extension does not provide a user group service this method should simply return <code>null</code>.
+     * <p>If the extension does not provide a user group service this method should simply return {@code null}.
      */
     @Override
     public Class<? extends PasswordValidator> getPasswordValidatorClass() {

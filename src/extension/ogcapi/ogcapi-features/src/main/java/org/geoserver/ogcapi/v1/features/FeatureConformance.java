@@ -503,7 +503,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     /**
      * PROPERTY_SELECTION conformance enabled by configuration.
      *
-     * @return PROPERTY_SELECTION conformance enabled, or <code>null</code> for default.
+     * @return PROPERTY_SELECTION conformance enabled, or {@code null} for default.
      */
     public Boolean isPropertySelection() {
         return propertySelection;
@@ -522,7 +522,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     /**
      * PROPERTY_SELECTION conformance enablement.
      *
-     * @param enabled PROPERTY_SELECTION conformance enabled, or <code>null</code> for default.
+     * @param enabled PROPERTY_SELECTION conformance enabled, or {@code null} for default.
      */
     public void setPropertySelection(Boolean enabled) {
         propertySelection = enabled;

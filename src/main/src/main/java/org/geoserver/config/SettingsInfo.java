@@ -23,7 +23,7 @@ public interface SettingsInfo extends Info {
      *
      * <p>Will be null for global settings: {@link GeoServerInfo#getSettings()}
      *
-     * @return A workspace, or <code>null</code>.
+     * @return A workspace, or {@code null}.
      */
     WorkspaceInfo getWorkspace();
 

@@ -71,7 +71,6 @@ import org.locationtech.jts.geom.Geometry;
  * StyledShapePainter.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<BufferedImageLegendGraphicBuilder> {
     @Before

@@ -51,7 +51,7 @@ public class GeoServerRequestMatcher implements RequestMatcher {
     }
 
     /**
-     * If {@link #methods} is <code>null</code>, the return value is always <code>true</code>.
+     * If {@link #methods} is {@code null}, the return value is always <code>true</code>.
      *
      * <p>Return <code>true</code> if the HTTP method is contained in {@link #methods}
      */

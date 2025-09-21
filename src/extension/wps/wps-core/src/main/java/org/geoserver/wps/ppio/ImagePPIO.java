@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageWriter;
 import org.geoserver.wps.WPSException;
+import org.geotools.image.io.ImageIOExt;
 
 public abstract class ImagePPIO extends BinaryPPIO {
 
@@ -32,7 +33,7 @@ public abstract class ImagePPIO extends BinaryPPIO {
     public void encode(Object value, OutputStream outputStream) throws Exception {
         RenderedImage renderedImage = (RenderedImage) value;
         ImageWriter encoder = getWriter();
-        encoder.setOutput(outputStream);
+        encoder.setOutput(ImageIOExt.createImageOutputStream(renderedImage, outputStream));
         encoder.write(renderedImage);
     }
 
@@ -41,7 +42,7 @@ public abstract class ImagePPIO extends BinaryPPIO {
         ImageReader decoder = getReader();
         RenderedImage ri = null;
         try {
-            decoder.setInput(inputStream);
+            decoder.setInput(ImageIOExt.createImageInputStream(inputStream));
             ri = decoder.read(0);
         } catch (IOException ioe) {
             return new WPSException("Unable to decode the image. Expected an image having mimetype = " + mimeType, ioe);

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -98,9 +97,9 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
     }
 
     /**
-     * Callback method called when the submit button have been hit and the parameters validation has succeed.
+     * Callback method called when the submit button have been hit and the parameters validation has succeeded.
      *
-     * @see AbstractDataAccessPage#onSaveDataStore(Form)
+     * @see AbstractDataAccessPage#onSaveDataStore(DataStoreInfo, AjaxRequestTarget, boolean)
      */
     @Override
     protected final void onSaveDataStore(

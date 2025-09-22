@@ -15,7 +15,7 @@ import org.geoserver.web.wicket.HelpLink;
 import org.geotools.util.logging.Logging;
 
 /**
- * Configuration panel for {@link GeoServerCredentialsFromRequestHeaderAuthenticationFilter}.
+ * Configuration panel for GeoServerCredentialsFromRequestHeaderAuthenticationFilter.
  *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions

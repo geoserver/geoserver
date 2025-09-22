@@ -70,7 +70,7 @@ import org.locationtech.jts.geom.Puntal;
 /**
  * Builder class which provides convenience methods for interacting with the catalog.
  *
- * <p>Warning: this class is stateful, and is not meant to be accessed by multiple threads and should not be an member
+ * <p>Warning: this class is stateful, and is not meant to be accessed by multiple threads and should not be a member
  * variable of another class.
  *
  * @author Justin Deoliveira, OpenGEO
@@ -317,8 +317,8 @@ public class CatalogBuilder {
 
     /**
      * Builds a feature type from a geotools feature source. The resulting {@link FeatureTypeInfo} will still miss the
-     * bounds and might miss the SRS. Use {@link #lookupSRS(FeatureTypeInfo, true)} and
-     * {@link #setupBounds(FeatureTypeInfo)} if you want to force them in (and spend time accordingly)
+     * bounds and might miss the SRS. Use {@link #lookupSRS(FeatureTypeInfo, boolean)} set to true and
+     * {@link #setupBounds(FeatureTypeInfo, FeatureSource)} if you want to force them in (and spend time accordingly)
      *
      * <p>The resulting object is not added to the catalog, it must be done by the calling code after the fact.
      */

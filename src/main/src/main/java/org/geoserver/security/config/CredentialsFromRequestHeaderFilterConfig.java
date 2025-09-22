@@ -7,7 +7,7 @@ package org.geoserver.security.config;
 import java.io.Serial;
 
 /**
- * {@link GeoServerCredentialsFromRequestHeaderAuthenticationFilter} configuration object.
+ * GeoServerCredentialsFromRequestHeaderAuthenticationFilter configuration object.
  *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions

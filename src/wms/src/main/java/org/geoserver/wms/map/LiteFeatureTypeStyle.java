@@ -25,16 +25,16 @@ import org.geotools.renderer.crs.ProjectionHandler;
  * to do the actual renderering.
  *
  * <p>It contains: a. a BufferedImage so lite knows where to do the drawing b. a list of rules (minimal # -- ie. remove
- * the ones that dont apply to this scale) c. "else" rule list
+ * the ones that don't apply to this scale) c. "else" rule list
  *
- * <p>To process this, you would a) foreach FEATURE b) foreach LiteFeatureTypeStyle c) <process rules and draw to the
- * appropriate image> d) combine the images
+ * <p>To process this, you would a) foreach FEATURE b) foreach LiteFeatureTypeStyle c) process rules and draw to the
+ * appropriate image d) combine the images
  *
  * <p>This was setup so you can "parallelize" literenderer in the simple way -- only read data once. The old
  * implementation would re-read the data for each one FeatureTypeStyle.
  *
- * <p>NOTE: a) the SLD spec says that each FeatureTypeStyle is rendered in order & independently b) If you have a
- * request like LAYERS=a,a&STYLES=a_style1,a_styel2 then you could optimize to something like this (!!)
+ * <p>NOTE: a) the SLD spec says that each FeatureTypeStyle is rendered in order &amp; independently b) If you have a
+ * request like LAYERS=a,a&amp;STYLES=a_style1,a_styel2 then you could optimize to something like this (!!)
  *
  * <p>NOTE: a) this also sets up the image -- clears it et al.
  *

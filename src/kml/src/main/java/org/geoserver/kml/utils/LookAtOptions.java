@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 
 /**
  * Data object to hold the KML <a
- * href="http://code.google.com/apis/kml/documentation/kmlreference.html#lookat">lookAt<a> properties as they come from
+ * href="http://code.google.com/apis/kml/documentation/kmlreference.html#lookat">lookAt</a> properties as they come from
  * the WMS GetMap's FORMAT_OPTIONS vendor specific parameter.
  *
  * <p>The following parameters are parsed at construction time and held by an instance of this class:

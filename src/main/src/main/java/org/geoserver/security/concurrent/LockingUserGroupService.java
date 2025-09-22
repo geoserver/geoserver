@@ -205,7 +205,7 @@ public class LockingUserGroupService extends AbstractLockingService
      * NO_LOCK
      *
      * @see
-     *     org.geoserver.security.GeoServerUserGroupService#registerUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
+     *     org.geoserver.security.GeoServerUserGroupService#registerUserGroupLoadedListener(UserGroupLoadedListener)
      */
     @Override
     public void registerUserGroupLoadedListener(UserGroupLoadedListener listener) {
@@ -216,7 +216,7 @@ public class LockingUserGroupService extends AbstractLockingService
      * NO_LOCK
      *
      * @see
-     *     org.geoserver.security.GeoServerUserGroupService#unregisterUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
+     *     org.geoserver.security.GeoServerUserGroupService#unregisterUserGroupLoadedListener(org.geoserver.security.event.UserGroupLoadedListener)
      */
     @Override
     public void unregisterUserGroupLoadedListener(UserGroupLoadedListener listener) {
@@ -227,7 +227,7 @@ public class LockingUserGroupService extends AbstractLockingService
      * NO_LOCK
      *
      * @see
-     *     org.geoserver.security.event.UserGroupChangedListener#usersAndGroupsChanged(org.geoserver.security.event.UserGroupChangedEvent)
+     *     org.geoserver.security.event.UserGroupLoadedListener#usersAndGroupsChanged(UserGroupLoadedEvent)
      */
     @Override
     public void usersAndGroupsChanged(UserGroupLoadedEvent event) {

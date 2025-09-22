@@ -95,7 +95,7 @@ import org.xml.sax.SAXException;
  * being specified in the query string:
  *
  * <pre>
- * <code>http://www.xyz.com/geoserver?service=someService&amp;request=someRequest&amp;version=X.Y.Z&amp;param1=...&amp;param2=...</code>
+ * {@code http://www.xyz.com/geoserver?service=someService&request=someRequest&version=X.Y.Z&param1=...&param2=...}
  * </pre>
  *
  * <p>This type of request can also be made in a "POST" request in with a mime-type of
@@ -104,14 +104,14 @@ import org.xml.sax.SAXException;
  * <p>The second form is known as "XML" in which all the parameters come in the form of an xml document. This type of
  * request is made in an http "POST" request.
  *
- * <pre><code>
- *  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
- *  &lt;SomeRequest service="someService" version="X.Y.Z"&gt;
- *    &lt;Param1&gt;...&lt;/Param1&gt;
- *    &lt;Param2&gt;...&lt;/Param2&gt;
- *    ...
- *  &lt;/SomeRequest&gt;
- * </code></pre>
+ * <pre>{@code
+ * <?xml version="1.0" encoding="UTF-8"?>
+ * <SomeRequest service="someService" version="X.Y.Z">
+ *   <Param1>...</Param1>
+ *   <Param2>...</Param2>
+ *   ...
+ * </SomeRequest>
+ * }</pre>
  *
  * <p>When a request is received, the <b>service</b> the <b>version</b> parameters are used to locate a service
  * desciptor, an instance of {@link Service} . With the service descriptor, the <b>request</b> parameter is used to
@@ -173,11 +173,11 @@ public class Dispatcher extends AbstractController {
     /**
      * Sets the flag to control wether the dispatcher is cite compliante.
      *
-     * <p>If set to <code>true</code>, the dispatcher with throw exceptions when it encounters something that is not
-     * 100% compliant with CITE standards. An example would be a request which specifies the servce in the context path:
+     * <p>If set to {@code true}, the dispatcher with throw exceptions when it encounters something that is not 100%
+     * compliant with CITE standards. An example would be a request which specifies the servce in the context path:
      * '.../geoserver/wfs?request=...' and not with the kvp '&amp;service=wfs'.
      *
-     * @param citeCompliant <code>true</code> to set compliance, <code>false</code> to unset it.
+     * @param citeCompliant {@code true} to set compliance, {@code false} to unset it.
      */
     public void setCiteCompliant(boolean citeCompliant) {
         this.citeCompliant = citeCompliant;
@@ -1645,30 +1645,28 @@ public class Dispatcher extends AbstractController {
     }
 
     /**
-     * To be called once determined the incoming request is an HTTP POST request
-     * with a request body, and the request's {@link Request#getInput() input
-     * reader} has been set; in order to pre-parse the XML request body root element
-     * and establish the following request properties:
+     * To be called once determined the incoming request is an HTTP POST request with a request body, and the request's
+     * {@link Request#getInput() input reader} has been set; in order to pre-parse the XML request body root element and
+     * establish the following request properties:
+     *
      * <p>
+     *
      * <ul>
-     * <li>{@link Request#setNamespace namespace}: The xml root element's namespace,
-     * or {@code ""} (empty string) if {@code null}
-     * <li>{@link Request#setPostRequestElementName PostRequestElementName}: The xml
-     * root element name (e.g. {@code GetMap}, {@code GetFeature},
-     * {@code StyledLayerDescriptor}, etc.)
-     * <li>{@link Request#setRequest: The xml root element name, assuming it matches
-     * the request name, might be overriten later while parting the request's query
-     * string key-value pairs
-     * <li>{@link Request#setService service}: matching the xml root element's
-     * {@code service} attribute, or {@code null}
-     * <li>{@link Request#setVersion version}: matching the xml root element's
-     * {@code version} attribute, or {@code null}
-     * <li>{@link Request#setOutputFormat outputFormat}: matching the xml root
-     * element's {@code outputFormat} attribute, or {@code null}
+     *   <li>{@link Request#setNamespace namespace}: The xml root element's namespace, or {@code ""} (empty string) if
+     *       {@code null}
+     *   <li>{@link Request#setPostRequestElementName PostRequestElementName}: The xml root element name (e.g.
+     *       {@code GetMap}, {@code GetFeature}, {@code StyledLayerDescriptor}, etc.)
+     *   <li>{@link Request#setRequest}: The xml root element name, assuming it matches the request name, might be
+     *       overriten later while parting the request's query string key-value pairs
+     *   <li>{@link Request#setService service}: matching the xml root element's {@code service} attribute, or
+     *       {@code null}
+     *   <li>{@link Request#setVersion version}: matching the xml root element's {@code version} attribute, or
+     *       {@code null}
+     *   <li>{@link Request#setOutputFormat outputFormat}: matching the xml root element's {@code outputFormat}
+     *       attribute, or {@code null}
      * </ul>
      *
-     * @param req The request to set properties to based on the xml request body's
-     *            root element
+     * @param req The request to set properties to based on the xml request body's root element
      * @param citeCompliant Whether to perform version negotiation for OWS requests
      * @return a {@link Map} containing the parsed parameters.
      * @throws Exception if there was an error reading the input.

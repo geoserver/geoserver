@@ -96,7 +96,7 @@ public interface AttributeTypeInfo extends Serializable {
     /**
      * The same as {@link Object#equals(Object)}, except doesn't compare {@link FeatureTypeInfo}s, to avoid recursion.
      */
-    boolean equalsIngnoreFeatureType(Object obj);
+    boolean equalsIgnoreFeatureType(Object obj);
 
     /**
      * Returns the actual value of source, eventually null if not set yet (unlike #getsSource(), which returns the

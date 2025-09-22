@@ -238,7 +238,7 @@ public class CatalogWriter {
             tx.transform(source, result);
         } catch (Exception e) {
             String msg = "Could not write catalog to " + file;
-            throw (IOException) new IOException(msg, e);
+            throw new IOException(msg, e);
         }
     }
 }

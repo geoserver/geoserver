@@ -19,10 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Unit test suite for {@link GetRepositoryItemKvpRequestReader}
- *
- */
+/** Unit test suite for {@link GetRepositoryItemKvpRequestReader} */
 public class GetRepositoryItemKvpRequestReaderTest {
 
     private GeoServerImpl geoServerImpl;

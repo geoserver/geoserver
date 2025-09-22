@@ -12,7 +12,7 @@ import org.geoserver.web.ComponentInfo;
 /**
  * Information about panels plugged into additional tabs on style edit page.
  *
- * <p>Style edit tabs have a self declared order which describes where they end up on the style edit page. Lower order
+ * <p>Style edit tabs have a self-declared order which describes where they end up on the style edit page. Lower order
  * panels are weighted toward the left hand side, higher order panels are weighted toward the right hand side.
  */
 public class StyleEditTabPanelInfo extends ComponentInfo<StyleEditTabPanel> {
@@ -51,7 +51,6 @@ public class StyleEditTabPanelInfo extends ComponentInfo<StyleEditTabPanel> {
      * appropriate.
      *
      * @return {@code null} if no need for a custom model for the tab, the model to use otherwise
-     * @see StyleEditTabPanel#save()
      */
     public IModel<?> createOwnModel(IModel<? extends StyleInfo> model, boolean isNew) {
         return null;

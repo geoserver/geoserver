@@ -76,7 +76,7 @@ public final class Requests {
     /**
      * Appends a query string to a url.
      *
-     * <p>This method checks <code>url</code> to see if the appended query string requires a '?' or '&' to be prepended.
+     * <p>This method checks {@code url} to see if the appended query string requires a '?' or '&amp;' to be prepended.
      *
      * @param url The base url.
      * @param queryString The query string to be appended, should not contain the '?' character.

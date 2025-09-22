@@ -16,16 +16,12 @@ import java.util.Set;
  * and namespace prefix.
  *
  * <p>Each name space translator should contain a list of name space elements for their particular prefix. This loading
- * should not be completed lazily to avoid performance lags at run time. When ever posible constants should alos be used
- * for performance purposes.
+ * should not be completed lazily to avoid performance lags at run time. When ever possible constants should also be
+ * used for performance purposes.
  *
- * <p>USE: <code>
- * NameSpaceTranslator nst = NameSpaceTranslatorFactor.getInstance().getNameSpaceTranslator("xs");
- * Class cls = nst.getElement("string").getJavaClass();
- * ...
- * Object obj // contains some data, what can it be represented as?
- * String elementName = ((NameSpaceElement)nst.getElements(obj).toArray()[0]).getTypeRefName();
- * </code>
+ * <p>USE: {@code NameSpaceTranslator nst = NameSpaceTranslatorFactor.getInstance().getNameSpaceTranslator("xs"); Class
+ * cls = nst.getElement("string").getJavaClass(); ... Object obj // contains some data, what can it be represented as?
+ * String elementName = ((NameSpaceElement)nst.getElements(obj).toArray()[0]).getTypeRefName(); }
  *
  * @author dzwiers, Refractions Research, Inc.
  * @author $Author: dmzwiers $ (last modification)
@@ -39,18 +35,18 @@ public abstract class NameSpaceTranslator {
      *
      * <p>Creates an instance of this translator for the given prefix.
      *
-     * @param prefix The prefix for which this tranlator will tranlate. A null prefix will affect the NameSpaceElements
+     * @param prefix The prefix for which this tranlator will translate. A null prefix will affect the NameSpaceElements
      *     returned by the access methods.
-     * @see #NameSpaceElement(String)
+     * @see #getElement(String)
      */
     public NameSpaceTranslator(String prefix) {
         this.prefix = prefix;
     }
 
     /**
-     * Retrive all elements that can be used with the provided type.
+     * Retrieve all elements that can be used with the provided type.
      *
-     * <p>Looks for Elements who's Class objects, or the parents of the Class object are compatible with this class
+     * <p>Looks for Elements whose Class objects, or the parents of the Class object are compatible with this class
      * object.
      *
      * @param type Class the class to attempt to find related elements for.
@@ -77,7 +73,7 @@ public abstract class NameSpaceTranslator {
     /**
      * Looks for Elements who's name is the same or a super set of this name.
      *
-     * <p>(ie. name.indexOf(type)!=-1)
+     * <p>(i.e. name.indexOf(type)!=-1)
      *
      * @param type String the class to attempt to find related elements for.
      * @return Set a set of associated NameSpaceElements

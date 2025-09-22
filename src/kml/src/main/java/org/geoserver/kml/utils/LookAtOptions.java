@@ -33,7 +33,7 @@ import org.locationtech.jts.geom.GeometryFactory;
  *   <li>HEADING: Double
  *   <li>TILT: Double
  *   <li>RANGE: Double
- *   <li>ALTITUDEMODE: String literal. One of <clampToGround|relativeToGround|absolute>
+ *   <li>ALTITUDEMODE: String literal. One of &lt;clampToGround|relativeToGround|absolute&gt;
  * </ul>
  *
  * All of them are optional, and {@code null} will be returned by it's matching accessor method if not provided.

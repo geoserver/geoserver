@@ -109,7 +109,7 @@ public class Transaction {
      * <p>The results of this opperation are stored for use by writeTo:
      *
      * <ul>
-     *   <li>transaction: used by abort & writeTo to commit/rollback
+     *   <li>transaction: used by abort &amp; writeTo to commit/rollback
      *   <li>request: used for users getHandle information to report errors
      *   <li>stores: FeatureStores required for Transaction
      *   <li>failures: List of failures produced
@@ -499,10 +499,10 @@ public class Transaction {
      * {@link org.geotools.api.data.Transaction#putProperty(Object, Object) transaction properties} so that they're
      * available to the lower level API.
      *
-     * <p>These properties can be provided for example by {@link TransactionPlugin#beforeTransaction(TransactionType)}
+     * <p>These properties can be provided for example by {@link TransactionCallback#beforeTransaction(TransactionRequest)}
      * implementations. A typical example is a custom authentication module providing extra user information that upon
      * transaction commit can be used by versioning geotools datastore to complete the information required for its
-     * records (such as committer full name, email, etc)
+     * records (such as committer full name, email, etc.)
      *
      * @return a new geotools transaction
      */

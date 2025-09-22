@@ -11,7 +11,7 @@ import org.apache.wicket.model.IModel;
 /**
  * Extension point for panels which appear in separate tabs on the style edit page.
  *
- * <p>Subclasses <b>must</b> override the {@link #StyleEditTabPanel(String, IModel)} constructor and <b>not</b> change
+ * <p>Subclasses <b>must</b> override the {@link #StyleEditTabPanel(String, AbstractStylePage)} constructor and <b>not</b> change
  * its signature.
  *
  * <p>Instances of this class are described in a spring context with a {@link StyleEditTabPanelInfo} bean.

@@ -298,7 +298,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
      * Performs the necessary operation on save.
      *
      * <p>This implementation adds the necessary objects to the catalog, respecting the isNew flag, and calls
-     * {@link #onSuccessfulSave()} upon success.
+     * {@link #onSuccessfulSave(boolean)} upon success.
      */
     protected void doSave(boolean doReturn) {
         try {

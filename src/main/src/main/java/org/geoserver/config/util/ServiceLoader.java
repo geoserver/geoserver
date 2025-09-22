@@ -37,7 +37,7 @@ public abstract class ServiceLoader {
      *
      * <p>This method is intended to be called by subclasses after creating an instance of ServiceInfo. Example:
      *
-     * <pre>
+     * {@code
      *   // read properties
      *   Map<String,Object> props = reader.wfs();
      *
@@ -50,7 +50,7 @@ public abstract class ServiceLoader {
      *   //load wfs specific properties
      *   wfs.setServiceLevel( map.get( "serviceLevel") );
      *   ...
-     * </pre>
+     * }
      */
     protected void load(ServiceInfo service, Map<String, Object> properties, GeoServer gs) throws Exception {
 

@@ -48,7 +48,7 @@ public class RSSGeoRSSMapOutputFormat implements GetMapOutputFormat {
         return MIME_TYPE;
     }
 
-    /** @see GetMapProducer#getOutputFormatNames() */
+    /** @see GetMapOutputFormat#getOutputFormatNames() */
     @Override
     public Set<String> getOutputFormatNames() {
         return FORMAT_NAMES;

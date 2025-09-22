@@ -484,7 +484,7 @@ public class TransactionTest extends WFSTestSupport {
                 + "</wfs:Transaction>";
 
         Document dom = postAsDOM("wfs", xml);
-        print(dom);
+        //  print(dom);
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
 
         assertEquals(
@@ -1062,9 +1062,8 @@ public class TransactionTest extends WFSTestSupport {
         NodeList exceptionElements = dom.getElementsByTagName("ows:ExceptionText");
         assertEquals(1, exceptionElements.getLength());
         String exceptionText = exceptionElements.item(0).getTextContent();
-        assertEquals(
-                "Insert error: Restriction evaluation failed for attribute 'radius' of feature 'bar.1234'",
-                exceptionText);
+        assertTrue(exceptionText.startsWith(
+                "Insert error: Restriction evaluation failed for attribute 'radius' of feature 'bar.1234' ("));
     }
 
     @Test
@@ -1161,7 +1160,8 @@ public class TransactionTest extends WFSTestSupport {
         NodeList exceptionElements = dom.getElementsByTagName("ows:ExceptionText");
         assertEquals(1, exceptionElements.getLength());
         String exceptionText = exceptionElements.item(0).getTextContent();
-        assertEquals("Update error: Restriction evaluation failed updating value of attribute 'name'", exceptionText);
+        assertTrue(exceptionText.startsWith(
+                "Update error: Restriction evaluation failed for the value of attribute 'name' ("));
     }
 
     /** Tests XML entity expansion limit on parsing with system property configuration. */
@@ -1234,6 +1234,8 @@ public class TransactionTest extends WFSTestSupport {
         featureTypeBuilder.setName("bar");
         featureTypeBuilder.add("name", String.class);
         featureTypeBuilder.add("geom", Point.class);
+        //        featureTypeBuilder.nillable(false);
+        //        featureTypeBuilder.minOccurs(1);
         featureTypeBuilder.add("radius", Double.class);
 
         store.createSchema(featureTypeBuilder.buildFeatureType());

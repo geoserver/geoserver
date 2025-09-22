@@ -15,13 +15,15 @@ import org.geotools.api.data.FeatureReader;
 import org.geotools.api.data.FeatureStore;
 import org.geotools.api.data.SimpleFeatureStore;
 import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.IllegalAttributeException;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.Name;
-import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.identity.FeatureId;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.complex.feature.type.Types;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.util.Converters;
@@ -58,7 +60,7 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
     @Override
     public List<FeatureId> addFeatures(FeatureCollection<SimpleFeatureType, SimpleFeature> fc) throws IOException {
 
-        enforceFeatureRestrictions(fc);
+        enforceFeatureInsertValidation(fc);
 
         FeatureStore<SimpleFeatureType, SimpleFeature> store = store();
 
@@ -70,25 +72,27 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
         return store().addFeatures(fc);
     }
 
-    private void enforceFeatureRestrictions(FeatureCollection<SimpleFeatureType, SimpleFeature> fc) {
+    private void enforceFeatureInsertValidation(FeatureCollection<SimpleFeatureType, SimpleFeature> fc) {
         try (FeatureIterator<SimpleFeature> features = fc.features()) {
             while (features.hasNext()) {
                 SimpleFeature feature = features.next();
-
-                for (PropertyDescriptor propertyDescriptor : schema.getDescriptors()) {
-                    Object value = feature.getAttribute(propertyDescriptor.getName());
-                    Class<?> binding = propertyDescriptor.getType().getBinding();
-
-                    Object convertedValue = Converters.convert(value, binding);
-
-                    if (isValueViolatingRestrictions(
-                            convertedValue, propertyDescriptor.getType().getRestrictions())) {
-                        throw new IllegalArgumentException(String.format(
-                                "Restriction evaluation failed for attribute '%s' of feature '%s'",
-                                propertyDescriptor.getName(), feature.getID()));
-                    }
-                }
+                feature.getType()
+                        .getAttributeDescriptors()
+                        .forEach(attributeDescriptor -> validateFeatureAttributeValue(attributeDescriptor, feature));
             }
+        }
+    }
+
+    private void validateFeatureAttributeValue(AttributeDescriptor attributeDescriptor, SimpleFeature feature) {
+        try {
+            Object value = feature.getAttribute(attributeDescriptor.getName());
+            Types.validate(attributeDescriptor, value);
+        } catch (IllegalAttributeException ex) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Restriction evaluation failed for attribute '%s' of feature '%s' (%s)",
+                            attributeDescriptor.getName(), feature.getID(), ex.getMessage()),
+                    ex);
         }
     }
 
@@ -128,7 +132,7 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
     @Override
     public void modifyFeatures(String name, Object attributeValue, Filter filter) throws IOException {
 
-        enforceFeatureRestrictions(name, attributeValue);
+        enforceFeatureUpdateValidation(name, attributeValue);
 
         filter = makeDefinitionFilter(filter);
 
@@ -138,7 +142,7 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
     @Override
     public void modifyFeatures(String[] names, Object[] attributeValues, Filter filter) throws IOException {
 
-        enforceFeatureRestrictions(names, attributeValues);
+        enforceFeatureUpdateValidation(names, attributeValues);
 
         filter = makeDefinitionFilter(filter);
 
@@ -149,7 +153,7 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
     public void modifyFeatures(Name[] attributeNames, Object[] attributeValues, Filter filter) throws IOException {
 
         String[] names = Stream.of(attributeNames).map(Name::getLocalPart).toArray(String[]::new);
-        enforceFeatureRestrictions(names, attributeValues);
+        enforceFeatureUpdateValidation(names, attributeValues);
 
         filter = makeDefinitionFilter(filter);
 
@@ -159,48 +163,42 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
     @Override
     public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter) throws IOException {
 
-        enforceFeatureRestrictions(attributeName.getLocalPart(), attributeValue);
+        enforceFeatureUpdateValidation(attributeName.getLocalPart(), attributeValue);
         filter = makeDefinitionFilter(filter);
 
         store().modifyFeatures(attributeName, attributeValue, filter);
     }
 
-    private void enforceFeatureRestrictions(String name, Object attributeValue) {
-        enforceFeatureRestrictions(new String[] {name}, new Object[] {attributeValue});
+    private void enforceFeatureUpdateValidation(String name, Object attributeValue) {
+        enforceFeatureUpdateValidation(new String[] {name}, new Object[] {attributeValue});
     }
 
-    private void enforceFeatureRestrictions(String[] names, Object[] attributeValues) {
+    private void enforceFeatureUpdateValidation(String[] names, Object[] attributeValues) {
         Map<String, Object> updates = new HashMap<>();
         for (int i = 0; i < names.length; i++) {
             updates.put(names[i], attributeValues[i]);
         }
 
-        for (PropertyDescriptor propertyDescriptor : schema.getDescriptors()) {
-            Object value = updates.get(propertyDescriptor.getName().toString());
-            Class<?> binding = propertyDescriptor.getType().getBinding();
+        for (AttributeDescriptor attributeDescriptor : schema.getAttributeDescriptors()) {
+
+            Object value = updates.get(attributeDescriptor.getName().toString());
+            Class<?> binding = attributeDescriptor.getType().getBinding();
 
             Object convertedValue = Converters.convert(value, binding);
 
-            if (isValueViolatingRestrictions(
-                    convertedValue, propertyDescriptor.getType().getRestrictions())) {
-                throw new IllegalArgumentException(String.format(
-                        "Restriction evaluation failed updating value of attribute '%s'",
-                        propertyDescriptor.getName()));
-            }
+            validateAttributeValue(attributeDescriptor, convertedValue);
         }
     }
 
-    private boolean isValueViolatingRestrictions(Object value, List<Filter> restrictions) {
-
-        if (value == null) {
-            return false;
+    private void validateAttributeValue(AttributeDescriptor attributeDescriptor, Object value) {
+        try {
+            Types.validate(attributeDescriptor, value);
+        } catch (IllegalAttributeException ex) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Restriction evaluation failed for the value of attribute '%s' (%s)",
+                            attributeDescriptor.getName(), ex.getMessage()),
+                    ex);
         }
-
-        for (Filter restriction : restrictions) {
-            if (!restriction.evaluate(value)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

@@ -44,24 +44,19 @@ import org.geoserver.wms.map.RenderedImageMap;
 import org.geotools.util.Version;
 
 /**
- * An implementation of {@link ServiceExceptionHandler} which outputs as service exception in a {@code
- * ServiceExceptionReport} document.
+ * An implementation of {@link ServiceExceptionHandler} which outputs as service exception in a
+ * {@code ServiceExceptionReport} document.
  *
- * <p>
+ * <p><strong>Version</strong>
  *
- * <strong>Version</strong>
- *
- * By default, this exception handler will output a {@code ServiceExceptionReport} which is of version {@code 1.2.0
+ * <p>By default, this exception handler will output a {@code ServiceExceptionReport} which is of version {@code 1.2.0
  * }.
  *
+ * <p><strong>DTD and Schema</strong>
  *
- *
- * <strong>DTD and Schema</strong>
- *
- * By default, no DTD or XML Schema reference will be included in the document.
+ * <p>By default, no DTD or XML Schema reference will be included in the document.
  *
  * <p>The supplied value should be relative to the web application context root.
- *
  *
  * @author Justin Deoliveira
  * @author Gabriel Roldan

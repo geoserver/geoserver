@@ -58,7 +58,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
         return Delete.class;
     }
 
-    /** @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject) */
+    /** @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(TransactionRequest, TransactionElement) */
     @Override
     public QName[] getTypeNames(TransactionRequest request, TransactionElement element) throws WFSTransactionException {
         return new QName[] {element.getTypeName()};

@@ -24,8 +24,8 @@ import org.geotools.util.logging.Logging;
 /**
  * Web Feature Service DescribeFeatureType operation.
  *
- * <p>This operation returns an array of {@link org.geoserver.data.feature.FeatureTypeInfo} metadata objects
- * corresponding to the feature type names specified in the request.
+ * <p>This operation returns an array of {@link FeatureTypeInfo} metadata objects corresponding to the feature type
+ * names specified in the request.
  *
  * @author Rob Hranac, TOPP
  * @author Chris Holmes, TOPP

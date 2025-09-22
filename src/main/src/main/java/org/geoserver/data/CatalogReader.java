@@ -84,10 +84,10 @@ public class CatalogReader {
     /**
      * Reads "namespace" elements from the catalog.xml file.
      *
-     * <p>For each namespace element read, an entry of &lt;prefix,uri&gt; is created in a map. The default uri is
-     * located under the empty string key.
+     * <p>For each namespace element read, an entry of &lt;prefix,urilt;prefix,uriprefix,urigt;&gt; is created in a map.
+     * The default uri is located under the empty string key.
      *
-     * @return A map containing &lt;prefix,uri&gt; tuples.
+     * @return A map containing &lt;prefix,urilt;prefix,uriprefix,urigt;&gt; tuples.
      * @throws Exception If error processing "namespaces" element.
      */
     public Map<String, String> namespaces() throws Exception {
@@ -144,7 +144,7 @@ public class CatalogReader {
      * Convenience method for reading namespace prefix and uri from a namespace element.
      *
      * @param namespaceElement The "namespace" element.
-     * @return A &lt;prefix,uri&gt; tuple.
+     * @return A &lt;prefix,urilt;prefix,uriprefix,urigt;&gt; tuple.
      * @throws Exception If problem parsing any parameters.
      */
     protected Map.Entry<String, String> namespaceTuple(Element namespaceElement) throws Exception {

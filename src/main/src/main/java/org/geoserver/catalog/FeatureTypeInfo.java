@@ -7,7 +7,6 @@ package org.geoserver.catalog;
 
 import java.io.IOException;
 import java.util.List;
-import org.geoserver.config.GeoServerInfo;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
@@ -136,8 +135,8 @@ public interface FeatureTypeInfo extends ResourceInfo {
     /**
      * Returns the underlying feature source instance.
      *
-     * <p>This method performs I/O and is potentially blocking. The {@code listener} may be used to report the progress of
-     * loading the feature source and also to report any errors or warnings that occur.
+     * <p>This method performs I/O and is potentially blocking. The {@code listener} may be used to report the progress
+     * of loading the feature source and also to report any errors or warnings that occur.
      *
      * @param listener A progress listener, may be {@code null}.
      * @param hints Hints to use while loading the feature source, may be {@code null}.

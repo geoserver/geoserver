@@ -664,8 +664,8 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
      * order.
      *
      * <p>This method should be called by pages that must return after doing some task on a form submit such as a save
-     * or a cancel. If no return page has been set via {@link #setReturnPage(Page)} or
-     * {@link #setReturnPageClass(Class)} then {@link GeoServerHomePage} is used.
+     * or a cancel. If no return page has been set via {@link #setReturnPage(Page)} or {@link #setReturnPage(Class)}
+     * then {@link GeoServerHomePage} is used.
      */
     protected void doReturn() {
         doReturn(null);

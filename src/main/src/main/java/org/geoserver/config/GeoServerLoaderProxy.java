@@ -93,8 +93,9 @@ public class GeoServerLoaderProxy
 
     /**
      * @param appContext required for {@link DataDirectoryGeoServerLoader#isEnabled(ApplicationContext)}
-     * @return a new instance of {@link DataDirectoryGeoServerLoader} if {@link DataDirectoryGeoServerLoader#isEnabled()
-     *     enabled}, or {@link DefaultGeoServerLoader} otherwise.
+     * @return a new instance of {@link DataDirectoryGeoServerLoader} if
+     *     {@link DataDirectoryGeoServerLoader#isEnabled(ApplicationContext) enabled}, or {@link DefaultGeoServerLoader}
+     *     otherwise.
      */
     protected GeoServerLoader createDefaultLoader(ApplicationContext appContext) {
         if (DataDirectoryGeoServerLoader.isEnabled(appContext)) {

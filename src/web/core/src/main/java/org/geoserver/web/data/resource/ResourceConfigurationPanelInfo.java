@@ -13,7 +13,7 @@ import org.geoserver.web.ComponentInfo;
 /**
  * Extension point for sections of the configuration pages for individual resources.
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow dwinslow@openplans.org
  */
 public class ResourceConfigurationPanelInfo extends ComponentInfo<ResourceConfigurationPanel> {
     public static final long serialVersionUID = -1l;

@@ -152,7 +152,8 @@ public class CatalogWriter {
     /**
      * Writes "namespace" elements to the catalog.xml file.
      *
-     * @param namespaces map of &lt;prefix,uri&gt;, default uri is located under the empty string key.
+     * @param namespaces map of &lt;prefix,urilt;prefix,uriprefix,urigt;&gt;, default uri is located under the empty
+     *     string key.
      */
     public void namespaces(Map namespaces) {
         namespaces(namespaces, Collections.emptyList());

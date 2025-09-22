@@ -26,15 +26,14 @@ import org.w3c.dom.NodeList;
  *
  * <p>Usage:
  *
- * <pre>
- *         <code>
- *                 File catalog = new File( ".../catalog.xml" );
- *                 LegacygCatalogReader reader = new LegacygCatalogReader();
- *                 reader.read( catalog );
- *                 List dataStores = reader.dataStores();
- *                 List nameSpaces = reader.nameSpaces();
- *         </code>
- * </pre>
+ * <pre>{@code
+ * File catalog = new File( ".../catalog.xml" );
+ * LegacygCatalogReader reader = new LegacygCatalogReader();
+ * reader.read( catalog );
+ * List dataStores = reader.dataStores();
+ * List nameSpaces = reader.nameSpaces();
+ *
+ * }</pre>
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -161,10 +160,10 @@ public class LegacyCatalogReader {
     /**
      * Reads "namespace" elements from the catalog.xml file.
      *
-     * <p>For each namespace element read, an entry of <prefix,uri> is created in a map. The default uri is located
-     * under the empty string key.
+     * <p>For each namespace element read, an entry of &lt;prefix,uri&gt; is created in a map. The default uri is
+     * located under the empty string key.
      *
-     * @return A map containing <prefix,uri> tuples.
+     * @return A map containing &lt;prefix,uri&gt; tuples.
      * @throws Exception If error processing "namespaces" element.
      */
     public Map<String, String> namespaces() throws Exception {
@@ -174,10 +173,10 @@ public class LegacyCatalogReader {
     /**
      * Reads "namespace" elements from the catalog.xml file that correspond to isolated workspaces.
      *
-     * <p>For each namespace element read, an entry of <prefix,uri> is created in a map. The default uri is located
-     * under the empty string key.
+     * <p>For each namespace element read, an entry of &lt;prefix,uri&gt; is created in a map. The default uri is
+     * located under the empty string key.
      *
-     * @return A map containing <prefix,uri> tuples.
+     * @return A map containing &lt;prefix,uri&gt; tuples.
      * @throws Exception If error processing "namespaces" element.
      */
     public Map<String, String> isolatedNamespaces() throws Exception {
@@ -230,9 +229,9 @@ public class LegacyCatalogReader {
     /**
      * Reads "style" elements from the catalog.xml file.
      *
-     * <p>For each style element read, an entry of <id,filename> is created in a map.
+     * <p>For each style element read, an entry of &lt;id,filename&gt; is created in a map.
      *
-     * @return A map containing style <id,filename> tuples.
+     * @return A map containing style &lt;id,filename&gt; tuples.
      * @throws Exception If error processing "styles" element.
      */
     public Map<String, String> styles() throws Exception {
@@ -277,7 +276,7 @@ public class LegacyCatalogReader {
      * Convenience method for reading namespace prefix and uri from a namespace element.
      *
      * @param namespaceElement The "namespace" element.
-     * @return A <prefix,uri> tuple.
+     * @return A &lt;prefix,uri&gt; tuple.
      * @throws Exception If problem parsing any parameters.
      */
     protected Map.Entry<String, String> namespaceTuple(Element namespaceElement) throws Exception {

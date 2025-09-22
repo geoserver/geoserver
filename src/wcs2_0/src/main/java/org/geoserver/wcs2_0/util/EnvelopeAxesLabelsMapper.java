@@ -16,7 +16,7 @@ import org.geotools.referencing.cs.DefaultCoordinateSystemAxis;
 import org.geotools.util.Utilities;
 
 /**
- * Retain a unique mapping between {@link Envelope} axes and their names.
+ * Retain a unique mapping between {@link Bounds} axes and their names.
  *
  * @author Simone Giannecchini, GeoSolutions TODO caching depending on CRS? TODO handle composite CRS
  */

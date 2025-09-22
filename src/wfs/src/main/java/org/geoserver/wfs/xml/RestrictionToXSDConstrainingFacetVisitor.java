@@ -1,8 +1,9 @@
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs.xml;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import org.eclipse.xsd.XSDConstrainingFacet;
 import org.eclipse.xsd.XSDEnumerationFacet;
 import org.eclipse.xsd.XSDFactory;
@@ -51,6 +52,10 @@ import org.geotools.api.filter.temporal.OverlappedBy;
 import org.geotools.api.filter.temporal.TContains;
 import org.geotools.api.filter.temporal.TEquals;
 import org.geotools.api.filter.temporal.TOverlaps;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class RestrictionToXSDConstrainingFacetVisitor implements FilterVisitor {
     private final XSDFactory factory;

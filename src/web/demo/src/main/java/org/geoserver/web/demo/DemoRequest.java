@@ -12,7 +12,6 @@ import java.io.Serializable;
  * Holds on the properties used as arguments for the Demo Request
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  * @since 2.0.x
  */
 public class DemoRequest implements Serializable {

@@ -14,8 +14,6 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /**
  * A content panel for a {@link GeoServerDialog} used by {@link DataAccessEditPage} and {@link CoverageStoreEditPage} to
  * ask for confirmation on saving a store that can't be connected to through it's connection parameters
- *
- * @version $Id$
  */
 public class StoreConnectionFailedInformationPanel extends Panel {
 

@@ -12,6 +12,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import javax.crypto.SecretKey;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.password.PasswordValidator;
 
 public interface KeyStoreProvider {
 
@@ -24,10 +25,10 @@ public interface KeyStoreProvider {
     /** Forces a reload of the key store */
     void reloadKeyStore() throws IOException;
 
-    /** Gets the {@link Key} object for this alias <code>null</code> if the alias does not exist */
+    /** Gets the {@link Key} object for this alias {@code null} if the alias does not exist */
     Key getKey(String alias) throws IOException;
 
-    /** Gets the key for encrypting passwords stored in configuration files, may be <code>null</code> */
+    /** Gets the key for encrypting passwords stored in configuration files, may be {@code null} */
     byte[] getConfigPasswordKey() throws IOException;
 
     /** Checks if a such a key is available without presenting the key itself */
@@ -40,7 +41,7 @@ public interface KeyStoreProvider {
      * Returns the key for a {@link org.geoserver.security.GeoServerUserGroupService} service Name. Needed if the
      * service uses symmetric password encryption
      *
-     * <p>may be <code>null</code>
+     * <p>may be {@code null}
      */
     byte[] getUserGroupKey(String serviceName) throws IOException;
 
@@ -48,21 +49,21 @@ public interface KeyStoreProvider {
     boolean hasUserGroupKey(String serviceName) throws IOException;
 
     /**
-     * Gets the {@link SecretKey} object for this alias <code>null</code> if the alias does not exist
+     * Gets the {@link SecretKey} object for this alias {@code null} if the alias does not exist
      *
      * @throws IOException if the key exists but has the wrong type
      */
     SecretKey getSecretKey(String name) throws IOException;
 
     /**
-     * Gets the {@link SecretKey} object for this alias <code>null</code> if the alias does not exist
+     * Gets the {@link SecretKey} object for this alias {@code null} if the alias does not exist
      *
      * @throws IOException if the key exists but has the wrong type
      */
     PublicKey getPublicKey(String name) throws IOException;
 
     /**
-     * Gets the {@link PrivateKey} object for this alias <code>null</code> if the alias does not exist
+     * Gets the {@link PrivateKey} object for this alias {@code null} if the alias does not exist
      *
      * @throws IOException if the key exists but has the wrong type
      */
@@ -86,27 +87,28 @@ public interface KeyStoreProvider {
     /** Remove a key belonging to the alias */
     void removeKey(String alias) throws IOException;
 
-    /** Stores the key store to {@link #ks} */
+    /** Stores the key store to {@link #getResource()} */
     void storeKeyStore() throws IOException;
 
     /**
      * Prepares a master password change. The new password is used to encrypt the {@link KeyStore} and each
-     * {@link Entry};
+     * {@link KeyStore.Entry};
      *
      * <p>The new password is assumed to be already validated by the {@link PasswordValidator} named
      * {@link PasswordValidator#MASTERPASSWORD_NAME}
      *
-     * <p>A new key store named {@link #PREPARED_FILE_NAME} is created. All keys a re-encrypted with the new password
-     * and stored in the new key store.
+     * <p>A new key store named {@link KeyStoreProviderImpl#PREPARED_FILE_NAME} is created. All keys a re-encrypted with
+     * the new password and stored in the new key store.
      */
     void prepareForMasterPasswordChange(char[] oldPassword, char[] newPassword) throws IOException;
 
-    /** Aborts the master password change by removing the file named {@link #PREPARED_FILE_NAME} */
+    /** Aborts the master password change by removing the file named {@link KeyStoreProviderImpl#PREPARED_FILE_NAME} */
     void abortMasterPasswordChange();
 
     /**
-     * if {@link #DEFAULT_FILE_NAME} and {@link #PREPARED_FILE_NAME} exist, this method checks if
-     * {@link #PREPARED_FILE_NAME} can be used with new {@link MasterPasswordProvider#getMasterPassword()} method.
+     * if {@link KeyStoreProviderImpl#DEFAULT_FILE_NAME} and {@link KeyStoreProviderImpl#PREPARED_FILE_NAME} exist, this
+     * method checks if {@link KeyStoreProviderImpl#PREPARED_FILE_NAME} can be used with new
+     * {@link MasterPasswordProvider#getMasterPassword()} method.
      *
      * <p>YES: replace the old keystore with the new one
      *

@@ -43,7 +43,6 @@ import org.geotools.util.logging.Logging;
  *
  * @author Richard Gould, Refractions Research, Inc.
  * @author $Author: cholmesny $ (last modification)
- * @version $Id$
  */
 public abstract class DataStoreUtils {
 

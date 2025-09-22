@@ -27,7 +27,6 @@ import org.w3c.dom.Element;
  * Unit test suite for {@link GetCapabilitiesResponse}.
  *
  * @author Antonio Cerciello - Geocat
- * @version $Id$
  */
 public class GetCapabilitiesSRCOrderTest extends WMSTestSupport {
 

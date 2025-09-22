@@ -28,7 +28,6 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * Reads a WMS GetCapabilities request from an XML stream
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class CapabilitiesXmlReader extends XmlRequestReader {
 
@@ -83,7 +82,6 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
      * A SAX content handler that acquires a GetCapabilities request from an incoming XML stream.
      *
      * @author Rob Hranac, TOPP
-     * @version $Id$
      */
     private static class CapabilitiesHandler extends XMLFilterImpl implements ContentHandler {
         /** Class logger */

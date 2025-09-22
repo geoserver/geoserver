@@ -90,11 +90,11 @@ public abstract class XmlRequestReader {
     /**
      * Reads the xml and initializes the request object.
      *
-     * <p>The <tt>request</tt> parameter may be <code>null</code>, so in this case the request reader would be
-     * responsible for creating the request object, or throwing an exception if this is not supported.
+     * <p>The <tt>request</tt> parameter may be {@code null}, so in this case the request reader would be responsible
+     * for creating the request object, or throwing an exception if this is not supported.
      *
-     * <p>In the case of the <tt>request</tt> being non <code>null</code>, the request reader may chose to modify and
-     * return <tt>request</tt>, or create a new request object and return it.
+     * <p>In the case of the <tt>request</tt> being non {@code null}, the request reader may chose to modify and return
+     * <tt>request</tt>, or create a new request object and return it.
      *
      * <p>The <tt>kvp</tt> is used to support mixed style reading of the request object from xml and from a set of key
      * value pairs. This map is often empty.

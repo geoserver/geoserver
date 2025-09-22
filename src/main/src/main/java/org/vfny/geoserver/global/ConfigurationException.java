@@ -12,7 +12,6 @@ import java.io.Serial;
  *
  * @author Chris Holmes
  * @author dzwiers
- * @version $Id$
  */
 public class ConfigurationException extends Exception {
     /** */

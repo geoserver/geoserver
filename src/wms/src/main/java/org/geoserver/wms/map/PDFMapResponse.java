@@ -61,7 +61,6 @@ import org.springframework.util.Assert;
  * @author Pierre-Emmanuel Balageas, ALCER (http://www.alcer.com)
  * @author Simone Giannecchini - GeoSolutions
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class PDFMapResponse extends AbstractMapResponse {
 

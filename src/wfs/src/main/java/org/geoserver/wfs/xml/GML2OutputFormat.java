@@ -53,7 +53,6 @@ import org.geotools.wfs.WFS;
  * </code>
  *
  * @author Gabriel Rold?n
- * @version $Id$
  */
 public class GML2OutputFormat extends WFSGetFeatureOutputFormat implements ComplexFeatureAwareFormat {
     private static final int NO_FORMATTING = -1;
@@ -67,7 +66,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat implements Compl
      * <p>This class seems to do all the work, if you have a problem with GML you will need to hunt it down. We supply
      * all of the header information in the execute method, and work through the featureList in the writeTo method.
      *
-     * <p>This value will be <code>null</code> until execute is called.
+     * <p>This value will be {@code null} until execute is called.
      */
     private FeatureTransformer transformer;
 

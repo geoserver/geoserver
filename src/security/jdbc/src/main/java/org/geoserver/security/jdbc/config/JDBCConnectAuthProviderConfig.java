@@ -38,7 +38,7 @@ public class JDBCConnectAuthProviderConfig extends BaseSecurityNamedServiceConfi
     /**
      * The JDBC driver class name.
      *
-     * <p>Used only if {@link #isJndi()} is false.
+     * <p>Used only if {@link JDBCSecurityServiceConfig#isJndi()} is false.
      */
     public String getDriverClassName() {
         return driverClassName;
@@ -52,7 +52,7 @@ public class JDBCConnectAuthProviderConfig extends BaseSecurityNamedServiceConfi
     /**
      * The JDBC url with which to obtain a database connection with.
      *
-     * <p>Used only if {@link #isJndi()} is false.
+     * <p>Used only if {@link JDBCSecurityServiceConfig#isJndi()} is false.
      */
     public String getConnectURL() {
         return connectURL;

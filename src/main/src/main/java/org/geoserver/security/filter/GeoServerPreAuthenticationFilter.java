@@ -70,7 +70,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
         chain.doFilter(request, response);
     }
 
-    /** subclasses should return the principal, <code>null</code> if no principal was authenticated */
+    /** subclasses should return the principal, {@code null} if no principal was authenticated */
     protected abstract String getPreAuthenticatedPrincipal(HttpServletRequest request);
 
     /**

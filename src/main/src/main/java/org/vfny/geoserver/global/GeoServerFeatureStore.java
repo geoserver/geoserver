@@ -38,7 +38,6 @@ import org.geotools.util.Converters;
  * this. Could we use this class to do so? It would need to support writing and locking though.
  *
  * @author Gabriel Rold?n
- * @version $Id$
  */
 public class GeoServerFeatureStore extends GeoServerFeatureSource implements SimpleFeatureStore {
     /**

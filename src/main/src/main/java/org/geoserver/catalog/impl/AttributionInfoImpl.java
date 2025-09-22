@@ -10,7 +10,7 @@ import org.geoserver.catalog.AttributionInfo;
 /**
  * AttributionInfoImpl is the default implementation of the AttributionInfo interface.
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 public class AttributionInfoImpl implements AttributionInfo {
     private String id;

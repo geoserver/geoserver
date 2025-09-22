@@ -23,7 +23,6 @@ import java.util.Set;
  * @see NameSpaceTranslatorFactory
  * @author dzwiers, Refractions Research, Inc.
  * @author $Author: dmzwiers $ (last modification)
- * @version $Id$
  */
 public class XMLSchemaTranslator extends NameSpaceTranslator {
     private Set<NameSpaceElement> elements;

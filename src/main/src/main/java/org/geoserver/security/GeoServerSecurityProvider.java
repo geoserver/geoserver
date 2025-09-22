@@ -29,7 +29,7 @@ import org.geoserver.security.validation.SecurityConfigValidator;
  */
 public abstract class GeoServerSecurityProvider {
 
-    /** Find the provider for a service type and a concrete class name. May return <code>null</code> */
+    /** Find the provider for a service type and a concrete class name. May return {@code null} */
     public static GeoServerSecurityProvider getProvider(Class<?> serviceClass, String className) {
 
         for (GeoServerSecurityProvider prov : GeoServerExtensions.extensions(GeoServerSecurityProvider.class)) {
@@ -153,7 +153,7 @@ public abstract class GeoServerSecurityProvider {
      * Returns the specific class of the user group service created by
      * {@link #createUserGroupService(SecurityNamedServiceConfig)}.
      *
-     * <p>If the extension does not provide a user group service this method should simply return <code>null</code>.
+     * <p>If the extension does not provide a user group service this method should simply return {@code null}.
      */
     public Class<? extends GeoServerUserGroupService> getUserGroupServiceClass() {
         return null;
@@ -162,7 +162,7 @@ public abstract class GeoServerSecurityProvider {
     /**
      * Creates a new user group service.
      *
-     * <p>If the extension does not provide a user group service this method should simply return <code>null</code>.
+     * <p>If the extension does not provide a user group service this method should simply return {@code null}.
      */
     public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config) throws IOException {
         return null;
@@ -211,16 +211,15 @@ public abstract class GeoServerSecurityProvider {
 
     /**
      * Returns the specific class of the password validator created by
-     * {@link #createPasswordValidator(PasswordPolicyConfig)}.
+     * {@link #createPasswordValidator(PasswordPolicyConfig, GeoServerSecurityManager)}
      *
-     * <p>If the extension does not provide a validator this method should simply return <code>null
-     * </code>.
+     * <p>If the extension does not provide a validator this method should simply return {@code null}.
      */
     public Class<? extends PasswordValidator> getPasswordValidatorClass() {
         return null;
     }
 
-    /** Create the standard password validator or return <code>null</code> */
+    /** Create the standard password validator or return {@code null} */
     public PasswordValidator createPasswordValidator(
             PasswordPolicyConfig config, GeoServerSecurityManager securityManager) {
         return null;

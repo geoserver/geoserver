@@ -856,7 +856,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Loads a role {@link SecurityRoleServiceConfig} from a named configuration. <code>null</code> if not found
+     * Loads a role {@link SecurityRoleServiceConfig} from a named configuration. {@code null} if not found
      *
      * @param name The name of the role service configuration.
      */
@@ -901,7 +901,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Loads a password encoder with the specified name.
      *
-     * @return The password encoder, or <code>null</code> if non found matching the name.
+     * @return The password encoder, or {@code null} if non found matching the name.
      */
     public GeoServerPasswordEncoder loadPasswordEncoder(String name) {
         GeoServerPasswordEncoder encoder = (GeoServerPasswordEncoder) GeoServerExtensions.bean(name);
@@ -1245,7 +1245,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Loads an authentication provider config from a named configuration. <code>null</code> if not found
+     * Loads an authentication provider config from a named configuration. {@code null} if not found
      *
      * @param name The name of the authentication provider service configuration.
      */
@@ -1748,7 +1748,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Loads a user {@link MasterPasswordProviderConfig} from a named configuration.
      *
-     * <p>This method returns <code>null</code> if the provider config is not found.
+     * <p>This method returns {@code null} if the provider config is not found.
      *
      * @param name The name of the keystore password provider configuration.
      */
@@ -1759,7 +1759,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Loads a user {@link MasterPasswordProvider} from a named configuration.
      *
-     * <p>This method returns <code>null</code> if the provider config is not found.
+     * <p>This method returns {@code null} if the provider config is not found.
      *
      * @param name The name of the keystore password provider configuration.
      */
@@ -1905,8 +1905,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Checks if the stack trace contains allowed methods. It it contains allowed methods, return <code>null</code>, if
-     * not return a String listing the methods.
+     * Checks if the stack trace contains allowed methods. It it contains allowed methods, return {@code null}, if not
+     * return a String listing the methods.
      */
     String checkStackTrace(int countMethodsToCheck, String[][] allowedMethods) {
 

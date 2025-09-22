@@ -15,7 +15,6 @@ import org.geoserver.platform.ServiceException;
  * Web Feature Service DescribeStoredQueries operation.
  *
  * @author Justin Deoliveira, OpenGeo
- * @version $Id$
  */
 public class DescribeStoredQueries {
 

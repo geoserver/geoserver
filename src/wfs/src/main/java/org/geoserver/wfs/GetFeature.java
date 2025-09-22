@@ -130,7 +130,6 @@ import org.xml.sax.helpers.NamespaceSupport;
  *
  * @author Rob Hranac, TOPP
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- * @version $Id$
  */
 public class GetFeature {
 

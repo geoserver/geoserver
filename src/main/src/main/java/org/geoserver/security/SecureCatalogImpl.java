@@ -598,7 +598,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a {@link StyleInfo} and a user, returns it back if the user can access it.
      *
-     * @return <code>null</code> if the user can't acess the style, otherwise the original style.
+     * @return {@code null} if the user can't acess the style, otherwise the original style.
      */
     protected StyleInfo checkAccess(Authentication user, StyleInfo style, MixedModeBehavior mixedModeBehavior) {
         if (style == null) return null;

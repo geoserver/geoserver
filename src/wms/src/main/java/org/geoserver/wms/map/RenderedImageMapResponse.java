@@ -47,7 +47,6 @@ import org.springframework.util.Assert;
  *
  * @author Chris Holmes, TOPP
  * @author Simone Giannecchini, GeoSolutions
- * @version $Id$
  */
 public abstract class RenderedImageMapResponse extends AbstractMapResponse {
 

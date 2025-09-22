@@ -17,7 +17,6 @@ import java.io.UncheckedIOException;
  * to the client.
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  * @since 1.6.x
  */
 public final class ClientStreamAbortedException extends IOException {

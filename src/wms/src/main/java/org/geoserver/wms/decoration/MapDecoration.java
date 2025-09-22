@@ -17,7 +17,7 @@ import org.geotools.api.filter.expression.Expression;
  * Decorations know how to determine their appropriate size, and how to render into a given area, but leave the actual
  * layout calculations to the {MapDecorationLayout} class.
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 public interface MapDecoration {
     /**

@@ -1552,14 +1552,18 @@
 
           <links>
             <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
-            <link>http://docs.oracle.com/javaee/7/api/</link>
-            <link>http://jscience.org/api/</link>
+            <link>https://docs.oracle.com/javaee/7/api/</link>
+            <link>https://javadoc.io/doc/org.jscience/jscience/4.3.1</link>
             <link>https://locationtech.github.io/jts/javadoc/</link>
-            <link>http://docs.geotools.org/latest/javadocs/</link>
-            <link>http://xmlgraphics.apache.org/batik/javadoc</link>
-            <link>http://freemarker.sourceforge.net/docs/api/</link>
-            <link>https://ci.apache.org/projects/wicket/apidocs/9.x/</link>
+            <link>https://docs.geotools.org/latest/javadocs/</link>
+            <link>https://xmlgraphics.apache.org/batik/javadoc/</link>
+            <link>https://freemarker.sourceforge.io/docs/api/</link>
+            <link>https://nightlies.apache.org/wicket/apidocs/9.x/</link>
           </links>
+          <additionalJOptions>
+            <additionalJOption>-Xmaxwarns</additionalJOption>
+            <additionalJOption>65536</additionalJOption>
+          </additionalJOptions>
         </configuration>
       </plugin>
 
@@ -1727,14 +1731,19 @@
 
           <links>
             <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
-            <link>http://docs.oracle.com/javaee/7/api/</link>
-            <link>http://jscience.org/api/</link>
-            <link>http://tsusiatsoftware.net/jts/javadoc</link>
-            <link>http://docs.geotools.org/latest/javadocs/</link>
-            <link>http://xmlgraphics.apache.org/batik/javadoc</link>
-            <link>http://freemarker.sourceforge.net/docs/api/</link>
-            <link>https://ci.apache.org/projects/wicket/apidocs/9.x/</link>
+            <link>https://docs.oracle.com/javaee/7/api/</link>
+            <link>https://javadoc.io/doc/org.jscience/jscience/4.3.1</link>
+            <link>https://locationtech.github.io/jts/javadoc/</link>
+            <link>https://docs.geotools.org/latest/javadocs/</link>
+            <link>https://xmlgraphics.apache.org/batik/javadoc/</link>
+            <link>https://freemarker.sourceforge.io/docs/api/</link>
+            <link>https://nightlies.apache.org/wicket/apidocs/9.x/</link>
           </links>
+          
+          <additionalJOptions>
+            <additionalJOption>-Xmaxwarns</additionalJOption>
+            <additionalJOption>65536</additionalJOption>
+          </additionalJOptions>
         </configuration>
       </plugin>
 

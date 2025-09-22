@@ -77,7 +77,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
         /**
          * "simple" encoding:
          *
-         * <p>ex: <georss:point>45.256 -71.92</georss:point>,<georss:line>...</georss:line>,...
+         * <p>ex: {@code <georss:point>45.256 -71.92</georss:point>,<georss:line>...</georss:line>,...}
          */
         public static GeometryEncoding SIMPLE = new GeometryEncoding() {
             @Override
@@ -130,7 +130,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
         /**
          * gml encoding:
          *
-         * <p>ex: <gml:Point> <gml:pos>45.256 -71.92</gml:pos> </gml:Point>
+         * <p>ex: {@code <gml:Point> <gml:pos>45.256 -71.92</gml:pos> </gml:Point>}
          */
         public static GeometryEncoding GML = new GeometryEncoding() {
             @Override
@@ -176,7 +176,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
         /**
          * lat/long encoding:
          *
-         * <p>ex: <geo:lat>45.256</geo:lat> <geo:long>-71.92</geo:long>
+         * <p>ex: {@code <geo:lat>45.256</geo:lat> <geo:long>-71.92</geo:long>}
          */
         public static GeometryEncoding LATLONG = new GeometryEncoding() {
             @Override

@@ -45,7 +45,7 @@ public interface StyleInfo extends CatalogInfo {
      */
     void setName(String name);
 
-    /** The workspace the style is part of, or <code>null</code> if the style is global. */
+    /** The workspace the style is part of, or {@code null} if the style is global. */
     WorkspaceInfo getWorkspace();
 
     /** Sets the workspace the style is part of. */

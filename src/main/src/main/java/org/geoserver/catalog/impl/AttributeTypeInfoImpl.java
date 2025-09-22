@@ -202,7 +202,7 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
 
     @Override
     public boolean equals(Object o) {
-        return equalsIgnoreFeatureType(o) && Objects.equals(featureType, ((AttributeTypeInfoImpl) o).featureType);
+        return equalsIngnoreFeatureType(o) && Objects.equals(featureType, ((AttributeTypeInfoImpl) o).featureType);
     }
 
     @Override
@@ -226,7 +226,7 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     }
 
     @Override
-    public boolean equalsIgnoreFeatureType(Object o) {
+    public boolean equalsIngnoreFeatureType(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AttributeTypeInfoImpl that = (AttributeTypeInfoImpl) o;

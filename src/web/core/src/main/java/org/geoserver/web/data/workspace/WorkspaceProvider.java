@@ -54,7 +54,7 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
     public static Property<WorkspaceInfo> NAME = new BeanProperty<>("name", "name");
 
     /**
-     * "Default" is not a {@link WorkspaceInfo} attribute, this property relies on {@link #iterator()} decorating the
+     * "Default" is not a {@link WorkspaceInfo} attribute, this property relies on {@link #iterator(long, long)} decorating the
      * default workspace, so {@link Catalog#getDefaultWorkspace()} doesn't need to be called for each item.
      *
      * @see #decorateDefault(WorkspaceInfo, WorkspaceInfo)

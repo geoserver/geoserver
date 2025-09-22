@@ -306,11 +306,11 @@ public class WMS implements ApplicationContextAware {
      * Returns a supported version according to the version negotiation rules in section 6.2.4 of the WMS 1.3.0 spec.
      *
      * <p>For instance: <u>
-     * <li>request version not provided? -> higher version supported
-     * <li>requested version supported? -> that same version
-     * <li>requested version < lowest supported version? -> lowest supported
-     * <li>requested version > lowest supported version? -> higher supported version that's lower than the requested
-     *     version </u>
+     * <li>request version not provided? -&gt; higher version supported
+     * <li>requested version supported? -&gt; that same version
+     * <li>requested version &lt; lowest supported version? -&gt; lowest supported
+     * <li>requested version &gt; lowest supported version? -&gt; higher supported version that's lower than the
+     *     requested version </u>
      *
      * @param requestedVersion the request version, or {@code null} if unspecified
      */
@@ -755,7 +755,7 @@ public class WMS implements ApplicationContextAware {
      * Grabs the list of allowed MIME-Types for the GetMap operation from the set of {@link GetMapOutputFormat}s
      * registered in the application context.
      *
-     * @see GetMapOutputFormat#getContentType()
+     * @see GetMapOutputFormat#getOutputFormatNames()
      */
     public Set<String> getAvailableMapFormatNames() {
 

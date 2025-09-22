@@ -41,14 +41,11 @@ public class WMSRequests {
     /**
      * Encodes the url of a GetMap request pointing to a tile cache if one exists.
      *
-     * <p>The tile cache location is determined from {@link GeoServer#getTileCache()}. If the above method returns null
-     * this method falls back to the behaviour of {@link #getGetMapUrl(WMSMapContent, Layer, Envelope, String[])}.
+     * <p>The tile cache location is determined from the tilecache parameter. If the above method returns null this
+     * method falls back to the behaviour of {@link #getGetMapUrl(GetMapRequest, Layer, int, Envelope, String[])}.
      *
-     * <p>If the <tt>layer</tt> argument is {@code null}, the request is made including all layers in the
-     * <tt>mapContexT</tt>.
-     *
-     * <p>If the <tt>bbox</tt> argument is {@code null}. {@link WMSMapContent#getAreaOfInterest()} is used for the bbox
-     * parameter.
+     * <p>If the {@code layer} argument is {@code null}, the request is made including all layers in the
+     * {@code mapContext}.
      *
      * @param req The getMap request.
      * @param layer The Map layer, may be {@code null}.
@@ -75,8 +72,8 @@ public class WMSRequests {
     /**
      * Returns the full url to the tile cache used by GeoServer ( if any ).
      *
-     * <p>If the tile cache set in the configuration ({@link GeoServer#getTileCache()}) is set to an asbsolute url, it
-     * is simply returned. Otherwise the value is appended to the scheme and host of the supplied <tt>request</tt>.
+     * <p>If the tile cache set in the configuration is set to an absolute url, it is simply returned. Otherwise, the
+     * value is appended to the scheme and host of the supplied {@code request}.
      *
      * @param req The request.
      * @param geoServer The geoserver configuration.
@@ -118,11 +115,8 @@ public class WMSRequests {
     /**
      * Encodes the url of a GetMap request.
      *
-     * <p>If the <tt>layer</tt> argument is {@code null}, the request is made including all layers in the
-     * <tt>mapContexT</tt>.
-     *
-     * <p>If the <tt>bbox</tt> argument is {@code null}. {@link WMSMapContent#getAreaOfInterest()} is used for the bbox
-     * parameter.
+     * <p>If the {@code layer} argument is {@code null}, the request is made including all layers in the
+     * {@code mapContext}.
      *
      * @param req The getMap request
      * @param layer The Map layer, may be {@code null}.
@@ -143,14 +137,11 @@ public class WMSRequests {
     /**
      * Encodes the url of a GetMap request.
      *
-     * <p>If the <tt>layer</tt> argument is {@code null}, the request is made including all layers in the
-     * <tt>mapContexT</tt>.
+     * <p>If the {@code layer} argument is {@code null}, the request is made including all layers in the
+     * {@code mapContext}.
      *
-     * <p>If the <tt>style</tt> argument is not {@code null} and the <tt>layer</tt> argument is {@code null}, then the
+     * <p>If the {@code style} argument is not {@code null} and the {@code layer} argument is {@code null}, then the
      * default style for that layer is used.
-     *
-     * <p>If the <tt>bbox</tt> argument is {@code null}. {@link WMSMapContent#getAreaOfInterest()} is used for the bbox
-     * parameter.
      *
      * @param req The getMap request
      * @param layer The layer name, may be {@code null}.

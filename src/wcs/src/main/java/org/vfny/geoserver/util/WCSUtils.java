@@ -381,9 +381,8 @@ public class WCSUtils {
     /**
      * Checks the coverage read is below the input limits. Mind, at this point the reader might have subsampled the
      * original image in some way so it is expected the coverage is actually smaller than what computed but
-     * {@link #checkInputLimits(WCSInfo, CoverageInfo, GridCoverage2DReader, GridGeometry2D)},
-     * however that method might have
-     * failed the computation due to lack of metadata (or wrong metadata) so it's safe to double-check the actual
+     * {@link #checkInputLimits(WCSInfo, CoverageInfo, GridCoverage2DReader, GridGeometry2D)}, however that method might
+     * have failed the computation due to lack of metadata (or wrong metadata) so it's safe to double-check the actual
      * coverage wit this one. Mind, this method might cause the coverage to be fully read in memory (if that is the
      * case, the actual WCS processing chain would result in the same behavior so this is not causing any extra memory
      * usage, just makes it happen sooner)

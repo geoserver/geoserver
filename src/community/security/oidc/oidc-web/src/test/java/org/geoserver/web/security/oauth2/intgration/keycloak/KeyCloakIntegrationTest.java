@@ -117,9 +117,16 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         assertEquals("admin@example.com", auth.getPrincipal().getName());
         assertEquals("admin@example.com", auth.getName());
 
-        assertEquals(
-                "ROLE_AUTHENTICATED",
-                auth.getAuthorities().stream().toList().get(0).getAuthority());
+        assertEquals(2, auth.getAuthorities().size());
+        assertEquals(2, auth.getPrincipal().getAuthorities().size());
+        assertTrue(auth.getAuthorities().stream()
+                .map(x -> x.getAuthority())
+                .toList()
+                .contains("ROLE_AUTHENTICATED"));
+        assertTrue(auth.getAuthorities().stream()
+                .map(x -> x.getAuthority())
+                .toList()
+                .contains("ROLE_ADMINISTRATOR"));
 
         assertEquals("admin", auth.getPrincipal().getAttributes().get("preferred_username"));
         assertEquals("gs-client", auth.getPrincipal().getAttributes().get("azp"));
@@ -154,9 +161,12 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         assertEquals("user_sample1@example.com", auth.getPrincipal().getName());
         assertEquals("user_sample1@example.com", auth.getName());
 
-        assertEquals(
-                "ROLE_AUTHENTICATED",
-                auth.getAuthorities().stream().toList().get(0).getAuthority());
+        assertEquals(1, auth.getAuthorities().size());
+        assertEquals(1, auth.getPrincipal().getAuthorities().size());
+        assertTrue(auth.getAuthorities().stream()
+                .map(x -> x.getAuthority())
+                .toList()
+                .contains("ROLE_AUTHENTICATED"));
 
         assertEquals("user_sample1", auth.getPrincipal().getAttributes().get("preferred_username"));
         assertEquals("gs-client", auth.getPrincipal().getAttributes().get("azp"));
@@ -396,6 +406,12 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         filterConfig.setOidcUserNameAttribute("email");
         filterConfig.setRoleSource(GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.IdToken);
         filterConfig.setTokenRolesClaim("roles");
+
+        // setup roles extraction
+        filterConfig.setRoleSource(GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.IdToken);
+        filterConfig.setRoleConverterString("geoserverAdmin=ROLE_ADMINISTRATOR");
+        filterConfig.setOnlyExternalListedRoles(true);
+        filterConfig.setTokenRolesClaim("resource_access.gs-client.roles");
 
         filterConfig.setOidcForceAuthorizationUriHttps(false);
         filterConfig.setOidcForceTokenUriHttps(false);

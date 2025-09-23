@@ -111,6 +111,10 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     private String postLogoutRedirectUri;
     private boolean enableRedirectAuthenticationEntryPoint;
 
+    // for role extraction
+    private String roleConverterString;
+    private boolean onlyExternalListedRoles;
+
     public GeoServerOAuth2LoginFilterConfig() {
         this.postLogoutRedirectUri = createPostLogoutRedirectUri();
         this.calculateRedirectUris();
@@ -575,5 +579,21 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     /** @param pJwsAlgorithmName the jwsAlgorithmName to set */
     public void setOidcJwsAlgorithmName(String pJwsAlgorithmName) {
         oidcJwsAlgorithmName = pJwsAlgorithmName;
+    }
+
+    public String getRoleConverterString() {
+        return roleConverterString;
+    }
+
+    public void setRoleConverterString(String roleConverterString) {
+        this.roleConverterString = roleConverterString;
+    }
+
+    public boolean isOnlyExternalListedRoles() {
+        return onlyExternalListedRoles;
+    }
+
+    public void setOnlyExternalListedRoles(boolean onlyExternalListedRoles) {
+        this.onlyExternalListedRoles = onlyExternalListedRoles;
     }
 }

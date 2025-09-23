@@ -75,6 +75,20 @@ public class ColorMapLabelMatcherTest {
         assertNull(label);
     }
 
+    @Test
+    public void testLabelMatchColorMapWithEnv() throws IOException {
+        Style style = readSLD("labelInFeatureInfoWithEnv.sld", getClass());
+        ColorMapLabelMatcherExtractor extractor = new ColorMapLabelMatcherExtractor(1091957.546931);
+        style.accept(extractor);
+        ColorMapLabelMatcher lifi = extractor.getColorMapLabelMatcherList().get(0);
+        String label = lifi.getLabelForPixel(-5);
+        assertEquals("LowerRange", label);
+        label = lifi.getLabelForPixel(10);
+        assertEquals("MidRange", label);
+        label = lifi.getLabelForPixel(100);
+        assertEquals("HigherRange", label);
+    }
+
     static Style readSLD(String sldName, Class<?> context) throws IOException {
         StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
         SLDParser stylereader = new SLDParser(styleFactory, context.getResource(sldName));

@@ -7,6 +7,7 @@ package org.geoserver.wms.legendgraphic;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +16,11 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
 import org.geotools.api.style.ColorMap;
 import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLD;
 import org.geotools.styling.StyleBuilder;
+import org.geotools.xml.styling.SLDParser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -221,5 +225,53 @@ public class RasterLegendBuilderTest {
         midRow = rows.get(1);
         assertEquals(colourToTest, midRow.getColorManager().borderColor);
         assertEquals(colourToTest, midRow.getRuleManager().borderColor);
+    }
+
+    @Test
+    /** Test that the legend is correctly built when env variables are used but no values are specified */
+    public void testLegendWithEnvDefaultValues() throws IOException {
+        Style style = readSLD("ColorMapWithEnv.sld");
+
+        RasterLayerLegendHelper helper = new RasterLayerLegendHelper(request, style, null);
+        List<ColorMapEntryLegendBuilder> rows =
+                new ArrayList<>(helper.getcMapLegendCreator().getBodyRows());
+        assertEquals(3, rows.size());
+        ColorMapEntryLegendBuilder firstRow = rows.get(0);
+        // First entry has 0.5 opacity so a black color with half transparency
+        Color halfTransparentBlack = new Color(0, 0, 0, 127);
+        assertEquals(halfTransparentBlack, firstRow.get(0).bkgColor);
+        // Default value for quantity env is 0.0 so the text should be built accordingly
+        assertEquals("x < 0.0", firstRow.get(1).text);
+        // First entry has hardcoded label "Low"
+        assertEquals("Low", firstRow.get(2).text);
+
+        ColorMapEntryLegendBuilder midRow = rows.get(1);
+        // Second entry has env variable for color but no value specified,
+        // with default set to green. So a green with half transparency
+        // due to the 0.5 opacity hardcoded in the SLD
+        Color halfTransparentGreen = new Color(0, 255, 0, 127);
+        assertEquals(halfTransparentGreen, midRow.get(0).bkgColor);
+        // Default value for quantity env is 100.0
+        assertEquals("0.0 <= x < 100.0", midRow.get(1).text);
+        // Second entry has env variable for label but no value specified,
+        // with default value of "Nominal"
+        assertEquals("Nominal", midRow.get(2).text);
+
+        ColorMapEntryLegendBuilder lastRow = rows.get(2);
+        // Third entry has env variable for opacity but no value specified,
+        // with default set to 1, so fully opaque
+        assertEquals(Color.RED, lastRow.get(0).bkgColor);
+        // Default value for quantity env is 1000.0
+        assertEquals("100.0 <= x < 1000.0", lastRow.get(1).text);
+        assertEquals("High", lastRow.get(2).text);
+    }
+
+    private Style readSLD(String sldName) throws IOException {
+        StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
+        SLDParser stylereader = new SLDParser(styleFactory, getClass().getResource(sldName));
+        Style[] readStyles = stylereader.readXML();
+
+        Style style = readStyles[0];
+        return style;
     }
 }

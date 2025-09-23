@@ -7,6 +7,7 @@ package org.geoserver.wms.featureinfo;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.geoserver.wms.legendgraphic.LegendUtils;
 import org.geotools.api.style.ColorMap;
 import org.geotools.api.style.ColorMapEntry;
 
@@ -70,21 +71,22 @@ class ColorMapLabelMatcher {
         String label = null;
         for (int i = 0; i < entries.length; i++) {
             ColorMapEntry current = entries[i];
-            double currentVal = current.getQuantity().evaluate(null, Double.class);
+            double currentVal = LegendUtils.getQuantity(current);
+            String currentLabel = LegendUtils.getLabel(current);
             if (i == 0 && pixel <= currentVal) {
-                label = current.getLabel();
+                label = currentLabel;
                 break;
             } else if (pixel <= currentVal) {
                 // matching with the nearest value
                 ColorMapEntry prev = entries[i - 1];
-                double prevValue = prev.getQuantity().evaluate(null, Double.class);
+                double prevValue = LegendUtils.getQuantity(prev);
                 double diffWithCurr = Math.abs(pixel - currentVal);
                 double diffWithPrev = Math.abs(pixel - prevValue);
-                if (diffWithCurr < diffWithPrev) label = current.getLabel();
-                else label = prev.getLabel();
+                if (diffWithCurr < diffWithPrev) label = currentLabel;
+                else label = LegendUtils.getLabel(prev);
                 break;
             } else if (i == entries.length - 1 && pixel > currentVal) {
-                label = current.getLabel();
+                label = currentLabel;
             }
         }
         return label;
@@ -93,9 +95,9 @@ class ColorMapLabelMatcher {
     private String getLabelForPixelValue(double pixel, ColorMapEntry[] entries) {
         String label = null;
         for (ColorMapEntry entry : entries) {
-            double quantity = entry.getQuantity().evaluate(null, Double.class);
+            double quantity = LegendUtils.getQuantity(entry);
             if (pixel == quantity) {
-                label = entry.getLabel();
+                label = LegendUtils.getLabel(entry);
                 break;
             }
         }
@@ -107,13 +109,13 @@ class ColorMapLabelMatcher {
         for (int i = 1; i < entries.length; i++) {
             ColorMapEntry current = entries[i];
             ColorMapEntry prev = entries[i - 1];
-            double currentQuantity = current.getQuantity().evaluate(null, Double.class);
-            double prevQuantity = entries[i - 1].getQuantity().evaluate(null, Double.class);
+            double currentQuantity = LegendUtils.getQuantity(current);
+            double prevQuantity = LegendUtils.getQuantity(entries[i - 1]);
             if (i == 1 && pixel < prevQuantity) {
-                label = prev.getLabel();
+                label = LegendUtils.getLabel(prev);
                 break;
             } else if (pixel >= prevQuantity && pixel < currentQuantity) {
-                label = current.getLabel();
+                label = LegendUtils.getLabel(current);
                 break;
             }
             // Raster Symbolizer will not produce results for pixel values > then the last

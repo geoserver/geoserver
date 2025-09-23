@@ -15,7 +15,7 @@ import javax.servlet.ServletInputStream;
 /**
  * Wrap a String up as a ServletInputStream so we can read it multiple times.
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow dwinslow@openplans.org
  */
 public class BufferedRequestStream extends ServletInputStream {
     InputStream myInputStream;

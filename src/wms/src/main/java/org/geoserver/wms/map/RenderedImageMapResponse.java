@@ -32,14 +32,14 @@ import org.geotools.image.palette.InverseColorMapOp;
 import org.springframework.util.Assert;
 
 /**
- * Abstract base class for GetMapProducers that relies in LiteRenderer for creating the raster map and then outputs it
- * in the format they specializes in.
+ * Abstract base class for GetMapProducers that rely on a LiteRenderer for creating the raster map and then outputs it
+ * in the format they specialize in.
  *
  * <p>This class does the job of producing a BufferedImage using geotools LiteRenderer, so it should be enough for a
  * subclass to implement {@linkplain #formatImageOutputStream}
  *
  * <p>Generates a map using the geotools jai rendering classes. Uses the Lite renderer, loading the data on the fly,
- * which is quite nice. Thanks Andrea and Gabriel. The word is that we should eventually switch over to
+ * which is quite nice. Thanks, Andrea and Gabriel. The word is that we should eventually switch over to
  * StyledMapRenderer and do some fancy stuff with caching layers, but I think we are a ways off with its maturity to try
  * that yet. So Lite treats us quite well, as it is stateless and therefore loads up nice and fast.
  *
@@ -85,7 +85,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
      * Writes the image to the given destination.
      *
      * @param value must be a {@link RenderedImageMap}
-     * @see GetMapOutputFormat#write(org.geoserver.wms.WebMap, OutputStream)
+     * @see GetMapOutputFormat#produceMap(WMSMapContent)
      * @see #formatImageOutputStream(RenderedImage, OutputStream, WMSMapContent)
      */
     @Override

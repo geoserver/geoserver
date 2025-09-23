@@ -24,34 +24,28 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
 /**
- * An implementation of {@link ServiceExceptionHandler} which outputs as service exception in a <code>
- * ServiceExceptionReport</code> document.
+ * An implementation of {@link ServiceExceptionHandler} which outputs as service exception in a
+ * {@code ServiceExceptionReport} document.
  *
  * <p>This handler is referred to as "legacy" as newer services move to the ows style exception report. See
  * {@link org.geoserver.ows.OWS10ServiceExceptionHandler}.
  *
- * <p>
+ * <p><strong>Version</strong>
  *
- * <h3>Version</h3>
+ * <p>By default this exception handler will output a {@code ServiceExceptionReport} which is of version {@code 1.2.0 }.
+ * This may be overridden with {@link #setVersion(String)}.
  *
- * By default this exception handler will output a <code>ServiceExceptionReport</code> which is of version <code>1.2.0
- * </code>. This may be overriden with {@link #setVersion(String)}.
+ * <p><strong>DTD and Schema</strong>
  *
- * <p>
- *
- * <h3>DTD and Schema</h3>
- *
- * By default, no DTD or XML Schema reference will be included in the document. The methods
+ * <p>By default, no DTD or XML Schema reference will be included in the document. The methods
  * {@link #setDTDLocation(String)} and {@link #setSchemaLocation(String)} can be used to override this behaviour. Only
  * one of these methods should be set per instance of this class.
  *
- * <p>The supplied value should be relative, and will be appended to the result of {@link OWS#getSchemaBaseURL()}.
+ * <p>The supplied value should be relative, and will be appended to the result of {@link OWS#getSchemaLocation()} .
  *
- * <p>
+ * <p><strong>Content Type</strong>
  *
- * <h3>Content Type</h3>
- *
- * The default content type for the created document is <code>text/xml</code>, this can be overridden with
+ * <p>The default content type for the created document is {@code text/xml}, this can be overridden with
  * {@link #setContentType(String)}.
  *
  * @author Justin Deoliveira, The Open Planning Project

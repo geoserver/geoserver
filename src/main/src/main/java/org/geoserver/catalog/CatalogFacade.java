@@ -18,7 +18,7 @@ import org.geotools.api.filter.sort.SortBy;
 /**
  * Data access facade for the catalog.
  *
- * @author ETj <etj at geo-solutions.it>
+ * @author ETj etj at geo-solutions.it
  * @author Justin Deoliveira, OpenGeo
  */
 public interface CatalogFacade {
@@ -395,14 +395,13 @@ public interface CatalogFacade {
      * Loads a global layer group from persistent storage by specifying its name.
      *
      * @param name The name of the layer group.
-     *
-     * @return The layer group, or <code>null</code. if it does not exist
+     * @return The layer group, or {@code null}. if it does not exist
      */
     LayerGroupInfo getLayerGroupByName(String name);
 
     /**
-     * Returns the layer group matching a particular name in the specified workspace, or <code>null
-     * </code> if no such layer group could be found.
+     * Returns the layer group matching a particular name in the specified workspace, or {@code null} if no such layer
+     * group could be found.
      *
      * @param workspace The workspace containing the layer group. Not {@code null}, use
      *     {@link DefaultCatalogFacade#NO_WORKSPACE} or {@link DefaultCatalogFacade#ANY_WORKSPACE} to be explicit about
@@ -629,7 +628,7 @@ public interface CatalogFacade {
      * Returns the style matching a particular name in the specified workspace, or {@code null} if no such style could
      * be found.
      *
-     * @param workspace The workspace containing the style; non {@code null}, use {@value #ANY_WORKSPACE} or
+     * @param workspace The workspace containing the style; non {@code null}, use {@link #ANY_WORKSPACE} or
      *     {@link #NO_WORKSPACE} as appropriate.
      * @param name The name of the style to return.
      */

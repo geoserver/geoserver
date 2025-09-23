@@ -14,6 +14,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.web.publish.PublishedEditTabPanel;
+import org.geoserver.web.publish.PublishedEditTabPanelInfo;
 
 /**
  * A contribution to the layer edit page to set up the layer caching options on a separate tab.
@@ -21,7 +22,6 @@ import org.geoserver.web.publish.PublishedEditTabPanel;
  * @author groldan
  * @see GeoServerTileLayerEditor
  * @see PublishedEditTabPanelInfo
- * @see LayerGroupCacheOptionsPanel
  */
 public class LayerCacheOptionsTabPanel extends PublishedEditTabPanel<PublishedInfo> {
 

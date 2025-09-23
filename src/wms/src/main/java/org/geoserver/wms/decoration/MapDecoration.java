@@ -24,7 +24,7 @@ public interface MapDecoration {
      * Load in configuration parameters from a map. All subsequent paint operations should use the provided parameters.
      * Implementations do not need to respect multiple calls to this method.
      *
-     * @param options a Map<String,Expression> containing the configuration parameters
+     * @param options a Map &lt;String,Expression&gt; containing the configuration parameters
      * @throws Exception if required parameters are missing from the configuration
      */
     public void loadOptions(Map<String, Expression> options) throws Exception;
@@ -34,7 +34,7 @@ public interface MapDecoration {
      *
      * @param g2d the Graphics2D context in which this Decoration will be rendered
      * @param mapContent the map context for the request
-     * @throws InvalidStateException if loadOptions() has not been called yet
+     * @throws Exception if loadOptions() has not been called yet
      */
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) throws Exception;
 
@@ -45,7 +45,7 @@ public interface MapDecoration {
      * @param g2d the Graphics2D object onto which the decoration should be drawn
      * @param paintArea the bounds within the graphics object where the decoration should be drawn
      * @param context the mapContent for the image being rendered
-     * @throws InvalidStateException if loadOptions() has not been called yet
+     * @throws Exception if loadOptions() has not been called yet
      */
     public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent context) throws Exception;
 }

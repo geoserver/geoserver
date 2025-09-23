@@ -135,7 +135,7 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     }
 
     /**
-     * If there are multiple ServiceDescriptions (i.e. WMS & OGCAPI-Features) for a Category, then we use the
+     * If there are multiple ServiceDescriptions (i.e. WMS &amp; OGCAPI-Features) for a Category, then we use the
      * descriptionPriority to determine which title to use.
      *
      * <p>In general, the WMS/WCS (etc) services should be high priority. Others, like OGCAPI should be lower.

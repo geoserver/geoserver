@@ -22,7 +22,7 @@ import org.geotools.util.logging.Logging;
 import org.geowebcache.config.XMLGridSubset;
 
 /**
- * Backwards (<= 2.1.3) compatible {@link GeoServerTileLayerInfoImpl} loader.
+ * Backwards (&lt;= 2.1.3) compatible {@link GeoServerTileLayerInfoImpl} loader.
  *
  * @author groldan
  */

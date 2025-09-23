@@ -18,7 +18,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 /**
  * Parses a list of namespace declarations of the form
  * {@code <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> } into a {@link NamespaceSupport}. Using the
- * {@link PrefixNamespaceSeparator#COMMA} it's also possible to handle the WFS 2.0 suggested syntax,
+ * ',' it's also possible to handle the WFS 2.0 suggested syntax,
  * {@code <xmlns(foo,http://name.space1)[,xmlns(bar,http://name.space2)]+> }
  *
  * @author groldan

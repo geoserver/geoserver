@@ -26,8 +26,8 @@ import org.springframework.util.StringUtils;
  *
  * <p>The {@link AuthenticationEntryPoint} is of type {@link DynamicAuthenticationEntryPoint}
  *
- * <p>if {@link ExceptionTranslationFilterConfig#getAuthenticationEntryPointName()} is not empty, use this name for a
- * lookup of an authentication filter and use the entry point of this filter.
+ * <p>if {@link ExceptionTranslationFilterConfig#getAuthenticationFilterName()} is not empty, use this name for a lookup
+ * of an authentication filter and use the entry point of this filter.
  *
  * <p>if the name is empty, use {@link GeoServerSecurityFilter#AUTHENTICATION_ENTRY_POINT_HEADER} as a servlet attribute
  * name. Previous authentication filter should put an entry point in this attribute.

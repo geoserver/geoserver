@@ -71,7 +71,7 @@ public interface KeyStoreProvider {
 
     /**
      * @param serviceName for a {@link org.geoserver.security.GeoServerUserGroupService}
-     * @return the following String {@link #USERGROUP_PREFIX}+serviceName+{@value #USERGROUP_POSTFIX}
+     * @return the following String {@code USERGROUP_PREFIX}+serviceName+{@code USERGROUP_POSTFIX}
      */
     String aliasForGroupService(String serviceName);
 

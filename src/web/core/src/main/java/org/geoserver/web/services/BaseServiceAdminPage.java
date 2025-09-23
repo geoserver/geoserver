@@ -52,22 +52,24 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 /**
  * Base page for service administration pages.
  *
- * <p>Subclasses of this page should contribute form components in the {@link #build(ServiceInfo, Form)} method. Each
+ * <p>Subclasses of this page should contribute form components in the {@link #build(IModel, Form)} method. Each
  * component that is added to the form should have a corresponding markup entry of the following form:
  *
  * <pre>
- * <wicket:extend>
- *   &lt;li>
- *       &lt;span>
- *         &lt;label><wicket:message key="maxFeatures.title">Maximum Features</wicket:message></label>
- *         &lt;input wicket:id="maxFeatures" class="field text" type="text">
- *       &lt;/span>
- *       &lt;p class="instruct">
- *       &lt;/p>
- *     &lt;/li>
+ * &lt;wicket:extend&gt;
+ *   &lt;li&gt;
+ *       &lt;span&gt;
+ *         &lt;label&gt;
+ *            &lt;wicket:message key="maxFeatures.title"&gt;Maximum Features&lt;/wicket:message&gt;
+ *         &lt;/label&gt;
+ *         &lt;input wicket:id="maxFeatures" class="field text" type="text"&gt;
+ *       &lt;/span&gt;
+ *       &lt;p class="instruct"&gt;
+ *       &lt;/p&gt;
+ *     &lt;/li&gt;
  *
- * </wicket:extend>
- *   </pre>
+ * &lt;/wicket:extend&gt;
+ * </pre>
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -79,6 +81,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     protected GeoServerDialog dialog;
     protected List<SerializableConsumer<Void>> onSubmitHooks = new ArrayList<>();
 
+    /** create a page */
     public BaseServiceAdminPage() {
         this(new PageParameters());
     }
@@ -251,7 +254,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     /**
      * Builds the form for the page.
      *
-     * <p>The form uses a {@link CompoundPropertyModel} so in the normal case components do not need a model as its
+     * <p>The form uses a {@link CompoundPropertyModel} so in the normal case components do not need a model as it's
      * inherited from the parent. This means that component id's should match the info bean property they correspond to.
      *
      * @param info The service info object.
@@ -270,7 +273,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         if (info.getId() != null) {
             getGeoServer().save(info);
         }
-        // else means a non attached instance was passed to us, do nothing, up to caller to add it
+        // else means a non-attached instance was passed to us, do nothing, up to caller to add it
         // to configuration
     }
 

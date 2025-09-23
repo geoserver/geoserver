@@ -13,7 +13,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  *
- * Modified by David Winslow <dwinslow@openplans.org> on 2007-12-13.
+ * Modified by David Winslow dwinslow@openplans.org on 2007-12-13.
  */
 package org.geoserver.filters;
 

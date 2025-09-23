@@ -88,7 +88,7 @@ public class MapDecorationLayout {
             /**
              * Decode a Position from a (presumably user-provided) string.
              *
-             * @param str the input String, expected to be in the format <vpos,hpos> with no whitespace
+             * @param str the input String, expected to be in the format &lt;vpos,hpos&gt; with no whitespace
              * @return the associated Position, or null if none can be found
              */
             public static Position fromString(String str) {

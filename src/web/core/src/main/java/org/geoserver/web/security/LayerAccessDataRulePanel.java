@@ -9,16 +9,12 @@ import java.util.List;
 import java.util.Set;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.web.publish.PublishedEditTabPanel;
 
 public class LayerAccessDataRulePanel extends PublishedEditTabPanel<PublishedInfo> {
-    /**
-     * @param id The id given to the panel.
-     * @param model The model for the panel which wraps a {@link LayerInfo} instance.
-     */
+
     private AccessDataRulePanel dataAccessPanel;
 
     private IModel<List<DataAccessRuleInfo>> ownModel;

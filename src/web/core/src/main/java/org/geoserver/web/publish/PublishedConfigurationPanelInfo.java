@@ -12,7 +12,7 @@ import org.geoserver.web.ComponentInfo;
 /**
  * Extension point for sections of the configuration pages for layers/layergroups.
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow dwinslow@openplans.org
  * @author Niels Charlier
  */
 public abstract class PublishedConfigurationPanelInfo<T extends PublishedInfo>

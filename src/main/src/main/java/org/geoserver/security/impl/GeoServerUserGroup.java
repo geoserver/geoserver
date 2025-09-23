@@ -8,11 +8,7 @@ package org.geoserver.security.impl;
 import java.io.Serial;
 import java.io.Serializable;
 
-/**
- * Implementation of {@link UserGroup}
- *
- * @author christian
- */
+/** @author christian */
 public class GeoServerUserGroup implements Comparable<GeoServerUserGroup>, Serializable {
 
     @Serial

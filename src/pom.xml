@@ -1513,7 +1513,8 @@
           <quiet>true</quiet>
           <maxmemory>512M</maxmemory>
           <encoding>UTF-8</encoding>
-          <failOnError>false</failOnError>
+          <failOnError>true</failOnError>
+          <failOnWarnings>true</failOnWarnings>
           <!-- Set an additional parameter for the javac command call. -->
           <doclint>none</doclint>
           <breakiterator>true</breakiterator>

@@ -29,11 +29,11 @@ import org.geotools.ows.v2_0.OWSConfiguration;
 import org.geotools.xsd.Encoder;
 
 /**
- * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in a <code>
- * ows:ExceptionReport</code> document.
+ * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in a
+ * {@code ows:ExceptionReport} document.
  *
- * <p>This service exception handler will generate an OWS exception report, see
- * {@linkplain "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd"}.
+ * <p>This service exception handler will generate an OWS exception report, see <a
+ * href="http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd">owsExceptionReport.xsd </a>.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

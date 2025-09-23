@@ -78,7 +78,6 @@ import org.springframework.util.Assert;
  */
 public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServerOAuth2ClientRegistrationId {
 
-
     public static final String DEFAULT_AUTHORIZATION_REQUEST_BASE_URI = "web/oauth2/authorization/";
 
     /** Filter types required for GeoServer */

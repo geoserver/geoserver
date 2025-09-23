@@ -184,7 +184,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
                         lRoles = asStringList(JwtHeaderUserNameExtractor.getClaim(claims, lClaimName));
                     }
                 } catch (ParseException e) {
-                    LOGGER.log(INFO, "could not parse Access Token as JWT!", e); // likely not a JWT
+                    LOGGER.log(INFO, "could not parse Access Token as JWT!"); // likely not a JWT
                 }
             }
         }

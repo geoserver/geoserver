@@ -58,6 +58,7 @@ public class DiscoveryClient {
         Optional.ofNullable(response.get(SCOPES_SUPPORTED)).ifPresent(s -> {
             @SuppressWarnings("unchecked")
             List<String> scopes = (List<String>) s;
+            scopes.remove("service_account"); // in keycloak this causes problems...
             conf.setOidcScopes(collectScopes(scopes));
         });
     }

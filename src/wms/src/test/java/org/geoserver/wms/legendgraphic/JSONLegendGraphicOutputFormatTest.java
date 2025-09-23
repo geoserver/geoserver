@@ -753,6 +753,71 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         assertEquals("[\"${0.25*2}\"]", colorMap.getJSONObject(2).getString(JSONLegendGraphicBuilder.OPACITY));
     }
 
+    @Test
+    /** test that a ColorMap with env() expressions is properly handled and reported in the JSON legend */
+    public void testColorMapWithEnvDefault() throws Exception {
+        Style style = readSLD("ColorMapWithEnv.sld");
+        assertNotNull(style.featureTypeStyles());
+        assertEquals(1, style.featureTypeStyles().size());
+        FeatureTypeStyle fts = style.featureTypeStyles().get(0);
+        assertNotNull(fts.rules());
+        assertEquals(1, fts.rules().size());
+        Rule rule = fts.rules().get(0);
+        assertNotNull(rule.symbolizers());
+        assertEquals(1, rule.symbolizers().size());
+        assertTrue(rule.symbolizers().get(0) instanceof RasterSymbolizer);
+        RasterSymbolizer symbolizer = (RasterSymbolizer) rule.symbolizers().get(0);
+        assertNotNull(symbolizer.getColorMap());
+        assertEquals(3, symbolizer.getColorMap().getColorMapEntries().length);
+        ColorMapEntry[] entries = symbolizer.getColorMap().getColorMapEntries();
+
+        Color color = LegendUtils.color(entries[0]);
+        int red = color.getRed();
+        assertEquals(0, red);
+        int green = color.getGreen();
+        assertEquals(0, green);
+        int blue = color.getBlue();
+        assertEquals(0, blue);
+
+        double quantity = LegendUtils.getQuantity(entries[0]);
+        assertEquals(0.0, quantity, 0.0);
+
+        double opacity = LegendUtils.getOpacity(entries[0]);
+        assertEquals(0.5, opacity, 0.0);
+
+        GetLegendGraphicRequest req = getRequest();
+        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
+        assertNotNull(cInfo);
+
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+        req.setLayer(feature.getSchema());
+        req.setStyle(style);
+        req.setLegendOptions(new HashMap<>());
+
+        JSONObject result = this.legendProducer.buildLegendGraphic(req);
+
+        // was the legend painted?
+        assertNotEmpty(result);
+        JSONArray lx = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
+        assertEquals(1, lx.size());
+        // rule 1 is a mark
+        JSONObject rasterSymb = lx.getJSONObject(0)
+                .getJSONArray(JSONLegendGraphicBuilder.RULES)
+                .getJSONObject(0)
+                .getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS)
+                .getJSONObject(0)
+                .getJSONObject(JSONLegendGraphicBuilder.RASTER);
+
+        JSONArray colorMap = rasterSymb
+                .getJSONObject(JSONLegendGraphicBuilder.COLORMAP)
+                .getJSONArray(JSONLegendGraphicBuilder.ENTRIES);
+        assertEquals("#000000", colorMap.getJSONObject(0).get(JSONLegendGraphicBuilder.COLOR));
+        assertEquals(
+                "[\'${env(''minimum'', 0)}\']", colorMap.getJSONObject(0).getString(JSONLegendGraphicBuilder.QUANTITY));
+        assertEquals("0.5", colorMap.getJSONObject(0).getString(JSONLegendGraphicBuilder.OPACITY));
+    }
+
     /**
      * Test that the legend is not the same if there is a rendering transformation that converts the rendered layer from
      * vector to raster

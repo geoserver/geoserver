@@ -452,14 +452,13 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         JSONArray entries = new JSONArray();
         for (ColorMapEntry entry : colorMap.getColorMapEntries()) {
             JSONObject ent = new JSONObject();
-            final Double qty = entry.getQuantity().evaluate(null, Double.class);
+            final double qty = LegendUtils.getQuantity(entry);
             if (colorMap.getType() == ColorMap.TYPE_INTERVALS && first && qty < 0 && Double.isInfinite(qty)) {
                 continue;
             }
             first = false;
-            ent.element(LABEL, entry.getLabel());
+            ent.element(LABEL, LegendUtils.getLabel(entry));
             ent.element(QUANTITY, toJSONValue(entry.getQuantity(), Number.class));
-
             ent.element(COLOR, toJSONValue(entry.getColor(), Color.class));
 
             Expression opac = entry.getOpacity();

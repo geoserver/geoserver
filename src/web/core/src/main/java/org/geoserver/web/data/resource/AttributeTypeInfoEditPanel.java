@@ -291,6 +291,7 @@ public class AttributeTypeInfoEditPanel extends Panel {
     private AjaxButton createRemoveOptionButton() {
         return new AjaxButton("removeOption") {
             @Override
+            @SuppressWarnings("unchecked")
             public void onSubmit(AjaxRequestTarget target) {
                 Collection<Object> selection = optionsListMultipleChoice.getModelObject();
                 List<Object> choices = (List<Object>) optionsListMultipleChoice.getChoices();
@@ -307,6 +308,7 @@ public class AttributeTypeInfoEditPanel extends Panel {
     private AjaxButton createAddOptionButton() {
         return new AjaxButton("addOption") {
             @Override
+            @SuppressWarnings("unchecked")
             public void onSubmit(AjaxRequestTarget target) {
                 String newOptionValue = newOptionTextField.getInput();
                 if (newOptionValue != null && !newOptionValue.isBlank()) {
@@ -338,6 +340,7 @@ public class AttributeTypeInfoEditPanel extends Panel {
         rangeContainer.add(rangeMinTextField, rangeMaxTextField);
     }
 
+    @SuppressWarnings("unchecked")
     private void initRangeTextFields() {
         Number minValue = 0;
         Number maxValue = 0;
@@ -349,11 +352,11 @@ public class AttributeTypeInfoEditPanel extends Panel {
             maxValue = range.getMaxValue();
         }
 
-        rangeMinTextField = new NumberTextField<>("rangeMin", new Model(minValue), (Class) object.getBinding());
+        rangeMinTextField = new NumberTextField("rangeMin", new Model<>(minValue), object.getBinding());
         rangeMinTextField.setOutputMarkupId(true);
         rangeMinTextField.setLabel(new StringResourceModel("AttributeTypeInfoEditPanel.minInclusive"));
 
-        rangeMaxTextField = new NumberTextField<>("rangeMax", new Model(maxValue), (Class) object.getBinding());
+        rangeMaxTextField = new NumberTextField("rangeMax", new Model<>(maxValue), object.getBinding());
         rangeMaxTextField.setOutputMarkupId(true);
         rangeMaxTextField.setLabel(new StringResourceModel("AttributeTypeInfoEditPanel.maxInclusive"));
     }
@@ -415,6 +418,7 @@ public class AttributeTypeInfoEditPanel extends Panel {
         return feedbackPanel;
     }
 
+    @SuppressWarnings("unchecked")
     public void finalizeAttributeValues() {
 
         if (ifBindingHasBeenChanged()) {
@@ -445,6 +449,7 @@ public class AttributeTypeInfoEditPanel extends Panel {
      * Since object range is not tied with the range fields models, this method creates a new {@link NumberRange} typed
      * as per the specified {@link #typeTextField}' model.
      */
+    @SuppressWarnings("unchecked")
     private NumberRange<? extends Number> createRangeFromRangeFields() {
         Class<?> type = typeTextField.getModelObject();
 

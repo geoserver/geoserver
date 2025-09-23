@@ -20,6 +20,7 @@ import org.junit.Test;
 
 public class AttributeTypeInfoEditPanelTest extends GeoServerWicketTestSupport {
     @Test
+    @SuppressWarnings("unchecked")
     public void testRestrictionType() {
 
         AttributeTypeInfoImpl model = new AttributeTypeInfoImpl();
@@ -62,6 +63,7 @@ public class AttributeTypeInfoEditPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testRestrictionTypeOptions() {
 
         AttributeTypeInfoImpl model = new AttributeTypeInfoImpl();
@@ -106,6 +108,7 @@ public class AttributeTypeInfoEditPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testRestrictionTypeOptionsComponents() {
 
         AttributeTypeInfoImpl model = new AttributeTypeInfoImpl();
@@ -159,6 +162,7 @@ public class AttributeTypeInfoEditPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testRestrictionTypeRange() {
 
         AttributeTypeInfoImpl model = new AttributeTypeInfoImpl();
@@ -201,6 +205,7 @@ public class AttributeTypeInfoEditPanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testRestrictionTypeRangeComponents() {
 
         AttributeTypeInfoImpl model = new AttributeTypeInfoImpl();
@@ -215,7 +220,6 @@ public class AttributeTypeInfoEditPanelTest extends GeoServerWicketTestSupport {
         tester.startComponentInPage(dialog);
 
         String attributeForm = "dialog:attributeForm";
-        FormTester form = tester.newFormTester(attributeForm);
 
         // assert restrictions visible
         tester.assertVisible(attributeForm + ":restrictionsContainer");

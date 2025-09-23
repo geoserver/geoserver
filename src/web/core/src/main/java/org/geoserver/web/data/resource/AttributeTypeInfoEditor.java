@@ -213,6 +213,7 @@ class AttributeTypeInfoEditor extends Panel {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private String composeDetailsText(AttributeTypeInfo attributeTypeInfo) {
         StringBuilder labelText = new StringBuilder();
 

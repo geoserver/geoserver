@@ -22,6 +22,7 @@ import org.geotools.api.filter.PropertyIsGreaterThanOrEqualTo;
 import org.geotools.api.filter.PropertyIsLessThanOrEqualTo;
 import org.geotools.filter.visitor.AbstractFilterVisitor;
 
+@SuppressWarnings("unchecked")
 public class RestrictionToXSDConstrainingFacetVisitor extends AbstractFilterVisitor {
     private final XSDFactory factory;
 

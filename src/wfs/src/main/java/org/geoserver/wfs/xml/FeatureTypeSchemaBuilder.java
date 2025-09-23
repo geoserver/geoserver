@@ -866,8 +866,7 @@ public abstract class FeatureTypeSchemaBuilder {
                 simple.setBaseTypeDefinition(element.getTypeDefinition().getSimpleType());
                 EList<XSDConstrainingFacet> facets = simple.getFacetContents();
                 restrictions.stream()
-                        .map(r -> (List<XSDConstrainingFacet>)
-                                r.accept(restrictionsVisitor, new ArrayList<XSDConstrainingFacet>()))
+                        .map(filter -> facetsFromFilter(filter, restrictionsVisitor))
                         .forEach(facets::addAll);
 
                 element.setAnonymousTypeDefinition(simple);
@@ -875,6 +874,12 @@ public abstract class FeatureTypeSchemaBuilder {
         });
 
         return xsdComplexType;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<XSDConstrainingFacet> facetsFromFilter(
+            Filter filter, RestrictionToXSDConstrainingFacetVisitor restrictionsVisitor) {
+        return (List<XSDConstrainingFacet>) filter.accept(restrictionsVisitor, new ArrayList<>());
     }
 
     XSDTypeDefinition resolveTypeInSchema(XSDSchema schema, Name typeName) {

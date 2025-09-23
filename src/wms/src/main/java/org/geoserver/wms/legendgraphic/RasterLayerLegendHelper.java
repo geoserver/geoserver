@@ -198,7 +198,7 @@ public class RasterLayerLegendHelper {
                     if (ce == null) {
                         continue;
                     }
-                    final Double qty = ce.getQuantity().evaluate(null, Double.class);
+                    final double qty = LegendUtils.getQuantity(ce);
                     if (cmap.getType() == ColorMap.TYPE_INTERVALS && first && qty < 0 && Double.isInfinite(qty)) {
                         continue;
                     }

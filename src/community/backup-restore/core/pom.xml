@@ -15,7 +15,7 @@
   <name>GeoServer Config Backup And Restore Core Module</name>
 
   <properties>
-    <spring.batch.version>3.0.7.RELEASE</spring.batch.version>
+    <spring.batch.version>3.0.10.RELEASE</spring.batch.version>
   </properties>
 
   <dependencies>

@@ -59,6 +59,7 @@ officially part of the GeoServer releases. They are however built along with the
    oauth2/index
    ogc-api/index
    ogr-store/index
+   oidc/index
    opensearch-eo/index
    proxy-base-ext/index
    remote-wps/index

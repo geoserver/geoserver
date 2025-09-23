@@ -72,7 +72,7 @@ public final class ExtraFileHandler implements GenericTaskletHandler {
                 IOUtils.copy(input, output);
             } catch (Exception exception) {
                 throw new RuntimeException(
-                        String.format("Error copying file '%s' to file '%s'.", inputFile, outputFile), exception);
+                        "Error copying file '%s' to file '%s'.".formatted(inputFile, outputFile), exception);
             }
         }
     }

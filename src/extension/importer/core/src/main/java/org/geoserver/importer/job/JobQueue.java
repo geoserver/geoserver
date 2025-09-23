@@ -50,15 +50,15 @@ public class JobQueue {
 
                 @Override
                 protected void beforeExecute(Thread t, Runnable r) {
-                    if (t != null && r instanceof Task) {
-                        ((Task) r).started();
+                    if (t != null && r instanceof Task task) {
+                        task.started();
                     }
                 }
 
                 @Override
                 protected void afterExecute(Runnable r, Throwable t) {
-                    if (t != null && r instanceof Task) {
-                        ((Task) r).setError(t);
+                    if (t != null && r instanceof Task task) {
+                        task.setError(t);
                     }
                 }
             };

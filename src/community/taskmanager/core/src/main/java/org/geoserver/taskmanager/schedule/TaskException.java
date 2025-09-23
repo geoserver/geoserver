@@ -4,6 +4,8 @@
  */
 package org.geoserver.taskmanager.schedule;
 
+import java.io.Serial;
+
 /**
  * Whenever a tasks fails to run, commit, rollback or clean this exception is called.
  *
@@ -11,6 +13,7 @@ package org.geoserver.taskmanager.schedule;
  */
 public class TaskException extends Exception {
 
+    @Serial
     private static final long serialVersionUID = 2357752792499129080L;
 
     public TaskException(String message) {

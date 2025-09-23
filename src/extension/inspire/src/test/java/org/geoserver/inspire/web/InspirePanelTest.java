@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -532,6 +533,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
         ServiceModel model = new ServiceModel(WFSInfo.class);
 
         tester.startPage(new FormTestPage(new ComponentBuilder() {
+            @Serial
             private static final long serialVersionUID = -5996984687607456244L;
 
             @Override
@@ -579,6 +581,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
     /** LoadableDetachable Service model like in real life */
     private class ServiceModel extends LoadableDetachableModel<ServiceInfo> {
 
+        @Serial
         private static final long serialVersionUID = 7281859913779496011L;
 
         /* reference via local workspace */

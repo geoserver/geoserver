@@ -34,7 +34,7 @@ public class OwsUtils {
      *
      * @param object The target object.
      * @param property The property to set.
-     * @param value The value to set, may be <code>null</code>.
+     * @param value The value to set, may be {@code null}.
      * @throws IllegalArgumentException If no such property exists.
      * @throws RuntimeException If an error occurs setting the property
      * @throws NullPointerException If the property specifies a property that results in null.
@@ -87,13 +87,13 @@ public class OwsUtils {
     /**
      * Returns a setter method for a property of java bean.
      *
-     * <p>The <tt>type</tt> parameter may be <code>null</code> to indicate the setter for the property should be
-     * returned regardless of the type. If not null it will be used to filter the returned method.
+     * <p>The <tt>type</tt> parameter may be {@code null} to indicate the setter for the property should be returned
+     * regardless of the type. If not null it will be used to filter the returned method.
      *
      * @param clazz The type of the bean.
      * @param property The property name.
-     * @param type The type of the property, may be <code>null</code>.
-     * @return The setter method, or <code>null</code> if not found.
+     * @param type The type of the property, may be {@code null}.
+     * @return The setter method, or {@code null} if not found.
      */
     public static Method setter(Class<?> clazz, String property, Class<?> type) {
         return classProperties(clazz).setter(property, type);
@@ -174,7 +174,7 @@ public class OwsUtils {
      * @param clazz The type of the bean.
      * @param property The property name.
      * @param type The type of the property, may be null.
-     * @return The setter method, or <code>null</code> if not found.
+     * @return The setter method, or {@code null} if not found.
      */
     public static Method getter(Class<?> clazz, String property, Class<?> type) {
         return classProperties(clazz).getter(property, type);
@@ -208,7 +208,7 @@ public class OwsUtils {
      *
      * @param clazz The class
      * @param name The name of the method.
-     * @return The method, or <code>null</code> if it could not be found.
+     * @return The method, or {@code null} if it could not be found.
      */
     public static Method method(Class<?> clazz, String name) {
         return classProperties(clazz).method(name);
@@ -219,7 +219,7 @@ public class OwsUtils {
      *
      * @param parameters A list of objects, of various types.
      * @param type The type of paramter to be returned.
-     * @return The object of the specified type, or <code>null</code>
+     * @return The object of the specified type, or {@code null}
      */
     @SuppressWarnings("unchecked")
     public static <T> T parameter(Object[] parameters, Class<T> type) {
@@ -242,8 +242,8 @@ public class OwsUtils {
             if (message != null && !"".equals(message)) {
                 if (xmlEscape) s.append(ResponseUtils.encodeXML(message));
                 else s.append(message);
-                if (ex instanceof ServiceException) {
-                    for (String value : ((ServiceException) ex).getExceptionText()) {
+                if (ex instanceof ServiceException exception) {
+                    for (String value : exception.getExceptionText()) {
                         s.append("\n");
                         String msg = value;
                         if (!lastMessage.equals(msg)) {

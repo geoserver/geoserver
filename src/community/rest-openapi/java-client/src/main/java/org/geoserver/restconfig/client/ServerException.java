@@ -1,10 +1,12 @@
 package org.geoserver.restconfig.client;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Map;
 import lombok.Getter;
 
 public class ServerException extends RuntimeException {
+    @Serial
     private static final long serialVersionUID = 220100165000333400L;
 
     private @Getter int status;
@@ -13,7 +15,7 @@ public class ServerException extends RuntimeException {
     private @Getter String request;
 
     public ServerException(int status, String reason, Map<String, Collection<String>> headers, String request) {
-        super(String.format("Status %d: %s\nRequest: %s", status, reason, request));
+        super("Status %d: %s\nRequest: %s".formatted(status, reason, request));
         this.status = status;
         this.reason = reason;
         this.responseHeaders = headers;
@@ -21,7 +23,7 @@ public class ServerException extends RuntimeException {
     }
 
     public @Override String toString() {
-        return String.format("%s\n------\nERROR: %d '%s'\nHeaders: %s", request, status, reason, responseHeaders);
+        return "%s\n------\nERROR: %d '%s'\nHeaders: %s".formatted(request, status, reason, responseHeaders);
     }
 
     public static ServerException of(

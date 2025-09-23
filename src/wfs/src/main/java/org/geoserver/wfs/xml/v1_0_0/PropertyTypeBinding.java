@@ -101,8 +101,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
             Object object = node.getChildValue("Value");
 
             // check for a map
-            if (object instanceof Map) {
-                Map map = (Map) object;
+            if (object instanceof Map map) {
 
                 // this means a complex element parsed by xs:AnyType binding
                 // try to pull out some text

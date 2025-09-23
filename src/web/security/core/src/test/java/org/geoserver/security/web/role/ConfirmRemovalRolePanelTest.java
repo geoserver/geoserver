@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.role;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
@@ -15,12 +16,14 @@ import org.geoserver.web.FormTestPage;
 import org.junit.Test;
 
 public class ConfirmRemovalRolePanelTest extends AbstractConfirmRemovalPanelTest<GeoServerRole> {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override
     protected void setupPanel(final List<GeoServerRole> roots) {
 
         tester.startPage(new FormTestPage(new ComponentBuilder() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -33,6 +36,7 @@ public class ConfirmRemovalRolePanelTest extends AbstractConfirmRemovalPanelTest
                         return link.canRemove(data);
                     }
 
+                    @Serial
                     private static final long serialVersionUID = 1L;
                 };
             }

@@ -266,7 +266,7 @@ public abstract class GeoServerLoader {
     public final Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof Catalog) {
             // ensure this is not a wrapper but the real deal
-            if (bean instanceof Wrapper && ((Wrapper) bean).isWrapperFor(Catalog.class)) {
+            if (bean instanceof Wrapper wrapper && wrapper.isWrapperFor(Catalog.class)) {
                 return bean;
             }
             postProcessBeforeInitializationCatalog(bean);
@@ -539,7 +539,7 @@ public abstract class GeoServerLoader {
                     try {
                         ws = depersist(xp, wc.contents, WorkspaceInfo.class);
                         catalog.add(ws);
-                        LOGGER.log(Level.CONFIG, () -> String.format("Loaded workspace '%s'", ws.getName()));
+                        LOGGER.log(Level.CONFIG, () -> "Loaded workspace '%s'".formatted(ws.getName()));
                     } catch (Exception e) {
                         LOGGER.log(Level.WARNING, "Failed to load workspace '" + workspaceResource.name() + "'", e);
                         continue;
@@ -1047,16 +1047,17 @@ public abstract class GeoServerLoader {
     }
 
     protected void logStop(Stopwatch stoppedSw, final Catalog catalog) {
-        Supplier<String> msg = () -> String.format(
-                "Read Catalog in %s: workspaces: %,d, namespaces: %,d, styles: %,d, stores: %,d, resources: %,d, layers: %,d, layer groups: %,d.",
-                stoppedSw,
-                catalog.count(WorkspaceInfo.class, Predicates.acceptAll()),
-                catalog.count(NamespaceInfo.class, Predicates.acceptAll()),
-                catalog.count(StyleInfo.class, Predicates.acceptAll()),
-                catalog.count(StoreInfo.class, Predicates.acceptAll()),
-                catalog.count(ResourceInfo.class, Predicates.acceptAll()),
-                catalog.count(LayerInfo.class, Predicates.acceptAll()),
-                catalog.count(LayerGroupInfo.class, Predicates.acceptAll()));
+        Supplier<String> msg = () ->
+                "Read Catalog in %s: workspaces: %,d, namespaces: %,d, styles: %,d, stores: %,d, resources: %,d, layers: %,d, layer groups: %,d."
+                        .formatted(
+                                stoppedSw,
+                                catalog.count(WorkspaceInfo.class, Predicates.acceptAll()),
+                                catalog.count(NamespaceInfo.class, Predicates.acceptAll()),
+                                catalog.count(StyleInfo.class, Predicates.acceptAll()),
+                                catalog.count(StoreInfo.class, Predicates.acceptAll()),
+                                catalog.count(ResourceInfo.class, Predicates.acceptAll()),
+                                catalog.count(LayerInfo.class, Predicates.acceptAll()),
+                                catalog.count(LayerGroupInfo.class, Predicates.acceptAll()));
         LOGGER.info(msg);
     }
 }

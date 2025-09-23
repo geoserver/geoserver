@@ -87,9 +87,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         // only intercepting getLegendGraphic invokation
         if (id.equalsIgnoreCase("getLegendGraphic")) {
             final Object[] params = operation.getParameters();
-            if (params != null && params.length > 0 && params[0] instanceof GetLegendGraphicRequest) {
-
-                final GetLegendGraphicRequest getLegendRequest = (GetLegendGraphicRequest) params[0];
+            if (params != null && params.length > 0 && params[0] instanceof GetLegendGraphicRequest getLegendRequest) {
 
                 try {
                     for (LegendRequest legend : getLegendRequest.getLegends()) {
@@ -133,8 +131,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
 
                 // Getting the main transformation
                 Expression transformation = featureTypeStyle.getTransformation();
-                if (transformation instanceof ProcessFunction) {
-                    final ProcessFunction processFunction = (ProcessFunction) transformation;
+                if (transformation instanceof ProcessFunction processFunction) {
                     final String processName = processFunction.getName();
 
                     // Checking whether the processFunction is a DynamicColorMapProcess
@@ -169,8 +166,8 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
                 Map map = param.evaluate(coverage, Map.class);
                 Object paramValue = map.values().iterator().next();
                 Object key = map.keySet().iterator().next();
-                if (paramValue instanceof ColorMap) {
-                    cm = (ColorMap) paramValue;
+                if (paramValue instanceof ColorMap colorMap) {
+                    cm = colorMap;
                 } else {
                     if ("opacity".equals(key) && paramValue != null) {
                         opacity = ((Number) paramValue).doubleValue();

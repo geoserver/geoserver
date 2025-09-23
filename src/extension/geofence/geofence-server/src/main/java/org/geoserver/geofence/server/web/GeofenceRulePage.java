@@ -5,6 +5,7 @@
 package org.geoserver.geofence.server.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,10 +93,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(GeofenceRulePage.class);
 
+    @Serial
     private static final long serialVersionUID = 3800195664060319256L;
 
     private static class LayerDetailsFormData implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = 3800199348340468123L;
 
         LayerType layerType;
@@ -119,6 +122,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     private static class RuleFormData implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = 3800199348340468123L;
 
         ShortRule rule;
@@ -173,6 +177,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
         List<AbstractTab> tabs = new ArrayList<>();
         tabs.add(new AbstractTab(new ResourceModel("general")) {
+            @Serial
             private static final long serialVersionUID = 446471321863431295L;
 
             @Override
@@ -181,6 +186,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             }
         });
         tabs.add(new AbstractTab(new ResourceModel("details")) {
+            @Serial
             private static final long serialVersionUID = 446471321863431295L;
 
             @Override
@@ -190,11 +196,13 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         });
         form.add(
                 tabbedPanel = new TabbedPanel<>("tabs", tabs) {
+                    @Serial
                     private static final long serialVersionUID = 2194590643994737914L;
 
                     @Override
                     protected WebMarkupContainer newLink(String linkId, final int index) {
                         return new SubmitLink(linkId) {
+                            @Serial
                             private static final long serialVersionUID = 4072507303411443283L;
 
                             @Override
@@ -207,6 +215,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
         // build the submit/cancel
         form.add(new SubmitLink("save") {
+            @Serial
             private static final long serialVersionUID = 3735176778941168701L;
 
             @Override
@@ -261,7 +270,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         String[] allowedAreaParts = allowedArea.split(";");
         if (allowedAreaParts.length != 2) {
             throw new GeoServerRuntimException(
-                    String.format("Invalid allowed area '%s' expecting SRID=<CODE>;<WKT>.", allowedArea));
+                    "Invalid allowed area '%s' expecting SRID=<CODE>;<WKT>.".formatted(allowedArea));
         }
         Integer srid;
         Geometry geometry;
@@ -269,9 +278,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             srid = Integer.valueOf(allowedAreaParts[0].split("=")[1]);
             geometry = new WKTReader().read(allowedAreaParts[1]);
         } catch (Exception exception) {
-            String message = String.format(
-                    "Error parsing SRID '%s' or WKT geometry '%s' expecting SRID=<CODE>;<WKT>.",
-                    allowedAreaParts[0], allowedAreaParts[1]);
+            String message = "Error parsing SRID '%s' or WKT geometry '%s' expecting SRID=<CODE>;<WKT>."
+                    .formatted(allowedAreaParts[0], allowedAreaParts[1]);
             LOGGER.log(Level.WARNING, message, exception);
             throw new GeoServerRuntimException(message, exception);
         }
@@ -281,15 +289,14 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     }
 
     private MultiPolygon castToMultiPolygon(Geometry geometry) {
-        if (geometry instanceof MultiPolygon) {
-            return (MultiPolygon) geometry;
+        if (geometry instanceof MultiPolygon polygon) {
+            return polygon;
         }
-        if (geometry instanceof Polygon) {
-            return new MultiPolygon(new Polygon[] {(Polygon) geometry}, new GeometryFactory());
+        if (geometry instanceof Polygon polygon) {
+            return new MultiPolygon(new Polygon[] {polygon}, new GeometryFactory());
         }
-        throw new GeoServerRuntimException(String.format(
-                "Invalid geometry of type '%s' expect a Polygon or MultiPolygon.",
-                geometry.getClass().getSimpleName()));
+        throw new GeoServerRuntimException("Invalid geometry of type '%s' expect a Polygon or MultiPolygon."
+                .formatted(geometry.getClass().getSimpleName()));
     }
 
     /** Returns a sorted list of workspace names */
@@ -418,6 +425,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     protected class GeneralPanel extends Panel {
 
+        @Serial
         private static final long serialVersionUID = 8124810941260273620L;
 
         protected DropDownChoice<String> userChoice,
@@ -454,6 +462,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             add(roleChoice = new DropDownChoice<>("roleName", ruleFormModel.bind("rule.roleName"), getRoleNames()));
 
             roleChoice.add(new OnChangeAjaxBehavior() {
+                @Serial
                 private static final long serialVersionUID = -2880886409750911044L;
 
                 @Override
@@ -476,6 +485,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
             add(serviceChoice = new DropDownChoice<>("service", ruleFormModel.bind("rule.service"), getServiceNames()));
             serviceChoice.add(new OnChangeAjaxBehavior() {
+                @Serial
                 private static final long serialVersionUID = -5925784823433092831L;
 
                 @Override
@@ -513,6 +523,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     workspaceChoice = new DropDownChoice<>(
                             "workspace", ruleFormModel.bind("rule.workspace"), getWorkspaceNames()));
             workspaceChoice.add(new OnChangeAjaxBehavior() {
+                @Serial
                 private static final long serialVersionUID = 732177308220189475L;
 
                 @Override
@@ -597,6 +608,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         }
 
         private class LayerChoiceOnChange extends OnChangeAjaxBehavior {
+            @Serial
             private static final long serialVersionUID = 8434775615039939193L;
 
             @Override
@@ -611,7 +623,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                             .get(PublishedInfo.class, Predicates.equal("name", layerChoice.getConvertedInput()));
                     LayerDetailsFormData layerDetails = ruleFormModel.getObject().layerDetails;
                     LayerType layerType = setLayerType(info, layerDetails);
-                    ResourceInfo resource = info instanceof LayerInfo ? ((LayerInfo) info).getResource() : null;
+                    ResourceInfo resource = info instanceof LayerInfo li ? li.getResource() : null;
                     if (layerType != null && layerType.equals(LayerType.RASTER)) {
                         spatialFilterTypeChoice.setModelObject(SpatialFilterType.CLIP);
                         spatialFilterTypeChoice.setEnabled(false);
@@ -620,8 +632,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     }
                     target.add(spatialFilterTypeLabel, spatialFilterTypeChoice);
 
-                    if (resource instanceof FeatureTypeInfo) {
-                        FeatureTypeInfo fti = (FeatureTypeInfo) resource;
+                    if (resource instanceof FeatureTypeInfo fti) {
                         try {
                             for (AttributeTypeInfo ati : fti.attributes()) {
                                 LayerAttribute attribute = new LayerAttribute(
@@ -646,6 +657,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
         private class GrantTypeOnChange extends OnChangeAjaxBehavior {
 
+            @Serial
             private static final long serialVersionUID = -4302901248019983282L;
 
             @Override
@@ -694,6 +706,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     protected class LayerDetailsPanel extends Panel {
 
+        @Serial
         private static final long serialVersionUID = 2996490022169801394L;
 
         // private AjaxSubmitLink remove;
@@ -715,6 +728,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             container.setOutputMarkupPlaceholderTag(true);
 
             layerDetailsCheck.add(new OnChangeAjaxBehavior() {
+                @Serial
                 private static final long serialVersionUID = 8280700310745922486L;
 
                 @Override
@@ -773,6 +787,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                             10,
                             false) {
 
+                        @Serial
                         private static final long serialVersionUID = 4843969600809421536L;
 
                         /** Override otherwise the header is not i18n'ized */
@@ -839,6 +854,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                     "layerAttributes",
                                     new LayerAttributeModel(ruleFormModel.getObject().layerDetails.attributes),
                                     true) {
+                                @Serial
                                 private static final long serialVersionUID = -2001227609501100452L;
 
                                 @SuppressWarnings("unchecked")
@@ -898,6 +914,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     /** Makes sure we see translated text, by the raw name is used for the model */
     protected class GrantTypeRenderer extends ChoiceRenderer<GrantType> {
+        @Serial
         private static final long serialVersionUID = -7478943956804313995L;
 
         @Override
@@ -913,6 +930,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     /** Makes sure we see translated text, by the raw name is used for the model */
     protected class AccessTypeRenderer extends ChoiceRenderer<AccessType> {
+        @Serial
         private static final long serialVersionUID = -7478943956804313995L;
 
         @Override
@@ -928,6 +946,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     /** Makes sure we see translated text, by the raw name is used for the model */
     protected class SpatialFilterTypeRendered extends ChoiceRenderer<SpatialFilterType> {
+        @Serial
         private static final long serialVersionUID = -7478943956804313995L;
 
         @Override
@@ -942,6 +961,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     /** Makes sure we see translated text, by the raw name is used for the model */
     protected class CatalogModeRenderer extends ChoiceRenderer<CatalogMode> {
+        @Serial
         private static final long serialVersionUID = -7478943956804313995L;
 
         @Override
@@ -957,6 +977,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     /** Makes sure that while rendered in mixed case, is stored in uppercase */
     protected static class CaseConversionRenderer extends ChoiceRenderer<String> {
+        @Serial
         private static final long serialVersionUID = 4238195087731806209L;
 
         @Override
@@ -972,6 +993,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     protected static class DropDownChoiceWrapperPanel<T> extends Panel {
 
+        @Serial
         private static final long serialVersionUID = 5677425055959281304L;
 
         public DropDownChoiceWrapperPanel(

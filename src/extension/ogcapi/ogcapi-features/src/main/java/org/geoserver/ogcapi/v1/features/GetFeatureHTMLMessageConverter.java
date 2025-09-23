@@ -40,8 +40,8 @@ public class GetFeatureHTMLMessageConverter extends AbstractServiceHTMLMessageCo
 
     private FeatureTypeInfo getResource(FeatureCollection collection) {
         FeatureTypeInfo info = null;
-        if (collection instanceof TypeInfoCollectionWrapper) {
-            info = ((TypeInfoCollectionWrapper) collection).getFeatureTypeInfo();
+        if (collection instanceof TypeInfoCollectionWrapper wrapper) {
+            info = wrapper.getFeatureTypeInfo();
         }
         if (info == null && collection.getSchema() != null) {
             info = geoServer
@@ -95,8 +95,8 @@ public class GetFeatureHTMLMessageConverter extends AbstractServiceHTMLMessageCo
                             model.put("featureInfo", typeInfo);
                             model.put("data", fc);
                             // allow building a collection backlink
-                            if (fc instanceof TypeInfoCollectionWrapper && includeCollectionLink()) {
-                                FeatureTypeInfo info = ((TypeInfoCollectionWrapper) fc).getFeatureTypeInfo();
+                            if (fc instanceof TypeInfoCollectionWrapper wrapper && includeCollectionLink()) {
+                                FeatureTypeInfo info = wrapper.getFeatureTypeInfo();
                                 if (info != null) {
                                     model.put("collection", info.prefixedName());
                                 }

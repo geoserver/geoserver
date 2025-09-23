@@ -64,7 +64,7 @@ public class LayersClientIT {
         DataStoresClient dataStores = support.client().dataStores();
         FeatureTypesClient featureTyes = support.client().featureTypes();
         this.layers = support.client().layers();
-        String wsname = String.format("%s-ws1-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String wsname = "%s-ws1-%d".formatted(testName.getMethodName(), rnd.nextInt((int) 1e6));
 
         workspaces.create(wsname);
         this.ws = workspaces.findByName(wsname).get();
@@ -125,29 +125,32 @@ public class LayersClientIT {
     @Ignore // NEED TO USE SLD STYLE
     public @Test void updateLayerSetDefaultStyle() throws IOException {
         StylesClient styles = support.client().styles();
-        String styleBody = "{\n"
-                + "  \"version\": 8,\n"
-                + "  \"name\": \"violet polygon\",\n"
-                + "  \"layers\": [\n"
-                + "      {\n"
-                + "          \"id\": \"violet polygon\",\n"
-                + "          \"type\": \"fill\",\n"
-                + "          \"source-layer\": \"roads\",\n"
-                + "          \"paint\": {\n"
-                + "              \"fill-color\": \"#3300ff\",\n"
-                + "              \"fill-outline-color\":\"#000000\"\n"
-                + "          }\n"
-                + "      }, {\n"
-                + "          \"id\": \"red polygon\",\n"
-                + "          \"type\": \"fill\",\n"
-                + "          \"source-layer\": \"roads\",\n"
-                + "          \"paint\": {\n"
-                + "              \"fill-color\": \"#aa0000\",\n"
-                + "              \"fill-outline-color\":\"#000000\"\n"
-                + "          }\n"
-                + "      }\n"
-                + "  ]\n"
-                + "}";
+        String styleBody =
+                """
+                {
+                  "version": 8,
+                  "name": "violet polygon",
+                  "layers": [
+                      {
+                          "id": "violet polygon",
+                          "type": "fill",
+                          "source-layer": "roads",
+                          "paint": {
+                              "fill-color": "#3300ff",
+                              "fill-outline-color":"#000000"
+                          }
+                      }, {
+                          "id": "red polygon",
+                          "type": "fill",
+                          "source-layer": "roads",
+                          "paint": {
+                              "fill-color": "#aa0000",
+                              "fill-outline-color":"#000000"
+                          }
+                      }
+                  ]
+                }\
+                """;
         StyleInfo style = styles.createMapboxStyle(ws.getName(), "roads-style", styleBody);
 
         LayerInfo info = new LayerInfo();

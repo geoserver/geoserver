@@ -62,10 +62,9 @@ import org.geotools.util.Converters;
  *
  * <p>Finally as a data structure {@link GetLegendGraphic} is used to collect additional context. Rendering environment
  * {@link #getEnv()} and {@link #locale}. LayerInfo configuration settings are available using methods like
- * {@link #getTitle(Name)}.
+ * {@link LayerInfo#getType()}}.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GetLegendGraphicRequest extends WMSRequest {
 
@@ -476,7 +475,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
      *   <li><code>minSymbolSize</code>: a number defining the minimum size to be rendered for a symbol (defaults to 3).
      * </ul>
      *
-     * @return Map<String,Object>
+     * @return Option string/value pairs controlling legend generation, never {@code null}.
      */
     public Map<String, Object> getLegendOptions() {
         return legendOptions == null ? Collections.emptyMap() : legendOptions;
@@ -534,9 +533,9 @@ public class GetLegendGraphicRequest extends WMSRequest {
     private Map<String, Object> env = new HashMap<>();
 
     /**
-     * Map of strings that make up the SLD enviroment for variable substitution
+     * Map of strings that make up the SLD environment for variable substitution
      *
-     * @return Map<String,Object>
+     * @return SLD variable substitutions
      */
     public Map<String, Object> getEnv() {
         return env;

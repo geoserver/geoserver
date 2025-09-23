@@ -1925,8 +1925,8 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
     private void testJsonRequest(String featureType, String expectResultPath) throws Exception {
         // get the complex features encoded in JSON
-        String request = String.format(
-                "wfs?request=GetFeature&version=1.1.0&typename=%s&outputFormat=application/json", featureType);
+        String request =
+                "wfs?request=GetFeature&version=1.1.0&typename=%s&outputFormat=application/json".formatted(featureType);
         JSON result = getAsJSON(request);
         // check that we got a valida JSON object
         assertThat(result, instanceOf(JSONObject.class));

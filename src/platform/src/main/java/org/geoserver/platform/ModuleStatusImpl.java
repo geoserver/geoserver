@@ -6,6 +6,7 @@ package org.geoserver.platform;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     private static final Logger LOGGER = Logging.getLogger(ModuleStatusImpl.class);
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -5759469520194940051L;
 
     /** The internal machine-readable module name, often a maven module or jar name (example gs-main) */

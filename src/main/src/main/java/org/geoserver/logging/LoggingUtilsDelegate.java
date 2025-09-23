@@ -191,8 +191,7 @@ class LoggingUtilsDelegate {
 
             // check resulting configuring of log4j file logger
             Appender gslf = configuration.getAppender("geoserverlogfile");
-            if (gslf instanceof RollingFileAppender) {
-                RollingFileAppender fileAppender = (RollingFileAppender) gslf;
+            if (gslf instanceof RollingFileAppender fileAppender) {
                 if (logFileName.equals(fileAppender.getFileName())) {
                     LoggingStartupContextListener.getLogger().fine("Logging output set to file '" + logFileName + "'");
                 } else {
@@ -203,8 +202,7 @@ class LoggingUtilsDelegate {
                                     + logFileName
                                     + "'");
                 }
-            } else if (gslf instanceof FileAppender) {
-                FileAppender fileAppender = (FileAppender) gslf;
+            } else if (gslf instanceof FileAppender fileAppender) {
                 if (logFileName.equals(fileAppender.getFileName())) {
                     LoggingStartupContextListener.getLogger().fine("Logging output set to file '" + logFileName + "'");
                 } else {

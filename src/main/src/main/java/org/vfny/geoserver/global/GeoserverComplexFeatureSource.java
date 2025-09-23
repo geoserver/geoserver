@@ -5,6 +5,7 @@
 package org.vfny.geoserver.global;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Objects;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
@@ -28,6 +29,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
  * @author Fernando Miño - Geosolutions
  */
 public class GeoserverComplexFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected static final FilterFactory FF = CommonFactoryFinder.getFilterFactory(null);

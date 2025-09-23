@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.data.impl;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import java.io.Serial;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.persistence.CascadeType;
@@ -35,6 +36,7 @@ import org.hibernate.annotations.FilterDefs;
 })
 public class ConfigurationImpl extends BaseImpl implements Configuration {
 
+    @Serial
     private static final long serialVersionUID = 7562166441281067057L;
 
     @Id

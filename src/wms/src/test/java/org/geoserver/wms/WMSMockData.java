@@ -56,7 +56,6 @@ import org.locationtech.jts.io.ParseException;
  * fully configured geoserver instance, and also they run fast due to no data directory set up required.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class WMSMockData {
 
@@ -159,7 +158,6 @@ public class WMSMockData {
      * formatImageOutputStream
      *
      * @author Gabriel Roldan
-     * @version $Id$
      */
     public static class DummyRasterMapProducer extends Response implements GetMapOutputFormat {
 

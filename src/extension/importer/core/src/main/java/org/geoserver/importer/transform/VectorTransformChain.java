@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.importer.ImportTask;
@@ -19,6 +20,7 @@ import org.geotools.util.logging.Logging;
  * @author Justin Deoliveira, OpenGeo
  */
 public class VectorTransformChain extends TransformChain<VectorTransform> {
+    @Serial
     private static final long serialVersionUID = 7406010540766743012L;
 
     static Logger LOGGER = Logging.getLogger(VectorTransformChain.class);

@@ -903,19 +903,20 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         // Do a WFS Insert against the layer. This should trigger a cache miss.
         final String wfsInsert =
-                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:testWorkspace=\"http://geoserver.org/GWCIntegerationTest/testWorkspace\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://geoserver.org/GWCIntegerationTest/testWorkspace http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=testWorkspace:workspacedLayer\">\n"
-                        + "    <wfs:Insert>\n"
-                        + "        <testWorkspace:workspacedLayer>\n"
-                        + "            <testWorkspace:location>\n"
-                        + "                    <gml:Point srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\" >\n"
-                        + "                      <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">0,0</gml:coordinates>\n"
-                        + "                    </gml:Point>\n"
-                        + "            </testWorkspace:location>\n"
-                        + "            <testWorkspace:name>origin</testWorkspace:name>\n"
-                        + "            <testWorkspace:value>0</testWorkspace:value>\n"
-                        + "        </testWorkspace:workspacedLayer>\n"
-                        + "    </wfs:Insert>\n"
-                        + "</wfs:Transaction>";
+                """
+                <wfs:Transaction service="WFS" version="1.0.0" xmlns:gml="http://www.opengis.net/gml" xmlns:testWorkspace="http://geoserver.org/GWCIntegerationTest/testWorkspace" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://geoserver.org/GWCIntegerationTest/testWorkspace http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=testWorkspace:workspacedLayer">
+                    <wfs:Insert>
+                        <testWorkspace:workspacedLayer>
+                            <testWorkspace:location>
+                                    <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4326" >
+                                      <gml:coordinates decimal="." cs="," ts=" ">0,0</gml:coordinates>
+                                    </gml:Point>
+                            </testWorkspace:location>
+                            <testWorkspace:name>origin</testWorkspace:name>
+                            <testWorkspace:value>0</testWorkspace:value>
+                        </testWorkspace:workspacedLayer>
+                    </wfs:Insert>
+                </wfs:Transaction>""";
 
         String wfsRequest = TEST_WORKSPACE_NAME + "/wfs?service=WFS&version=1.0.0&request=Transaction";
         MockHttpServletResponse wfsResponse = postAsServletResponse(wfsRequest, wfsInsert);

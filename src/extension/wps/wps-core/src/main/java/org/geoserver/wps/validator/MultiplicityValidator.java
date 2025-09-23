@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps.validator;
 
+import java.io.Serial;
 import java.util.Collection;
 import org.springframework.validation.Errors;
 
@@ -14,6 +15,7 @@ import org.springframework.validation.Errors;
  */
 public class MultiplicityValidator implements WPSInputValidator {
 
+    @Serial
     private static final long serialVersionUID = 6088321363424263041L;
 
     static final String CODE = "TooManyValues";
@@ -31,8 +33,8 @@ public class MultiplicityValidator implements WPSInputValidator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        if (target instanceof Collection && maxInstances > 0) {
-            int size = ((Collection) target).size();
+        if (target instanceof Collection collection && maxInstances > 0) {
+            int size = collection.size();
             if (size > maxInstances) {
                 errors.reject(
                         CODE,

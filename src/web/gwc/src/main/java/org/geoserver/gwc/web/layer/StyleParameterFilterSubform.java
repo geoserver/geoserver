@@ -6,6 +6,7 @@
 
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +29,7 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
     static class SetAsListModel implements IModel<List<String>> {
 
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private final IModel<Set<String>> realModel;
@@ -86,6 +88,7 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
 
     static class LabelledEmptyStringModel implements IModel<String> {
 
+        @Serial
         private static final long serialVersionUID = 7591957769540603345L;
 
         private final IModel<String> realModel;
@@ -126,6 +129,7 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
     static class NullableSetAsListModel implements IModel<List<String>> {
 
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private final IModel<Set<String>> realModel;
@@ -183,6 +187,7 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
     }
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public StyleParameterFilterSubform(String id, IModel<StyleParameterFilter> model) {

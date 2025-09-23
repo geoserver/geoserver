@@ -234,9 +234,8 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
             store.setPassword(decoded);
         } catch (RuntimeException e) {
             store.setEnabled(false);
-            String msg = String.format(
-                    "Error decrypting password for store %s:%s",
-                    store.getWorkspace().getName(), store.getName());
+            String msg = "Error decrypting password for store %s:%s"
+                    .formatted(store.getWorkspace().getName(), store.getName());
             LOGGER.log(Level.SEVERE, msg, e);
         }
     }
@@ -247,9 +246,8 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
             helper.decode(store);
         } catch (RuntimeException e) {
             store.setEnabled(false);
-            String msg = String.format(
-                    "Error decrypting password for store '%s:%s'. Store disabled.",
-                    store.getWorkspace().getName(), store.getName());
+            String msg = "Error decrypting password for store '%s:%s'. Store disabled."
+                    .formatted(store.getWorkspace().getName(), store.getName());
             LOGGER.log(Level.SEVERE, msg, e);
         }
     }

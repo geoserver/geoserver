@@ -7,6 +7,7 @@ package org.geoserver.web.resources;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.net.URLConnection;
 import java.time.Instant;
 import org.apache.wicket.util.resource.AbstractResourceStream;
@@ -20,6 +21,7 @@ import org.geoserver.platform.resource.Resource;
  */
 public class WicketResourceAdaptor extends AbstractResourceStream {
 
+    @Serial
     private static final long serialVersionUID = -1009868612769713937L;
 
     protected Resource resource;

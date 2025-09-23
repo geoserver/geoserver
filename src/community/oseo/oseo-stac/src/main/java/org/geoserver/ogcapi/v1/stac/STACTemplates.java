@@ -191,7 +191,7 @@ public class STACTemplates extends AbstractTemplates {
         @SuppressWarnings("unchecked")
         Set<Object> values = visitor.getResult().toSet();
         return values.stream()
-                .map(o -> (String) ((o instanceof Attribute) ? ((Attribute) o).getValue() : o))
+                .map(o -> (String) ((o instanceof Attribute a) ? a.getValue() : o))
                 .collect(Collectors.toSet());
     }
 

@@ -32,10 +32,10 @@ public abstract class FeatureCollectionResponse extends RequestObject {
     protected Supplier<BigInteger> lazyTotalNumberOfFeatures = null;
 
     public static FeatureCollectionResponse adapt(Object adaptee) {
-        if (adaptee instanceof FeatureCollectionType) {
-            return new WFS11((EObject) adaptee);
-        } else if (adaptee instanceof net.opengis.wfs20.FeatureCollectionType) {
-            return new WFS20((EObject) adaptee);
+        if (adaptee instanceof FeatureCollectionType type) {
+            return new WFS11(type);
+        } else if (adaptee instanceof net.opengis.wfs20.FeatureCollectionType type) {
+            return new WFS20(type);
         }
         return null;
     }

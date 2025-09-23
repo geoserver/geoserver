@@ -195,7 +195,7 @@ public abstract class AbstractAclController<R extends Comparable<R>, DAO extends
     protected abstract String keyFor(R rule);
 
     /**
-     * Validate a rule, return an error message or <code>null</code> if the rule is ok
+     * Validate a rule, return an error message or {@code null} if the rule is ok
      *
      * @param ruleKey ,ruleValue
      */
@@ -288,8 +288,8 @@ public abstract class AbstractAclController<R extends Comparable<R>, DAO extends
     }
 
     protected RestException createRestException(Exception ex) {
-        if (ex instanceof RestException) {
-            return (RestException) ex; // do nothing
+        if (ex instanceof RestException exception) {
+            return exception; // do nothing
         } else {
             return new RestException("", HttpStatus.INTERNAL_SERVER_ERROR, ex);
         }

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
@@ -18,6 +19,7 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - GeoSolutions
  */
 public class EnumChoiceRenderer extends ChoiceRenderer<Enum<?>> {
+    @Serial
     private static final long serialVersionUID = -8773437372842472840L;
 
     static final Logger LOGGER = Logging.getLogger(EnumChoiceRenderer.class);

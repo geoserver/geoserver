@@ -5,6 +5,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import org.springframework.util.StringUtils;
 public abstract class RequestFilterChain implements Serializable, Cloneable {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");

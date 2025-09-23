@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.resources;
 
+import java.io.Serial;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -20,6 +21,7 @@ import org.geoserver.platform.resource.Resource;
  */
 public class PanelEdit extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -31594049414032328L;
 
     public PanelEdit(String id, Resource resource, boolean isNew, String contents) {
@@ -31,6 +33,7 @@ public class PanelEdit extends Panel {
         }
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
         add(new TextField<>("resource", new Model<>(resource.toString())) {
+            @Serial
             private static final long serialVersionUID = 1019950718780805835L;
 
             @Override

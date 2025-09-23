@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
+import java.io.Serial;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
@@ -16,6 +17,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 
 public class StatusBar extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final String script;

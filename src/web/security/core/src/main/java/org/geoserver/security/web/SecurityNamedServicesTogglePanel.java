@@ -49,11 +49,14 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
         public void renderHead(IHeaderResponse response) {
             super.renderHead(response);
             // Content-Security-Policy: inline styles must be nonce=...
-            String css = " #edit {\n"
-                    + "   margin-top: -20px; \n"
-                    + "   padding-bottom: 0.5em; \n"
-                    + "   padding-right:1em;\n"
-                    + " }";
+            String css =
+                    """
+                     #edit {
+                       margin-top: -20px;\s
+                       padding-bottom: 0.5em;\s
+                       padding-right:1em;
+                     }\
+                    """;
             response.render(CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataSecurityPage-1"));
         }
 

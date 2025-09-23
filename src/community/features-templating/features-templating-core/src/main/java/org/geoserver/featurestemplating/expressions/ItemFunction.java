@@ -27,8 +27,8 @@ public class ItemFunction extends FunctionExpressionImpl {
     @Override
     public Object evaluate(Object feature) {
         Object array = getExpression(0).evaluate(feature, Object.class);
-        if (array instanceof Attribute) {
-            array = ((Attribute) array).getValue();
+        if (array instanceof Attribute attribute) {
+            array = attribute.getValue();
         }
         Integer idx = getExpression(1).evaluate(feature, Integer.class);
 

@@ -41,7 +41,7 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
      * <p>If an exact match cannot be made, then those types which are supertypes of clazz are examined.
      *
      * @param clazz The class.
-     * @return The AttributeType, or <code>null</code> if no atttribute type mapped to <code>clazz
+     * @return The AttributeType, or {@code null} if no atttribute type mapped to <code>clazz
      *     </code>
      */
     public AttributeType type(Class<?> clazz) {
@@ -98,7 +98,7 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
      * Obtains the {@link Name} of the {@link AttributeDescriptor} mapped to a particular class.
      *
      * @param clazz The class.
-     * @return The Name, or <code>null</code> if no atttribute type mapped to <code>clazz</code>
+     * @return The Name, or {@code null} if no atttribute type mapped to <code>clazz</code>
      */
     public Name name(Class<?> clazz) {
         List<Map.Entry> assignable = new ArrayList<>();

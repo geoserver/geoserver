@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.locationtech.jts.geom.Geometry;
 public class KMLPlacemarkTransform extends AbstractTransform implements InlineVectorTransform {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public SimpleFeatureType convertFeatureType(SimpleFeatureType oldFeatureType) {

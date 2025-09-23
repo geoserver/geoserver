@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.service;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,7 @@ import org.geoserver.security.web.AbstractConfirmRemovalPanel;
 
 public class ConfirmRemovalServicePanel extends AbstractConfirmRemovalPanel<ServiceAccessRule> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public ConfirmRemovalServicePanel(String id, List<ServiceAccessRule> roots) {

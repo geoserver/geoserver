@@ -42,62 +42,68 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
 
     static final FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
-    static final String INSERT_RESTRICTED_STREET = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\"\n"
-            + "  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:cite=\"http://www.opengis.net/cite\"\n"
-            + "  xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-            + "  xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd \">\n"
-            + "  <wfs:Insert>\n"
-            + "    <cite:Buildings fid=\"Buildings.123\">\n"
-            + "      <cite:the_geom>\n"
-            + "        <gml:MultiPolygon srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-            + "          <gml:polygonMember>\n"
-            + "            <gml:Polygon>\n"
-            + "              <gml:outerBoundaryIs>\n"
-            + "                <gml:LinearRing>\n"
-            + "                  <gml:coordinates cs=\",\" decimal=\".\"\n"
-            + "                    ts=\" \" xmlns:gml=\"http://www.opengis.net/gml\">0.0020,0.0008 0.0020,0.0010\n"
-            + "                    0.0024,0.0010 0.0024,0.0008 0.0020,0.0008</gml:coordinates>\n"
-            + "                </gml:LinearRing>\n"
-            + "              </gml:outerBoundaryIs>\n"
-            + "            </gml:Polygon>\n"
-            + "          </gml:polygonMember>\n"
-            + "        </gml:MultiPolygon>\n"
-            + "      </cite:the_geom>\n"
-            + "      <cite:FID>151</cite:FID>\n"
-            + "      <cite:ADDRESS>123 Restricted Street</cite:ADDRESS>\n"
-            + "    </cite:Buildings>\n"
-            + "  </wfs:Insert>\n"
-            + "</wfs:Transaction>";
+    static final String INSERT_RESTRICTED_STREET =
+            """
+            <wfs:Transaction service="WFS" version="1.0.0"
+              xmlns:wfs="http://www.opengis.net/wfs" xmlns:cite="http://www.opengis.net/cite"
+              xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd ">
+              <wfs:Insert>
+                <cite:Buildings fid="Buildings.123">
+                  <cite:the_geom>
+                    <gml:MultiPolygon srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                      <gml:polygonMember>
+                        <gml:Polygon>
+                          <gml:outerBoundaryIs>
+                            <gml:LinearRing>
+                              <gml:coordinates cs="," decimal="."
+                                ts=" " xmlns:gml="http://www.opengis.net/gml">0.0020,0.0008 0.0020,0.0010
+                                0.0024,0.0010 0.0024,0.0008 0.0020,0.0008</gml:coordinates>
+                            </gml:LinearRing>
+                          </gml:outerBoundaryIs>
+                        </gml:Polygon>
+                      </gml:polygonMember>
+                    </gml:MultiPolygon>
+                  </cite:the_geom>
+                  <cite:FID>151</cite:FID>
+                  <cite:ADDRESS>123 Restricted Street</cite:ADDRESS>
+                </cite:Buildings>
+              </wfs:Insert>
+            </wfs:Transaction>""";
 
-    static final String UPDATE_ADDRESS = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"\n"
-            + "  xmlns:cite=\"http://www.opengis.net/cite\"\n"
-            + "  xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
-            + "  xmlns:wfs=\"http://www.opengis.net/wfs\">\n"
-            + "  <wfs:Update typeName=\"cite:Buildings\">\n"
-            + "    <wfs:Property>\n"
-            + "      <wfs:Name>ADDRESS</wfs:Name>\n"
-            + "      <wfs:Value>123 ABC Street</wfs:Value>\n"
-            + "    </wfs:Property>\n"
-            + "  </wfs:Update>\n"
-            + "</wfs:Transaction>";
+    static final String UPDATE_ADDRESS =
+            """
+            <wfs:Transaction service="WFS" version="1.1.0"
+              xmlns:cite="http://www.opengis.net/cite"
+              xmlns:ogc="http://www.opengis.net/ogc"
+              xmlns:wfs="http://www.opengis.net/wfs">
+              <wfs:Update typeName="cite:Buildings">
+                <wfs:Property>
+                  <wfs:Name>ADDRESS</wfs:Name>
+                  <wfs:Value>123 ABC Street</wfs:Value>
+                </wfs:Property>
+              </wfs:Update>
+            </wfs:Transaction>""";
 
-    static final String DELETE_ADDRESS = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"\n"
-            + "  xmlns:cite=\"http://www.opengis.net/cite\"\n"
-            + "  xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
-            + "  xmlns:wfs=\"http://www.opengis.net/wfs\""
-            + "  xmlns:gml=\"http://www.opengis.net/gml\">\n"
-            + "  <wfs:Delete typeName=\"cite:Buildings\">"
-            + "  <ogc:Filter>\n"
-            + "    <ogc:BBOX>\n"
-            + "        <ogc:PropertyName>the_geom</ogc:PropertyName>\n"
-            + "        <gml:Envelope srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-            + "           <gml:lowerCorner>-180 -90</gml:lowerCorner>\n"
-            + "           <gml:upperCorner>180 90</gml:upperCorner>\n"
-            + "        </gml:Envelope>\n"
-            + "      </ogc:BBOX>\n"
-            + "  </ogc:Filter>\n"
-            + "  </wfs:Delete>\n"
-            + "</wfs:Transaction>";
+    static final String DELETE_ADDRESS =
+            """
+            <wfs:Transaction service="WFS" version="1.1.0"
+              xmlns:cite="http://www.opengis.net/cite"
+              xmlns:ogc="http://www.opengis.net/ogc"
+              xmlns:wfs="http://www.opengis.net/wfs"\
+              xmlns:gml="http://www.opengis.net/gml">
+              <wfs:Delete typeName="cite:Buildings">\
+              <ogc:Filter>
+                <ogc:BBOX>
+                    <ogc:PropertyName>the_geom</ogc:PropertyName>
+                    <gml:Envelope srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                       <gml:lowerCorner>-180 -90</gml:lowerCorner>
+                       <gml:upperCorner>180 90</gml:upperCorner>
+                    </gml:Envelope>
+                  </ogc:BBOX>
+              </ogc:Filter>
+              </wfs:Delete>
+            </wfs:Transaction>""";
 
     @Before
     public void revert() throws Exception {

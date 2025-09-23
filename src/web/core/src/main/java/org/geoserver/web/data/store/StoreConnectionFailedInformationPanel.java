@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -13,11 +14,10 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /**
  * A content panel for a {@link GeoServerDialog} used by {@link DataAccessEditPage} and {@link CoverageStoreEditPage} to
  * ask for confirmation on saving a store that can't be connected to through it's connection parameters
- *
- * @version $Id$
  */
 public class StoreConnectionFailedInformationPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -4118332716894663905L;
 
     public StoreConnectionFailedInformationPanel(

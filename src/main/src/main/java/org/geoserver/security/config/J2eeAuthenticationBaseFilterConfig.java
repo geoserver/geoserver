@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
@@ -32,6 +33,7 @@ import org.geoserver.security.filter.GeoServerX509CertificateAuthenticationFilte
 public class J2eeAuthenticationBaseFilterConfig extends PreAuthenticatedUserNameFilterConfig {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

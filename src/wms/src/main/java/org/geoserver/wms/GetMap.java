@@ -116,10 +116,10 @@ public class GetMap {
         } catch (Throwable t) {
             mapContent.dispose();
             fireFailed(t);
-            if (t instanceof RuntimeException) {
-                throw (RuntimeException) t;
-            } else if (t instanceof Error) {
-                throw (Error) t;
+            if (t instanceof RuntimeException exception) {
+                throw exception;
+            } else if (t instanceof Error error) {
+                throw error;
             } else {
                 throw new ServiceException("Internal error ", t);
             }
@@ -376,8 +376,7 @@ public class GetMap {
         if (!mapContent.layers().isEmpty()) {
             org.geotools.map.Layer lastLayer =
                     mapContent.layers().get(mapContent.layers().size() - 1);
-            if (lastLayer instanceof WMSLayer) {
-                WMSLayer lastWMS = (WMSLayer) lastLayer;
+            if (lastLayer instanceof WMSLayer lastWMS) {
                 WebMapServer otherWMS = lastWMS.getWebMapServer();
                 if (otherWMS.equals(wms)) {
                     lastWMS.addLayer(gt2Layer);
@@ -713,7 +712,7 @@ public class GetMap {
      * <p>If <code>requestFilters != null</code>, it shall contain the same number of elements than <code>layers</code>,
      * as filters are requested one per layer.
      *
-     * @param requestFilters the list of filters sent by the user, or <code>null</code>
+     * @param requestFilters the list of filters sent by the user, or {@code null}
      * @param layers the layers requested in the GetMap request, where to get the per layer definition filters from.
      * @return a list of filters, one per layer, resulting of anding the user requested filter and the layer definition
      *     filter

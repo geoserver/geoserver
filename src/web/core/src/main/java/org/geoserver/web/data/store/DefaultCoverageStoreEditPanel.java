@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -21,6 +22,7 @@ import org.geoserver.web.wicket.FileExistsValidator;
  */
 public class DefaultCoverageStoreEditPanel extends StoreEditPanel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public DefaultCoverageStoreEditPanel(final String componentId, final Form storeEditForm) {

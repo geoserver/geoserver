@@ -49,7 +49,6 @@ import org.geotools.api.style.ResourceLocator;
 import org.geotools.api.style.SelectedChannelType;
 import org.geotools.api.style.Style;
 import org.geotools.api.style.StyledLayerDescriptor;
-import org.geotools.data.DataUtilities;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.util.URLs;
@@ -182,23 +181,20 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist null will be
-     * returned.
+     * Returns a directory under the {@link #root()} directory, if the directory does not exist null will be returned.
      */
     public File findDataDir(String... location) throws IOException {
         Resource resource = get(Paths.path("data", Paths.path(location)));
         return Resources.directory(resource);
     }
 
-    /**
-     * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist it will be created.
-     */
+    /** Returns a directory under the {@link #root()} directory, if the directory does not exist it will be created. */
     public File findOrCreateDataDir(String... location) throws IOException {
         Resource resource = get(Paths.path("data", Paths.path(location)));
         return resource.dir();
     }
 
-    /** Returns a file under the {@link #dataRoot()} directory, if the file does not exist null is returned. */
+    /** Returns a file under the {@link #root()} directory, if the file does not exist null is returned. */
     public File findDataFile(String... location) throws IOException {
         Resource resource = get(Paths.path("data", Paths.path(location)));
         return Resources.file(resource);
@@ -420,14 +416,14 @@ public class GeoServerDataDirectory {
      */
     private @Nonnull Resource config(StoreInfo si) {
         final Resource r;
-        if (si instanceof DataStoreInfo) {
-            r = config((DataStoreInfo) si);
-        } else if (si instanceof CoverageStoreInfo) {
-            r = config((CoverageStoreInfo) si);
-        } else if (si instanceof WMTSStoreInfo) {
-            r = config((WMTSStoreInfo) si);
-        } else if (si instanceof WMSStoreInfo) {
-            r = config((WMSStoreInfo) si);
+        if (si instanceof DataStoreInfo ds) {
+            r = config(ds);
+        } else if (si instanceof CoverageStoreInfo cs) {
+            r = config(cs);
+        } else if (si instanceof WMTSStoreInfo wmtss) {
+            r = config(wmtss);
+        } else if (si instanceof WMSStoreInfo wmss) {
+            r = config(wmss);
         } else {
             // It'd be nice if we could be generic and cover potential future StoreInfo types.
             throw new IllegalArgumentException(
@@ -445,14 +441,14 @@ public class GeoServerDataDirectory {
      */
     private @Nonnull Resource config(ResourceInfo si) {
         final Resource r;
-        if (si instanceof FeatureTypeInfo) {
-            r = config((FeatureTypeInfo) si);
-        } else if (si instanceof CoverageInfo) {
-            r = config((CoverageInfo) si);
-        } else if (si instanceof WMTSLayerInfo) {
-            r = config((WMTSLayerInfo) si);
-        } else if (si instanceof WMSLayerInfo) {
-            r = config((WMSLayerInfo) si);
+        if (si instanceof FeatureTypeInfo ft) {
+            r = config(ft);
+        } else if (si instanceof CoverageInfo cv) {
+            r = config(cv);
+        } else if (si instanceof WMTSLayerInfo wmts) {
+            r = config(wmts);
+        } else if (si instanceof WMSLayerInfo wms) {
+            r = config(wms);
         } else {
             // It'd be nice if we could be generic and cover potential future ResourceInfo types.
             throw new IllegalArgumentException(
@@ -604,7 +600,7 @@ public class GeoServerDataDirectory {
      * @return A {@link Resource}
      */
     public @Nonnull Resource config(LayerGroupInfo lgi) {
-        Resource r = get(lgi, String.format("%s.xml", lgi.getName()));
+        Resource r = get(lgi, "%s.xml".formatted(lgi.getName()));
         assert r != null;
         return r;
     }
@@ -892,7 +888,7 @@ public class GeoServerDataDirectory {
         return resources;
     }
 
-    /** Wrapper for {@link DataUtilities#fileToURL} that unescapes braces used to delimit CQL templates. */
+    /** Wrapper for {@link URLs#fileToUrl(File)} that unescapes braces used to delimit CQL templates. */
     public static URL fileToUrlPreservingCqlTemplates(File file) {
         URL url = URLs.fileToUrl(file);
         if (!file.getPath().contains("${")) {

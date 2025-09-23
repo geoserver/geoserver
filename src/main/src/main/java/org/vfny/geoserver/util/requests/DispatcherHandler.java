@@ -18,7 +18,6 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * whatsoever.
  *
  * @author Chris Holmes, TOPP
- * @version $Id$
  */
 public class DispatcherHandler extends XMLFilterImpl implements ContentHandler {
 

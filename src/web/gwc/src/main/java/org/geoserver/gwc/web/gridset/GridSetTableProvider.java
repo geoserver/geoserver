@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.gridset;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -17,11 +18,13 @@ import org.geowebcache.grid.GridSet;
 
 public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet> {
 
+    @Serial
     private static final long serialVersionUID = 399110981279814481L;
 
     static final Property<GridSet> NAME = new BeanProperty<>("name", "name");
 
     static final Property<GridSet> EPSG_CODE = new AbstractProperty<>("epsg_code") {
+        @Serial
         private static final long serialVersionUID = -4311392731568045337L;
 
         @Override
@@ -31,6 +34,7 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
     };
 
     static final Property<GridSet> TILE_DIMENSION = new AbstractProperty<>("tile_dimension") {
+        @Serial
         private static final long serialVersionUID = 7300188694215155063L;
 
         @Override
@@ -40,6 +44,7 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
     };
 
     static final Property<GridSet> ZOOM_LEVELS = new AbstractProperty<>("zoom_levels") {
+        @Serial
         private static final long serialVersionUID = 3155098860179765581L;
 
         @Override
@@ -49,6 +54,7 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
     };
 
     static final Property<GridSet> QUOTA_USED = new AbstractProperty<>("quota_used") {
+        @Serial
         private static final long serialVersionUID = 1152149141759317288L;
 
         @Override
@@ -60,6 +66,7 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
     };
 
     static final Property<GridSet> ACTION_LINK = new AbstractProperty<>("") {
+        @Serial
         private static final long serialVersionUID = -7593097569735264194L;
 
         @Override

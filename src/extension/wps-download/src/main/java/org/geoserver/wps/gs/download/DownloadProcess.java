@@ -300,7 +300,7 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
 
             // CORE CODE
             Resource internalOutput = null;
-            if (resourceInfo instanceof FeatureTypeInfo) {
+            if (resourceInfo instanceof FeatureTypeInfo info) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "The resource to work on is a vector layer");
                 }
@@ -309,23 +309,15 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                 //
                 // perform the actual download of vectorial data accordingly to the request inputs
                 internalOutput = new VectorDownload(limits, resourceManager, context)
-                        .execute(
-                                (FeatureTypeInfo) resourceInfo,
-                                mimeType,
-                                roi,
-                                clip,
-                                filter,
-                                targetCRS,
-                                progressListener);
+                        .execute(info, mimeType, roi, clip, filter, targetCRS, progressListener);
 
-            } else if (resourceInfo instanceof CoverageInfo) {
+            } else if (resourceInfo instanceof CoverageInfo cInfo) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "The resource to work on is a raster layer");
                 }
                 //
                 // RASTER
                 //
-                CoverageInfo cInfo = (CoverageInfo) resourceInfo;
                 // convert/reproject/crop if needed the coverage
                 internalOutput = new RasterDownload(limits, resourceManager, context, catalog)
                         .execute(

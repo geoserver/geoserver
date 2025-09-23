@@ -62,11 +62,10 @@ public class StylesDocument extends AbstractDocument {
     }
 
     private List<StyleInfo> getStyleInfos() {
-        if (tileLayer instanceof GeoServerTileLayer) {
-            PublishedInfo published = ((GeoServerTileLayer) tileLayer).getPublishedInfo();
-            if (published instanceof LayerInfo) {
+        if (tileLayer instanceof GeoServerTileLayer layer1) {
+            PublishedInfo published = layer1.getPublishedInfo();
+            if (published instanceof LayerInfo layer) {
                 List<StyleInfo> result = new ArrayList<>();
-                LayerInfo layer = (LayerInfo) published;
                 result.addAll(layer.getStyles());
                 StyleInfo defaultStyle = layer.getDefaultStyle();
                 if (!result.contains(defaultStyle)) result.add(defaultStyle);

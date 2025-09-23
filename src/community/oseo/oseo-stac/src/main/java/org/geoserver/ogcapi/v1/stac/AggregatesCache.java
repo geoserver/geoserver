@@ -84,7 +84,7 @@ public class AggregatesCache implements GeoServerLifecycleHandler {
             return aggregates.get(key);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof IOException) throw (IOException) cause;
+            if (cause instanceof IOException exception) throw exception;
             throw new IOException(e);
         }
     }

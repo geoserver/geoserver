@@ -119,9 +119,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterDescribeDomainsOperation() throws Exception {
         // perform the get describe domains operation request
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(RASTER_ELEVATION_TIME));
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -149,9 +148,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterDescribeDomainsOperationNoSpace() throws Exception {
         // perform the get describe domains operation request
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(RASTER_ELEVATION_TIME) + "&domains=elevation,time");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME) + "&domains=elevation,time");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check that we have two domains
@@ -174,9 +172,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterDescribeDomainsOperationOnlySpace() throws Exception {
         // perform the get describe domains operation request
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(RASTER_ELEVATION_TIME) + "&domains=bbox");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME) + "&domains=bbox");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check that we have two domains
@@ -192,9 +189,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterDescribeDomainsOperationInvalidDimension() throws Exception {
         // perform the get describe domains operation request
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(RASTER_ELEVATION_TIME) + "&domains=abcd");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME) + "&domains=abcd");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result =
                 getResultAsDocument(response, "text/xml", HttpStatus.BAD_REQUEST); // check that we have two domains
@@ -206,9 +202,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorDescribeDomainsOperation() throws Exception {
         // perform the get describe domains operation request
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(VECTOR_ELEVATION_TIME));
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(VECTOR_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -236,9 +231,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testRasterDescribeDomainsOperationWithElevationFilter() throws Exception {
         // perform the get describe domains operation request filter elevations that are equal to
         // 100.0
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(RASTER_ELEVATION_TIME) + "&elevation=100");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME) + "&elevation=100");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -267,9 +261,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testVectorDescribeDomainsOperationWithTimeFilterNoResults() throws Exception {
         // perform the get describe domains operation request filter elevations that are equal to
         // 100.0
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(VECTOR_ELEVATION_TIME) + "&time=1980-10-31T00:00:00.000Z");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(VECTOR_ELEVATION_TIME) + "&time=1980-10-31T00:00:00.000Z");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -284,9 +277,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterDescribeDomainsOperationWithBoundingBoxNoResultsFilter() throws Exception {
         // perform the get describe domains operation with a spatial restriction
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=5,5,6,6");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME) + "&bbox=5,5,6,6");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check that we have two domains
@@ -301,9 +293,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testRasterDescribeDomainsReprojectedFilterMosaic() throws Exception {
         // perform the get describe domains operation with a spatial restriction in 3857, crossing
         // the data
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=700000,5000000,800000,6000000,EPSG:3857");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME) + "&bbox=700000,5000000,800000,6000000,EPSG:3857");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -320,9 +311,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // perform the get describe domains operation with a spatial restriction across the
         // dateline,
         // with the part covering the data fully outside of the dateline
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=170,40,374,45,EPSG:4326");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME) + "&bbox=170,40,374,45,EPSG:4326");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -338,9 +328,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testRasterDescribeDomainsReprojectedOutsideValid() throws Exception {
         // perform the get describe domains operation with a spatial restriction in 3857 and with
         // values wrapped to a "second copy of the world" past the dateline
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=40000000,5000000,41000000,6000000,EPSG:3857");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME) + "&bbox=40000000,5000000,41000000,6000000,EPSG:3857");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -356,9 +345,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testRasterDescribeDomainsOperationWithBoundingAndWrongTileMatrixSet() throws Exception {
         // perform the get describe domains operation with a spatial restriction and in invalid tile
         // matrix set
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:XXXX",
-                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=5,5,6,6");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:XXXX"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME) + "&bbox=5,5,6,6");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         // this request should fail because of the invalid tile matrix set
         assertThat(response.getContentAsString(), containsString("Unknown grid set"));
@@ -368,9 +356,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorDescribeDomainsOperationWithBoundingBoxFilter() throws Exception {
         // perform the get describe domains operation with a spatial restriction
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-180,-90,180,90");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-180,-90,180,90");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check the space domain
@@ -400,9 +387,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorDescribeDomainsReprojectedFilter() throws Exception {
         // perform the get describe domains operation with a spatial restriction
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-20000000,-20000000,20000000,20000000,EPSG:3857");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-20000000,-20000000,20000000,20000000,EPSG:3857");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -414,9 +400,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testVectorDescribeDomainsAcrossDateline() throws Exception {
         // spatial restriction across the dateline, the polygons are the 4 quadrants covering the
         // world
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=170,-90,190,90,EPSG:4326");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=170,-90,190,90,EPSG:4326");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -427,9 +412,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorDescribeDomainsOutsideWorld() throws Exception {
         // spatial restriction is whole world but completely outside range, code should re-roll it
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=180,-90,540,90,EPSG:4326");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=180,-90,540,90,EPSG:4326");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -441,9 +425,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testVectorDescribeDomainsAcrossDatelineWebMercator() throws Exception {
         // spatial restriction across the dateline in 3857, the polygons are the 4 quadrants
         // covering the world
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=19000000,-20000000,21000000,20000000,EPSG:3857");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=19000000,-20000000,21000000,20000000,EPSG:3857");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -455,9 +438,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testVectorDescribeDomainsOutswideWorldWebMercator() throws Exception {
         // spatial restriction outside of the valid 3857 domain, the polygons are the 4 quadrants
         // covering the world
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=21000000,-20000000,59000000,20000000,EPSG:3857");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=21000000,-20000000,59000000,20000000,EPSG:3857");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -499,9 +481,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorDescribeDomainsOperationWithLimitZero() throws Exception {
         // perform the get describe domains operation with a spatial restriction
-        String queryRequest = String.format(
-                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-180,-90,180,90&expandLimit=0");
+        String queryRequest = "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-180,-90,180,90&expandLimit=0");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check the space domain
@@ -529,9 +510,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterGetHistogramOperationForElevation() throws Exception {
         // perform the get histogram operation request
-        String queryRequest = String.format(
-                "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=elevation&resolution=25",
-                getLayerId(RASTER_ELEVATION_TIME));
+        String queryRequest =
+                "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=elevation&resolution=25"
+                        .formatted(getLayerId(RASTER_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -661,9 +642,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorGetHistogramOperationForTime() throws Exception {
         // perform the get histogram operation request
-        String queryRequest = String.format(
-                "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M",
-                getLayerId(VECTOR_ELEVATION_TIME));
+        String queryRequest =
+                "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M"
+                        .formatted(getLayerId(VECTOR_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -711,8 +692,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterGetFeatureOperation() throws Exception {
         // perform the get feature operation request
-        String queryRequest = String.format(
-                "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326", getLayerId(RASTER_ELEVATION_TIME));
+        String queryRequest = "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the returned features
@@ -727,9 +708,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterGetFeatureOperationWithBoundingBoxFilterNoResults() throws Exception {
         // perform the get feature operation request
-        String queryRequest = String.format(
-                "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=-1,-1,0,0");
+        String queryRequest = "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(RASTER_ELEVATION_TIME) + "&bbox=-1,-1,0,0");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the no features were returned
@@ -739,8 +719,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorGetFeatureOperation() throws Exception {
         // perform the get histogram operation request
-        String queryRequest = String.format(
-                "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326", getLayerId(VECTOR_ELEVATION_TIME));
+        String queryRequest = "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(getLayerId(VECTOR_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the returned features
@@ -757,9 +737,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorGetFeatureOperationWithTimeFilter() throws Exception {
         // perform the get histogram operation request
-        String queryRequest = String.format(
-                "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                getLayerId(VECTOR_ELEVATION_TIME) + "&time=2012-02-10T00:00:00.000Z/2012-02-11T00:00:00.000Z");
+        String queryRequest = "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                .formatted(
+                        getLayerId(VECTOR_ELEVATION_TIME) + "&time=2012-02-10T00:00:00.000Z/2012-02-11T00:00:00.000Z");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the filtered returned features

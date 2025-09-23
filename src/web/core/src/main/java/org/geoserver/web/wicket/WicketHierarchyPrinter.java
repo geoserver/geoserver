@@ -76,8 +76,7 @@ public class WicketHierarchyPrinter {
     /** Walks down the containment hierarchy depth first and prints each component found */
     private void walkHierarchy(Component c, int level) {
         printComponent(c, level);
-        if (c instanceof MarkupContainer) {
-            MarkupContainer mc = (MarkupContainer) c;
+        if (c instanceof MarkupContainer mc) {
             for (Component component : mc) {
                 walkHierarchy(component, level + 1);
             }

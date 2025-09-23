@@ -332,11 +332,11 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
         if (index <= 0) {
             // we can't handle this situation let's raise an exception
             throw new RuntimeException(
-                    String.format("Can't build include types '%s' URL using parent '%s' URL.", include, url));
+                    "Can't build include types '%s' URL using parent '%s' URL.".formatted(include, url));
         }
         // build the include types URL
         url = url.substring(0, index + 1) + include;
-        LOGGER.fine(String.format("Using URL '%s' to retrieve include types with '%s'.", url, include));
+        LOGGER.fine("Using URL '%s' to retrieve include types with '%s'.".formatted(url, include));
         return url;
     }
 

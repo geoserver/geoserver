@@ -5,6 +5,7 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import org.geotools.util.logging.Logging;
  * @author Jody Garnett
  */
 public class ServicesPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 5536322717819915862L;
 
     public ServicesPanel(

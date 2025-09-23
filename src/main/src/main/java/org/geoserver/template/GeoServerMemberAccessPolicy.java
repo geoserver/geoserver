@@ -340,8 +340,8 @@ public final class GeoServerMemberAccessPolicy implements MemberAccessPolicy {
         private boolean matchesAny(Class<?> clazz, List<Object> list) {
             String name = clazz.getName();
             return list.stream()
-                    .anyMatch(object -> object instanceof Class
-                            ? ((Class<?>) object).isAssignableFrom(clazz)
+                    .anyMatch(object -> object instanceof Class<?> c
+                            ? c.isAssignableFrom(clazz)
                             : name.startsWith((String) object));
         }
     }

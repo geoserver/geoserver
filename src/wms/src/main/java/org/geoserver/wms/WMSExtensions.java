@@ -18,7 +18,6 @@ import org.springframework.context.ApplicationContext;
  * Utility class uses to process GeoServer WMS extension points.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class WMSExtensions {
 

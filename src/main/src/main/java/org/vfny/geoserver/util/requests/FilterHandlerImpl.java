@@ -15,7 +15,6 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * Minimal class to implement the FilterHandler interface.
  *
  * @author Rob Hranac, TOPP
- * @version $Id$
  */
 public class FilterHandlerImpl extends XMLFilterImpl implements ContentHandler, FilterHandler {
     /** Class logger */

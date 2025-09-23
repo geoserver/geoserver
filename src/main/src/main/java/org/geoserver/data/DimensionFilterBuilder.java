@@ -65,8 +65,7 @@ public class DimensionFilterBuilder {
         Filter filter;
         if (value == null) {
             filter = Filter.INCLUDE;
-        } else if (value instanceof Range) {
-            Range range = (Range) value;
+        } else if (value instanceof Range range) {
             if (endAttribute == null) {
                 filter = ff.between(attribute, ff.literal(range.getMinValue()), ff.literal(range.getMaxValue()));
             } else {

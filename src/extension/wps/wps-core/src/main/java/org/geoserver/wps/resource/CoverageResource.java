@@ -21,11 +21,10 @@ public class CoverageResource implements WPSResource {
 
     @Override
     public void delete() throws Exception {
-        if (coverage instanceof GridCoverage2D) {
-            final GridCoverage2D gc = (GridCoverage2D) coverage;
+        if (coverage instanceof GridCoverage2D gc) {
             final RenderedImage image = gc.getRenderedImage();
-            if (image instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+            if (image instanceof PlanarImage planarImage) {
+                ImageUtilities.disposePlanarImageChain(planarImage);
             }
             gc.dispose(true);
         }

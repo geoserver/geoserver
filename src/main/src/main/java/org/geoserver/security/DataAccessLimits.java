@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.geotools.api.filter.Filter;
 import org.geotools.filter.v1_0.OGC;
@@ -24,6 +25,7 @@ import org.geotools.xsd.Parser;
 public class DataAccessLimits extends AccessLimits {
     private static final OGCConfiguration CONFIGURATION = new OGCConfiguration();
 
+    @Serial
     private static final long serialVersionUID = 2594922992934373705L;
 
     /**

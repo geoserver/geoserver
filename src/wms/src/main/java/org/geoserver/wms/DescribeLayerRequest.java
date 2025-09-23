@@ -17,7 +17,6 @@ import org.geoserver.wms.describelayer.XMLDescribeLayerResponse;
  *
  * @author Gabriel Roldan
  * @author Carlo Cancellieri
- * @version $Id$
  */
 public class DescribeLayerRequest extends WMSRequest {
 

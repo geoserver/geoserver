@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.gridset;
 
+import java.io.Serial;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -13,6 +14,7 @@ import org.geowebcache.grid.GridSet;
 
 public class GridSetNewPage extends AbstractGridSetPage {
 
+    @Serial
     private static final long serialVersionUID = -3748376561268773207L;
 
     public GridSetNewPage(PageParameters parameters) {

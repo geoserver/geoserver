@@ -67,8 +67,7 @@ class CoverageRenderSupport {
         // in case of index color model we try to preserve it, so that output
         // formats that can work with it can enjoy its extra compactness
         double[] bgValues = null;
-        if (cm instanceof IndexColorModel) {
-            IndexColorModel icm = (IndexColorModel) cm;
+        if (cm instanceof IndexColorModel icm) {
             // try to find the index that matches the requested background color
             final int bgColorIndex = icm.getTransparentPixel();
 
@@ -109,10 +108,8 @@ class CoverageRenderSupport {
 
         // in case of component color model
         boolean noDataTransparencyApplied = false;
-        if (cm instanceof ComponentColorModel) {
-
+        if (cm instanceof ComponentColorModel ccm) {
             // convert to RGB if necessary
-            ComponentColorModel ccm = (ComponentColorModel) cm;
             boolean hasAlpha = cm.hasAlpha();
 
             // if we have a grayscale image see if we have to expand to RGB
@@ -287,8 +284,7 @@ class CoverageRenderSupport {
             Object roiCandidate,
             boolean preProcessedWithTransparency) {
         ROI roi;
-        if (roiCandidate instanceof ROI) {
-            ROI imageROI = (ROI) roiCandidate;
+        if (roiCandidate instanceof ROI imageROI) {
             try {
                 roi = new ROIGeometry(mapRasterArea).intersect(imageROI);
             } catch (IllegalArgumentException e) {

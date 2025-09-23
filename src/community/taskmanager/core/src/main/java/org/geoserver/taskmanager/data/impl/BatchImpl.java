@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.data.impl;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -39,6 +40,7 @@ import org.hibernate.annotations.FilterDef;
 @FilterDef(name = "activeElementFilter", defaultCondition = "removeStamp = 0")
 public class BatchImpl extends BaseImpl implements Batch {
 
+    @Serial
     private static final long serialVersionUID = 3321130631692899821L;
 
     @Id

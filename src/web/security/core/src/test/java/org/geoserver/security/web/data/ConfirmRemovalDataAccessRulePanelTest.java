@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.data;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
@@ -17,6 +18,7 @@ import org.geoserver.web.FormTestPage;
 import org.junit.Test;
 
 public class ConfirmRemovalDataAccessRulePanelTest extends AbstractConfirmRemovalPanelTest<DataAccessRule> {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Test
@@ -28,6 +30,7 @@ public class ConfirmRemovalDataAccessRulePanelTest extends AbstractConfirmRemova
     @Override
     protected void setupPanel(final List<DataAccessRule> roots) {
         tester.startPage(new FormTestPage(new ComponentBuilder() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -39,6 +42,7 @@ public class ConfirmRemovalDataAccessRulePanelTest extends AbstractConfirmRemova
                         return link.canRemove(data);
                     }
 
+                    @Serial
                     private static final long serialVersionUID = 1L;
                 };
             }

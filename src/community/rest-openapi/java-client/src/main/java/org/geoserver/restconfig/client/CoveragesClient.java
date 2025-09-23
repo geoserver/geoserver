@@ -65,7 +65,7 @@ public class CoveragesClient {
         api().createCoverageAtStore(workspace, store, new CoverageInfoWrapper().coverage(info));
         return findByStore(workspace, store, name)
                 .orElseThrow(() -> new IllegalStateException(
-                        String.format("Coverage '%s.%s.%s' not found right after creation", workspace, store, name)));
+                        "Coverage '%s.%s.%s' not found right after creation".formatted(workspace, store, name)));
     }
 
     /**
@@ -97,8 +97,8 @@ public class CoveragesClient {
         final String name = info.getName();
         api().createCoverageAtStore(workspace, store.getName(), new CoverageInfoWrapper().coverage(info));
         return findByStore(workspace, store.getName(), name)
-                .orElseThrow(() -> new IllegalStateException(String.format(
-                        "Coverage '%s.%s.%s' not found right after creation", workspace, store.getName(), name)));
+                .orElseThrow(() -> new IllegalStateException("Coverage '%s.%s.%s' not found right after creation"
+                        .formatted(workspace, store.getName(), name)));
     }
 
     /**
@@ -248,7 +248,6 @@ public class CoveragesClient {
         api().updateCoverage(workspace, store, coverage, new CoverageInfoWrapper().coverage(info), calculate);
         final String newName = info.getName();
         return findByStore(workspace, store, newName)
-                .orElseThrow(
-                        () -> new IllegalStateException(String.format("Coverage %s not found after update", newName)));
+                .orElseThrow(() -> new IllegalStateException("Coverage %s not found after update".formatted(newName)));
     }
 }

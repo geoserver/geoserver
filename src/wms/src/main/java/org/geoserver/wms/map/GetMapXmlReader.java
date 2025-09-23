@@ -71,7 +71,6 @@ import org.xml.sax.SAXParseException;
  *
  * @author Rob Hranac, TOPP
  * @author Chris Holmes, TOPP
- * @version $Id$
  */
 public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
@@ -306,9 +305,9 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
             // TODO: add support for remote WFS here
             // handle the InLineFeature stuff
-            if ((sl instanceof UserLayer) && ((((UserLayer) sl)).getInlineFeatureDatastore() != null)) {
+            if ((sl instanceof UserLayer layer1) && ((layer1).getInlineFeatureDatastore() != null)) {
                 // SPECIAL CASE - we make the temporary version
-                UserLayer ul = ((UserLayer) sl);
+                UserLayer ul = layer1;
                 CoordinateReferenceSystem crs =
                         (getMapRequest.getCrs() == null) ? DefaultGeographicCRS.WGS84 : getMapRequest.getCrs();
                 currLayer = initializeInlineFeatureLayer(ul, crs);
@@ -370,15 +369,15 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         Style[] layerStyles = null;
         FeatureTypeConstraint[] ftcs = null;
 
-        if (layer instanceof NamedLayer) {
-            ftcs = ((NamedLayer) layer).getLayerFeatureConstraints();
-            layerStyles = ((NamedLayer) layer).getStyles();
+        if (layer instanceof NamedLayer namedLayer) {
+            ftcs = namedLayer.getLayerFeatureConstraints();
+            layerStyles = namedLayer.getStyles();
             if (shouldUseLayerStyle(layerStyles, currLayer)) {
                 layerStyles = new Style[] {currLayer.getStyle()};
             }
-        } else if (layer instanceof UserLayer) {
-            ftcs = ((UserLayer) layer).getLayerFeatureConstraints();
-            layerStyles = ((UserLayer) layer).getUserStyles();
+        } else if (layer instanceof UserLayer userLayer) {
+            ftcs = userLayer.getLayerFeatureConstraints();
+            layerStyles = userLayer.getUserStyles();
         }
 
         // DJB: TODO: this needs to do the whole thing, not just names

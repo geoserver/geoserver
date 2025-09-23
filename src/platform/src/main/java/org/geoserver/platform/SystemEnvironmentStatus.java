@@ -75,18 +75,17 @@ public class SystemEnvironmentStatus implements ModuleStatus {
         }
         LOGGER.log(
                 Level.WARNING,
-                String.format(
-                        "environment variable '%s' should be 'true' or 'false', but was '%s'",
-                        SystemEnvironmentStatusEnabledEnvironmentVar, val));
+                "environment variable '%s' should be 'true' or 'false', but was '%s'"
+                        .formatted(SystemEnvironmentStatusEnabledEnvironmentVar, val));
         return false; // bad value -> default
     }
 
     @Override
     public Optional<String> getMessage() {
         if (!isShow()) {
-            String message = String.format(
-                    "Environment variables hidden for security reasons.  Set the environment variable '%s' to 'true' to see them.",
-                    SystemEnvironmentStatusEnabledEnvironmentVar);
+            String message =
+                    "Environment variables hidden for security reasons.  Set the environment variable '%s' to 'true' to see them."
+                            .formatted(SystemEnvironmentStatusEnabledEnvironmentVar);
             return Optional.of(message);
         }
 

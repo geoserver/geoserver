@@ -23,7 +23,6 @@ import org.springframework.util.Assert;
  * requested
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GetFeatureInfoResponse extends Response {
 

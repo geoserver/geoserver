@@ -303,10 +303,10 @@ public class DeprecatedProcessFactory implements ProcessFactory, DisposableBean,
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         // add and remove the process factory as necessary
-        if (event instanceof ContextLoadedEvent) {
+        if (event instanceof ContextLoadedEvent loadedEvent) {
             // JD: look up GeoServer and register now rather than use constructor injection
             // to avoid circular dependency during service loading startup
-            geoServer = GeoServerExtensions.bean(GeoServer.class, ((ContextLoadedEvent) event).getApplicationContext());
+            geoServer = GeoServerExtensions.bean(GeoServer.class, loadedEvent.getApplicationContext());
             listener = new ConfigurationListenerAdapter() {
                 @Override
                 public void handleServiceChange(

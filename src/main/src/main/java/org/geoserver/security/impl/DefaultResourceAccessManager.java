@@ -280,8 +280,8 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
     /** Returns true if there is a path from the group to the resource that does not involve crossing a opaque group */
     private boolean allowsAccessViaNonOpaqueGroup(LayerGroupInfo gi, ResourceInfo resource) {
         for (PublishedInfo pi : gi.getLayers()) {
-            if (pi instanceof LayerInfo) {
-                if (resource.equals(((LayerInfo) pi).getResource())) {
+            if (pi instanceof LayerInfo info) {
+                if (resource.equals(info.getResource())) {
                     return true;
                 }
             } else {
@@ -708,9 +708,8 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                 }
                 boolean layerAccess = canAccess(user, layerNode);
                 if (layerAccess != wsAccess) {
-                    if (ResourceInfo.class.isAssignableFrom(clazz) && published instanceof LayerInfo) {
-                        layerExceptionIds.add(
-                                ((LayerInfo) published).getResource().getId());
+                    if (ResourceInfo.class.isAssignableFrom(clazz) && published instanceof LayerInfo info) {
+                        layerExceptionIds.add(info.getResource().getId());
                     } else {
                         layerExceptionIds.add(published.getId());
                     }

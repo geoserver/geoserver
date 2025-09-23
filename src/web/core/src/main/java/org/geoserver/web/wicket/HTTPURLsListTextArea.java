@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import org.apache.wicket.validation.ValidationError;
 /** TextArea for specifying a list of HTTP Urls (separated by new lines). */
 public class HTTPURLsListTextArea extends TextArea<List<String>> {
 
+    @Serial
     private static final long serialVersionUID = -8195179437229644665L;
 
     public HTTPURLsListTextArea(String id, IModel<List<String>> model) {
@@ -42,6 +44,7 @@ public class HTTPURLsListTextArea extends TextArea<List<String>> {
     }
 
     private static class URLsListConverter implements IConverter<List<String>> {
+        @Serial
         private static final long serialVersionUID = 1083795866666107798L;
 
         static final Pattern NEW_LINE_SEPARATED = Pattern.compile("\\s*\\r?\\n\\s*", Pattern.MULTILINE);
@@ -67,6 +70,7 @@ public class HTTPURLsListTextArea extends TextArea<List<String>> {
 
     private static class HTTPURLsListValidator implements IValidator<List<String>> {
 
+        @Serial
         private static final long serialVersionUID = 8041469734553805086L;
 
         @Override

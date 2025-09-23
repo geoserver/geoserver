@@ -402,8 +402,8 @@ public class TilesService {
         final byte[] tileBytes;
         {
             final Resource mapContents = tile.getBlob();
-            if (mapContents instanceof ByteArrayResource) {
-                tileBytes = ((ByteArrayResource) mapContents).getContents();
+            if (mapContents instanceof ByteArrayResource resource) {
+                tileBytes = resource.getContents();
             } else {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 mapContents.transferTo(Channels.newChannel(out));
@@ -431,9 +431,7 @@ public class TilesService {
         // override for workspace specific services
         tmpHeaders.put(
                 "geowebcache-layer",
-                tileLayer instanceof GeoServerTileLayer
-                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
-                        : tileLayer.getName());
+                tileLayer instanceof GeoServerTileLayer gstl ? gstl.getContextualName() : tileLayer.getName());
         if (filterSpec != null && !tileIsCacheable) {
             tmpHeaders.put("geowebcache-cache-result", MISS.toString());
             tmpHeaders.put(
@@ -453,9 +451,7 @@ public class TilesService {
     }
 
     static String getTileLayerId(TileLayer tileLayer) {
-        return tileLayer instanceof GeoServerTileLayer
-                ? ((GeoServerTileLayer) tileLayer).getContextualName()
-                : tileLayer.getName();
+        return tileLayer instanceof GeoServerTileLayer gstl ? gstl.getContextualName() : tileLayer.getName();
     }
 
     private String getETag(byte[] tileBytes) throws NoSuchAlgorithmException {
@@ -507,7 +503,7 @@ public class TilesService {
             Optional<ParameterFilter> styles = tileLayer.getParameterFilters().stream()
                     .filter(pf -> "styles".equalsIgnoreCase(pf.getKey()))
                     .findFirst();
-            if (!styles.isPresent() || !styles.get().applies(styleId)) {
+            if (styles.isEmpty() || !styles.get().applies(styleId)) {
                 throw new InvalidParameterValueException(
                         "Invalid style name, please check the collection description for valid style names: "
                                 + tileLayer.getStyles());
@@ -516,8 +512,8 @@ public class TilesService {
     }
 
     static boolean isLayerGroup(TileLayer tileLayer) {
-        if (tileLayer instanceof GeoServerTileLayer) {
-            return ((GeoServerTileLayer) tileLayer).getPublishedInfo() instanceof LayerGroupInfo;
+        if (tileLayer instanceof GeoServerTileLayer layer) {
+            return layer.getPublishedInfo() instanceof LayerGroupInfo;
         }
 
         return false;
@@ -678,7 +674,7 @@ public class TilesService {
 
     /** Utility method to check if a given tile layer supports filtering */
     public static boolean supportsFiltering(TileLayer tileLayer) {
-        return (tileLayer instanceof GeoServerTileLayer)
+        return (tileLayer instanceof GeoServerTileLayer gstl)
                 && (((GeoServerTileLayer) tileLayer).getPublishedInfo() instanceof LayerInfo)
                 && (((LayerInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo()).getResource()
                         instanceof FeatureTypeInfo);

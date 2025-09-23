@@ -17,8 +17,6 @@ import freemarker.template.TemplateDateModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateSequenceModel;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -179,17 +177,17 @@ public class FeatureWrapper extends BeansWrapper {
             // nulls throw tempaltes off, use empty string
             return "";
         }
-        if (o instanceof Date) {
-            if (o instanceof Timestamp) {
-                return DateFormat.getDateTimeInstance().format((Date) o);
+        if (o instanceof Date date) {
+            if (o instanceof Date timestamp) {
+                return DateFormat.getDateTimeInstance().format(timestamp);
             }
-            if (o instanceof Time) {
-                return DateFormat.getTimeInstance().format((Date) o);
+            if (o instanceof Date time) {
+                return DateFormat.getTimeInstance().format(time);
             }
-            return DateFormat.getInstance().format((Date) o);
+            return DateFormat.getInstance().format(date);
         }
-        if (o instanceof Boolean) {
-            return ((Boolean) o).booleanValue() ? "true" : "false";
+        if (o instanceof Boolean boolean1) {
+            return boolean1.booleanValue() ? "true" : "false";
         }
         if (o instanceof Geometry) {
             return String.valueOf(o);
@@ -216,22 +214,20 @@ public class FeatureWrapper extends BeansWrapper {
     @Override
     public TemplateModel wrap(Object object) throws TemplateModelException {
         // check for feature collection
-        if (object instanceof FeatureCollection) {
+        if (object instanceof FeatureCollection collection) {
             // create a model with just one variable called 'features'
             SimpleHash map = new SimpleHash(this.wrapper);
-            map.put(
-                    "features",
-                    templateFeatureCollectionFactory.createTemplateFeatureCollection((FeatureCollection) object, this));
-            map.put("type", wrap(((FeatureCollection) object).getSchema()));
+            map.put("features", templateFeatureCollectionFactory.createTemplateFeatureCollection(collection, this));
+            map.put("type", wrap(collection.getSchema()));
 
             return map;
-        } else if (object instanceof ComplexType) {
+        } else if (object instanceof ComplexType type) {
 
-            return buildType((ComplexType) object);
+            return buildType(type);
 
-        } else if (object instanceof Feature) {
+        } else if (object instanceof Feature feature) {
 
-            return buildComplex((Feature) object);
+            return buildComplex(feature);
         }
 
         return super.wrap(object);
@@ -311,8 +307,8 @@ public class FeatureWrapper extends BeansWrapper {
         // create a variable "attributes" which his a list of all the
         // attributes, but at the same time, is a map keyed by name
         map.put("attributes", new SequenceMapModel(attributeMap, this));
-        if (att instanceof Feature) {
-            map.put("bounds", ((Feature) att).getBounds());
+        if (att instanceof Feature feature) {
+            map.put("bounds", feature.getBounds());
         }
 
         return map;
@@ -329,8 +325,8 @@ public class FeatureWrapper extends BeansWrapper {
         dummy.put("keywords", new ArrayList<>());
         dummy.put("metadataLinks", new ArrayList<>());
         dummy.put("SRS", "[SRS]");
-        if (f instanceof Feature) {
-            final GeometryDescriptor gd = ((Feature) f).getType().getGeometryDescriptor();
+        if (f instanceof Feature feature) {
+            final GeometryDescriptor gd = feature.getType().getGeometryDescriptor();
             if (gd != null) {
                 dummy.put("nativeCRS", gd.getCoordinateReferenceSystem());
             }
@@ -396,7 +392,7 @@ public class FeatureWrapper extends BeansWrapper {
      *   <li>name: String holding the attribute name
      *   <li>type: String with the java class name bound to the attribute type
      *   <li>value: String representation of the attribute value suitable to be used directly in a template expression.
-     *       <code>null</code> values are returned as the empty string, non String values as per
+     *       {@code null} values are returned as the empty string, non String values as per
      *       {@link FeatureWrapper#valueToString(Object)}
      *   <li>rawValue: the actual attribute value as it is in the Feature
      *   <li>isGeometry: Boolean indicating whether the attribute is of a geometric type
@@ -472,8 +468,8 @@ public class FeatureWrapper extends BeansWrapper {
                 entrySet.add(new MapEntry<Object, Object>("isComplex", property instanceof ComplexAttribute));
 
                 Object value = null;
-                if (property instanceof ComplexAttribute) {
-                    value = buildComplex((ComplexAttribute) property);
+                if (property instanceof ComplexAttribute attribute) {
+                    value = buildComplex(attribute);
                 } else if (property != null) {
                     value = property.getValue();
                 }

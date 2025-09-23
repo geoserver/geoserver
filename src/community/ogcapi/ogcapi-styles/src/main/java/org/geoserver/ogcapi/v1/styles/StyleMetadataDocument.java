@@ -152,10 +152,10 @@ public class StyleMetadataDocument extends AbstractDocument {
     private Stream<Description> getDescriptions(StyledLayerDescriptor sld) {
         return Arrays.stream(sld.getStyledLayers())
                 .flatMap(sl -> {
-                    if (sl instanceof NamedLayer) {
-                        return Arrays.stream(((NamedLayer) sl).getStyles());
-                    } else if (sl instanceof UserLayer) {
-                        return Arrays.stream(((UserLayer) sl).getUserStyles());
+                    if (sl instanceof NamedLayer layer1) {
+                        return Arrays.stream(layer1.getStyles());
+                    } else if (sl instanceof UserLayer layer) {
+                        return Arrays.stream(layer.getUserStyles());
                     }
                     return Stream.empty();
                 })

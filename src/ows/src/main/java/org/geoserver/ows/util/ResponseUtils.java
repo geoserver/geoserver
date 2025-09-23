@@ -474,7 +474,7 @@ public class ResponseUtils {
                     || ArrayUtils.contains(exclude, (char) enc)) {
                 resultStr.append((char) enc);
             } else {
-                resultStr.append(String.format("%%%02X", enc));
+                resultStr.append("%%%02X".formatted(enc));
             }
         }
         return resultStr.toString();

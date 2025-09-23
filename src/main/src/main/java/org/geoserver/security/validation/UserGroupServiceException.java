@@ -6,6 +6,7 @@
 
 package org.geoserver.security.validation;
 
+import java.io.Serial;
 import org.geoserver.security.GeoServerUserGroupService;
 
 /**
@@ -14,6 +15,7 @@ import org.geoserver.security.GeoServerUserGroupService;
  * @author christian
  */
 public class UserGroupServiceException extends AbstractSecurityException {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String USERNAME_REQUIRED = "USERNAME_REQUIRED";

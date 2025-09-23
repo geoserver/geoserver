@@ -15,7 +15,7 @@ import org.geoserver.web.services.ServiceMenuPageInfo;
  *
  * <p>Menu pages for OGC service configuration should use the subclass {@link ServiceMenuPageInfo}.
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 @SuppressWarnings("serial")
 public class MenuPageInfo<T extends GeoServerBasePage> extends ComponentInfo<T> implements Comparable<MenuPageInfo<T>> {

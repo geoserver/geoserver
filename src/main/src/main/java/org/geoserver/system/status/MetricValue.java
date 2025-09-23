@@ -4,6 +4,7 @@
  */
 package org.geoserver.system.status;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalTime;
 import org.geotools.util.Converters;
@@ -16,6 +17,7 @@ import org.geotools.util.Converters;
  */
 public class MetricValue implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 344784541680947799L;
 
     Object value;
@@ -109,8 +111,8 @@ public class MetricValue implements Serializable {
         }
         if (value instanceof Double || value instanceof Float) {
             final Number numberValue = (Number) value;
-            return String.format(
-                    "%.2f %s", value instanceof Double ? numberValue.doubleValue() : numberValue.floatValue(), unit);
+            return "%.2f %s"
+                    .formatted(value instanceof Double ? numberValue.doubleValue() : numberValue.floatValue(), unit);
         }
         if (unit != null && unit.equalsIgnoreCase("bytes")) {
             long bytes = Converters.convert(value, Long.class);
@@ -119,7 +121,7 @@ public class MetricValue implements Serializable {
             long seconds = Converters.convert(value, Long.class);
             return LocalTime.MIN.plusSeconds(seconds).toString();
         }
-        return String.format("%s %s", value, unit);
+        return "%s %s".formatted(value, unit);
     }
 
     public String getIdentifier() {
@@ -139,7 +141,7 @@ public class MetricValue implements Serializable {
         }
         int exp = (int) (Math.log(bytes) / Math.log(unit));
         char pre = "KMGTPE".charAt(exp - 1);
-        return String.format("%.1f %siB", bytes / Math.pow(unit, exp), pre);
+        return "%.1f %siB".formatted(bytes / Math.pow(unit, exp), pre);
     }
 
     /** Value holder used for XML and JSOn encoding. */

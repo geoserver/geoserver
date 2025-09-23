@@ -4,6 +4,7 @@
  */
 package org.geoserver.backuprestore.web;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.LayerInfo;
@@ -13,6 +14,7 @@ import org.geoserver.web.GeoServerApplication;
 /** Detachable model for a specific layer. */
 public class LayerModel<T extends LayerInfo> extends LoadableDetachableModel<T> {
 
+    @Serial
     private static final long serialVersionUID = 1619470274815042758L;
 
     private ResourceFilePanel resourceFilePanel;

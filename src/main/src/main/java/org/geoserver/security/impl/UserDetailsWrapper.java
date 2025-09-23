@@ -6,6 +6,7 @@
 
 package org.geoserver.security.impl;
 
+import java.io.Serial;
 import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class UserDetailsWrapper implements UserDetails {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private UserDetails details;

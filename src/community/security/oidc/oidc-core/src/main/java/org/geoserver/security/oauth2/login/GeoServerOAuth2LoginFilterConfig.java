@@ -5,6 +5,7 @@
 package org.geoserver.security.oauth2.login;
 
 import static java.util.Optional.ofNullable;
+import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilterBuilder.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,9 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
      * to avoid hard-coding the value in the code.
      */
     public static final String OPENID_TEST_GS_PROXY_BASE = "OPENID_TEST_GS_PROXY_BASE";
+
+    /** This is the GeoServer URL that the OIDC IDP should redirect to (with the oidc "code") */
+    public static final String OIDC_INCOMING_CODE_ENDPOINT = "web/login/oauth2/code/";
 
     // Common for all providers
     private String baseRedirectUri = baseRedirectUri();
@@ -121,7 +125,7 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
 
     private String redirectUri(String pRegId) {
         String lBase = baseRedirectUriNormalized();
-        return lBase + "web/login/oauth2/code/" + pRegId;
+        return lBase + OIDC_INCOMING_CODE_ENDPOINT + pRegId;
     }
 
     private String createPostLogoutRedirectUri() {
@@ -157,7 +161,8 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
             return null;
         }
         String lBase = baseRedirectUriNormalized();
-        return lBase + "web/oauth2/authorization/" + lRegIds.get(0);
+
+        return lBase + DEFAULT_AUTHORIZATION_REQUEST_BASE_URI + lRegIds.get(0);
     }
 
     /**

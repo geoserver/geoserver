@@ -55,7 +55,7 @@ public class CreateComplexViewTaskTypeImpl extends AbstractCreateViewTaskTypeImp
                         o = t;
                     }
                 }
-                definition = m.replaceFirst(o instanceof DbTable ? ((DbTable) o).getTableName() : o.toString());
+                definition = m.replaceFirst(o instanceof DbTable dt ? dt.getTableName() : o.toString());
                 m = PATTERN_PLACEHOLDER.matcher(definition);
             } else {
                 // TODO: should already happen in validation

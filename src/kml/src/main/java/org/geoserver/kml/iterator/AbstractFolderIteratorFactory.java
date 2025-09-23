@@ -70,10 +70,10 @@ public abstract class AbstractFolderIteratorFactory implements IteratorFactory<F
                                         layer, mapContent, context.getWms(), mapContent.getScaleDenominator());
                         context.setCurrentFeatureCollection(fc);
                     } catch (Exception e) {
-                        if (e instanceof ServiceException) {
-                            throw (ServiceException) e;
-                        } else if (e instanceof HttpErrorCodeException) {
-                            throw (HttpErrorCodeException) e;
+                        if (e instanceof ServiceException exception1) {
+                            throw exception1;
+                        } else if (e instanceof HttpErrorCodeException exception) {
+                            throw exception;
                         } else {
                             throw new ServiceException("Failed to load vector data during KML generation", e);
                         }

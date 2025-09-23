@@ -35,20 +35,22 @@ public class WFSCascadedStoredQueryConfigurationParserTest {
 
     @Test
     public void testDeserialization() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<storedQueryConfiguration>\n"
-                + "  <storedQueryParameterMappings>\n"
-                + "    <storedQueryParameterMappingExpressionValue>\n"
-                + "      <parameterName>bbox</parameterName>\n"
-                + "      <expressionLanguage>CQL</expressionLanguage>\n"
-                + "      <expression>strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMinY), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMinX), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMaxY), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMaxX), &apos;,EPSG:4258&apos;)))))))</expression>\n"
-                + "    </storedQueryParameterMappingExpressionValue>\n"
-                + "    <storedQueryParameterMappingDefaultValue>\n"
-                + "      <parameterName>timestep</parameterName>\n"
-                + "      <defaultValue>720</defaultValue>\n"
-                + "    </storedQueryParameterMappingDefaultValue>\n"
-                + "  </storedQueryParameterMappings>\n"
-                + "</storedQueryConfiguration>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <storedQueryConfiguration>
+                  <storedQueryParameterMappings>
+                    <storedQueryParameterMappingExpressionValue>
+                      <parameterName>bbox</parameterName>
+                      <expressionLanguage>CQL</expressionLanguage>
+                      <expression>strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMinY), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMinX), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMaxY), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMaxX), &apos;,EPSG:4258&apos;)))))))</expression>
+                    </storedQueryParameterMappingExpressionValue>
+                    <storedQueryParameterMappingDefaultValue>
+                      <parameterName>timestep</parameterName>
+                      <defaultValue>720</defaultValue>
+                    </storedQueryParameterMappingDefaultValue>
+                  </storedQueryParameterMappings>
+                </storedQueryConfiguration>""";
 
         ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
 

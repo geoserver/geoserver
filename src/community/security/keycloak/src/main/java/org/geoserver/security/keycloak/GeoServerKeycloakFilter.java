@@ -204,7 +204,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
         PreAuthenticatedAuthenticationToken result = null;
         Object principal = keycloakAuth.getPrincipal();
         String userName = null;
-        if (principal instanceof UserDetails) userName = ((UserDetails) principal).getUsername();
+        if (principal instanceof UserDetails details) userName = details.getUsername();
         else userName = principal.toString();
         if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
             result = new PreAuthenticatedAuthenticationToken(

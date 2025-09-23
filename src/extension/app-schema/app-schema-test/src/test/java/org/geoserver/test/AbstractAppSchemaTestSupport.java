@@ -270,8 +270,8 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      */
     private SchemaCatalog getSchemaCatalog() {
         if (catalog == null) {
-            if (testData instanceof AbstractAppSchemaMockData) {
-                catalog = ((AbstractAppSchemaMockData) testData).getSchemaCatalog();
+            if (testData instanceof AbstractAppSchemaMockData data) {
+                catalog = data.getSchemaCatalog();
             }
         }
         return catalog;
@@ -553,10 +553,10 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         JDBCDataStore store = (JDBCDataStore) source;
         SQLDialect dialect = store.getSQLDialect();
         FilterToSQL original = null;
-        if (dialect instanceof BasicSQLDialect) {
-            original = ((BasicSQLDialect) dialect).createFilterToSQL();
-        } else if (dialect instanceof PreparedStatementSQLDialect) {
-            original = ((PreparedStatementSQLDialect) dialect).createPreparedFilterToSQL();
+        if (dialect instanceof BasicSQLDialect lDialect1) {
+            original = lDialect1.createFilterToSQL();
+        } else if (dialect instanceof PreparedStatementSQLDialect lDialect) {
+            original = lDialect.createPreparedFilterToSQL();
             // disable prepared statements to have literals actually encoded in the SQL
             ((PreparedFilterToSQL) original).setPrepareEnabled(false);
         }
@@ -592,7 +592,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         try (InputStream input = NormalizedMultiValuesTest.class.getResourceAsStream(resourcePath)) {
             return IOUtils.toString(input);
         } catch (Exception exception) {
-            throw new RuntimeException(String.format("Error reading resource '%s'.", resourcePath));
+            throw new RuntimeException("Error reading resource '%s'.".formatted(resourcePath));
         }
     }
 

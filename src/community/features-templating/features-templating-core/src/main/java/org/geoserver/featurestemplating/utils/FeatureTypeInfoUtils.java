@@ -23,10 +23,9 @@ public class FeatureTypeInfoUtils {
      * @return the FeatureTypeInfo.
      */
     public static FeatureTypeInfo getFeatureTypeInfo(Catalog catalog, FeatureCollection collection) {
-        if (collection instanceof TypeInfoCollectionWrapper)
-            return ((TypeInfoCollectionWrapper) collection).getFeatureTypeInfo();
-        else if (collection instanceof FeatureCollectionDecorator)
-            return getFeatureTypeInfo(catalog, ((FeatureCollectionDecorator) collection).getName());
+        if (collection instanceof TypeInfoCollectionWrapper wrapper) return wrapper.getFeatureTypeInfo();
+        else if (collection instanceof FeatureCollectionDecorator decorator)
+            return getFeatureTypeInfo(catalog, decorator.getName());
         else return getFeatureTypeInfo(catalog, collection.getSchema().getName());
     }
 

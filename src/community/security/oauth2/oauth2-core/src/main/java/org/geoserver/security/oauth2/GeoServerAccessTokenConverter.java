@@ -85,7 +85,7 @@ public class GeoServerAccessTokenConverter extends DefaultAccessTokenConverter {
         }
 
         Object aud = map.get(AUD);
-        if (aud instanceof Collection) return (Collection) aud;
+        if (aud instanceof Collection collection) return collection;
         else return Collections.singletonList(String.valueOf(aud));
     }
 

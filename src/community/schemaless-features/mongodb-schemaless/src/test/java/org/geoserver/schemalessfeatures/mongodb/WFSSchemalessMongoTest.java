@@ -184,7 +184,7 @@ public class WFSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
             IOUtils.copy(input, output);
             return new String(output.toByteArray());
         } catch (Exception exception) {
-            throw new RuntimeException(String.format("Error reading resource '%s' content.", resourcePath), exception);
+            throw new RuntimeException("Error reading resource '%s' content.".formatted(resourcePath), exception);
         }
     }
 

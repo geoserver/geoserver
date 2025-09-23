@@ -199,7 +199,7 @@ public interface ResourceInfo extends CatalogInfo {
      *
      * <p>This value represents a "fixed value" and is not calulated on the underlying dataset.
      *
-     * @return The bounds of the resource in lat / lon, or <code>null</code> if not set.
+     * @return The bounds of the resource in lat / lon, or {@code null} if not set.
      * @uml.property name="latLonBoundingBox"
      */
     ReferencedEnvelope getLatLonBoundingBox();
@@ -220,7 +220,7 @@ public interface ResourceInfo extends CatalogInfo {
      * <p>This value is combined with {@link #getProjectionPolicy()}, {@link #getNativeCRS()} by {@link #boundingBox()}
      * to determine user supplied bounds in native crs.
      *
-     * @return Records the bounds of the resource in native crs, or <code>null</code> if not set.
+     * @return Records the bounds of the resource in native crs, or {@code null} if not set.
      * @uml.property name="boundingBox"
      */
     ReferencedEnvelope getNativeBoundingBox();
@@ -257,7 +257,7 @@ public interface ResourceInfo extends CatalogInfo {
      *   <li>EPSG:26713
      * </ol>
      *
-     * @return A crs identifier, or <code>null</code> if not set.
+     * @return A crs identifier, or {@code null} if not set.
      * @uml.property name="sRS"
      */
     String getSRS();
@@ -355,7 +355,7 @@ public interface ResourceInfo extends CatalogInfo {
      *
      * @param adapterClass The class of the adapter.
      * @param hints Hints to use when creating the adapter.
-     * @return The adapter, an intsanceof adapterClass, or <code>null</code>.
+     * @return The adapter, an intsanceof adapterClass, or {@code null}.
      */
     <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints);
 

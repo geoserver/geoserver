@@ -52,10 +52,10 @@ public class GHRSSTEncoderFactory implements NetCDFEncoderFactory {
                 TreeSet<Object> values =
                         (TreeSet<Object>) dimension.getDimensionValues().getValues();
                 Object first = values.first();
-                if (first instanceof Date) {
-                    referenceDate = (Date) first;
-                } else if (first instanceof DateRange) {
-                    referenceDate = ((DateRange) first).getMinValue();
+                if (first instanceof Date date) {
+                    referenceDate = date;
+                } else if (first instanceof DateRange range) {
+                    referenceDate = range.getMinValue();
                 } else {
                     throw new IllegalArgumentException("Unrecognized data type for reference date: " + first);
                 }

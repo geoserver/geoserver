@@ -70,7 +70,6 @@ import org.geotools.renderer.lite.StreamingRenderer;
  * @author Simone Giannecchini, GeoSolutions
  * @author Andrea Aime
  * @author Gabriel Roldan
- * @version $Id$
  * @see RenderedImageMapOutputFormat
  * @see PNGMapResponse
  * @see GIFMapResponse
@@ -433,8 +432,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             // placemarks.
             List<Layer> layers = mapContent.layers();
             for (Layer value : layers) {
-                if (value instanceof StyleLayer) {
-                    StyleLayer layer = (StyleLayer) value;
+                if (value instanceof StyleLayer layer) {
                     Style style = layer.getStyle();
                     style.accept(dupVisitor);
                     Style copy = (Style) dupVisitor.getCopy();

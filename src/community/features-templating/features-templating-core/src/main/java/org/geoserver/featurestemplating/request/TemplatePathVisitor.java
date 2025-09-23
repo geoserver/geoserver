@@ -49,8 +49,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
     @Override
     public Object visit(PropertyName expression, Object extraData) {
         String propertyName = expression.getPropertyName();
-        if (extraData instanceof TemplateBuilder) {
-            TemplateBuilder builder = (TemplateBuilder) extraData;
+        if (extraData instanceof TemplateBuilder builder) {
             Object newExpression = mapPropertyThroughBuilder(propertyName, builder);
             if (newExpression != null) return newExpression;
         }
@@ -119,22 +118,19 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         // find the builder to which the path is pointing
         TemplateBuilder jb = findBuilder(builder, pathElements);
         if (jb != null) {
-            if (jb instanceof IteratingBuilder && index != 0) {
+            if (jb instanceof IteratingBuilder itb && index != 0) {
                 // retrieve the builder based on the position
-                IteratingBuilder itb = (IteratingBuilder) jb;
                 jb = getChildFromIterating(itb, index - 1);
             }
 
-            if (jb instanceof DynamicValueBuilder) {
-                DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
+            if (jb instanceof DynamicValueBuilder dvb) {
                 addFilter(dvb.getFilter());
                 this.contextPos = dvb.getContextPos();
                 if (dvb.getXpath() != null) return (PropertyName) super.visit(dvb.getXpath(), null);
                 else {
                     return super.visit(dvb.getCql(), null);
                 }
-            } else if (jb instanceof StaticBuilder) {
-                StaticBuilder staticBuilder = (StaticBuilder) jb;
+            } else if (jb instanceof StaticBuilder staticBuilder) {
                 addFilter(staticBuilder.getFilter());
                 Expression retExpr;
                 if (staticBuilder.getStaticValue() != null) {
@@ -170,16 +166,16 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         if (children != null) {
             for (TemplateBuilder tb : children) {
                 String key = ((AbstractTemplateBuilder) tb).getKey(null);
-                if (tb instanceof DynamicIncludeFlatBuilder) {
+                if (tb instanceof DynamicIncludeFlatBuilder builder) {
                     // go get the including node that the dynamic build inglobated
-                    tb = ((DynamicIncludeFlatBuilder) tb).getIncludingNodeBuilder(null);
+                    tb = builder.getIncludingNodeBuilder(null);
                 }
                 if (matchBuilder(tb, key, pathElements, parent)) {
                     boolean isLastEl = currentEl == length;
                     if (isLastEl || tb instanceof StaticBuilder) {
                         return tb;
-                    } else if (tb instanceof SourceBuilder) {
-                        pickSourceAndFilter((SourceBuilder) tb);
+                    } else if (tb instanceof SourceBuilder builder) {
+                        pickSourceAndFilter(builder);
                         TemplateBuilder result = findBuilder(tb, pathElements);
                         if (result != null) {
                             return result;
@@ -236,7 +232,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         boolean result = keyMatched(current, key, pathElements);
         if (!result) {
             if (parent instanceof RootBuilder) result = true;
-            else if (parent instanceof SourceBuilder && !((SourceBuilder) parent).hasOwnOutput()) result = true;
+            else if (parent instanceof SourceBuilder builder && !builder.hasOwnOutput()) result = true;
         }
         return result;
     }
@@ -246,8 +242,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         @Override
         public Object visit(PropertyName filter, Object extraData) {
             filter = (PropertyName) super.visit(filter, extraData);
-            if (filter instanceof AttributeExpressionImpl) {
-                AttributeExpressionImpl pn = (AttributeExpressionImpl) filter;
+            if (filter instanceof AttributeExpressionImpl pn) {
                 String property;
                 if (canCompleteXpath(extraData)) property = completeXPath(pn.getPropertyName());
                 else property = pn.getPropertyName();
@@ -274,7 +269,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
          * @return true if extradata is true, false otherwise.
          */
         private boolean canCompleteXpath(Object extradata) {
-            return extradata == null || (extradata instanceof Boolean && ((Boolean) extradata).booleanValue());
+            return extradata == null || (extradata instanceof Boolean b && b.booleanValue());
         }
 
         private String completeXpath(Stack<String> source, String xpath) {
@@ -296,15 +291,14 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         public Object visit(Function expression, Object extraData) {
             // Stream Function is a special case since after the first property name
             // all the next ones evaluate on the result of the first one.
-            if (expression instanceof StreamFunction) {
-                StreamFunction streamFunction = (StreamFunction) expression;
+            if (expression instanceof StreamFunction streamFunction) {
                 List<Expression> expressions = streamFunction.getParameters();
                 int size = expressions.size();
                 int pnCounter = 0;
                 for (int i = 0; i < size; i++) {
                     Expression e = expressions.get(i);
-                    if (e instanceof PropertyName) {
-                        e = (Expression) visit((PropertyName) e, pnCounter == 0);
+                    if (e instanceof PropertyName name) {
+                        e = (Expression) visit(name, pnCounter == 0);
                         pnCounter++;
                     } else e = visit(e, extraData);
                     expressions.set(i, e);

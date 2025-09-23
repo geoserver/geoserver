@@ -539,23 +539,23 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @SuppressWarnings("unchecked")
     protected <T extends CatalogInfo> T checkAccess(Authentication user, T info, MixedModeBehavior mixedModeBehavior) {
-        if (info instanceof WorkspaceInfo) {
-            return (T) checkAccess(user, (WorkspaceInfo) info, mixedModeBehavior);
+        if (info instanceof WorkspaceInfo workspaceInfo) {
+            return (T) checkAccess(user, workspaceInfo, mixedModeBehavior);
         }
-        if (info instanceof NamespaceInfo) {
-            return (T) checkAccess(user, (NamespaceInfo) info, mixedModeBehavior);
+        if (info instanceof NamespaceInfo namespaceInfo) {
+            return (T) checkAccess(user, namespaceInfo, mixedModeBehavior);
         }
-        if (info instanceof StoreInfo) {
-            return (T) checkAccess(user, (StoreInfo) info, mixedModeBehavior);
+        if (info instanceof StoreInfo storeInfo) {
+            return (T) checkAccess(user, storeInfo, mixedModeBehavior);
         }
-        if (info instanceof ResourceInfo) {
-            return (T) checkAccess(user, (ResourceInfo) info, mixedModeBehavior);
+        if (info instanceof ResourceInfo resourceInfo) {
+            return (T) checkAccess(user, resourceInfo, mixedModeBehavior);
         }
-        if (info instanceof LayerInfo) {
-            return (T) checkAccess(user, (LayerInfo) info, mixedModeBehavior, Collections.emptyList());
+        if (info instanceof LayerInfo layerInfo) {
+            return (T) checkAccess(user, layerInfo, mixedModeBehavior, Collections.emptyList());
         }
-        if (info instanceof LayerGroupInfo) {
-            return (T) checkAccess(user, (LayerGroupInfo) info, mixedModeBehavior, Collections.emptyList());
+        if (info instanceof LayerGroupInfo groupInfo) {
+            return (T) checkAccess(user, groupInfo, mixedModeBehavior, Collections.emptyList());
         }
 
         return info;
@@ -564,11 +564,11 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     @SuppressWarnings("unchecked")
     protected <T extends PublishedInfo> T checkAccess(
             Authentication user, T info, MixedModeBehavior mixedModeBehavior, List<LayerGroupInfo> containers) {
-        if (info instanceof LayerInfo) {
-            return (T) checkAccess(user, (LayerInfo) info, mixedModeBehavior, containers);
+        if (info instanceof LayerInfo layerInfo) {
+            return (T) checkAccess(user, layerInfo, mixedModeBehavior, containers);
         }
-        if (info instanceof LayerGroupInfo) {
-            return (T) checkAccess(user, (LayerGroupInfo) info, mixedModeBehavior, containers);
+        if (info instanceof LayerGroupInfo groupInfo) {
+            return (T) checkAccess(user, groupInfo, mixedModeBehavior, containers);
         }
 
         return info;
@@ -598,7 +598,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a {@link StyleInfo} and a user, returns it back if the user can access it.
      *
-     * @return <code>null</code> if the user can't acess the style, otherwise the original style.
+     * @return {@code null} if the user can't acess the style, otherwise the original style.
      */
     protected StyleInfo checkAccess(Authentication user, StyleInfo style, MixedModeBehavior mixedModeBehavior) {
         if (style == null) return null;
@@ -752,46 +752,42 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             MixedModeBehavior mixedModeBehavior) {
         Assert.notNull(info, "CatalogInfo must not be null");
 
-        if (info instanceof NamespaceInfo) {
+        if (info instanceof NamespaceInfo namespaceInfo) {
             // route the security check thru the associated workspace info
-            WorkspaceInfo ws = delegate.getWorkspaceByName(((NamespaceInfo) info).getPrefix());
+            WorkspaceInfo ws = delegate.getWorkspaceByName(namespaceInfo.getPrefix());
             if (ws == null) {
                 // temporary workaround, build a fake workspace, as we're
                 // probably
                 // in between a change of workspace/namespace name
                 ws = delegate.getFactory().createWorkspace();
-                ws.setName(((NamespaceInfo) info).getPrefix());
+                ws.setName(namespaceInfo.getPrefix());
             }
             return buildWrapperPolicy(accessManager, user, ws, ws.getName(), mixedModeBehavior);
         }
 
-        if (info instanceof WorkspaceInfo) {
-            return buildWrapperPolicy(accessManager, user, info, ((WorkspaceInfo) info).getName(), mixedModeBehavior);
+        if (info instanceof WorkspaceInfo workspaceInfo) {
+            return buildWrapperPolicy(accessManager, user, info, workspaceInfo.getName(), mixedModeBehavior);
         }
 
-        if (info instanceof StoreInfo) {
+        if (info instanceof StoreInfo storeInfo) {
             return buildWrapperPolicy(
-                    accessManager,
-                    user,
-                    ((StoreInfo) info).getWorkspace(),
-                    ((StoreInfo) info).getName(),
-                    mixedModeBehavior);
+                    accessManager, user, storeInfo.getWorkspace(), storeInfo.getName(), mixedModeBehavior);
         }
 
-        if (info instanceof ResourceInfo) {
-            return buildWrapperPolicy(accessManager, user, info, ((ResourceInfo) info).getName(), mixedModeBehavior);
+        if (info instanceof ResourceInfo resourceInfo) {
+            return buildWrapperPolicy(accessManager, user, info, resourceInfo.getName(), mixedModeBehavior);
         }
 
-        if (info instanceof LayerInfo) {
-            return buildWrapperPolicy(accessManager, user, info, ((LayerInfo) info).getName(), mixedModeBehavior);
+        if (info instanceof LayerInfo layerInfo) {
+            return buildWrapperPolicy(accessManager, user, info, layerInfo.getName(), mixedModeBehavior);
         }
 
-        if (info instanceof LayerGroupInfo) {
+        if (info instanceof LayerGroupInfo groupInfo) {
             // return the most restrictive policy that's not HIDDEN, or the
             // first HIDDEN one
             WrapperPolicy mostRestrictive = WrapperPolicy.readWrite(null);
 
-            for (PublishedInfo layer : ((LayerGroupInfo) info).getLayers()) {
+            for (PublishedInfo layer : groupInfo.getLayers()) {
                 WrapperPolicy policy =
                         buildWrapperPolicy(accessManager, user, layer, layer.getName(), mixedModeBehavior);
                 if (AccessLevel.HIDDEN.equals(policy.getAccessLevel())) {
@@ -805,8 +801,8 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             }
 
             return mostRestrictive;
-        } else if (info instanceof StyleInfo) {
-            return buildWrapperPolicy(accessManager, user, info, ((StyleInfo) info).getName(), mixedModeBehavior);
+        } else if (info instanceof StyleInfo styleInfo) {
+            return buildWrapperPolicy(accessManager, user, info, styleInfo.getName(), mixedModeBehavior);
         }
 
         throw new IllegalArgumentException("Can't build wrapper policy for objects of type "
@@ -863,11 +859,11 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
         AccessLimits limits;
 
-        if (info instanceof WorkspaceInfo) {
+        if (info instanceof WorkspaceInfo workspaceInfo) {
             // unsure here... shall we disallow writing? Only catalog and config
             // related code should be playing with stores directly, so it's more of a
             // matter if you can admin a workspace or not
-            limits = accessManager.getAccessLimits(user, (WorkspaceInfo) info);
+            limits = accessManager.getAccessLimits(user, workspaceInfo);
             WorkspaceAccessLimits wl = (WorkspaceAccessLimits) limits;
             if (wl != null) {
                 if (wl.isAdminable()) {
@@ -887,10 +883,10 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             DataAccessLimits dl;
             WorkspaceAccessLimits wl;
 
-            if (info instanceof LayerInfo) {
-                dl = accessManager.getAccessLimits(user, (LayerInfo) info, containers);
+            if (info instanceof LayerInfo layerInfo) {
+                dl = accessManager.getAccessLimits(user, layerInfo, containers);
                 wl = accessManager.getAccessLimits(
-                        user, ((LayerInfo) info).getResource().getStore().getWorkspace());
+                        user, layerInfo.getResource().getStore().getWorkspace());
             } else {
                 dl = accessManager.getAccessLimits(user, (ResourceInfo) info);
                 wl = accessManager.getAccessLimits(
@@ -898,8 +894,8 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             }
             if (dl != null) {
                 canRead = dl.getReadFilter() != Filter.EXCLUDE;
-                if (dl instanceof VectorAccessLimits) {
-                    canWrite = ((VectorAccessLimits) dl).getWriteFilter() != Filter.EXCLUDE;
+                if (dl instanceof VectorAccessLimits accessLimits) {
+                    canWrite = accessLimits.getWriteFilter() != Filter.EXCLUDE;
                 } else {
                     canWrite = false;
                 }
@@ -913,9 +909,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             }
         } else if (info instanceof StyleInfo || info instanceof LayerGroupInfo) {
             WorkspaceInfo ws = null;
-            if (info instanceof StyleInfo) {
-                limits = accessManager.getAccessLimits(user, (StyleInfo) info);
-                ws = ((StyleInfo) info).getWorkspace();
+            if (info instanceof StyleInfo styleInfo) {
+                limits = accessManager.getAccessLimits(user, styleInfo);
+                ws = styleInfo.getWorkspace();
             } else {
                 limits = accessManager.getAccessLimits(user, (LayerGroupInfo) info, containers);
                 ws = ((LayerGroupInfo) info).getWorkspace();
@@ -1060,47 +1056,46 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     // read only wrappers
     // -------------------------------------------------------------------
     static LayerGroupInfo unwrap(LayerGroupInfo layerGroup) {
-        if (layerGroup instanceof SecuredLayerGroupInfo)
-            return ((SecuredLayerGroupInfo) layerGroup).unwrap(LayerGroupInfo.class);
+        if (layerGroup instanceof SecuredLayerGroupInfo info) return info.unwrap(LayerGroupInfo.class);
         return layerGroup;
     }
 
     static LayerInfo unwrap(LayerInfo layer) {
-        if (layer instanceof SecuredLayerInfo) return ((SecuredLayerInfo) layer).unwrap(LayerInfo.class);
+        if (layer instanceof SecuredLayerInfo info) return info.unwrap(LayerInfo.class);
         return layer;
     }
 
     static ResourceInfo unwrap(ResourceInfo info) {
-        if (info instanceof SecuredFeatureTypeInfo) return ((SecuredFeatureTypeInfo) info).unwrap(ResourceInfo.class);
-        if (info instanceof SecuredCoverageInfo) return ((SecuredCoverageInfo) info).unwrap(ResourceInfo.class);
-        if (info instanceof SecuredWMSLayerInfo) return ((SecuredWMSLayerInfo) info).unwrap(ResourceInfo.class);
-        if (info instanceof SecuredWMTSLayerInfo) return ((SecuredWMTSLayerInfo) info).unwrap(ResourceInfo.class);
+        if (info instanceof SecuredFeatureTypeInfo typeInfo) return typeInfo.unwrap(ResourceInfo.class);
+        if (info instanceof SecuredCoverageInfo coverageInfo) return coverageInfo.unwrap(ResourceInfo.class);
+        if (info instanceof SecuredWMSLayerInfo layerInfo) return layerInfo.unwrap(ResourceInfo.class);
+        if (info instanceof SecuredWMTSLayerInfo layerInfo) return layerInfo.unwrap(ResourceInfo.class);
         return info;
     }
 
     static StoreInfo unwrap(StoreInfo info) {
-        if (info instanceof SecuredDataStoreInfo) return ((SecuredDataStoreInfo) info).unwrap(StoreInfo.class);
-        if (info instanceof SecuredCoverageStoreInfo) return ((SecuredCoverageStoreInfo) info).unwrap(StoreInfo.class);
-        if (info instanceof SecuredWMSStoreInfo) return ((SecuredWMSStoreInfo) info).unwrap(StoreInfo.class);
-        if (info instanceof SecuredWMTSStoreInfo) return ((SecuredWMTSStoreInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredDataStoreInfo storeInfo) return storeInfo.unwrap(StoreInfo.class);
+        if (info instanceof SecuredCoverageStoreInfo storeInfo) return storeInfo.unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMSStoreInfo storeInfo) return storeInfo.unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMTSStoreInfo storeInfo) return storeInfo.unwrap(StoreInfo.class);
         return info;
     }
 
     public static Object unwrap(Object obj) {
-        if (obj instanceof LayerGroupInfo) {
-            return unwrap((LayerGroupInfo) obj);
+        if (obj instanceof LayerGroupInfo info) {
+            return unwrap(info);
         }
-        if (obj instanceof LayerInfo) {
-            return unwrap((LayerInfo) obj);
+        if (obj instanceof LayerInfo info) {
+            return unwrap(info);
         }
-        if (obj instanceof ResourceInfo) {
-            return unwrap((ResourceInfo) obj);
+        if (obj instanceof ResourceInfo info) {
+            return unwrap(info);
         }
-        if (obj instanceof StoreInfo) {
-            return unwrap((StoreInfo) obj);
+        if (obj instanceof StoreInfo info) {
+            return unwrap(info);
         }
-        if (obj instanceof SecureCatalogImpl) {
-            return ((SecureCatalogImpl) obj).delegate;
+        if (obj instanceof SecureCatalogImpl impl) {
+            return impl.delegate;
         }
 
         return obj;

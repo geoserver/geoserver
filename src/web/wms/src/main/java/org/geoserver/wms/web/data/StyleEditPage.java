@@ -7,6 +7,7 @@ package org.geoserver.wms.web.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -25,6 +26,7 @@ import org.geotools.util.Version;
 /** Style edit page */
 public class StyleEditPage extends AbstractStylePage {
 
+    @Serial
     private static final long serialVersionUID = 5478083954402101191L;
 
     public static final String NAME = "name";
@@ -57,6 +59,7 @@ public class StyleEditPage extends AbstractStylePage {
                 get("validate").add(AttributeModifier.append("class", "hidden"));
                 add(new Behavior() {
 
+                    @Serial
                     private static final long serialVersionUID = -4336130086161028141L;
 
                     @Override

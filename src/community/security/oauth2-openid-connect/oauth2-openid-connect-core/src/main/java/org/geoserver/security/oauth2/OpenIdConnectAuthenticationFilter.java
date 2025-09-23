@@ -78,11 +78,10 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             TokenValidator bearerTokenValidator) {
         super(config, tokenServices, oauth2SecurityConfiguration, oauth2RestTemplate);
         // reconfigure the token services
-        if (tokenServices instanceof OpenIdConnectTokenServices && config instanceof OpenIdConnectFilterConfig) {
+        if (tokenServices instanceof OpenIdConnectTokenServices services
+                && config instanceof OpenIdConnectFilterConfig idConfig) {
 
-            OpenIdConnectFilterConfig idConfig = (OpenIdConnectFilterConfig) config;
-
-            ((OpenIdConnectTokenServices) tokenServices).setConfiguration(idConfig);
+            services.setConfiguration(idConfig);
             AuthorizationCodeAccessTokenProvider provider =
                     (AuthorizationCodeAccessTokenProvider) GeoServerExtensions.bean("authorizationAccessTokenProvider");
             if (idConfig.isUsePKCE()) provider.setTokenRequestEnhancer(new PKCERequestEnhancer(idConfig));
@@ -90,10 +89,8 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             else provider.setTokenRequestEnhancer(new DefaultRequestEnhancer());
         }
         // reconfigure the configuration, allow building a useful rest template
-        if (oauth2SecurityConfiguration instanceof OpenIdConnectSecurityConfiguration
-                && config instanceof OpenIdConnectFilterConfig) {
-            OpenIdConnectSecurityConfiguration sc = (OpenIdConnectSecurityConfiguration) oauth2SecurityConfiguration;
-            OpenIdConnectFilterConfig idConfig = (OpenIdConnectFilterConfig) config;
+        if (oauth2SecurityConfiguration instanceof OpenIdConnectSecurityConfiguration sc
+                && config instanceof OpenIdConnectFilterConfig idConfig) {
             sc.setConfiguration(idConfig);
         }
         this.bearerTokenValidator = bearerTokenValidator;
@@ -103,9 +100,8 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
 
-        if (config instanceof OpenIdConnectFilterConfig) {
+        if (config instanceof OpenIdConnectFilterConfig idConfig) {
             // in case cache authentication got disabled, clear the cache
-            OpenIdConnectFilterConfig idConfig = (OpenIdConnectFilterConfig) config;
             if (!idConfig.isCacheAuthentication()) {
                 AuthenticationCache cache = getSecurityManager().getAuthenticationCache();
                 if (cache != null) cache.removeAll(getName());
@@ -181,8 +177,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             bearerTokenValidator.verifyToken((OpenIdConnectFilterConfig) filterConfig, accessTokenClaims, userinfoMap);
             collectExpiration(req, accessTokenClaims);
         } else if (jwt instanceof JWEObject) {
-            if (tokenServices instanceof OpenIdConnectTokenServices) {
-                OpenIdConnectTokenServices ots = (OpenIdConnectTokenServices) tokenServices;
+            if (tokenServices instanceof OpenIdConnectTokenServices ots) {
                 Map<String, Object> result = ots.introspectToken(accessToken);
                 if (!Boolean.TRUE.equals(result.get("active"))) {
                     throw new Exception("Bearer token is not active");
@@ -337,10 +332,10 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     @SuppressWarnings("unchecked")
     private List<GeoServerRole> getGeoServerRoles(String rolesAttributePath, Object jsonObject) throws IOException {
         List<GeoServerRole> result = new ArrayList<>();
-        if (jsonObject instanceof String) {
-            result.add(new GeoServerRole((String) jsonObject));
-        } else if (jsonObject instanceof List) {
-            ((List) jsonObject).stream().forEach(v -> result.add(new GeoServerRole((String) v)));
+        if (jsonObject instanceof String string) {
+            result.add(new GeoServerRole(string));
+        } else if (jsonObject instanceof List list) {
+            list.stream().forEach(v -> result.add(new GeoServerRole((String) v)));
         } else {
             LOGGER.log(
                     Level.FINE, "Did not find " + rolesAttributePath + " in the token, returning an empty role list");
@@ -385,8 +380,8 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
             if (token != null && token.getAdditionalInformation() != null) {
                 Object maybeIdToken = token.getAdditionalInformation().get("id_token");
-                if (maybeIdToken instanceof String) {
-                    idToken = (String) maybeIdToken;
+                if (maybeIdToken instanceof String string) {
+                    idToken = string;
                 }
             }
         }

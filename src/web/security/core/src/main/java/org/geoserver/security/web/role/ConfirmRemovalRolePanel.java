@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.role;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.ows.util.OwsUtils;
@@ -13,6 +14,7 @@ import org.geoserver.security.web.AbstractConfirmRemovalPanel;
 
 public class ConfirmRemovalRolePanel extends AbstractConfirmRemovalPanel<GeoServerRole> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public ConfirmRemovalRolePanel(String id, List<GeoServerRole> roots) {

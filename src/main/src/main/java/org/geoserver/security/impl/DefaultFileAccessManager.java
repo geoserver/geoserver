@@ -7,7 +7,6 @@ package org.geoserver.security.impl;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -144,13 +143,13 @@ public class DefaultFileAccessManager implements FileAccessManager {
         while (ram instanceof ResourceAccessManagerWrapper) {
             ram = ((ResourceAccessManagerWrapper) ram).unwrap();
         }
-        if (ram instanceof DefaultResourceAccessManager) {
-            ((DefaultResourceAccessManager) ram).reload();
+        if (ram instanceof DefaultResourceAccessManager manager) {
+            manager.reload();
         }
     }
 
     private static Path canonical(String fileName) {
-        return Paths.get(fileName).toAbsolutePath().normalize();
+        return Path.of(fileName).toAbsolutePath().normalize();
     }
 
     private static Path canonical(File file) {

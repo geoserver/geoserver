@@ -6,6 +6,7 @@
 package org.geoserver.web.publish;
 
 import java.io.IOException;
+import java.io.Serial;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerInfo;
@@ -25,6 +26,7 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
  */
 public class PublishedEditTabPanel<T extends PublishedInfo> extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 8044055895040826418L;
 
     /**

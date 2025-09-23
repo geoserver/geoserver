@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class RepeatableComplexAttributeDataProvider extends GeoServerDataProvider<ComplexMetadataMap> {
 
+    @Serial
     private static final long serialVersionUID = -255037580716257623L;
 
     public static String KEY_VALUE = "value";

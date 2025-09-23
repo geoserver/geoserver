@@ -5,6 +5,7 @@
 package org.geoserver.wps.validator;
 
 import com.google.common.reflect.Parameter;
+import java.io.Serial;
 import org.springframework.validation.Errors;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.validation.Errors;
  */
 public class MaxSizeValidator implements WPSInputValidator {
 
+    @Serial
     private static final long serialVersionUID = 6486547223545859567L;
 
     /** Key in the {@link Parameter} metadata map representing the size limits */

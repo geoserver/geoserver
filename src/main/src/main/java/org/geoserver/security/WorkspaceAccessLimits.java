@@ -5,6 +5,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.geoserver.platform.GeoServerExtensions;
 
 /**
@@ -14,6 +15,7 @@ import org.geoserver.platform.GeoServerExtensions;
  * @author Andrea Aime - GeoSolutions
  */
 public class WorkspaceAccessLimits extends AccessLimits {
+    @Serial
     private static final long serialVersionUID = -1852838160677767466L;
 
     boolean readable;

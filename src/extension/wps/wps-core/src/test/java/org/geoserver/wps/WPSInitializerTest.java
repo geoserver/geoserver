@@ -168,9 +168,9 @@ public class WPSInitializerTest {
 
         @Override
         public boolean matches(Object argument) {
-            if (argument instanceof ConfigurationListener) {
-                if (add) listeners.add((ConfigurationListener) argument);
-                else listeners.remove((ConfigurationListener) argument);
+            if (argument instanceof ConfigurationListener listener) {
+                if (add) listeners.add(listener);
+                else listeners.remove(listener);
                 return true;
             }
             return false;

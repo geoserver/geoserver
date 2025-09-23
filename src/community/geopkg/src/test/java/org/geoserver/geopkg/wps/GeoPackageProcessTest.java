@@ -256,9 +256,12 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         assertEquals(1, lakesStylesheets.size());
         GeoPkgStyleSheet lakesStylesheet = lakesStylesheets.get(0);
         assertEquals("application/vnd.ogc.sld+xml", lakesStylesheet.getFormat());
-        String expectedFill = "                        <CssParameter name=\"fill\">\n"
-                + "                            <ogc:Literal>#4040C0</ogc:Literal>\n"
-                + "                        </CssParameter>\n";
+        String expectedFill =
+                """
+                                        <CssParameter name="fill">
+                                            <ogc:Literal>#4040C0</ogc:Literal>
+                                        </CssParameter>
+                """;
         assertThat(lakesStylesheet.getStylesheet(), CoreMatchers.containsString(expectedFill));
 
         // the symbology

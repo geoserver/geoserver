@@ -5,6 +5,7 @@
 package org.geoserver.wms.web.data;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -26,6 +27,7 @@ public class LayerAttributePanel extends StyleEditTabPanel {
 
     static final Logger LOGGER = Logging.getLogger(LayerAttributePanel.class);
 
+    @Serial
     private static final long serialVersionUID = -5936224477909623317L;
 
     public LayerAttributePanel(String id, AbstractStylePage parent) throws IOException {
@@ -34,6 +36,7 @@ public class LayerAttributePanel extends StyleEditTabPanel {
         // Change layer link
         PropertyModel<String> layerNameModel = new PropertyModel<>(parent.getLayerModel(), "prefixedName");
         add(new SimpleAjaxLink<>("changeLayer", layerNameModel) {
+            @Serial
             private static final long serialVersionUID = 7341058018479354596L;
 
             @Override
@@ -68,10 +71,10 @@ public class LayerAttributePanel extends StyleEditTabPanel {
         if (this.get("attributePanel") != null) {
             this.remove("attributePanel");
         }
-        if (resource instanceof FeatureTypeInfo) {
-            this.add(new DataPanel("attributePanel", (FeatureTypeInfo) resource));
-        } else if (resource instanceof CoverageInfo) {
-            this.add(new BandsPanel("attributePanel", (CoverageInfo) resource));
+        if (resource instanceof FeatureTypeInfo info1) {
+            this.add(new DataPanel("attributePanel", info1));
+        } else if (resource instanceof CoverageInfo info) {
+            this.add(new BandsPanel("attributePanel", info));
         }
     }
 }

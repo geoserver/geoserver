@@ -20,28 +20,30 @@ import org.junit.Test;
 public class WpsXmlReaderTest extends WPSTestSupport {
     @Test
     public void testWpsExecuteWithGetFeatureAndViewParams() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                + "  <ows:Identifier>gs:Bounds</ows:Identifier>\n"
-                + "  <wps:DataInputs>\n"
-                + "    <wps:Input>\n"
-                + "      <ows:Identifier>features</ows:Identifier>\n"
-                + "      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" "
-                + " xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n"
-                + "         <wps:Body>\n"
-                + "           <wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\" xmlns:test=\"test\" viewParams=\"A:b;C:d\">\n"
-                + "             <wfs:Query typeName=\"test:test\"/>\n"
-                + "           </wfs:GetFeature>\n"
-                + "         </wps:Body>\n"
-                + "      </wps:Reference>\n"
-                + "    </wps:Input>\n"
-                + "  </wps:DataInputs>\n"
-                + "  <wps:ResponseForm>\n"
-                + "    <wps:RawDataOutput>\n"
-                + "      <ows:Identifier>bounds</ows:Identifier>\n"
-                + "    </wps:RawDataOutput>\n"
-                + "  </wps:ResponseForm>\n"
-                + "</wps:Execute>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+                  <ows:Identifier>gs:Bounds</ows:Identifier>
+                  <wps:DataInputs>
+                    <wps:Input>
+                      <ows:Identifier>features</ows:Identifier>
+                      <wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" \
+                 xlink:href="http://geoserver/wfs" method="POST">
+                         <wps:Body>
+                           <wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:test="test" viewParams="A:b;C:d">
+                             <wfs:Query typeName="test:test"/>
+                           </wfs:GetFeature>
+                         </wps:Body>
+                      </wps:Reference>
+                    </wps:Input>
+                  </wps:DataInputs>
+                  <wps:ResponseForm>
+                    <wps:RawDataOutput>
+                      <ows:Identifier>bounds</ows:Identifier>
+                    </wps:RawDataOutput>
+                  </wps:ResponseForm>
+                </wps:Execute>""";
 
         WpsXmlReader reader = new WpsXmlReader(
                 "Execute",
@@ -68,28 +70,30 @@ public class WpsXmlReaderTest extends WPSTestSupport {
 
     @Test
     public void testWpsExecuteWithGetFeature_2_0_0() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                + "  <ows:Identifier>gs:Bounds</ows:Identifier>\n"
-                + "  <wps:DataInputs>\n"
-                + "    <wps:Input>\n"
-                + "      <ows:Identifier>features</ows:Identifier>\n"
-                + "      <wps:Reference mimeType=\"text/xml\" "
-                + " xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n"
-                + "         <wps:Body>\n"
-                + "           <wfs:GetFeature service=\"WFS\" version=\"2.0.0\" outputFormat=\"GML2\" xmlns:test=\"test\" >\n"
-                + "             <wfs:Query typeNames=\"test:test\"/>\n"
-                + "           </wfs:GetFeature>\n"
-                + "         </wps:Body>\n"
-                + "      </wps:Reference>\n"
-                + "    </wps:Input>\n"
-                + "  </wps:DataInputs>\n"
-                + "  <wps:ResponseForm>\n"
-                + "    <wps:RawDataOutput>\n"
-                + "      <ows:Identifier>bounds</ows:Identifier>\n"
-                + "    </wps:RawDataOutput>\n"
-                + "  </wps:ResponseForm>\n"
-                + "</wps:Execute>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+                  <ows:Identifier>gs:Bounds</ows:Identifier>
+                  <wps:DataInputs>
+                    <wps:Input>
+                      <ows:Identifier>features</ows:Identifier>
+                      <wps:Reference mimeType="text/xml" \
+                 xlink:href="http://geoserver/wfs" method="POST">
+                         <wps:Body>
+                           <wfs:GetFeature service="WFS" version="2.0.0" outputFormat="GML2" xmlns:test="test" >
+                             <wfs:Query typeNames="test:test"/>
+                           </wfs:GetFeature>
+                         </wps:Body>
+                      </wps:Reference>
+                    </wps:Input>
+                  </wps:DataInputs>
+                  <wps:ResponseForm>
+                    <wps:RawDataOutput>
+                      <ows:Identifier>bounds</ows:Identifier>
+                    </wps:RawDataOutput>
+                  </wps:ResponseForm>
+                </wps:Execute>""";
 
         WpsXmlReader reader = new WpsXmlReader(
                 "Execute",

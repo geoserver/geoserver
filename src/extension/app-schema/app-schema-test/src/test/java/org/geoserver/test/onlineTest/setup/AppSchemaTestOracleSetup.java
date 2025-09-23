@@ -34,36 +34,38 @@ import org.locationtech.jts.io.WKTWriter;
 public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
 
     /** Mapping file database parameters */
-    public static String DB_PARAMS = "<parameters>" //
-            + "\n<Parameter>\n" //
-            + "<name>dbtype</name>\n" //
-            + "<value>Oracle</value>" //
-            + "\n</Parameter>" //
-            + "\n<Parameter>\n" //
-            + "<name>host</name>\n" //
-            + "<value>${host}</value>" //
-            + "\n</Parameter>" //
-            + "\n<Parameter>\n" //
-            + "<name>port</name>\n" //
-            + "<value>${port}</value>" //
-            + "\n</Parameter>" //
-            + "\n<Parameter>\n" //
-            + "<name>database</name>\n" //
-            + "<value>${database}</value>" //
-            + "\n</Parameter>" //
-            + "\n<Parameter>\n" //
-            + "<name>user</name>\n" //
-            + "<value>${user}</value>" //
-            + "\n</Parameter>" //
-            + "\n<Parameter>\n" //
-            + "<name>passwd</name>\n" //
-            + "<value>${passwd}</value>" //
-            + "\n</Parameter>" //
-            + "\n<Parameter>\n"
-            + "<name>Expose primary keys</name>"
-            + "<value>true</value>"
-            + "\n</Parameter>" //
-            + "\n</parameters>"; //
+    public static String DB_PARAMS =
+            """
+            <parameters>
+            <Parameter>
+            <name>dbtype</name>
+            <value>Oracle</value>
+            </Parameter>
+            <Parameter>
+            <name>host</name>
+            <value>${host}</value>
+            </Parameter>
+            <Parameter>
+            <name>port</name>
+            <value>${port}</value>
+            </Parameter>
+            <Parameter>
+            <name>database</name>
+            <value>${database}</value>
+            </Parameter>
+            <Parameter>
+            <name>user</name>
+            <value>${user}</value>
+            </Parameter>
+            <Parameter>
+            <name>passwd</name>
+            <value>${passwd}</value>
+            </Parameter>
+            <Parameter>
+            <name>Expose primary keys</name>\
+            <value>true</value>
+            </Parameter>
+            </parameters>"""; //
 
     /** Default WKT parser for non 3D tests. */
     private static String DEFAULT_PARSER = "SDO_GEOMETRY";
@@ -163,7 +165,7 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 for (PropertyDescriptor desc : schema.getDescriptors()) {
                     field = desc.getName().toString().toUpperCase();
                     fieldNames[j] = field;
-                    if (desc instanceof GeometryDescriptor) {
+                    if (desc instanceof GeometryDescriptor descriptor) {
                         type = "SDO_GEOMETRY";
                         // Update spatial index
                         int srid = getSrid(((GeometryType) desc.getType()));
@@ -183,8 +185,8 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                                 .append("',MDSYS.SDO_DIM_ARRAY(MDSYS.SDO_DIM_ELEMENT('X',140.962,144.909,0.00001),")
                                 .append("MDSYS.SDO_DIM_ELEMENT('Y',-38.858,-33.98,0.00001)")
                                 .append( // support 3d index
-                                        ((GeometryDescriptor) desc).getCoordinateReferenceSystem() != null
-                                                        && ((GeometryDescriptor) desc)
+                                        descriptor.getCoordinateReferenceSystem() != null
+                                                        && descriptor
                                                                         .getCoordinateReferenceSystem()
                                                                         .getCoordinateSystem()
                                                                         .getDimension()
@@ -246,10 +248,9 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                     int valueIndex = 0;
                     for (Property prop : properties) {
                         Object value = prop.getValue();
-                        if (value instanceof Geometry) {
-                            // use wkt writer to convert geometry to string, so third dimension can
-                            // be supported if present.
-                            Geometry geom = (Geometry) value;
+                        if (value instanceof Geometry geom) {
+                            // use wkt writer to convert geometry to string, so third dimension can be supported if
+                            // present.
                             value = new WKTWriter(
                                             Double.isNaN(geom.getCoordinate().getZ()) ? 2 : 3)
                                     .write(geom);

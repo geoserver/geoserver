@@ -46,25 +46,23 @@ import org.xml.sax.XMLReader;
  * {@link CapabilitiesTransformer} is gonna be run through an XSLT transformation that will insert the proper internal
  * DTD declaration.
  *
- * <p>Each {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()} is added to the list of direct
- * children of the {@code VendorSpecificCapabilities} element, and each
- * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()} is added to the list of internal DTD
- * elements, like in the following example:
+ * <p>Each {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest)} is added to
+ * the list of direct children of the {@code VendorSpecificCapabilities} element, and each
+ * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest)} is added to the
+ * list of internal DTD elements, like in the following example:
  *
- * <pre>
- * <code>
- * &lt;!DOCTYPE WMT_MS_Capabilities SYSTEM "BASE_URL/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd"[
- * &lt;!ELEMENT VendorSpecificCapabilities (TileSet*, Test?) &gt;
- * &lt;!ELEMENT Resolutions (#PCDATA) &gt;
- * &lt;!ELEMENT TestChild (#PCDATA) &gt;
- * ]&gt;
- * </code>
- * </pre>
+ * <pre>{@code
+ * <!DOCTYPE WMT_MS_Capabilities SYSTEM "BASE_URL/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd"[
+ * <!ELEMENT VendorSpecificCapabilities (TileSet*, Test?) >
+ * <!ELEMENT Resolutions (#PCDATA) >
+ * <!ELEMENT TestChild (#PCDATA) >
+ * ]>
+ * }</pre>
  *
  * Where BASE_URL is the {@link GetMapRequest#getBaseUrl()}, {@code TileSet*} and {@code Test?} are contributed through
- * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()}, and {@code <!ELEMENT Resolutions (#PCDATA)
- * >} and {@code <!ELEMENT TestChild (#PCDATA) >} through
- * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()}
+ * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest)}, and {@code <!ELEMENT
+ * Resolutions (#PCDATA) >} and {@code <!ELEMENT TestChild (#PCDATA) >} through
+ * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest)}.
  *
  * @author groldan
  */

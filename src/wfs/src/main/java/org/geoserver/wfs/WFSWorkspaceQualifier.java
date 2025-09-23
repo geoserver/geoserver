@@ -164,14 +164,12 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
         TransactionRequest t = TransactionRequest.adapt(OwsUtils.parameter(operation.getParameters(), EObject.class));
         if (t != null) {
             for (TransactionElement el : t.getElements()) {
-                if (el instanceof Insert) {
-                    Insert in = (Insert) el;
+                if (el instanceof Insert in) {
                     // in the insert case the objects are gt feature types which are not mutable
                     // so we just check them and throw an exception if a name does not match
                     List features = in.getFeatures();
                     ensureFeatureNamespaceUriMatches(features, ns, t);
-                } else if (el instanceof Replace) {
-                    Replace rep = (Replace) el;
+                } else if (el instanceof Replace rep) {
                     // in the replace case the objects are gt feature types which are not mutable
                     // so we just check them and throw an exception if a name does not match
                     List features = rep.getFeatures();
@@ -186,8 +184,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     /** Iterates the given features and ensures their namespaceURI matches the given namespace */
     private void ensureFeatureNamespaceUriMatches(List features, NamespaceInfo ns, TransactionRequest t) {
         for (Object next : features) {
-            if (next instanceof Feature) {
-                Feature f = (Feature) next;
+            if (next instanceof Feature f) {
                 Name n = f.getType().getName();
                 if (n.getNamespaceURI() != null && !ns.getURI().equals(n.getNamespaceURI())) {
                     throw new WFSException(t, "No such feature type " + n);

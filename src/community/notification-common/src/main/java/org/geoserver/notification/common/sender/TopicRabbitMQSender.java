@@ -7,6 +7,7 @@ package org.geoserver.notification.common.sender;
 
 import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
+import java.io.Serial;
 import org.geoserver.notification.common.NotificationXStreamDefaultInitializer;
 
 /**
@@ -24,6 +25,7 @@ import org.geoserver.notification.common.NotificationXStreamDefaultInitializer;
  */
 public class TopicRabbitMQSender extends RabbitMQSender {
 
+    @Serial
     private static final long serialVersionUID = 8282122533228442676L;
 
     public static final String EXCHANGE_TYPE = "topic";

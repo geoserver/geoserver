@@ -4,6 +4,7 @@
  */
 package org.geoserver.wfs.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,6 +50,7 @@ public class OutputTypesFormComponent extends FormComponentPanel<String> {
 
         add(
                 palette = new Palette<>("palette", model, choicesModel, new SimpleChoiceRenderer<>(), 10, false) {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override

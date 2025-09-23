@@ -334,8 +334,7 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     @SuppressWarnings({"unchecked", "static-access"})
     public void doWrite(Object item, Resource directory, String fileName) throws Exception {
         try {
-            if (item instanceof ServiceInfo) {
-                ServiceInfo service = (ServiceInfo) item;
+            if (item instanceof ServiceInfo service) {
                 XStreamServiceLoader loader = findServiceLoader(service);
 
                 try {

@@ -16,7 +16,7 @@ import org.geoserver.security.config.PasswordPolicyConfig;
 import org.geoserver.security.web.SecurityNamedServicePanel;
 
 /**
- * Configuration panel for {@link PasswordPolicy}.
+ * Configuration panel for {@link PasswordPolicyConfig}.
  *
  * @author Justin Deoliveira, OpenGeo
  */

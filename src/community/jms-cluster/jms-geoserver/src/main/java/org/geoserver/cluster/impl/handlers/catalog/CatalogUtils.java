@@ -212,17 +212,17 @@ public abstract class CatalogUtils {
         List<PublishedInfo> layers = info.getLayers();
         if (layers != null) {
             for (PublishedInfo layer : layers) {
-                if (layer instanceof LayerInfo) {
-                    ResourceInfo resource = ((LayerInfo) layer).getResource();
+                if (layer instanceof LayerInfo layerInfo) {
+                    ResourceInfo resource = layerInfo.getResource();
                     if (resource == null) {
                         continue;
                     }
                     StoreInfo store = resource.getStore();
                     // we need the non proxy instance
                     store = ModificationProxy.unwrap(store);
-                    if (store instanceof StoreInfoImpl) {
+                    if (store instanceof StoreInfoImpl impl) {
                         // setting the catalog
-                        ((StoreInfoImpl) store).setCatalog(catalog);
+                        impl.setCatalog(catalog);
                     }
                 }
             }
@@ -243,12 +243,12 @@ public abstract class CatalogUtils {
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null) throw new NullPointerException("Arguments may never be null");
 
-        if (info instanceof CoverageStoreInfo) {
-            return localizeCoverageStore((CoverageStoreInfo) info, catalog);
-        } else if (info instanceof DataStoreInfo) {
-            return localizeDataStore((DataStoreInfo) info, catalog);
-        } else if (info instanceof WMSStoreInfo) {
-            return localizeWMSStore((WMSStoreInfo) info, catalog);
+        if (info instanceof CoverageStoreInfo storeInfo2) {
+            return localizeCoverageStore(storeInfo2, catalog);
+        } else if (info instanceof DataStoreInfo storeInfo1) {
+            return localizeDataStore(storeInfo1, catalog);
+        } else if (info instanceof WMSStoreInfo storeInfo) {
+            return localizeWMSStore(storeInfo, catalog);
         } else {
             throw new IllegalArgumentException("Unable to provide localization for the passed instance");
         }
@@ -328,17 +328,17 @@ public abstract class CatalogUtils {
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null) throw new NullPointerException("Arguments may never be null");
 
-        if (info instanceof CoverageInfo) {
+        if (info instanceof CoverageInfo coverageInfo) {
             // coverage
-            return localizeCoverage((CoverageInfo) info, catalog);
+            return localizeCoverage(coverageInfo, catalog);
 
-        } else if (info instanceof FeatureTypeInfo) {
+        } else if (info instanceof FeatureTypeInfo typeInfo) {
             // feature
-            return localizeFeatureType((FeatureTypeInfo) info, catalog);
+            return localizeFeatureType(typeInfo, catalog);
 
-        } else if (info instanceof WMSLayerInfo) {
+        } else if (info instanceof WMSLayerInfo layerInfo) {
             // wmslayer
-            return localizeWMSLayer((WMSLayerInfo) info, catalog);
+            return localizeWMSLayer(layerInfo, catalog);
 
         } else {
             throw new IllegalArgumentException("Unable to provide localization for the passed instance");

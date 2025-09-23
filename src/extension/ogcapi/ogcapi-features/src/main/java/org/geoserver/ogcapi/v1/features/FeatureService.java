@@ -58,6 +58,7 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.Id;
@@ -344,7 +345,9 @@ public class FeatureService {
             @RequestParam(name = "bbox-crs", required = false) String bboxCRS,
             @RequestParam(name = "time", required = false) String time,
             @PathVariable(name = "itemId") String itemId,
-            @RequestParam(name = "crs", required = false) String crs)
+            @RequestParam(name = "crs", required = false) String crs,
+            @RequestParam(name = "properties", required = false) List<String> properties,
+            @RequestParam(name = "exclude-properties", required = false) List<String> excludeProperties)
             throws Exception {
         return items(
                 collectionId,
@@ -359,6 +362,8 @@ public class FeatureService {
                 null, /* sortby */
                 crs,
                 null, /* ids */
+                properties,
+                excludeProperties,
                 itemId);
     }
 
@@ -378,6 +383,8 @@ public class FeatureService {
             @RequestParam(name = "sortby", required = false) SortBy[] sortBy,
             @RequestParam(name = "crs", required = false) String crs,
             @RequestParam(name = "ids", required = false) List<String> ids,
+            @RequestParam(name = "properties", required = false) List<String> properties,
+            @RequestParam(name = "exclude-properties", required = false) List<String> excludeProperties,
             String itemId)
             throws Exception {
 
@@ -443,6 +450,32 @@ public class FeatureService {
                 LOGGER.warning(() -> "The sortby parameter is not supported by the service, requires "
                         + FeatureConformance.SORTBY.getId()
                         + " conformance to be enabled.");
+            }
+        }
+
+        if (properties != null || excludeProperties != null) {
+            if (!features.propertySelection(wfs)) {
+                LOGGER.warning(
+                        () -> "The properties / exclude-properties parameter is not supported by the service, requires "
+                                + FeatureConformance.PROPERTY_SELECTION.getId()
+                                + " conformance to be enabled.");
+            } else if (properties != null && excludeProperties != null) {
+                throw new APIException(
+                        APIException.INVALID_PARAMETER_VALUE,
+                        "You cannot use both properties and exclude-properties in the same request",
+                        HttpStatus.BAD_REQUEST);
+            } else {
+                if (properties != null && !properties.isEmpty()) {
+                    query.setPropertyNames(properties);
+                } else if (excludeProperties != null && !excludeProperties.isEmpty()) {
+                    List<String> props = new ArrayList<>();
+                    for (PropertyDescriptor pd : ft.getFeatureType().getDescriptors()) {
+                        if (!excludeProperties.contains(pd.getName().getLocalPart())) {
+                            props.add(pd.getName().getLocalPart());
+                        }
+                    }
+                    query.setPropertyNames(props);
+                }
             }
         }
 
@@ -521,6 +554,8 @@ public class FeatureService {
                 query.getSortBy(),
                 query.getCrs(),
                 query.getIds(),
+                null,
+                null,
                 null);
     }
 
@@ -541,8 +576,7 @@ public class FeatureService {
             Filter filter;
             if (timeSpec instanceof Date) {
                 filter = FF.equals(property, FF.literal(timeSpec));
-            } else if (timeSpec instanceof DateRange) {
-                DateRange dateRange = (DateRange) timeSpec;
+            } else if (timeSpec instanceof DateRange dateRange) {
                 Literal before = FF.literal(dateRange.getMinValue());
                 Literal after = FF.literal(dateRange.getMaxValue());
                 filter = FF.between(property, before, after);

@@ -83,11 +83,11 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -150,11 +150,11 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -202,11 +202,11 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -253,11 +253,11 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }

@@ -5,6 +5,7 @@
 package org.geoserver.security.oauth2;
 
 import java.io.IOException;
+import java.io.Serial;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterConfig
         implements SecurityAuthFilterConfig, OAuth2FilterConfig {
 
+    @Serial
     private static final long serialVersionUID = -8581346584859849804L;
 
     protected String cliendId;

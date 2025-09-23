@@ -26,10 +26,10 @@ import org.geotools.xsd.EMFUtils;
 public abstract class GetFeatureRequest extends RequestObject {
 
     public static GetFeatureRequest adapt(Object request) {
-        if (request instanceof GetFeatureType) {
-            return new WFS11((EObject) request);
-        } else if (request instanceof net.opengis.wfs20.GetFeatureType) {
-            return new WFS20((EObject) request);
+        if (request instanceof GetFeatureType type) {
+            return new WFS11(type);
+        } else if (request instanceof net.opengis.wfs20.GetFeatureType type) {
+            return new WFS20(type);
         }
         return null;
     }

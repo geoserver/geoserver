@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -23,6 +24,7 @@ import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfigurat
 
 public class JDBCConnectionPoolPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -1579697287836672528L;
 
     public JDBCConnectionPoolPanel(String id, IModel<ConnectionPoolConfiguration> model) {
@@ -89,11 +91,14 @@ public class JDBCConnectionPoolPanel extends Panel {
      * @author Andrea Aime - GeoSolutions
      */
     private static class ContainsAutoCompleteBehavior extends AutoCompleteBehavior<String> {
+        @Serial
         private static final long serialVersionUID = 993566054116148859L;
+
         private List<String> choices;
 
         public ContainsAutoCompleteBehavior(List<String> choices) {
             super(new AbstractAutoCompleteTextRenderer<>() {
+                @Serial
                 private static final long serialVersionUID = 3192368880726583011L;
 
                 @Override

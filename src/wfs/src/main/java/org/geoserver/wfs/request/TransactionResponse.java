@@ -20,10 +20,10 @@ import org.geotools.api.filter.identity.FeatureId;
 public abstract class TransactionResponse extends RequestObject {
 
     public static TransactionResponse adapt(Object request) {
-        if (request instanceof TransactionResponseType) {
-            return new WFS11((EObject) request);
-        } else if (request instanceof net.opengis.wfs20.TransactionResponseType) {
-            return new WFS20((EObject) request);
+        if (request instanceof TransactionResponseType type) {
+            return new WFS11(type);
+        } else if (request instanceof net.opengis.wfs20.TransactionResponseType type) {
+            return new WFS20(type);
         }
         return null;
     }

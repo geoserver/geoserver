@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.model.impl;
 
+import java.io.Serial;
 import java.util.UUID;
 import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.service.GlobalModelService;
@@ -11,6 +12,7 @@ import org.geoserver.web.GeoServerApplication;
 
 public class GlobalModel<T> implements IModel<T> {
 
+    @Serial
     private static final long serialVersionUID = -933926008434334649L;
 
     private UUID key = UUID.randomUUID();

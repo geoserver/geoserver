@@ -61,7 +61,6 @@ import org.springframework.util.Assert;
  * @author Pierre-Emmanuel Balageas, ALCER (http://www.alcer.com)
  * @author Simone Giannecchini - GeoSolutions
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class PDFMapResponse extends AbstractMapResponse {
 
@@ -278,9 +277,9 @@ public class PDFMapResponse extends AbstractMapResponse {
         @Override
         protected void paintGraphicFill(Graphics2D graphics, Shape shape, Style2D graphicFill, double scale) {
 
-            if (graphics instanceof PdfGraphics2D
+            if (graphics instanceof PdfGraphics2D graphics2D
                     && (graphicFill instanceof IconStyle2D || isMarkNonHatchFill(graphicFill))) {
-                fillShapeAsPattern((PdfGraphics2D) graphics, shape, graphicFill, scale);
+                fillShapeAsPattern(graphics2D, shape, graphicFill, scale);
             } else {
                 super.paintGraphicFill(graphics, shape, graphicFill, scale);
             }
@@ -370,16 +369,15 @@ public class PDFMapResponse extends AbstractMapResponse {
 
         private PdfPatternPainter buildPattern(Style2D graphicFill, final PdfContentByte content, double scale) {
             PdfPatternPainter pattern;
-            if (graphicFill instanceof IconStyle2D) {
-                final Icon icon = ((IconStyle2D) graphicFill).getIcon();
+            if (graphicFill instanceof IconStyle2D style2D) {
+                final Icon icon = style2D.getIcon();
                 int width = icon.getIconWidth();
                 int height = icon.getIconHeight();
                 pattern = content.createPattern(width, height);
                 Graphics2D patternGraphic = pattern.createGraphics(width, height);
                 icon.paintIcon(null, patternGraphic, 0, 0);
                 patternGraphic.dispose();
-            } else if (graphicFill instanceof MarkStyle2D) {
-                MarkStyle2D mark = (MarkStyle2D) graphicFill;
+            } else if (graphicFill instanceof MarkStyle2D mark) {
                 int size = (int) Math.round(mark.getSize());
                 pattern = content.createPattern(size, size);
                 Graphics2D patternGraphic = pattern.createGraphics(size, size);

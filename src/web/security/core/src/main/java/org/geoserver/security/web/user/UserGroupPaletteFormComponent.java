@@ -6,6 +6,7 @@
 package org.geoserver.security.web.user;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.geoserver.web.GeoServerApplication;
 /** A form component that can be used to edit user to group assignments */
 public class UserGroupPaletteFormComponent extends PaletteFormComponent<GeoServerUserGroup> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     GeoServerUser user;

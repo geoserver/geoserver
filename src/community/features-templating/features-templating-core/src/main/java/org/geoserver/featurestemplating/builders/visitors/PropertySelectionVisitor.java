@@ -79,10 +79,10 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
     @Override
     public Object visit(DynamicValueBuilder dynamicBuilder, Object extradata) {
         Object result;
-        if (dynamicBuilder instanceof DynamicMergeBuilder) {
-            result = visit((DynamicMergeBuilder) dynamicBuilder, extradata);
-        } else if (dynamicBuilder instanceof DynamicIncludeFlatBuilder) {
-            result = visit((DynamicIncludeFlatBuilder) dynamicBuilder, extradata);
+        if (dynamicBuilder instanceof DynamicMergeBuilder builder2) {
+            result = visit(builder2, extradata);
+        } else if (dynamicBuilder instanceof DynamicIncludeFlatBuilder builder1) {
+            result = visit(builder1, extradata);
         } else {
             PropertySelectionContext selectionExtradata = createExtradata(dynamicBuilder, extradata);
             DynamicValueBuilder copy = (DynamicValueBuilder) super.visit(dynamicBuilder, selectionExtradata);
@@ -136,22 +136,20 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
     // wrap the builder if the key cannot be computed before template evaluation.
     private PropertySelectionWrapper wrapWhenNonStaticKey(AbstractTemplateBuilder builder) {
         PropertySelectionWrapper result = null;
-        if (builder instanceof DynamicIncludeFlatBuilder) {
-            result = new IncludeFlatPropertySelection((DynamicIncludeFlatBuilder) builder, selectionHandler);
-        } else if (builder instanceof ArrayIncludeFlatBuilder) {
-            result = new IncludeArrayPropertySelection((ArrayIncludeFlatBuilder) builder, selectionHandler);
+        if (builder instanceof DynamicIncludeFlatBuilder flatBuilder1) {
+            result = new IncludeFlatPropertySelection(flatBuilder1, selectionHandler);
+        } else if (builder instanceof ArrayIncludeFlatBuilder flatBuilder) {
+            result = new IncludeArrayPropertySelection(flatBuilder, selectionHandler);
         } else {
             boolean wrap = hasDynamicKey(builder);
-            if (builder instanceof DynamicValueBuilder && wrap) {
-                DynamicValueBuilder dynamic = (DynamicValueBuilder) builder;
+            if (builder instanceof DynamicValueBuilder dynamic && wrap) {
                 result = new DynamicPropertySelection(dynamic, selectionHandler);
-            } else if (builder instanceof StaticBuilder && wrap) {
-                StaticBuilder staticBuilder = (StaticBuilder) builder;
+            } else if (builder instanceof StaticBuilder staticBuilder && wrap) {
                 result = new StaticPropertySelection(staticBuilder, selectionHandler);
-            } else if (wrap && builder instanceof CompositeBuilder) {
-                result = new CompositePropertySelection((CompositeBuilder) builder, selectionHandler);
-            } else if (wrap && builder instanceof IteratingBuilder) {
-                result = new IteratingPropertySelection((IteratingBuilder) builder, selectionHandler);
+            } else if (wrap && builder instanceof CompositeBuilder compositeBuilder) {
+                result = new CompositePropertySelection(compositeBuilder, selectionHandler);
+            } else if (wrap && builder instanceof IteratingBuilder iteratingBuilder) {
+                result = new IteratingPropertySelection(iteratingBuilder, selectionHandler);
             }
         }
         return result;
@@ -160,11 +158,11 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
     // wrap a builder if it holds a JsonValue that potentially might be selected
     private AbstractTemplateBuilder wrapJsonValuesBuilder(
             AbstractTemplateBuilder builder, PropertySelectionContext extradata) {
-        if (builder instanceof StaticBuilder) {
-            builder = wrapStaticBuilder((StaticBuilder) builder, extradata);
-        } else if (builder instanceof DynamicValueBuilder) {
+        if (builder instanceof StaticBuilder staticBuilder) {
+            builder = wrapStaticBuilder(staticBuilder, extradata);
+        } else if (builder instanceof DynamicValueBuilder valueBuilder) {
             queryProperties.addAll(extractSelectedProperties(builder, extradata));
-            builder = wrapDynamicBuilder((DynamicValueBuilder) builder, extradata);
+            builder = wrapDynamicBuilder(valueBuilder, extradata);
         }
         return builder;
     }
@@ -210,8 +208,8 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
         boolean result = false;
         for (PropertyName pn : propertyNames) {
             Object evalRes = pn.evaluate(propertyType);
-            if (evalRes instanceof PropertyDescriptor) {
-                result = JSONFieldSupport.isJSONField((PropertyDescriptor) evalRes);
+            if (evalRes instanceof PropertyDescriptor descriptor) {
+                result = JSONFieldSupport.isJSONField(descriptor);
                 break;
             }
         }
@@ -248,11 +246,11 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
 
     private PropertySelectionContext createExtradata(TemplateBuilder current, Object extradata) {
         PropertySelectionContext selectionExtradata;
-        if (extradata instanceof PropertySelectionContext)
-            selectionExtradata = new PropertySelectionContext((PropertySelectionContext) extradata);
+        if (extradata instanceof PropertySelectionContext context)
+            selectionExtradata = new PropertySelectionContext(context);
         else selectionExtradata = new PropertySelectionContext();
-        if (current instanceof AbstractTemplateBuilder && !selectionExtradata.isDynamicKeyParent()) {
-            updateFullStaticKey((AbstractTemplateBuilder) current, selectionExtradata);
+        if (current instanceof AbstractTemplateBuilder builder && !selectionExtradata.isDynamicKeyParent()) {
+            updateFullStaticKey(builder, selectionExtradata);
         }
         return selectionExtradata;
     }
@@ -278,13 +276,11 @@ public class PropertySelectionVisitor extends DuplicatingTemplateVisitor {
     private Set<String> extractSelectedProperties(
             AbstractTemplateBuilder templateBuilder, PropertySelectionContext context) {
         Set<String> result = Collections.emptySet();
-        if (templateBuilder instanceof DynamicJsonBuilder) {
-            DynamicJsonBuilder jsonBuilder = (DynamicJsonBuilder) templateBuilder;
+        if (templateBuilder instanceof DynamicJsonBuilder jsonBuilder) {
             result = getPropertiesFromDynamicJsonBuilder(jsonBuilder, context);
-        } else if (templateBuilder instanceof DynamicValueBuilder) {
-            result = getPropertiesFromDynamic((DynamicValueBuilder) templateBuilder);
-        } else if (templateBuilder instanceof SourceBuilder) {
-            SourceBuilder sourceBuilder = (SourceBuilder) templateBuilder;
+        } else if (templateBuilder instanceof DynamicValueBuilder builder) {
+            result = getPropertiesFromDynamic(builder);
+        } else if (templateBuilder instanceof SourceBuilder sourceBuilder) {
             result = getPropertiesFromSourceBuilder(sourceBuilder);
         }
         if (hasDynamicKey(templateBuilder)) {

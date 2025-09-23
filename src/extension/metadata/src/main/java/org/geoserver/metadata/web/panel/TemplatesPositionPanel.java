@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.MarkupContainer;
@@ -20,6 +21,7 @@ import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 public class TemplatesPositionPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = -4645368967597125299L;
 
     public TemplatesPositionPanel(
@@ -32,6 +34,7 @@ public class TemplatesPositionPanel extends Panel {
         ImageAjaxLink<Object> upLink =
                 new ImageAjaxLink<>(
                         "up", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_up.png")) {
+                    @Serial
                     private static final long serialVersionUID = -4165434301439054175L;
 
                     @Override
@@ -63,6 +66,7 @@ public class TemplatesPositionPanel extends Panel {
                 new ImageAjaxLink<>(
                         "down",
                         new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_down.png")) {
+                    @Serial
                     private static final long serialVersionUID = -8005026702401617344L;
 
                     @Override

@@ -25,7 +25,6 @@ import org.geotools.api.filter.Filter;
  * this. Could we use this class to do so? It would need to support writing and locking though.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GeoServerFeatureLocking extends GeoServerFeatureStore implements SimpleFeatureLocking {
     /**

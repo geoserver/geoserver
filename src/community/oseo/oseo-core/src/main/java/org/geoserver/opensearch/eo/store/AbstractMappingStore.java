@@ -304,8 +304,8 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
 
     protected SimpleFeatureStore getDelegateCollectionStore() throws IOException {
         SimpleFeatureSource simpleFeatureSource = getDelegateSource();
-        if (simpleFeatureSource instanceof WorkspaceFeatureSource) {
-            simpleFeatureSource = ((WorkspaceFeatureSource) simpleFeatureSource).getDelegate();
+        if (simpleFeatureSource instanceof WorkspaceFeatureSource source) {
+            simpleFeatureSource = source.getDelegate();
         }
         SimpleFeatureStore fs = (SimpleFeatureStore) simpleFeatureSource;
         if (transaction != null) {
@@ -574,12 +574,12 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             Object layer = fi.getAttribute("layer");
 
             // handle joined layer if any
-            if (layer instanceof SimpleFeature) {
-                layers.add((SimpleFeature) layer);
+            if (layer instanceof SimpleFeature feature) {
+                layers.add(feature);
             }
 
-            if (link instanceof SimpleFeature) {
-                links.add((SimpleFeature) link);
+            if (link instanceof SimpleFeature feature) {
+                links.add(feature);
             }
 
             if (it.hasNext()) {
@@ -917,8 +917,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             String attributeName = at.getLocalName();
             Object attributeValue = f.getAttribute(attributeName);
             if (("bands".equals(attributeName) || "browseBands".equals(attributeName))
-                    && attributeValue instanceof String[]) {
-                final String[] array = (String[]) attributeValue;
+                    && attributeValue instanceof String[] array) {
                 attributeValue = Arrays.stream(array).collect(Collectors.joining(","));
             }
             if (!isSynthentic(at)) {
@@ -987,8 +986,8 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         SimpleFeatureSource fs = getDelegateSource();
         Transaction t = getTransaction();
         if (t != Transaction.AUTO_COMMIT && t != null) {
-            if (fs instanceof WorkspaceFeatureSource) {
-                fs = ((WorkspaceFeatureSource) fs).getDelegate();
+            if (fs instanceof WorkspaceFeatureSource source) {
+                fs = source.getDelegate();
             }
             ((SimpleFeatureStore) fs).setTransaction(transaction);
         }

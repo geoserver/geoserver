@@ -72,8 +72,7 @@ public class ObjectIdRemappingFilterVisitor extends DuplicatingFilterVisitor {
     }
 
     private boolean isIdAttribute(Expression expr, boolean matchCase) {
-        if (expr instanceof AttributeExpressionImpl) {
-            AttributeExpressionImpl attr = (AttributeExpressionImpl) expr;
+        if (expr instanceof AttributeExpressionImpl attr) {
             if (attr.getPropertyName().equals(objectId)
                     || (!matchCase && attr.getPropertyName().equalsIgnoreCase(objectId))) {
                 return true;

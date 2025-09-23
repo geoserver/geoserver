@@ -110,7 +110,7 @@ public class ProxyBaseExtensionRuleBuilder {
      */
     public static void checkCondition(boolean condition, String failMessage, Object... failMessageArguments) {
         if (!condition) {
-            throw new ProxyBaseExtRuleDAO.ProxyBaseExtException(null, String.format(failMessage, failMessageArguments));
+            throw new ProxyBaseExtRuleDAO.ProxyBaseExtException(null, failMessage.formatted(failMessageArguments));
         }
     }
 }

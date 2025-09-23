@@ -76,8 +76,7 @@ public class IpBlacklistFilter implements GeoServerFilter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         if (isBlackListed(httpRequest)) {
-            if (response instanceof HttpServletResponse) {
-                HttpServletResponse httpResponse = (HttpServletResponse) response;
+            if (response instanceof HttpServletResponse httpResponse) {
                 httpResponse.sendError(
                         HttpServletResponse.SC_FORBIDDEN,
                         "This IP has been blocked. Please contact the server administrator");

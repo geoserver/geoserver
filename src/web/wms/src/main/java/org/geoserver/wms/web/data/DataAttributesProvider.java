@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.web.data;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +23,7 @@ class DataAttributesProvider extends GeoServerDataProvider<DataAttribute> {
     static final int MAX_SAMPLE_LENGTH = 200;
 
     /** */
+    @Serial
     private static final long serialVersionUID = 3228269047960562646L;
 
     private final List<DataAttribute> attributes;

@@ -68,8 +68,8 @@ public class BackupController extends AbstractBackupRestoreController {
         Object lookup = lookupBackupExecutionsContext(null, true, false);
 
         if (lookup != null) {
-            if (lookup instanceof BackupExecutionAdapter) {
-                return wrapObject((BackupExecutionAdapter) lookup, BackupExecutionAdapter.class);
+            if (lookup instanceof BackupExecutionAdapter adapter) {
+                return wrapObject(adapter, BackupExecutionAdapter.class);
             } else {
                 return wrapList((List<BackupExecutionAdapter>) lookup, BackupExecutionAdapter.class);
             }
@@ -94,13 +94,11 @@ public class BackupController extends AbstractBackupRestoreController {
         Object lookup = lookupBackupExecutionsContext(getExecutionIdFilter(backupId), true, false);
 
         if (lookup != null) {
-            if (lookup instanceof BackupExecutionAdapter) {
+            if (lookup instanceof BackupExecutionAdapter adapter) {
                 if (backupId.endsWith(".zip")) {
                     try {
                         // get your file as InputStream
-                        File file = ((BackupExecutionAdapter) lookup)
-                                .getArchiveFile()
-                                .file();
+                        File file = adapter.getArchiveFile().file();
                         InputStream is = new FileInputStream(file);
                         // copy it to response's OutputStream
                         org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
@@ -110,7 +108,7 @@ public class BackupController extends AbstractBackupRestoreController {
                         throw new RuntimeException("IOError writing file to output stream");
                     }
                 } else {
-                    return wrapObject((BackupExecutionAdapter) lookup, BackupExecutionAdapter.class);
+                    return wrapObject(adapter, BackupExecutionAdapter.class);
                 }
             } else {
                 return wrapList((List<BackupExecutionAdapter>) lookup, BackupExecutionAdapter.class);
@@ -131,13 +129,13 @@ public class BackupController extends AbstractBackupRestoreController {
         Object lookup = lookupBackupExecutionsContext(executionId, true, false);
 
         if (lookup != null) {
-            if (lookup instanceof BackupExecutionAdapter) {
+            if (lookup instanceof BackupExecutionAdapter adapter) {
                 try {
                     getBackupFacade().abandonExecution(Long.valueOf(executionId));
                 } catch (Exception e) {
                     throw new IOException(e);
                 }
-                return wrapObject((BackupExecutionAdapter) lookup, BackupExecutionAdapter.class);
+                return wrapObject(adapter, BackupExecutionAdapter.class);
             } else {
                 return wrapList((List<BackupExecutionAdapter>) lookup, BackupExecutionAdapter.class);
             }

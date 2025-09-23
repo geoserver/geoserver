@@ -38,8 +38,7 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
     @Override
     public void handleServiceException(ServiceException exception, Request request) {
         HttpServletResponse response = request.getHttpResponse();
-        if (exception instanceof OWS20Exception) {
-            OWS20Exception ex = (OWS20Exception) exception;
+        if (exception instanceof OWS20Exception ex) {
             if (ex.getHttpCode() != null) {
                 response.setStatus(ex.getHttpCode());
             } else {

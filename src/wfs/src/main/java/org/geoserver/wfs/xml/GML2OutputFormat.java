@@ -53,7 +53,6 @@ import org.geotools.wfs.WFS;
  * </code>
  *
  * @author Gabriel Rold?n
- * @version $Id$
  */
 public class GML2OutputFormat extends WFSGetFeatureOutputFormat implements ComplexFeatureAwareFormat {
     private static final int NO_FORMATTING = -1;
@@ -67,7 +66,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat implements Compl
      * <p>This class seems to do all the work, if you have a problem with GML you will need to hunt it down. We supply
      * all of the header information in the execute method, and work through the featureList in the writeTo method.
      *
-     * <p>This value will be <code>null</code> until execute is called.
+     * <p>This value will be {@code null} until execute is called.
      */
     private FeatureTransformer transformer;
 
@@ -129,9 +128,8 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat implements Compl
                 // don't blindly assume it's a feature type, this class is used also by WMS
                 // FeatureInfo
                 // meaning it might be a coverage or a remote wms layer
-                if (meta instanceof FeatureTypeInfo) {
-                    String location =
-                            typeSchemaLocation(geoServer.getGlobal(), (FeatureTypeInfo) meta, request.getBaseUrl());
+                if (meta instanceof FeatureTypeInfo info) {
+                    String location = typeSchemaLocation(geoServer.getGlobal(), info, request.getBaseUrl());
                     ftNamespaces.put(uri, location);
                 }
             }
@@ -156,16 +154,16 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat implements Compl
             // track num decimals, in cases where the query has multiple types we choose the max
             // of all the values (same deal as above, might not be a vector due to GetFeatureInfo
             // reusing this)
-            if (meta instanceof FeatureTypeInfo) {
-                int ftiDecimals = ((FeatureTypeInfo) meta).getNumDecimals();
+            if (meta instanceof FeatureTypeInfo info) {
+                int ftiDecimals = info.getNumDecimals();
                 if (ftiDecimals > 0) {
                     numDecimals = numDecimals == -1 ? ftiDecimals : Math.max(numDecimals, ftiDecimals);
                 }
-                boolean pad = ((FeatureTypeInfo) meta).getPadWithZeros();
+                boolean pad = info.getPadWithZeros();
                 if (pad) {
                     padWithZeros = true;
                 }
-                boolean force = ((FeatureTypeInfo) meta).getForcedDecimal();
+                boolean force = info.getForcedDecimal();
                 if (force) {
                     forcedDecimal = true;
                 }

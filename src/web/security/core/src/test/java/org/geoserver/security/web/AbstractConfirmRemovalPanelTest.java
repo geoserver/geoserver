@@ -8,6 +8,7 @@ package org.geoserver.security.web;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import org.geoserver.web.FormTestPage;
 
 public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurityWicketTestSupport
         implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected abstract void setupPanel(List<T> roots);

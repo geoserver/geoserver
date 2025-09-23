@@ -79,10 +79,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.NamespaceSupport;
 
-/**
- * @author Gabriel Roldan
- * @version $Id$
- */
+/** @author Gabriel Roldan */
 public class GetCapabilitiesTransformerTest extends WMSTestSupport {
 
     private static final class EmptyExtendedCapabilitiesProvider implements ExtendedCapabilitiesProvider {

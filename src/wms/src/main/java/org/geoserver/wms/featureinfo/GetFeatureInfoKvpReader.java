@@ -29,7 +29,6 @@ import org.geotools.util.Version;
  * <p>Request parameters:
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GetFeatureInfoKvpReader extends KvpRequestReader {
 
@@ -41,18 +40,16 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
 
         @Override
         protected boolean skipResource(Object theResource) {
-            if (theResource instanceof LayerGroupInfo) {
-                LayerGroupInfo groupInfo = (LayerGroupInfo) theResource;
+            if (theResource instanceof LayerGroupInfo groupInfo) {
                 if (groupInfo.isQueryDisabled()) {
                     return true;
                 }
-            } else if (theResource instanceof LayerInfo) {
-                LayerInfo layerInfo = (LayerInfo) theResource;
+            } else if (theResource instanceof LayerInfo layerInfo) {
                 if (!wms.isQueryable(layerInfo)) {
                     return true;
                 }
-            } else if (theResource instanceof MapLayerInfo) {
-                LayerInfo layerInfo = ((MapLayerInfo) theResource).getLayerInfo();
+            } else if (theResource instanceof MapLayerInfo info) {
+                LayerInfo layerInfo = info.getLayerInfo();
                 if (!wms.isQueryable(layerInfo)) {
                     return true;
                 }
@@ -72,18 +69,16 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
 
         @Override
         protected boolean skipResource(Object theResource) {
-            if (theResource instanceof LayerGroupInfo) {
-                LayerGroupInfo groupInfo = (LayerGroupInfo) theResource;
+            if (theResource instanceof LayerGroupInfo groupInfo) {
                 if (groupInfo.isQueryDisabled()) {
                     return true;
                 }
-            } else if (theResource instanceof LayerInfo) {
-                LayerInfo layerInfo = (LayerInfo) theResource;
+            } else if (theResource instanceof LayerInfo layerInfo) {
                 if (!wms.isQueryable(layerInfo)) {
                     return true;
                 }
-            } else if (theResource instanceof MapLayerInfo) {
-                LayerInfo layerInfo = ((MapLayerInfo) theResource).getLayerInfo();
+            } else if (theResource instanceof MapLayerInfo info) {
+                LayerInfo layerInfo = info.getLayerInfo();
                 if (!wms.isQueryable(layerInfo)) {
                     return true;
                 }
@@ -235,9 +230,8 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
             // ensure x/y in dimension of image
             if (x < 0 || x > getMapPart.getWidth() || y < 0 || y > getMapPart.getHeight()) {
                 throw new ServiceException(
-                        String.format(
-                                "%d, %d not in dimensions of image: %d, %d",
-                                x, y, getMapPart.getWidth(), getMapPart.getHeight()),
+                        "%d, %d not in dimensions of image: %d, %d"
+                                .formatted(x, y, getMapPart.getWidth(), getMapPart.getHeight()),
                         "InvalidPoint");
             }
             request.setXPixel(x);

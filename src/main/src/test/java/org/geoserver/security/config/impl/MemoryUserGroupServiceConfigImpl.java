@@ -5,13 +5,16 @@
  */
 package org.geoserver.security.config.impl;
 
+import java.io.Serial;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 
 public class MemoryUserGroupServiceConfigImpl extends BaseSecurityNamedServiceConfig
         implements SecurityUserGroupServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     protected String passwordEncoderName;
     protected String passwordPolicyName;
     protected String toBeEncrypted;

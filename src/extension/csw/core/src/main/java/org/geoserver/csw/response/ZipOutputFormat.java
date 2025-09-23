@@ -70,8 +70,8 @@ public class ZipOutputFormat extends Response {
         List<File> files = null;
         if (value instanceof List) {
             files = (List<File>) value;
-        } else if (value instanceof File) {
-            files = Collections.singletonList((File) value);
+        } else if (value instanceof File file) {
+            files = Collections.singletonList(file);
         } else {
             throw new IllegalArgumentException(value.getClass() + " type isn't supported yet");
         }

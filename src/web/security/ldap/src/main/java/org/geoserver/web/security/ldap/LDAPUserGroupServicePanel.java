@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.security.ldap;
 
+import java.io.Serial;
 import java.util.Optional;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
@@ -17,6 +18,7 @@ import org.geoserver.security.web.usergroup.UserGroupServicePanel;
 
 /** @author Niels Charlier */
 public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGroupServiceConfig> {
+    @Serial
     private static final long serialVersionUID = -5052166946618920800L;
 
     private static final String USE_NESTED_PARENT_GROUPS = "useNestedParentGroups";
@@ -26,6 +28,7 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
 
     static class LDAPAuthenticationPanel extends WebMarkupContainer {
 
+        @Serial
         private static final long serialVersionUID = 6533128678666053350L;
 
         public LDAPAuthenticationPanel(String id) {
@@ -68,6 +71,7 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
 
         /** privileged account for querying the LDAP server (if needed) */
         add(new AjaxCheckBox("bindBeforeGroupSearch") {
+            @Serial
             private static final long serialVersionUID = -6388847010436939988L;
 
             @Override
@@ -102,6 +106,7 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
         nestedSearchFieldsContainer.setVisible(useNestedActivated);
 
         final AjaxCheckBox useNestedCheckbox = new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

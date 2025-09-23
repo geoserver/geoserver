@@ -42,8 +42,7 @@ public class GeneralizationInfosProviderImpl extends org.geotools.data.gen.info.
             throw new IOException("Cannot read from null");
         }
 
-        if (source instanceof String) {
-            String path = (String) source;
+        if (source instanceof String path) {
 
             GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             Resource resource = loader.get(Paths.convert(path));

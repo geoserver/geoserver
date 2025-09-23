@@ -52,6 +52,7 @@ jobs:
       run: |
         mvn -B -ntp -nsu -U -T1C -fae -DskipTests -PcommunityRelease -f src/community/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
+      if: always()
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
 

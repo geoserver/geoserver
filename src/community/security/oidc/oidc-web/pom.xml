@@ -39,27 +39,6 @@
       <version>${project.version}</version>
     </dependency>
 
-    <!--    <dependency>-->
-    <!--      <groupId>org.geoserver</groupId>-->
-    <!--      <artifactId>gs-main</artifactId>-->
-    <!--    </dependency>-->
-
-    <!--    <dependency>-->
-    <!--      <groupId>org.geoserver</groupId>-->
-    <!--      <artifactId>gs-main</artifactId>-->
-    <!--      <version>${project.version}</version>-->
-    <!--      <classifier>tests</classifier>-->
-    <!--      <scope>test</scope>-->
-    <!--    </dependency>-->
-
-    <!--    <dependency>-->
-    <!--      <groupId>org.geoserver.web</groupId>-->
-    <!--      <artifactId>gs-web-core</artifactId>-->
-    <!--      <version>${project.version}</version>-->
-    <!--      <classifier>tests</classifier>-->
-    <!--      <scope>test</scope>-->
-    <!--    </dependency>-->
-
     <dependency>
       <groupId>org.geoserver.security</groupId>
       <artifactId>gs-security-tests</artifactId>
@@ -68,7 +47,6 @@
       <scope>test</scope>
     </dependency>
 
-    <!--    thisone-->
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-sec-core</artifactId>
@@ -105,15 +83,6 @@
       </exclusions>
     </dependency>
 
-    <!--      <dependency>-->
-    <!--        <groupId>org.geoserver.web</groupId>-->
-    <!--        <artifactId>gs-web-core</artifactId>-->
-    <!--        <version>${gs.version}</version>-->
-    <!--        <type>test-jar</type>-->
-    <!--        <scope>test</scope>-->
-    <!--      </dependency>-->
-
-    <!-- this one -->
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>

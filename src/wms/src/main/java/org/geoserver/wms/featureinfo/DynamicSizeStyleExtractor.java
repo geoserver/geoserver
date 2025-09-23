@@ -173,8 +173,7 @@ class DynamicSizeStyleExtractor extends DuplicatingStyleVisitor {
     private boolean hasDynamicGraphic(Graphic gr) {
         // not a fixed size, let's see if it has dynamic graphics inside
         for (GraphicalSymbol gs : gr.graphicalSymbols()) {
-            if (gs instanceof ExternalGraphic) {
-                ExternalGraphic eg = (ExternalGraphic) gs;
+            if (gs instanceof ExternalGraphic eg) {
                 try {
                     Icon icon = null;
                     if (eg.getInlineContent() != null) {

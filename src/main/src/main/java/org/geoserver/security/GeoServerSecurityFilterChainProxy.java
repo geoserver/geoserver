@@ -236,8 +236,8 @@ public class GeoServerSecurityFilterChainProxy
         if (filter == null) {
             try {
                 Object obj = GeoServerExtensions.bean(filterName, appContext);
-                if (obj != null && obj instanceof Filter) {
-                    filter = (Filter) obj;
+                if (obj != null && obj instanceof Filter filter1) {
+                    filter = filter1;
                 }
             } catch (NoSuchBeanDefinitionException ex) {
                 // do nothing

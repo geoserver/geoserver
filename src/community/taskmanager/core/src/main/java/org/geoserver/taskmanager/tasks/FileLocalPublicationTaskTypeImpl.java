@@ -97,8 +97,8 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
                         FileReference fileRef = (FileReference) ctx.getBatchContext()
                                 .get(ctx.getParameterValues().get(PARAM_FILE));
                         final URI uri = process(fileRef.getService().getURI(fileRef.getLatestVersion()), ctx);
-                        if (store instanceof CoverageStoreInfo) {
-                            ((CoverageStoreInfo) store).setURL(uri.toString());
+                        if (store instanceof CoverageStoreInfo info) {
+                            info.setURL(uri.toString());
                         } else {
                             try {
                                 store.getConnectionParameters().put("url", uri.toURL());
@@ -263,8 +263,8 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
     }
 
     private static <T> T unwrap(T o, Class<T> clazz) {
-        if (o instanceof Wrapper) {
-            return ((Wrapper) o).unwrap(clazz);
+        if (o instanceof Wrapper wrapper) {
+            return wrapper.unwrap(clazz);
         } else {
             return o;
         }

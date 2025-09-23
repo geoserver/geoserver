@@ -319,8 +319,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         }
         boolean geoserverLayerEnabled;
         PublishedInfo published = getPublishedInfo();
-        if (published instanceof LayerInfo) {
-            geoserverLayerEnabled = ((LayerInfo) published).enabled();
+        if (published instanceof LayerInfo layerInfo) {
+            geoserverLayerEnabled = layerInfo.enabled();
         } else {
             // LayerGroupInfo has no enabled property, so assume true
             geoserverLayerEnabled = true;
@@ -377,7 +377,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
 
     private ResourceInfo getResourceInfo() {
         PublishedInfo publishedInfo = getPublishedInfo();
-        return publishedInfo instanceof LayerInfo ? ((LayerInfo) publishedInfo).getResource() : null;
+        return publishedInfo instanceof LayerInfo li ? li.getResource() : null;
     }
 
     /**
@@ -394,8 +394,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         List<ContactInformation> contacts = Collections.emptyList();
 
         PublishedInfo publishedInfo = getPublishedInfo();
-        ResourceInfo resourceInfo =
-                publishedInfo instanceof LayerInfo ? ((LayerInfo) publishedInfo).getResource() : null;
+        ResourceInfo resourceInfo = publishedInfo instanceof LayerInfo li ? li.getResource() : null;
         if (resourceInfo != null) {
             title = resourceInfo.getTitle();
             description = resourceInfo.getAbstract();
@@ -404,8 +403,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                 keywords.add(kw.getValue());
             }
         } else {
-            if (publishedInfo instanceof LayerGroupInfo) {
-                LayerGroupInfo lg = (LayerGroupInfo) publishedInfo;
+            if (publishedInfo instanceof LayerGroupInfo lg) {
                 if (lg.getTitle() != null) {
                     title = lg.getTitle();
                 }
@@ -985,11 +983,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         // gs might be null in test case runs.
         if ((gs != null) && !gs.getGlobal().isGlobalServices()) {
             PublishedInfo publishedInfo = getPublishedInfo();
-            if (publishedInfo instanceof LayerInfo) {
-                LayerInfo layerInfo = (LayerInfo) publishedInfo;
+            if (publishedInfo instanceof LayerInfo layerInfo) {
                 params.put("WORKSPACE", layerInfo.getResource().getNamespace().getName());
-            } else if (publishedInfo instanceof LayerGroupInfo) {
-                LayerGroupInfo groupInfo = (LayerGroupInfo) publishedInfo;
+            } else if (publishedInfo instanceof LayerGroupInfo groupInfo) {
                 WorkspaceInfo workspace = groupInfo.getWorkspace();
                 if (workspace == null) {
                     throw new ParameterException("Global web services are disabled, global LayerGroup "
@@ -1395,8 +1391,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         }
 
         PublishedInfo published = getPublishedInfo();
-        if (published instanceof LayerInfo) {
-            return getLayerMaxAge((LayerInfo) published);
+        if (published instanceof LayerInfo layerInfo) {
+            return getLayerMaxAge(layerInfo);
         }
         LayerGroupInfo layerGroupInfo = (LayerGroupInfo) published;
         if (layerGroupInfo != null) {
@@ -1424,10 +1420,10 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         int maxAge = Integer.MAX_VALUE;
         for (PublishedInfo pi : lg.getLayers()) {
             int piAge;
-            if (pi instanceof LayerInfo) {
-                piAge = getLayerMaxAge((LayerInfo) pi);
-            } else if (pi instanceof LayerGroupInfo) {
-                piAge = getGroupMaxAge((LayerGroupInfo) pi);
+            if (pi instanceof LayerInfo layerInfo) {
+                piAge = getLayerMaxAge(layerInfo);
+            } else if (pi instanceof LayerGroupInfo groupInfo) {
+                piAge = getGroupMaxAge(groupInfo);
             } else {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(
@@ -1553,9 +1549,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         List<MetadataLinkInfo> gsMetadataLinks;
         List<MetadataURL> gwcMetadataLinks = new ArrayList<>();
         PublishedInfo published = getPublishedInfo();
-        if (published instanceof LayerInfo) {
+        if (published instanceof LayerInfo layerInfo) {
             // this is a normal layer
-            gsMetadataLinks = ((LayerInfo) published).getResource().getMetadataLinks();
+            gsMetadataLinks = layerInfo.getResource().getMetadataLinks();
         } else {
             // this is a layer group
             gsMetadataLinks = new ArrayList<>();
@@ -1622,8 +1618,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                 scalesDenominator = CapabilityUtil.searchMinMaxScaleDenominator(Collections.singleton(styleInfo));
             } catch (Exception exception) {
                 throw new RuntimeException(
-                        String.format(
-                                "Error searching max and min scale denominators for style '%s'.", styleInfo.getName()),
+                        "Error searching max and min scale denominators for style '%s'.".formatted(styleInfo.getName()),
                         exception);
             }
             org.geoserver.catalog.LegendInfo legendInfo = styleInfo.getLegend();
@@ -1778,8 +1773,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
 
     private void setVectorLayers(PublishedInfo publishedInfo, List<VectorLayerMetadata> metadataLayers) {
         ResourceInfo resource = getResource(publishedInfo);
-        if (resource instanceof FeatureTypeInfo) {
-            addVectorLayerMetadata((FeatureTypeInfo) resource, metadataLayers);
+        if (resource instanceof FeatureTypeInfo typeInfo) {
+            addVectorLayerMetadata(typeInfo, metadataLayers);
         }
     }
 
@@ -1787,8 +1782,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         LayerGroupInfo layerGroupInfo = null;
         if (Proxy.isProxyClass(publishedInfo.getClass())) {
             layerGroupInfo = (LayerGroupInfo) ModificationProxy.unwrap(publishedInfo);
-        } else if (publishedInfo instanceof LayerGroupInfo) {
-            layerGroupInfo = (LayerGroupInfo) publishedInfo;
+        } else if (publishedInfo instanceof LayerGroupInfo groupInfo) {
+            layerGroupInfo = groupInfo;
         }
         if (layerGroupInfo != null) {
             List<PublishedInfo> layers = layerGroupInfo.getLayers();
@@ -1814,8 +1809,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         if (Proxy.isProxyClass(publishedInfo.getClass())) {
             LayerInfo inner = (LayerInfo) ModificationProxy.unwrap(publishedInfo);
             resource = inner.getResource();
-        } else if (publishedInfo instanceof LayerInfo) {
-            resource = ((LayerInfo) publishedInfo).getResource();
+        } else if (publishedInfo instanceof LayerInfo layerInfo) {
+            resource = layerInfo.getResource();
         }
         return resource;
     }

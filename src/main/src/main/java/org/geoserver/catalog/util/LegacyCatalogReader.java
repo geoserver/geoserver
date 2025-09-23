@@ -73,7 +73,7 @@ public class LegacyCatalogReader {
      *   <li>"connectionParams": data store connection parameters (Map)
      * </ul>
      *
-     * * indicates that the parameter is optional and may be <code>null</code>
+     * * indicates that the parameter is optional and may be {@code null}
      *
      * @return A list of Map objects containing datastore information.
      * @throws Exception If error processing "datastores" element.
@@ -126,7 +126,7 @@ public class LegacyCatalogReader {
      *   <li>"description": description of the format (String) *
      * </ul>
      *
-     * * indicates that the parameter is optional and may be <code>null</code>
+     * * indicates that the parameter is optional and may be {@code null}
      *
      * @return A list of Map objects containg the format information.
      * @throws Exception If error processing "datastores" element.

@@ -30,10 +30,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
-/**
- * @author Gabriel Roldan
- * @version $Id$
- */
+/** @author Gabriel Roldan */
 class SVGWriter extends OutputStreamWriter {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(
             SVGWriter.class.getPackage().getName());

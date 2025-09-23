@@ -86,8 +86,7 @@ public class ExecuteProcessResponse extends Response {
     }
 
     private boolean isStandardDocumentResponse(Operation operation) {
-        if (operation.getParameters()[0] instanceof ExecuteType) {
-            ExecuteType execute = (ExecuteType) operation.getParameters()[0];
+        if (operation.getParameters()[0] instanceof ExecuteType execute) {
             return execute.getResponseForm() == null
                     || execute.getResponseForm().getRawDataOutput() == null;
         }
@@ -142,10 +141,10 @@ public class ExecuteProcessResponse extends Response {
                     Parameter p = resultInfo.get(result.getIdentifier().getValue());
                     if (p != null) {
                         ProcessParameterIO ppio = ProcessParameterIO.find(p, ctx, complex.getMimeType());
-                        if (ppio instanceof ComplexPPIO) {
+                        if (ppio instanceof ComplexPPIO iO) {
                             Object cd =
                                     result.getData().getComplexData().getData().get(0);
-                            fext = ((ComplexPPIO) ppio).getFileExtension(cd);
+                            fext = iO.getFileExtension(cd);
                         }
                     }
                 }
@@ -197,11 +196,9 @@ public class ExecuteProcessResponse extends Response {
     /** Write out complex data assuming {@link Execute} has set up the proper encoder as the output */
     void writeComplex(OutputStream output, OutputDataType result) throws IOException {
         Object rawResult = result.getData().getComplexData().getData().get(0);
-        if (rawResult instanceof RawDataEncoderDelegate) {
-            RawDataEncoderDelegate delegate = (RawDataEncoderDelegate) rawResult;
+        if (rawResult instanceof RawDataEncoderDelegate delegate) {
             delegate.encode(output);
-        } else if (rawResult instanceof XMLEncoderDelegate) {
-            XMLEncoderDelegate delegate = (XMLEncoderDelegate) rawResult;
+        } else if (rawResult instanceof XMLEncoderDelegate delegate) {
 
             try {
                 TransformerHandler xmls =
@@ -213,15 +210,15 @@ public class ExecuteProcessResponse extends Response {
             } catch (Exception e) {
                 throw new WPSException("An error occurred while encoding " + "the results of the process", e);
             }
-        } else if (rawResult instanceof CDataEncoderDelegate) {
+        } else if (rawResult instanceof CDataEncoderDelegate delegate1) {
             try {
-                ((CDataEncoderDelegate) rawResult).encode(output);
+                delegate1.encode(output);
             } catch (Exception e) {
                 throw new WPSException("An error occurred while encoding " + "the results of the process", e);
             }
-        } else if (rawResult instanceof BinaryEncoderDelegate) {
+        } else if (rawResult instanceof BinaryEncoderDelegate delegate) {
             try {
-                ((BinaryEncoderDelegate) rawResult).encode(output);
+                delegate.encode(output);
             } catch (Exception e) {
                 throw new WPSException("An error occurred while encoding " + "the results of the process", e);
             }

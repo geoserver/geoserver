@@ -6,6 +6,7 @@
 
 package org.geoserver.security.impl;
 
+import java.io.Serial;
 import org.geoserver.security.GeoServerUserGroupService;
 
 /**
@@ -15,6 +16,7 @@ import org.geoserver.security.GeoServerUserGroupService;
  */
 public class MemoryGeoserverUser extends GeoServerUser {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public MemoryGeoserverUser(String username, GeoServerUserGroupService service) {

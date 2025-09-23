@@ -13,7 +13,7 @@ public class BBoxAsserts {
 
     /** Asserts two BoundingBoxes are equal to within delta. */
     public static void assertEqualsBbox(BoundingBox expected, BoundingBox result, double delta) {
-        assertNotNull(String.format("Expected %s but got null", expected), result);
+        assertNotNull("Expected %s but got null".formatted(expected), result);
         assertEquals(expected.getMaxX(), result.getMaxX(), delta);
         assertEquals(expected.getMinX(), result.getMinX(), delta);
         assertEquals(expected.getMaxY(), result.getMaxY(), delta);

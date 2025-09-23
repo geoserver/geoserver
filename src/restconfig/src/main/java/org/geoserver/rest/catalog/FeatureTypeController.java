@@ -196,13 +196,12 @@ public class FeatureTypeController extends AbstractCatalogController {
 
         // now, does the feature type exist? If not, create it
         DataAccess dataAccess = dsInfo.getDataStore(null);
-        if (dataAccess instanceof DataStore) {
+        if (dataAccess instanceof DataStore dataStore) {
             String typeName = ftInfo.getName();
             if (ftInfo.getNativeName() != null) {
                 typeName = ftInfo.getNativeName();
             }
             boolean typeExists = false;
-            DataStore dataStore = (DataStore) dataAccess;
             for (String name : dataStore.getTypeNames()) {
                 if (name.equals(typeName)) {
                     typeExists = true;
@@ -393,10 +392,10 @@ public class FeatureTypeController extends AbstractCatalogController {
             FeatureTypeInfo featureType, String workspaceName, String storeName, String featureTypeName) {
         if (featureType == null && storeName == null) {
             throw new ResourceNotFoundException(
-                    String.format("No such feature type: %s,%s", workspaceName, featureTypeName));
+                    "No such feature type: %s,%s".formatted(workspaceName, featureTypeName));
         } else if (featureType == null) {
             throw new ResourceNotFoundException(
-                    String.format("No such feature type: %s,%s,%s", workspaceName, storeName, featureTypeName));
+                    "No such feature type: %s,%s,%s".formatted(workspaceName, storeName, featureTypeName));
         }
     }
 
@@ -490,12 +489,10 @@ public class FeatureTypeController extends AbstractCatalogController {
                     String prefix,
                     HierarchicalStreamWriter writer,
                     MarshallingContext context) {
-                if (obj instanceof NamespaceInfo) {
-                    NamespaceInfo ns = (NamespaceInfo) obj;
+                if (obj instanceof NamespaceInfo ns) {
                     converter.encodeLink("/namespaces/" + converter.encode(ns.getPrefix()), writer);
                 }
-                if (obj instanceof DataStoreInfo) {
-                    DataStoreInfo ds = (DataStoreInfo) obj;
+                if (obj instanceof DataStoreInfo ds) {
                     converter.encodeLink(
                             "/workspaces/"
                                     + converter.encode(ds.getWorkspace().getName())

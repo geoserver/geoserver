@@ -749,9 +749,8 @@ public class GetFeatureTest extends WFSTestSupport {
         // get rid of the current WFS schema
         org.geotools.wfs.v1_1.WFS.getInstance().dispose();
         // perform a GetFeature request using virtual service for workspace CGF
-        String response = getAsServletResponse(String.format(
-                        "%s/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=%s",
-                        SystemTestData.CGF_PREFIX, getLayerId(SystemTestData.MLINES)))
+        String response = getAsServletResponse("%s/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=%s"
+                        .formatted(SystemTestData.CGF_PREFIX, getLayerId(SystemTestData.MLINES)))
                 .getContentAsString();
         assertThat(response, notNullValue());
         assertThat(response.contains("null:MLines"), is(false));
@@ -759,9 +758,8 @@ public class GetFeatureTest extends WFSTestSupport {
         String count = xpath.evaluate("count(//gml:featureMembers/cgf:MLines)", document);
         assertThat(Integer.parseInt(count), greaterThan(0));
         // now perform a GetFeature request using virtual service for workspace CITE
-        response = getAsServletResponse(String.format(
-                        "%s/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=%s",
-                        SystemTestData.CITE_PREFIX, getLayerId(SystemTestData.BUILDINGS)))
+        response = getAsServletResponse("%s/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=%s"
+                        .formatted(SystemTestData.CITE_PREFIX, getLayerId(SystemTestData.BUILDINGS)))
                 .getContentAsString();
         assertThat(response, notNullValue());
         assertThat(response.contains("null:Buildings"), is(false));

@@ -137,23 +137,19 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         // doesn't distinguish between a linestring and a multilinestring) and
         // generality.
 
-        if (geom instanceof org.locationtech.jts.geom.Point) {
-            org.locationtech.jts.geom.Point p = (org.locationtech.jts.geom.Point) geom;
+        if (geom instanceof org.locationtech.jts.geom.Point p) {
             T[] coords = embeddedPoint(p);
 
             return new Point(coords[0], coords[1], spatialReference);
-        } else if (geom instanceof org.locationtech.jts.geom.MultiPoint) {
-            org.locationtech.jts.geom.MultiPoint mpoint = (org.locationtech.jts.geom.MultiPoint) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.MultiPoint mpoint) {
             List<T[]> points = new ArrayList<>();
             for (int i = 0; i < mpoint.getNumPoints(); i++) {
                 points.add(embeddedPoint((org.locationtech.jts.geom.Point) mpoint.getGeometryN(i)));
             }
             return new Multipoint(points.toArray(new Number[points.size()][]), spatialReference);
-        } else if (geom instanceof org.locationtech.jts.geom.LineString) {
-            org.locationtech.jts.geom.LineString line = (org.locationtech.jts.geom.LineString) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.LineString line) {
             return new Polyline(new Number[][][] {embeddedLineString(line)}, spatialReference);
-        } else if (geom instanceof org.locationtech.jts.geom.MultiLineString) {
-            org.locationtech.jts.geom.MultiLineString mline = (org.locationtech.jts.geom.MultiLineString) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.MultiLineString mline) {
             List<T[][]> paths = new ArrayList<>();
 
             for (int i = 0; i < mline.getNumGeometries(); i++) {
@@ -163,8 +159,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             }
             return new Polyline(paths.toArray(new Number[paths.size()][][]), spatialReference);
 
-        } else if (geom instanceof org.locationtech.jts.geom.Polygon) {
-            org.locationtech.jts.geom.Polygon polygon = (org.locationtech.jts.geom.Polygon) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.Polygon polygon) {
             List<T[][]> rings = new ArrayList<>();
             LineString shell = polygon.getExteriorRing();
             if (Orientation.isCCW(shell.getCoordinateSequence())) {
@@ -180,8 +175,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
                 rings.add(embeddedLineString(hole));
             }
             return new Polygon(rings.toArray(new Number[rings.size()][][]), spatialReference);
-        } else if (geom instanceof org.locationtech.jts.geom.MultiPolygon) {
-            org.locationtech.jts.geom.MultiPolygon mpoly = (org.locationtech.jts.geom.MultiPolygon) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.MultiPolygon mpoly) {
 
             // ESRI API has no concept of multi-polygon, there is only polygon, which can have
             // multiple outer rings, depending on their orientation. The old implementation using
@@ -210,9 +204,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             }
 
             return new Polygon(rings.toArray(new Number[rings.size()][][]), spatialReference);
-        } else if (geom instanceof org.locationtech.jts.geom.GeometryCollection) {
-            org.locationtech.jts.geom.GeometryCollection collection =
-                    (org.locationtech.jts.geom.GeometryCollection) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.GeometryCollection collection) {
             GeometryTypeEnum geometryType = determineGeometryType(collection);
             List<org.geoserver.gsr.model.geometry.Geometry> geometries = new ArrayList<>();
             for (int i = 0; i < collection.getNumGeometries(); i++) {
@@ -457,20 +449,16 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
     public static Geometry toJts(org.geoserver.gsr.model.geometry.Geometry geometry) {
         GeometryFactory geometries = new GeometryFactory();
 
-        if (geometry instanceof Point) {
-            Point p = (Point) geometry;
+        if (geometry instanceof Point p) {
 
             double x = p.getX().doubleValue();
             double y = p.getY().doubleValue();
             return geometries.createPoint(new org.locationtech.jts.geom.Coordinate(x, y));
-        } else if (geometry instanceof Multipoint) {
-            Multipoint mp = (Multipoint) geometry;
+        } else if (geometry instanceof Multipoint mp) {
 
             Number[][] points = mp.getPoints();
             return geometries.createMultiPointFromCoords(arrayToCoordinates(points));
-        } else if (geometry instanceof Polyline) {
-
-            Polyline pl = (Polyline) geometry;
+        } else if (geometry instanceof Polyline pl) {
 
             Number[][][] paths = pl.getPaths();
 
@@ -480,12 +468,10 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
                 lines[i] = geometries.createLineString(coords);
             }
             return geometries.createMultiLineString(lines);
-        } else if (geometry instanceof Polygon) {
+        } else if (geometry instanceof Polygon pg) {
             // A Polygon can have multiple outer rings, there is no notion of multipolygon
             // See https://developers.arcgis.com/documentation/common-data-types/geometry-objects
             // .htm#POLYGON
-            Polygon pg = (Polygon) geometry;
-
             Number[][][] rings = pg.getRings();
             if (rings.length < 1) {
                 throw new JSONException("Polygon must have at least one ring");
@@ -562,9 +548,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
                 return geometries.createMultiPolygon(
                         polygons.toArray(new org.locationtech.jts.geom.Polygon[polygons.size()]));
             }
-        } else if (geometry instanceof GeometryArray) {
-
-            GeometryArray ga = (GeometryArray) geometry;
+        } else if (geometry instanceof GeometryArray ga) {
             org.geoserver.gsr.model.geometry.Geometry[] nestedGeometries = ga.getGeometries();
             Geometry[] parsedGeometries = new Geometry[nestedGeometries.length];
             for (int i = 0; i < nestedGeometries.length; i++) {

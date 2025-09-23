@@ -563,8 +563,8 @@ public class Dispatcher extends AbstractController {
         Element payload = null;
         for (int i = 0; payload == null && i < body.getChildNodes().getLength(); i++) {
             Node n = body.getChildNodes().item(i);
-            if (n instanceof Element) {
-                payload = (Element) n;
+            if (n instanceof Element element) {
+                payload = element;
             }
         }
 
@@ -715,11 +715,11 @@ public class Dispatcher extends AbstractController {
         }
 
         if (v.getMinor() == null) {
-            return String.format("%d.0.0", ((Number) v.getMajor()).intValue());
+            return "%d.0.0".formatted(((Number) v.getMajor()).intValue());
         }
 
         if (v.getRevision() == null) {
-            return String.format("%d.%d.0", ((Number) v.getMajor()).intValue(), ((Number) v.getMinor()).intValue());
+            return "%d.%d.0".formatted(((Number) v.getMajor()).intValue(), ((Number) v.getMinor()).intValue());
         }
 
         // version ok
@@ -912,11 +912,9 @@ public class Dispatcher extends AbstractController {
     }
 
     String lookupRequestBeanProperty(Object requestBean, String property, boolean allowDefaultValues) {
-        if (requestBean instanceof EObject && EMFUtils.has((EObject) requestBean, property)) {
+        if (requestBean instanceof EObject eObject && EMFUtils.has(eObject, property)) {
             // special case hack for eObject, we should move
-            // this out into an extension ppint
-            EObject eObject = (EObject) requestBean;
-
+            // this out into an extension point
             if (allowDefaultValues || EMFUtils.isSet(eObject, property)) {
                 return normalize((String) EMFUtils.get(eObject, property));
             }
@@ -941,12 +939,12 @@ public class Dispatcher extends AbstractController {
         Object result = null;
 
         try {
-            if (serviceBean instanceof DirectInvocationService) {
+            if (serviceBean instanceof DirectInvocationService service) {
                 // invokeDirect expects the operation to be called as declared in the operation
                 // descriptor, although it used to match a method name, lets use the declared
                 // operation name for contract compliance.
                 String operationName = opDescriptor.getId();
-                result = ((DirectInvocationService) serviceBean).invokeDirect(operationName, parameters);
+                result = service.invokeDirect(operationName, parameters);
             } else {
                 Method operation = opDescriptor.getMethod();
                 result = operation.invoke(serviceBean, parameters);
@@ -1091,8 +1089,8 @@ public class Dispatcher extends AbstractController {
                 }
 
                 // special check for transformer
-                if (req.isSOAP() && result instanceof TransformerBase) {
-                    ((TransformerBase) result).setOmitXMLDeclaration(true);
+                if (req.isSOAP() && result instanceof TransformerBase base) {
+                    base.setOmitXMLDeclaration(true);
                 }
 
                 // actually write out the response
@@ -1178,8 +1176,8 @@ public class Dispatcher extends AbstractController {
     void startSOAPEnvelope(OutputStream output, Request request, Response response) throws IOException {
         output.write(("<soap:Envelope xmlns:soap='" + request.getSOAPNamespace() + "'><soap:Header/>").getBytes());
         output.write("<soap:Body".getBytes());
-        if (response != null && response instanceof SOAPAwareResponse) {
-            String type = ((SOAPAwareResponse) response).getBodyType();
+        if (response != null && response instanceof SOAPAwareResponse awareResponse) {
+            String type = awareResponse.getBodyType();
             if (type != null) {
                 output.write((" type='" + type + "'").getBytes());
             }
@@ -1797,8 +1795,8 @@ public class Dispatcher extends AbstractController {
                 && !(current instanceof ClientStreamAbortedException)
                 && !isSecurityException(current)
                 && !(current instanceof HttpErrorCodeException)) {
-            if (current instanceof SAXException) {
-                current = ((SAXException) current).getException();
+            if (current instanceof SAXException exception) {
+                current = exception.getException();
             } else {
                 current = current.getCause();
             }
@@ -1811,8 +1809,7 @@ public class Dispatcher extends AbstractController {
             throw (RuntimeException) current;
         }
 
-        if (current instanceof HttpErrorCodeException) {
-            HttpErrorCodeException ece = (HttpErrorCodeException) current;
+        if (current instanceof HttpErrorCodeException ece) {
             int errorCode = ece.getErrorCode();
             if (errorCode < 199 || errorCode > 299) {
                 logger.log(Level.FINE, "", t);
@@ -1857,8 +1854,8 @@ public class Dispatcher extends AbstractController {
             // unwind the exception stack until we find one we know about
             Throwable cause = t;
             while (cause != null) {
-                if (cause instanceof ServiceException) {
-                    errorCode = ((ServiceException) cause).getCode();
+                if (cause instanceof ServiceException exception) {
+                    errorCode = exception.getCode();
                     break;
                 }
                 cause = cause.getCause();

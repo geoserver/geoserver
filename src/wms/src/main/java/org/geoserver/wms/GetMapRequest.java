@@ -40,7 +40,6 @@ import org.locationtech.jts.geom.Geometry;
  *
  * @author Gabriel Roldan
  * @author Simone Giannecchini
- * @version $Id$
  */
 public class GetMapRequest extends WMSRequest implements Cloneable {
 
@@ -81,7 +80,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
      * DJB: spec says SRS is *required*, so if they dont specify one, we should throw an error instead we use "NONE" -
      * which is no-projection. Previous behavior was to the WSG84 lat/long (4326)
      *
-     * @return request CRS, or <code>null</code> if not set. TODO: make CRS manditory as for spec conformance
+     * @return request CRS, or {@code null} if not set. TODO: make CRS manditory as for spec conformance
      */
     public CoordinateReferenceSystem getCrs() {
         return this.optionalParams.crs;
@@ -799,8 +798,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         if (getRawKvp() != null) {
             String key = CUSTOM_DIM_PREFIX + dimensionName;
             Object value = getRawKvp().get(key);
-            if (value instanceof String) {
-                String s = (String) value;
+            if (value instanceof String s) {
                 final ArrayList<String> values = new ArrayList<>(1);
                 if (s.indexOf(",") > 0) {
                     String[] elements = s.split("\\s*,\\s*");

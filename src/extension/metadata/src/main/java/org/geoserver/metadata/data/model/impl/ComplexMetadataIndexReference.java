@@ -4,10 +4,12 @@
  */
 package org.geoserver.metadata.data.model.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class ComplexMetadataIndexReference implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -893882182247353028L;
 
     private int[] index;

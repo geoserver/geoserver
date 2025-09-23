@@ -41,8 +41,8 @@ public class FeatureCollectionDecorator implements FeatureCollection<FeatureType
      * @return Name of Resource
      */
     public static Name getName(FeatureCollection fc) {
-        if (fc instanceof FeatureCollectionDecorator) {
-            return ((FeatureCollectionDecorator) fc).getName();
+        if (fc instanceof FeatureCollectionDecorator decorator) {
+            return decorator.getName();
         } else {
             return fc.getSchema().getName();
         }

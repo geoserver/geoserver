@@ -44,7 +44,7 @@ public class GeoServerExceptions {
      *
      * @param e The exception whose message to localize.
      * @param locale The locale to use.
-     * @return The localized message, or <code>null</code> if none could be found.
+     * @return The localized message, or {@code null} if none could be found.
      */
     public static String localize(IGeoServerException e, Locale locale) {
         Class<? extends IGeoServerException> clazz = e.getClass();

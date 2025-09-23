@@ -104,8 +104,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
         if (it.hasNext()) {
             next = it.next();
-            if (next instanceof LayerInfo) {
-                next = ((LayerInfo) next).getResource();
+            if (next instanceof LayerInfo info) {
+                next = info.getResource();
             }
         } else {
             next = null;
@@ -122,8 +122,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
         CatalogInfo info = nextInternal();
 
-        if (info instanceof ResourceInfo) {
-            return convertToFeature((ResourceInfo) info);
+        if (info instanceof ResourceInfo resourceInfo) {
+            return convertToFeature(resourceInfo);
         } else {
             return convertToFeature((LayerGroupInfo) info);
         }
@@ -137,8 +137,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
                 value = mappingElement.getContent().evaluate(resource);
 
                 if (value != null || mappingElement.isRequired()) {
-                    if (value instanceof Collection) {
-                        List<Object> elements = interpolate(interpolationProperties, (Collection<?>) value);
+                    if (value instanceof Collection<?> collection) {
+                        List<Object> elements = interpolate(interpolationProperties, collection);
                         if (elements != null) {
                             builder.addElement(
                                     mappingElement.getKey(),
@@ -169,8 +169,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         FeatureCustomizer customizer = null;
 
         // DirectDownload capability is only checked for Coverage layers
-        if (info instanceof CoverageInfo) {
-            CoverageInfo coverageInfo = (CoverageInfo) info;
+        if (info instanceof CoverageInfo coverageInfo) {
             MetadataMap metadata = coverageInfo.getMetadata();
 
             boolean directDownloadEnabled = false;
@@ -276,8 +275,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
             List<Object> elements = new ArrayList<>();
             for (Object element : value) {
                 Object result = null;
-                if (element instanceof Collection<?>) {
-                    result = interpolate(properties, (Collection<?>) element);
+                if (element instanceof Collection<?> collection) {
+                    result = interpolate(properties, collection);
                 } else if (element != null) {
                     result = interpolate(properties, element.toString());
                 }

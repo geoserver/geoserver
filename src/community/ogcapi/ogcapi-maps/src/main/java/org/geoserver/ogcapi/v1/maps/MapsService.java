@@ -183,11 +183,10 @@ public class MapsService {
     }
 
     private List<MapLayerInfo> getMapLayers(PublishedInfo p) {
-        if (p instanceof LayerGroupInfo) {
-            return ((LayerGroupInfo) p)
-                    .layers().stream().map(l -> new MapLayerInfo(l)).collect(Collectors.toList());
-        } else if (p instanceof LayerInfo) {
-            return Arrays.asList(new MapLayerInfo((LayerInfo) p));
+        if (p instanceof LayerGroupInfo info1) {
+            return info1.layers().stream().map(l -> new MapLayerInfo(l)).collect(Collectors.toList());
+        } else if (p instanceof LayerInfo info) {
+            return Arrays.asList(new MapLayerInfo(info));
         } else {
             throw new RuntimeException("Unexpected published object" + p);
         }
@@ -196,8 +195,7 @@ public class MapsService {
     private void checkStyle(PublishedInfo p, String styleId) {
         if (p instanceof LayerGroupInfo && StyleDocument.DEFAULT_STYLE_NAME.equals(styleId)) {
             return;
-        } else if (p instanceof LayerInfo) {
-            LayerInfo l = (LayerInfo) p;
+        } else if (p instanceof LayerInfo l) {
             if (l.getDefaultStyle().prefixedName().equals(styleId)
                     || l.getStyles().stream().anyMatch(s -> s.prefixedName().equals(styleId))) return;
         } else {

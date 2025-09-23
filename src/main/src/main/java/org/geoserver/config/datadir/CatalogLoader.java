@@ -5,7 +5,6 @@
 
 package org.geoserver.config.datadir;
 
-import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
@@ -345,19 +344,20 @@ class CatalogLoader {
 
         sanitizer.resolveProxies(info);
 
-        if (info instanceof WorkspaceInfo) {
-            doAddToCatalog((WorkspaceInfo) info, catalog::add, WorkspaceInfo::getName);
-        } else if (info instanceof NamespaceInfo) {
-            doAddToCatalog((NamespaceInfo) info, catalog::add, NamespaceInfo::getPrefix);
-        } else if (info instanceof StoreInfo) doAddToCatalog((StoreInfo) info, catalog::add, StoreInfo::getName);
-        else if (info instanceof ResourceInfo) doAddToCatalog((ResourceInfo) info, catalog::add, this::resourceLog);
-        else if (info instanceof LayerInfo) {
-            doAddToCatalog((LayerInfo) info, catalog::add, LayerInfo::getName);
-        } else if (info instanceof LayerGroupInfo) {
-            doAddToCatalog((LayerGroupInfo) info, catalog::add, LayerGroupInfo::getName);
-        } else if (info instanceof StyleInfo) doAddToCatalog((StyleInfo) info, catalog::add, StyleInfo::getName);
+        if (info instanceof WorkspaceInfo workspaceInfo) {
+            doAddToCatalog(workspaceInfo, catalog::add, WorkspaceInfo::getName);
+        } else if (info instanceof NamespaceInfo namespaceInfo) {
+            doAddToCatalog(namespaceInfo, catalog::add, NamespaceInfo::getPrefix);
+        } else if (info instanceof StoreInfo storeInfo) doAddToCatalog(storeInfo, catalog::add, StoreInfo::getName);
+        else if (info instanceof ResourceInfo resourceInfo)
+            doAddToCatalog(resourceInfo, catalog::add, this::resourceLog);
+        else if (info instanceof LayerInfo layerInfo) {
+            doAddToCatalog(layerInfo, catalog::add, LayerInfo::getName);
+        } else if (info instanceof LayerGroupInfo groupInfo) {
+            doAddToCatalog(groupInfo, catalog::add, LayerGroupInfo::getName);
+        } else if (info instanceof StyleInfo styleInfo) doAddToCatalog(styleInfo, catalog::add, StyleInfo::getName);
         else {
-            throw new IllegalArgumentException(format("Unexpected value: %s", info));
+            throw new IllegalArgumentException("Unexpected value: %s".formatted(info));
         }
         return info;
     }
@@ -385,9 +385,9 @@ class CatalogLoader {
     private <I extends CatalogInfo> Optional<I> doAddToCatalog(I info, Consumer<I> saver, Function<I, String> name) {
         try {
             saver.accept(info);
-            LOGGER.log(Level.CONFIG, () -> format("Loaded %s %s", sanitizer.typeOf(info), name.apply(info)));
+            LOGGER.log(Level.CONFIG, () -> "Loaded %s %s".formatted(sanitizer.typeOf(info), name.apply(info)));
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e, () -> format("Failed to load %s %s", sanitizer.typeOf(info), info.getId()));
+            LOGGER.log(Level.SEVERE, e, () -> "Failed to load %s %s".formatted(sanitizer.typeOf(info), info.getId()));
             return Optional.empty();
         }
         return Optional.of(info);

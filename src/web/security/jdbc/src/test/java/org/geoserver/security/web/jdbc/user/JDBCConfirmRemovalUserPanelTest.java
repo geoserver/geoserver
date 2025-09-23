@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.jdbc.user;
 
+import java.io.Serial;
 import org.geoserver.security.jdbc.H2RoleServiceTest;
 import org.geoserver.security.jdbc.H2UserGroupServiceTest;
 import org.geoserver.security.web.user.ConfirmRemovalUserPanelTest;
@@ -12,6 +13,7 @@ import org.junit.Test;
 
 public class JDBCConfirmRemovalUserPanelTest extends ConfirmRemovalUserPanelTest {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override

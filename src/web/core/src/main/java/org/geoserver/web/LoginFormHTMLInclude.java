@@ -8,6 +8,7 @@ import static freemarker.ext.beans.BeansWrapper.EXPOSE_NOTHING;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import java.io.Serial;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class LoginFormHTMLInclude extends Include {
     protected static final Logger LOGGER = Logging.getLogger(LoginFormHTMLInclude.class);
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 2413413223248385722L;
 
     private static final String DEFAULT_AUTOCOMPLETE_VALUE = "on";

@@ -6,6 +6,8 @@
 
 package org.geoserver.security.impl;
 
+import java.io.Serial;
+
 /**
  * Needed to test if subclassing works
  *
@@ -14,6 +16,7 @@ package org.geoserver.security.impl;
 public class MemoryGeoserverRole extends GeoServerRole {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public MemoryGeoserverRole(String role) {

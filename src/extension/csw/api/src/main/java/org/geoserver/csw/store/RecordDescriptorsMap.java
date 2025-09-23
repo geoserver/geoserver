@@ -5,6 +5,7 @@
  */
 package org.geoserver.csw.store;
 
+import java.io.Serial;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.geoserver.csw.records.RecordDescriptor;
@@ -15,6 +16,7 @@ import org.geotools.api.feature.type.Name;
  * not namespace qualified, then a match on the local part is attempted too
  */
 public class RecordDescriptorsMap extends LinkedHashMap<Name, RecordDescriptor> {
+    @Serial
     private static final long serialVersionUID = 335115347101959746L;
 
     @Override

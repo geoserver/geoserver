@@ -75,8 +75,8 @@ public class ResolvingProxyResolverTest {
         when(resource.getName()).thenReturn("resource-name");
         when(resource.getStore()).thenReturn(store);
         when(resource.getNamespace()).thenReturn(namespace);
-        if (resource instanceof ResourceInfoImpl) {
-            ((ResourceInfoImpl) resource).setCatalog(catalog);
+        if (resource instanceof ResourceInfoImpl impl) {
+            impl.setCatalog(catalog);
         }
 
         // Mock style
@@ -84,8 +84,8 @@ public class ResolvingProxyResolverTest {
         when(style.getId()).thenReturn("style-id");
         when(style.getName()).thenReturn("style-name");
         when(style.getWorkspace()).thenReturn(workspace);
-        if (style instanceof StyleInfoImpl) {
-            ((StyleInfoImpl) style).setCatalog(catalog);
+        if (style instanceof StyleInfoImpl impl) {
+            impl.setCatalog(catalog);
         }
 
         // Mock layer

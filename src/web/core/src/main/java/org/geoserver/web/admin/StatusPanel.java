@@ -5,6 +5,7 @@
 package org.geoserver.web.admin;
 
 import java.awt.GraphicsEnvironment;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,7 @@ import org.geotools.util.logging.Logging;
 
 public class StatusPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 7732030199323990637L;
 
     /** The map used as the model source so the label contents are updated */
@@ -126,6 +128,7 @@ public class StatusPanel extends Panel {
         add(new Label("renderer", new MapModel<>(values, KEY_JAVA_RENDERER)));
         // serialization error here
         add(new Link<>("free.locks") {
+            @Serial
             private static final long serialVersionUID = -2889353495319211391L;
 
             @Override
@@ -135,6 +138,7 @@ public class StatusPanel extends Panel {
             }
         });
         add(new Link<>("free.memory") {
+            @Serial
             private static final long serialVersionUID = 3695369177295089346L;
 
             @Override
@@ -146,6 +150,7 @@ public class StatusPanel extends Panel {
         });
 
         add(new Link<>("free.memory.jai") {
+            @Serial
             private static final long serialVersionUID = -3556725607958589003L;
 
             @Override
@@ -166,6 +171,7 @@ public class StatusPanel extends Panel {
         add(new BookmarkablePageLink<>("show.fonts", JVMFontsPage.class));
 
         add(new AjaxLink<>("clear.resourceCache") {
+            @Serial
             private static final long serialVersionUID = 2663650174059497376L;
 
             @Override
@@ -183,6 +189,7 @@ public class StatusPanel extends Panel {
         });
 
         add(new AjaxLink<>("reload.catalogConfig") {
+            @Serial
             private static final long serialVersionUID = -7476556423889306321L;
 
             @Override
@@ -223,8 +230,8 @@ public class StatusPanel extends Panel {
         TileCache jaiCache = jaiInfo.getTileCache();
 
         values.put(KEY_JAI_MAX_MEM, formatMemory(jaiCache.getMemoryCapacity()));
-        if (jaiCache instanceof CacheDiagnostics) {
-            values.put(KEY_JAI_MEM_USAGE, formatMemory(((CacheDiagnostics) jaiCache).getCacheMemoryUsed()));
+        if (jaiCache instanceof CacheDiagnostics diagnostics) {
+            values.put(KEY_JAI_MEM_USAGE, formatMemory(diagnostics.getCacheMemoryUsed()));
         } else {
             values.put(KEY_JAI_MEM_USAGE, "-");
         }
@@ -306,14 +313,12 @@ public class StatusPanel extends Panel {
                     continue;
                 }
 
-                if (meta instanceof DataStoreInfo) {
-                    DataStoreInfo dataStoreInfo = (DataStoreInfo) meta;
+                if (meta instanceof DataStoreInfo dataStoreInfo) {
                     try {
                         DataAccess store = dataStoreInfo.getDataStore(null);
-                        if (store instanceof DataStore) {
-                            LockingManager lockingManager = ((DataStore) store).getLockingManager();
-                            if (lockingManager instanceof InProcessLockingManager) {
-                                InProcessLockingManager inprocess = (InProcessLockingManager) lockingManager;
+                        if (store instanceof DataStore dataStore) {
+                            LockingManager lockingManager = dataStore.getLockingManager();
+                            if (lockingManager instanceof InProcessLockingManager inprocess) {
                                 count += inprocess.allLocks().size();
                             }
                         }
@@ -364,8 +369,7 @@ public class StatusPanel extends Panel {
                     // Don't count connections from disabled datastores.
                     continue;
                 }
-                if (meta instanceof DataStoreInfo) {
-                    DataStoreInfo dataMeta = (DataStoreInfo) meta;
+                if (meta instanceof DataStoreInfo dataMeta) {
                     try {
                         DataAccess<? extends FeatureType, ? extends Feature> store = dataMeta.getDataStore(null);
                         if (store == null) {

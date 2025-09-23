@@ -54,26 +54,26 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
     public void write(List<? extends T> items) {
         for (T item : items) {
             try {
-                if (item instanceof WorkspaceInfo) {
-                    write((WorkspaceInfo) item);
-                } else if (item instanceof NamespaceInfo) {
-                    write((NamespaceInfo) item);
-                } else if (item instanceof DataStoreInfo) {
-                    write((DataStoreInfo) item);
-                } else if (item instanceof WMSStoreInfo) {
-                    write((WMSStoreInfo) item);
-                } else if (item instanceof WMTSStoreInfo) {
-                    write((WMTSStoreInfo) item);
-                } else if (item instanceof CoverageStoreInfo) {
-                    write((CoverageStoreInfo) item);
-                } else if (item instanceof ResourceInfo) {
-                    write((ResourceInfo) item);
-                } else if (item instanceof LayerInfo) {
-                    write((LayerInfo) item);
-                } else if (item instanceof StyleInfo) {
-                    write((StyleInfo) item);
-                } else if (item instanceof LayerGroupInfo) {
-                    write((LayerGroupInfo) item);
+                if (item instanceof WorkspaceInfo info9) {
+                    write(info9);
+                } else if (item instanceof NamespaceInfo info8) {
+                    write(info8);
+                } else if (item instanceof DataStoreInfo info7) {
+                    write(info7);
+                } else if (item instanceof WMSStoreInfo info6) {
+                    write(info6);
+                } else if (item instanceof WMTSStoreInfo info5) {
+                    write(info5);
+                } else if (item instanceof CoverageStoreInfo info4) {
+                    write(info4);
+                } else if (item instanceof ResourceInfo info3) {
+                    write(info3);
+                } else if (item instanceof LayerInfo info2) {
+                    write(info2);
+                } else if (item instanceof StyleInfo info1) {
+                    write(info1);
+                } else if (item instanceof LayerGroupInfo info) {
+                    write(info);
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Exception writting catalog item : " + item, e);

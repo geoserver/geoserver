@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.resources;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -17,6 +18,7 @@ import org.apache.wicket.model.Model;
  */
 public class PanelPaste extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 6463557973347000931L;
 
     public PanelPaste(String id, String source, String directory, boolean isCopy) {

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.settings;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.config.SettingsInfo;
@@ -15,6 +16,7 @@ import org.geoserver.config.SettingsInfo;
  * @author Nicola Lagomarsini Geosolutions S.A.S.
  */
 public abstract class SettingsPluginPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 2747074530701938992L;
 
     public SettingsPluginPanel(String id, IModel<SettingsInfo> model) {

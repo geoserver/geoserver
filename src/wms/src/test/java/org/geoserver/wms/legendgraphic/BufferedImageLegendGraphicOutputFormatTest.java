@@ -71,7 +71,6 @@ import org.locationtech.jts.geom.Geometry;
  * StyledShapePainter.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<BufferedImageLegendGraphicBuilder> {
     @Before
@@ -157,11 +156,11 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<B
             assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -439,11 +438,11 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<B
             assertPixel(image, 10, 70 + titleHeight * 2, new Color(115, 38, 0));
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -494,11 +493,11 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<B
             assertTrue(image.getHeight() < 70 + titleHeight * 2);
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -896,11 +895,11 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<B
             fail(e.getMessage());
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -979,11 +978,11 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<B
             assertEquals(fixedWidth, image.getWidth());
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -1051,11 +1050,11 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<B
             assertPixel(image, 10, HEIGHT_HINT + HEIGHT_HINT / 2, Color.YELLOW);
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -1142,11 +1141,11 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<B
             assertTrue(image.getWidth() > absoluteWidth);
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -1203,11 +1202,11 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<B
 
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }

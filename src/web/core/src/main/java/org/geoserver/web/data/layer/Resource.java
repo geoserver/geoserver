@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layer;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
@@ -17,6 +18,7 @@ import org.geotools.feature.NameImpl;
 public class Resource implements Comparable<Resource>, Serializable {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 8744964557875392120L;
     /** The resource name */
     String name;

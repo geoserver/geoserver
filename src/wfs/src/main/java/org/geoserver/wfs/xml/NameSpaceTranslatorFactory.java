@@ -20,7 +20,6 @@ import org.geotools.util.logging.Logging;
  * @see NameSpaceTranslator
  * @author dzwiers, Refractions Research, Inc.
  * @author $Author: dmzwiers $ (last modification)
- * @version $Id$
  */
 public class NameSpaceTranslatorFactory {
     static final Logger LOGGER = Logging.getLogger(NameSpaceTranslatorFactory.class);

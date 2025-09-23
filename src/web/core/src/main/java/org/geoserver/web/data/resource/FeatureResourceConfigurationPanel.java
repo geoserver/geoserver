@@ -278,9 +278,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         if (cqlFilterString != null && !cqlFilterString.isEmpty()) {
             cqlFilter = ECQL.toFilter(cqlFilterString);
             FeatureType ft = typeInfo.getFeatureType();
-            if (ft instanceof SimpleFeatureType) {
-
-                SimpleFeatureType sft = (SimpleFeatureType) ft;
+            if (ft instanceof SimpleFeatureType sft) {
                 BeanToPropertyValueTransformer transformer = new BeanToPropertyValueTransformer("localName");
                 Collection<String> featureAttributesNames = CollectionUtils.collect(
                         sft.getAttributeDescriptors(), ad -> (String) transformer.transform(ad));

@@ -131,7 +131,7 @@ public class PaletteParser {
 
     private String toColorSpec(Color c) {
         if (c.getAlpha() == 255) {
-            return String.format("rgb(%d,%d,%d)", c.getRed(), c.getGreen(), c.getBlue());
+            return "rgb(%d,%d,%d)".formatted(c.getRed(), c.getGreen(), c.getBlue());
         } else {
             return String.format(
                     Locale.ENGLISH, "rgba(%d,%d,%d,%.2f)", c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha() / 255.);

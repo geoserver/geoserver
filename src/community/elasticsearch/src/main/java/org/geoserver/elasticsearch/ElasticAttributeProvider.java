@@ -5,6 +5,7 @@
 
 package org.geoserver.elasticsearch;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -13,6 +14,7 @@ import org.geotools.data.elasticsearch.ElasticAttribute;
 /** Provide attributes from Elasticsearch fields. */
 class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttribute> {
 
+    @Serial
     private static final long serialVersionUID = -1021780286733349153L;
 
     private final List<ElasticAttribute> attributes;
@@ -23,6 +25,7 @@ class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttribute> {
     /** Class type of field */
     static final Property<ElasticAttribute> TYPE = new AbstractProperty<ElasticAttribute>("type") {
 
+        @Serial
         private static final long serialVersionUID = 4454312983828267130L;
 
         @Override

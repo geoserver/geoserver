@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.gwc.GWC;
@@ -16,6 +17,7 @@ import org.geoserver.web.publish.CommonPublishedEditTabPanelInfo;
 
 public class LayerEditCacheOptionsTabPanelInfo extends CommonPublishedEditTabPanelInfo {
 
+    @Serial
     private static final long serialVersionUID = 7917940832781227130L;
 
     @Override

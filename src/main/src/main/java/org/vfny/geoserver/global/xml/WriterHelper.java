@@ -21,7 +21,6 @@ import org.vfny.geoserver.global.ConfigurationException;
  * <p>
  *
  * @author dzwiers, Refractions Research, Inc.
- * @version $Id$
  */
 public class WriterHelper {
     /**

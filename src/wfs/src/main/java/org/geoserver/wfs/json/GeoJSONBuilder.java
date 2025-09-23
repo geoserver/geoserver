@@ -29,7 +29,6 @@ import org.locationtech.jts.geom.Polygon;
  * of the spec on http://geojson.org
  *
  * @author Chris Holmes, The Open Planning Project
- * @version $Id$
  */
 public class GeoJSONBuilder extends JSONBuilder {
 
@@ -382,12 +381,12 @@ public class GeoJSONBuilder extends JSONBuilder {
     public GeoJSONBuilder value(Object value) {
         if (value == null) {
             super.value(value);
-        } else if (value instanceof Geometry) {
-            this.writeGeom((Geometry) value);
-        } else if (value instanceof List) {
-            this.writeList((List) value);
-        } else if (value instanceof Map) {
-            this.writeMap((Map) value);
+        } else if (value instanceof Geometry geometry) {
+            this.writeGeom(geometry);
+        } else if (value instanceof List list) {
+            this.writeList(list);
+        } else if (value instanceof Map map) {
+            this.writeMap(map);
         } else {
             if (value instanceof java.util.Date || value instanceof Calendar) {
                 value = Converters.convert(value, String.class);

@@ -528,8 +528,7 @@ public class TemplateRestController extends AbstractCatalogController {
         @Override
         public void marshal(
                 Object o, HierarchicalStreamWriter hierarchicalStreamWriter, MarshallingContext marshallingContext) {
-            if (o instanceof TemplateInfoList) {
-                TemplateInfoList list = (TemplateInfoList) o;
+            if (o instanceof TemplateInfoList list) {
                 for (TemplateInfo info : list.getInfos()) {
                     hierarchicalStreamWriter.startNode("templates");
                     hierarchicalStreamWriter.startNode("name");

@@ -52,8 +52,8 @@ public class RetypingFeatureCollection<T extends FeatureType, F extends Feature>
 
     @Override
     protected void closeIterator(Iterator<F> close) {
-        if (close instanceof RetypingIterator) {
-            ((RetypingIterator) close).close();
+        if (close instanceof RetypingIterator iterator) {
+            iterator.close();
         }
     }
 }

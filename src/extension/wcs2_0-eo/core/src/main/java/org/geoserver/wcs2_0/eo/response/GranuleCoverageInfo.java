@@ -6,6 +6,7 @@
 package org.geoserver.wcs2_0.eo.response;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.security.decorators.DecoratingCoverageInfo;
@@ -25,7 +26,9 @@ import org.geotools.util.factory.Hints;
  * @author Andrea Aime - GeoSolutions
  */
 public class GranuleCoverageInfo extends DecoratingCoverageInfo {
+    @Serial
     private static final long serialVersionUID = 7877565589262804385L;
+
     private SimpleFeature feature;
     private List<DimensionDescriptor> dimensionDescriptors;
 

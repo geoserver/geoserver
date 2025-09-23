@@ -5,16 +5,17 @@
  */
 package org.geoserver.web.demo;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
  * Holds on the properties used as arguments for the Demo Request
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  * @since 2.0.x
  */
 public class DemoRequest implements Serializable {
+    @Serial
     private static final long serialVersionUID = -6605104556907827822L;
 
     /** The directory containing the demo files */

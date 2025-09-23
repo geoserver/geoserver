@@ -71,9 +71,9 @@ import org.xml.sax.EntityResolver;
 
 /**
  * Key/Value pair set parsed for a GetLegendGraphic request. When calling <code>getRequest</code> produces a
- * {@linkPlain org.vfny.geoserver.requests.wms.GetLegendGraphicRequest}
+ * {@linkPlain GetLegendGraphicRequest}
  *
- * <p>See {@linkplain org.org.geoserver.wms.GetLegendGraphicRequest} for a complete list of expected request parameters.
+ * <p>See {@linkplain GetLegendGraphicRequest} for a complete list of expected request parameters.
  *
  * <p>This class is responsible for looking up all the required information for
  * {@link BufferedImageLegendGraphicBuilder} (titles, styles and legend graphics used). If requested information (such
@@ -82,8 +82,7 @@ import org.xml.sax.EntityResolver;
  * BufferedImageLegendGraphicBuilder, RasterLayerLegendHelper and similar.
  *
  * @author Gabriel Roldan
- * @version $Id$
- * @see org.org.geoserver.wms.GetLegendGraphicRequest
+ * @see GetLegendGraphicRequest
  */
 public class GetLegendGraphicKvpReader extends KvpRequestReader {
 
@@ -495,8 +494,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             for (String styleName : styleNames) {
                 // if we have a layer group and no style is specified
                 // use the default one for the layer in the current position
-                if (infoObj instanceof LayerGroupInfo) {
-                    LayerGroupInfo layerGroupInfo = (LayerGroupInfo) infoObj;
+                if (infoObj instanceof LayerGroupInfo layerGroupInfo) {
                     boolean groupDefaultStyle = isGroupDefaultStyle(styleName, layerGroupInfo);
                     LayerGroupStyle lgStyle = null;
                     if (!groupDefaultStyle && isSingleOrOpaque(layerGroupInfo)) {
@@ -509,12 +507,11 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     if (style == null) throwNoSuchStyle(styleName);
 
                     sldStyles.add(style);
-                    if (infoObj instanceof LayerInfo) {
+                    if (infoObj instanceof LayerInfo layerInfo) {
                         StyleInfo styleInfo = wms.getCatalog().getStyleByName(styleName);
                         if (styleInfo != null) {
                             LegendInfo legend = resolveLegendInfo(styleInfo.getLegend(), req, styleInfo);
                             if (legend != null) {
-                                LayerInfo layerInfo = (LayerInfo) infoObj;
                                 Name name = layerInfo.getResource().getQualifiedName();
                                 LegendRequest legendRequest = req.getLegend(name);
                                 if (legendRequest != null) {
@@ -529,8 +526,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             }
 
         } else {
-            if (infoObj instanceof LayerInfo) {
-                LayerInfo layerInfo = (LayerInfo) infoObj;
+            if (infoObj instanceof LayerInfo layerInfo) {
                 sldStyles.add(getStyleFromLayer(layerInfo));
 
                 StyleInfo defaultStyle = layerInfo.getDefaultStyle();
@@ -544,8 +540,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                         LOGGER.log(Level.FINE, "Unable to set LegendInfo for " + name);
                     }
                 }
-            } else if (infoObj instanceof LayerGroupInfo) {
-                addLayerGroupStyles(req, (LayerGroupInfo) infoObj, sldStyles, null);
+            } else if (infoObj instanceof LayerGroupInfo info) {
+                addLayerGroupStyles(req, info, sldStyles, null);
             }
         }
 
@@ -646,8 +642,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     /**
      * Finds the Style named <code>styleName</code> in <code>styles</code>.
      *
-     * @param styleName name of style to search for in the list of styles. If <code>null</code>, it is assumed the
-     *     request is made in literal mode and the user has requested the first style.
+     * @param styleName name of style to search for in the list of styles. If {@code null}, it is assumed the request is
+     *     made in literal mode and the user has requested the first style.
      * @param styles non null, non empty, list of styles
      * @throws NoSuchElementException if no style named <code>styleName</code> is found in <code>
      *     styles</code>

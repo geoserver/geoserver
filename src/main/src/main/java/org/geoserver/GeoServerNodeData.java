@@ -83,7 +83,7 @@ public class GeoServerNodeData {
                     if (SUBSTITUTIONS.keySet().stream().anyMatch(id::contains)) {
                         final InetAddress address = getLocalHostLANAddress();
                         for (Entry<String, Function<InetAddress, String>> e : SUBSTITUTIONS.entrySet()) {
-                            final String token = String.format("$%s", e.getKey());
+                            final String token = "$%s".formatted(e.getKey());
                             final String value = e.getValue().apply(address);
                             id = id.replace(token, value);
                         }

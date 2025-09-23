@@ -24,7 +24,7 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
      * Maps the key provided in the request to the {@link GeoServerUser} object of the corresponding user, or returns
      * null if no corresponding user is found
      *
-     * <p>Returns <code>null</code> if the user is disabled
+     * <p>Returns {@code null} if the user is disabled
      */
     GeoServerUser getUser(String key) throws IOException;
 

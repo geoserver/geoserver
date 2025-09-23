@@ -48,16 +48,16 @@ public class InternalWFSInputProvider extends AbstractInputProvider {
             gft = kvpParse(ref.getHref(), reader);
         }
 
-        if (gft instanceof net.opengis.wfs.GetFeatureType) {
+        if (gft instanceof net.opengis.wfs.GetFeatureType type1) {
             WebFeatureService wfs = (WebFeatureService) context.getBean("wfsServiceTarget");
 
-            FeatureCollectionResponse featureCollectionType = wfs.getFeature((net.opengis.wfs.GetFeatureType) gft);
+            FeatureCollectionResponse featureCollectionType = wfs.getFeature(type1);
             // this will also deal with axis order issues
             return ((ComplexPPIO) ppio).decode(featureCollectionType.getAdaptee());
-        } else if (gft instanceof net.opengis.wfs20.GetFeatureType) {
+        } else if (gft instanceof net.opengis.wfs20.GetFeatureType type) {
             WebFeatureService20 wfs = (WebFeatureService20) context.getBean("wfsService20Target");
 
-            FeatureCollectionResponse featureCollectionType = wfs.getFeature((net.opengis.wfs20.GetFeatureType) gft);
+            FeatureCollectionResponse featureCollectionType = wfs.getFeature(type);
             // this will also deal with axis order issues
             return ((ComplexPPIO) ppio).decode(featureCollectionType.getAdaptee());
         } else {

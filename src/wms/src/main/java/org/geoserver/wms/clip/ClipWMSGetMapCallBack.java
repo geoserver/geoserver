@@ -46,25 +46,20 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
         // check: if wkt area fully contains bbox
         if (wktGeom.covers(bboxGeom)) return layer;
         try {
-            if (layer instanceof FeatureLayer) {
-
+            if (layer instanceof FeatureLayer fl) {
                 // wrap around
-                FeatureLayer fl = (FeatureLayer) layer;
-
                 FeatureSource<?, ?> clippedFS = new ClippedFeatureSource<>(layer.getFeatureSource(), wktGeom);
                 FeatureLayer clippedLayer = new FeatureLayer(clippedFS, fl.getStyle(), fl.getTitle());
                 BeanUtilsBean2.getInstance().copyProperties(clippedLayer, fl);
                 fl.getUserData().putAll(layer.getUserData());
                 return clippedLayer;
 
-            } else if (layer instanceof GridReaderLayer) {
-
-                GridReaderLayer gr = (GridReaderLayer) layer;
+            } else if (layer instanceof GridReaderLayer gr) {
                 // wrap
                 CroppedGridCoverage2DReader croppedGridReader =
                         new CroppedGridCoverage2DReader(gr.getReader(), wktGeom);
-                CachedGridReaderLayer croppedGridLayer = new CachedGridReaderLayer(
-                        croppedGridReader, layer.getStyle(), ((GridReaderLayer) layer).getParams());
+                CachedGridReaderLayer croppedGridLayer =
+                        new CachedGridReaderLayer(croppedGridReader, layer.getStyle(), gr.getParams());
                 BeanUtilsBean2.getInstance().copyProperties(croppedGridLayer, gr);
                 croppedGridLayer.getUserData().putAll(layer.getUserData());
                 return croppedGridLayer;

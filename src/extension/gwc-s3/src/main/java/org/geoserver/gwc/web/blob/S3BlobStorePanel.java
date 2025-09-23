@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import java.io.Serial;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Radio;
@@ -25,6 +26,7 @@ import org.geowebcache.s3.S3BlobStoreInfo;
  */
 public class S3BlobStorePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -8237328668463257329L;
 
     public S3BlobStorePanel(String id, final IModel<S3BlobStoreInfo> configModel) {

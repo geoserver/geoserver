@@ -36,14 +36,17 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
         info.setExtension("xhtml");
         TemplateInfoDAO.get().saveOrUpdate(info);
 
-        String json = "{\n"
-                + "    \"Rule\": {\n"
-                + "        \"priority\": 1,\n"
-                + "        \"templateName\": \"test-rules\",\n"
-                + "        \"outputFormat\": \"HTML\",\n"
-                + "        \"cqlFilter\": \"requestParam('myRequestParam')='true'\",\n"
-                + "    }\n"
-                + "}";
+        String json =
+                """
+                {
+                    "Rule": {
+                        "priority": 1,
+                        "templateName": "test-rules",
+                        "outputFormat": "HTML",
+                        "cqlFilter": "requestParam('myRequestParam')='true'",
+                    }
+                }\
+                """;
         MockHttpServletResponse response = postAsServletResponse(
                 RestBaseController.ROOT_PATH + "/workspaces/cdf/featuretypes/Fifteen/templaterules",
                 json,
@@ -62,12 +65,14 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
         assertEquals("HTML", ruleJSON.getString("outputFormat"));
         assertEquals("requestParam('myRequestParam')='true'", ruleJSON.getString("cqlFilter"));
 
-        String xmlRule = " <Rule>\n"
-                + "        <priority>2</priority>\n"
-                + "        <templateName>test-rules</templateName>\n"
-                + "        <outputFormat>HTML</outputFormat>\n"
-                + "        <cqlFilter>requestParam('otherRequestParam')='true'</cqlFilter>\n"
-                + "    </Rule>";
+        String xmlRule =
+                """
+                 <Rule>
+                        <priority>2</priority>
+                        <templateName>test-rules</templateName>
+                        <outputFormat>HTML</outputFormat>
+                        <cqlFilter>requestParam('otherRequestParam')='true'</cqlFilter>
+                    </Rule>""";
 
         response = putAsServletResponse(
                 RestBaseController.ROOT_PATH + "/workspaces/cdf/featuretypes/Fifteen/templaterules/" + rule.getRuleId(),
@@ -102,14 +107,17 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             info.setExtension("xhtml");
             TemplateInfoDAO.get().saveOrUpdate(info);
 
-            String json = "{\n"
-                    + "    \"Rule\": {\n"
-                    + "        \"priority\": 1,\n"
-                    + "        \"templateName\": \"test-rules2\",\n"
-                    + "        \"outputFormat\": \"HTML\",\n"
-                    + "        \"cqlFilter\": \"requestParam('myRequestParam')='true'\",\n"
-                    + "    }\n"
-                    + "}";
+            String json =
+                    """
+                    {
+                        "Rule": {
+                            "priority": 1,
+                            "templateName": "test-rules2",
+                            "outputFormat": "HTML",
+                            "cqlFilter": "requestParam('myRequestParam')='true'",
+                        }
+                    }\
+                    """;
             MockHttpServletResponse response = postAsServletResponse(
                     RestBaseController.ROOT_PATH + "/workspaces/cite/featuretypes/Forests/templaterules",
                     json,
@@ -131,10 +139,12 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             assertEquals("HTML", ruleJSON.getString("outputFormat"));
             assertEquals("requestParam('myRequestParam')='true'", ruleJSON.getString("cqlFilter"));
 
-            String xmlRule = " <Rule>\n"
-                    + "        <priority>2</priority>\n"
-                    + "        <cqlFilter>requestParam('otherRequestParam')='true'</cqlFilter>\n"
-                    + "    </Rule>";
+            String xmlRule =
+                    """
+                     <Rule>
+                            <priority>2</priority>
+                            <cqlFilter>requestParam('otherRequestParam')='true'</cqlFilter>
+                        </Rule>""";
 
             response = patchAsServletResponse(
                     RestBaseController.ROOT_PATH
@@ -244,10 +254,12 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             places.getMetadata().put(TemplateLayerConfig.METADATA_KEY, templateLayerConfig);
             getCatalog().save(places);
 
-            String xmlRule = " <Rule>\n"
-                    + "        <priority>2</priority>\n"
-                    + "        <cqlFilter xs:nil=\"true\"/>\n"
-                    + "    </Rule>";
+            String xmlRule =
+                    """
+                     <Rule>
+                            <priority>2</priority>
+                            <cqlFilter xs:nil="true"/>
+                        </Rule>""";
             MockHttpServletResponse response = patchAsServletResponse(
                     RestBaseController.ROOT_PATH
                             + "/workspaces/cite/featuretypes/Lakes/templaterules/"

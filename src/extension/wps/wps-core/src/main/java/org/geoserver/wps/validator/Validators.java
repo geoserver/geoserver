@@ -52,8 +52,7 @@ public class Validators {
         int maxSize = Integer.MAX_VALUE;
         if (validators != null) {
             for (Validator v : validators) {
-                if (v instanceof MaxSizeValidator) {
-                    MaxSizeValidator ms = (MaxSizeValidator) v;
+                if (v instanceof MaxSizeValidator ms) {
                     int msSize = ms.getMaxSizeMB();
                     maxSize = Math.min(maxSize, msSize);
                 }

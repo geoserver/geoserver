@@ -154,9 +154,8 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
     public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
             throws SAXException, IOException {
         if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.finest(String.format(
-                    "resolveEntity request: name=%s, publicId=%s, baseURI=%s, systemId=%s",
-                    name, publicId, baseURI, systemId));
+            LOGGER.finest("resolveEntity request: name=%s, publicId=%s, baseURI=%s, systemId=%s"
+                    .formatted(name, publicId, baseURI, systemId));
         }
 
         try {

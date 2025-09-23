@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
@@ -22,6 +23,7 @@ public class DateTimeLabel extends Panel {
     static final Logger LOGGER = Logging.getLogger(DateTimeLabel.class);
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -665729388275555894L;
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -36,8 +38,7 @@ public class DateTimeLabel extends Panel {
         if (model.getObject() != null) {
             Object val = model.getObject();
             // type check
-            if (val instanceof Date) {
-                Date date = (Date) val;
+            if (val instanceof Date date) {
                 formattedDateString = dateFormat.format(date);
                 formattedTimeString = timeFormat.format(date);
             } else LOGGER.severe("expected instance of java.util.Date as Model object in DateTimeLabel");

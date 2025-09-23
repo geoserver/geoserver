@@ -7,6 +7,7 @@
 package org.geoserver.security;
 
 import java.io.IOException;
+import java.io.Serial;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import org.geoserver.security.filter.GeoServerLogoutFilter;
 public class LogoutFilterChain extends ConstantFilterChain {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public LogoutFilterChain(String... patterns) {

@@ -42,8 +42,8 @@ public class CSVMonitorConverter extends BaseMonitorConverter {
 
                 for (String fld : fields) {
                     Object val = OwsUtils.get(data, fld);
-                    if (val instanceof Date) {
-                        val = DateUtil.serializeDateTime((Date) val);
+                    if (val instanceof Date date) {
+                        val = DateUtil.serializeDateTime(date);
                     }
                     if (val != null) {
                         String string = val.toString();

@@ -43,7 +43,6 @@ import org.geotools.util.logging.Logging;
  *
  * @author Richard Gould, Refractions Research, Inc.
  * @author $Author: cholmesny $ (last modification)
- * @version $Id$
  */
 public abstract class DataStoreUtils {
 
@@ -102,11 +101,11 @@ public abstract class DataStoreUtils {
             return null;
         }
 
-        if (store instanceof DataStore) {
+        if (store instanceof DataStore dataStore) {
             try {
-                String[] names = ((DataStore) store).getTypeNames();
+                String[] names = dataStore.getTypeNames();
                 for (String name : names) {
-                    if (name.indexOf(":") >= 0) return new RetypingDataStore((DataStore) store);
+                    if (name.indexOf(":") >= 0) return new RetypingDataStore(dataStore);
                 }
             } catch (IOException | RuntimeException e) {
                 // in case of exception computing the feature types make sure we clean up the store

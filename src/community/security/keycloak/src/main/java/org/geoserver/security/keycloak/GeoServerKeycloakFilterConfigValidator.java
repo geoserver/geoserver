@@ -33,9 +33,9 @@ public class GeoServerKeycloakFilterConfigValidator extends FilterConfigValidato
     @Override
     public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
         LOG.log(Level.FINER, "GeoServerKeycloakFilterConfigValidator.validateFilterConfig ENTRY");
-        if (config instanceof GeoServerKeycloakFilterConfig) {
+        if (config instanceof GeoServerKeycloakFilterConfig filterConfig) {
             LOG.log(Level.FINE, "valid config type");
-            validateKeycloakConfig((GeoServerKeycloakFilterConfig) config);
+            validateKeycloakConfig(filterConfig);
             super.validateFilterConfig(config);
         } else {
             LOG.log(Level.FINE, "invalid config type");

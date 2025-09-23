@@ -24,15 +24,18 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 public class MapDecorationLayoutTest {
-    private static final String DYNAMIC_TEXT_DECORATION = "<layout>\n"
-            + "  <decoration type=\"text\" affinity=\"bottom,right\" offset=\"${env('offset', '6,"
-            + "6')}\" size=\"auto\">\n"
-            + "    <option name=\"message\">${expression}</option>\n"
-            + "    <option name=\"font-family\" value=\"Bitstream Vera Sans\"/>\n"
-            + "    <option name=\"font-size\" value=\"${env('fs', 12)}\"/>\n"
-            + "    <option name=\"halo-radius\" value=\"2\"/>\n"
-            + "  </decoration>\n"
-            + "</layout>\n";
+    private static final String DYNAMIC_TEXT_DECORATION =
+            """
+            <layout>
+              <decoration type="text" affinity="bottom,right" offset="${env('offset', '6,\
+            6')}" size="auto">
+                <option name="message">${expression}</option>
+                <option name="font-family" value="Bitstream Vera Sans"/>
+                <option name="font-size" value="${env('fs', 12)}"/>
+                <option name="halo-radius" value="2"/>
+              </decoration>
+            </layout>
+            """;
     // public static TestSuite suite() { return new TestSuite(MapDecorationLayout.class); }
 
     private static class MockMapDecoration implements MapDecoration {
@@ -311,11 +314,13 @@ public class MapDecorationLayoutTest {
 
     @Test
     public void testLoadLargeValue() throws Exception {
-        String messageTemplate = "<#setting datetime_format=\"yyyy-MM-dd'T'HH:mm:ss.SSSX\">\n"
-                + "<#setting locale=\"en_US\">\n"
-                + "<#if time??>\n"
-                + "${time?datetime?string[\"dd-MM-yyyy\"]}\n"
-                + "</#if>";
+        String messageTemplate =
+                """
+                <#setting datetime_format="yyyy-MM-dd'T'HH:mm:ss.SSSX">
+                <#setting locale="en_US">
+                <#if time??>
+                ${time?datetime?string["dd-MM-yyyy"]}
+                </#if>""";
         String definition = "<layout>\n"
                 + "  <decoration type=\"text\" affinity=\"bottom,right\" offset=\"6,6\" size=\"auto\">\n"
                 + "    <option name=\"message\"><![CDATA["

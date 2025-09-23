@@ -45,8 +45,8 @@ public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
             throw new IllegalArgumentException("Incoming object is null");
         }
         try {
-            if (event instanceof CatalogAddEvent) {
-                final CatalogAddEvent addEv = ((CatalogAddEvent) event);
+            if (event instanceof CatalogAddEvent addEvent) {
+                final CatalogAddEvent addEv = addEvent;
 
                 // get the source from the incoming event
                 final CatalogInfo info = addEv.getSource();
@@ -75,44 +75,44 @@ public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
     private static void add(final Catalog catalog, CatalogInfo info)
             throws IllegalAccessException, InvocationTargetException {
 
-        if (info instanceof LayerGroupInfo) {
+        if (info instanceof LayerGroupInfo groupInfo) {
 
-            final LayerGroupInfo deserObject = CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
+            final LayerGroupInfo deserObject = CatalogUtils.localizeLayerGroup(groupInfo, catalog);
             catalog.add(ModificationProxy.unwrap(deserObject));
 
-        } else if (info instanceof LayerInfo) {
+        } else if (info instanceof LayerInfo layerInfo) {
 
-            final LayerInfo layer = CatalogUtils.localizeLayer((LayerInfo) info, catalog);
+            final LayerInfo layer = CatalogUtils.localizeLayer(layerInfo, catalog);
             catalog.add(ModificationProxy.unwrap(layer));
 
-        } else if (info instanceof MapInfo) {
+        } else if (info instanceof MapInfo mapInfo) {
 
-            final MapInfo localObject = CatalogUtils.localizeMapInfo((MapInfo) info, catalog);
+            final MapInfo localObject = CatalogUtils.localizeMapInfo(mapInfo, catalog);
             catalog.add(ModificationProxy.unwrap(localObject));
 
-        } else if (info instanceof NamespaceInfo) {
+        } else if (info instanceof NamespaceInfo namespaceInfo) {
 
-            final NamespaceInfo namespace = CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
+            final NamespaceInfo namespace = CatalogUtils.localizeNamespace(namespaceInfo, catalog);
             catalog.add(ModificationProxy.unwrap(namespace));
 
-        } else if (info instanceof StoreInfo) {
+        } else if (info instanceof StoreInfo storeInfo) {
 
-            StoreInfo store = CatalogUtils.localizeStore((StoreInfo) info, catalog);
+            StoreInfo store = CatalogUtils.localizeStore(storeInfo, catalog);
             catalog.add(ModificationProxy.unwrap(store));
 
-        } else if (info instanceof ResourceInfo) {
+        } else if (info instanceof ResourceInfo resourceInfo) {
 
-            final ResourceInfo resource = CatalogUtils.localizeResource((ResourceInfo) info, catalog);
+            final ResourceInfo resource = CatalogUtils.localizeResource(resourceInfo, catalog);
             catalog.add(ModificationProxy.unwrap(resource));
 
-        } else if (info instanceof StyleInfo) {
+        } else if (info instanceof StyleInfo styleInfo) {
 
-            final StyleInfo deserializedObject = CatalogUtils.localizeStyle((StyleInfo) info, catalog);
+            final StyleInfo deserializedObject = CatalogUtils.localizeStyle(styleInfo, catalog);
             catalog.add(ModificationProxy.unwrap(deserializedObject));
 
-        } else if (info instanceof WorkspaceInfo) {
+        } else if (info instanceof WorkspaceInfo workspaceInfo) {
 
-            final WorkspaceInfo workspace = CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
+            final WorkspaceInfo workspace = CatalogUtils.localizeWorkspace(workspaceInfo, catalog);
             catalog.add(ModificationProxy.unwrap(workspace));
 
         } else if (info instanceof CatalogInfo) {

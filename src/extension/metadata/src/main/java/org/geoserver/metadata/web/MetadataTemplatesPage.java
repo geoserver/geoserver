@@ -8,6 +8,7 @@ package org.geoserver.metadata.web;
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -51,6 +52,7 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
  */
 public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 2273966783474224452L;
 
     private GeoServerTablePanel<MetadataTemplate> templatesPanel;
@@ -79,6 +81,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
         add(progressPanel = new ProgressPanel("progress", new ResourceModel("MetadataTemplatesPage.updatingMetadata")));
 
         add(new AjaxLink<>("addNew") {
+            @Serial
             private static final long serialVersionUID = 3581476968062788921L;
 
             @Override
@@ -89,6 +92,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
         // the removal button
         AjaxLink<Object> remove = new AjaxLink<>("removeSelected") {
+            @Serial
             private static final long serialVersionUID = 3581476968062788921L;
 
             @Override
@@ -112,6 +116,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                             new ParamResourceModel("deleteDialog.content", MetadataTemplatesPage.this);
                     dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                        @Serial
                         private static final long serialVersionUID = -5552087037163833563L;
 
                         @Override
@@ -142,6 +147,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
         // the copy button
         AjaxLink<Object> copy = new AjaxLink<>("copySelected") {
+            @Serial
             private static final long serialVersionUID = 3581476968062788921L;
 
             @Override
@@ -162,6 +168,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
         templatesPanel =
                 new GeoServerTablePanel<>("templatesPanel", new MetadataTemplateDataProvider(templates), true) {
 
+                    @Serial
                     private static final long serialVersionUID = -8943273843044917552L;
 
                     @Override
@@ -180,6 +187,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                             GeoServerDataProvider.Property<MetadataTemplate> property) {
                         if (property.equals(MetadataTemplateDataProvider.NAME)) {
                             return new SimpleAjaxLink<>(id, (IModel<String>) property.getModel(itemModel)) {
+                                @Serial
                                 private static final long serialVersionUID = -9184383036056499856L;
 
                                 @Override
@@ -206,6 +214,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
         add(templatesPanel);
 
         add(new AjaxLink<>("save") {
+            @Serial
             private static final long serialVersionUID = 6152685206300932774L;
 
             @Override
@@ -221,6 +230,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
             }
         });
         add(new AjaxLink<>("cancel") {
+            @Serial
             private static final long serialVersionUID = -2023310159199302483L;
 
             @Override
@@ -233,6 +243,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
     private DialogDelegate saveWarningDialog() {
         return new GeoServerDialog.DialogDelegate() {
 
+            @Serial
             private static final long serialVersionUID = 6769706050075583226L;
 
             private boolean ok = false;
@@ -269,6 +280,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                     });
 
                     progressPanel.start(target, progressModel, new ProgressPanel.EventHandler() {
+                        @Serial
                         private static final long serialVersionUID = 8967087707332457974L;
 
                         @Override

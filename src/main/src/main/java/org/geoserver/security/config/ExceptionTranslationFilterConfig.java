@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerExceptionTranslationFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,6 +28,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  */
 public class ExceptionTranslationFilterConfig extends SecurityFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String authenticationFilterName;

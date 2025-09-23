@@ -134,8 +134,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         setExceptionsOnInvalidDimension(true);
 
         // invalid elevation, no value found, but also no exception
-        Document dom =
-                getAsDOM(String.format("%s&elevation=%d&info_format=text/plain&x=%d&y=%d", BASE_URL, -100, 36, 31));
+        Document dom = getAsDOM("%s&elevation=%d&info_format=text/plain&x=%d&y=%d".formatted(BASE_URL, -100, 36, 31));
         String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "elevation");
         assertThat(message, containsString("Could not find a match for 'elevation' value: '-100'"));
     }

@@ -112,8 +112,8 @@ public class Query implements Serializable {
     public Query and(Filter f) {
         if (filter == null) {
             filter = f;
-        } else if (filter instanceof And) {
-            ((And) filter).getFilters().add(f);
+        } else if (filter instanceof And and) {
+            and.getFilters().add(f);
         } else {
             filter = new And(filter, f);
         }
@@ -127,8 +127,8 @@ public class Query implements Serializable {
     public Query or(Filter f) {
         if (filter == null) {
             filter = f;
-        } else if (filter instanceof Or) {
-            ((Or) filter).getFilters().add(f);
+        } else if (filter instanceof Or or) {
+            or.getFilters().add(f);
         } else {
             filter = new Or(filter, f);
         }

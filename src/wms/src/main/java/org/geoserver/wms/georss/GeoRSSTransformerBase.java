@@ -77,7 +77,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
         /**
          * "simple" encoding:
          *
-         * <p>ex: <georss:point>45.256 -71.92</georss:point>,<georss:line>...</georss:line>,...
+         * <p>ex: {@code <georss:point>45.256 -71.92</georss:point>,<georss:line>...</georss:line>,...}
          */
         public static GeometryEncoding SIMPLE = new GeometryEncoding() {
             @Override
@@ -92,13 +92,11 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
 
             @Override
             public void encode(Geometry g, GeoRSSTranslatorSupport t) {
-                if (g instanceof Point) {
-                    Point p = (Point) g;
+                if (g instanceof Point p) {
                     t.element("georss:point", p.getY() + " " + p.getX());
                 }
 
-                if (g instanceof LineString) {
-                    LineString l = (LineString) g;
+                if (g instanceof LineString l) {
 
                     StringBuffer sb = new StringBuffer();
 
@@ -112,8 +110,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
                     t.element("georss:line", sb.toString());
                 }
 
-                if (g instanceof Polygon) {
-                    Polygon p = (Polygon) g;
+                if (g instanceof Polygon p) {
                     LineString line = p.getExteriorRing();
 
                     StringBuffer sb = new StringBuffer();
@@ -133,7 +130,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
         /**
          * gml encoding:
          *
-         * <p>ex: <gml:Point> <gml:pos>45.256 -71.92</gml:pos> </gml:Point>
+         * <p>ex: {@code <gml:Point> <gml:pos>45.256 -71.92</gml:pos> </gml:Point>}
          */
         public static GeometryEncoding GML = new GeometryEncoding() {
             @Override
@@ -179,7 +176,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
         /**
          * lat/long encoding:
          *
-         * <p>ex: <geo:lat>45.256</geo:lat> <geo:long>-71.92</geo:long>
+         * <p>ex: {@code <geo:lat>45.256</geo:lat> <geo:long>-71.92</geo:long>}
          */
         public static GeometryEncoding LATLONG = new GeometryEncoding() {
             @Override
@@ -222,8 +219,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
                 Geometry g = (Geometry) feature.getDefaultGeometry();
 
                 // handle case of multi geometry with a single geometry in it
-                if (g instanceof GeometryCollection) {
-                    GeometryCollection mg = (GeometryCollection) g;
+                if (g instanceof GeometryCollection mg) {
 
                     if (mg.getNumGeometries() == 1) {
                         g = mg.getGeometryN(0);

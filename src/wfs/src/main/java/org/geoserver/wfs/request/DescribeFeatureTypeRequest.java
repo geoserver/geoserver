@@ -16,10 +16,10 @@ import org.eclipse.emf.ecore.EObject;
 public abstract class DescribeFeatureTypeRequest extends RequestObject {
 
     public static DescribeFeatureTypeRequest adapt(Object request) {
-        if (request instanceof DescribeFeatureTypeType) {
-            return new WFS11((EObject) request);
-        } else if (request instanceof net.opengis.wfs20.DescribeFeatureTypeType) {
-            return new WFS20((EObject) request);
+        if (request instanceof DescribeFeatureTypeType type) {
+            return new WFS11(type);
+        } else if (request instanceof net.opengis.wfs20.DescribeFeatureTypeType type) {
+            return new WFS20(type);
         }
         return null;
     }

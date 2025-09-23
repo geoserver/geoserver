@@ -4,6 +4,7 @@
  */
 package org.geoserver.geofence.server.web;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,9 +23,11 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class GeofenceAdminRulesModel extends GeoServerDataProvider<ShortAdminRule> {
 
+    @Serial
     private static final long serialVersionUID = 2987962533487848796L;
 
     public static class RuleBeanProperty<T> extends BeanProperty<T> {
+        @Serial
         private static final long serialVersionUID = 3626448043686728925L;
 
         public RuleBeanProperty(String key, String propertyPath) {
@@ -40,6 +43,7 @@ public class GeofenceAdminRulesModel extends GeoServerDataProvider<ShortAdminRul
         @SuppressWarnings("unchecked")
         public IModel getModel(IModel<T> itemModel) {
             return new PropertyModel<>(itemModel, getPropertyPath()) {
+                @Serial
                 private static final long serialVersionUID = -3213885135907358752L;
 
                 @Override

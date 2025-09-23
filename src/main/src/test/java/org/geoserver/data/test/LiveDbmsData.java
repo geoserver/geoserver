@@ -208,8 +208,8 @@ public class LiveDbmsData extends LiveSystemTestData {
      * methods
      */
     protected Connection getDatabaseConnection(DataStore ds) throws IOException {
-        if (ds instanceof JDBCDataStore) {
-            return ((JDBCDataStore) ds).getConnection(Transaction.AUTO_COMMIT);
+        if (ds instanceof JDBCDataStore store) {
+            return store.getConnection(Transaction.AUTO_COMMIT);
         } else {
             return null;
         }

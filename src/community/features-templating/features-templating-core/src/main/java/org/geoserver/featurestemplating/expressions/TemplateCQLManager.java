@@ -126,8 +126,8 @@ public class TemplateCQLManager {
             }
         };
         Object result;
-        if (cql instanceof Expression) {
-            result = ((Expression) cql).accept(filterVisitor, null);
+        if (cql instanceof Expression expression) {
+            result = expression.accept(filterVisitor, null);
         } else {
             result = ((Filter) cql).accept(filterVisitor, null);
         }
@@ -357,7 +357,7 @@ public class TemplateCQLManager {
         @Override
         public Object visit(PropertyName expression, Object extraData) {
             if (expression instanceof XpathFunction) {
-                XpathFunction f = (XpathFunction) visit(((Function) expression), extraData);
+                XpathFunction f = (XpathFunction) visit((Function) expression, extraData);
                 f.setNamespaceContext(namespaces);
                 return f;
             }
@@ -366,8 +366,7 @@ public class TemplateCQLManager {
 
         @Override
         public Object visit(Function expression, Object extraData) {
-            if (expression instanceof StringCQLFunction) {
-                StringCQLFunction function = (StringCQLFunction) expression;
+            if (expression instanceof StringCQLFunction function) {
                 function.setNamespaceSupport(namespaces);
             }
             return super.visit(expression, extraData);

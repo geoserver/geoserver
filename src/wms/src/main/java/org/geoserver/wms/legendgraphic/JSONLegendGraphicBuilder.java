@@ -299,8 +299,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             }
 
             ArrayList<JSONObject> jRules = new ArrayList<>();
-            if (legend instanceof CascadedLegendRequest) {
-                CascadedLegendRequest cascadedLegend = (CascadedLegendRequest) legend;
+            if (legend instanceof CascadedLegendRequest cascadedLegend) {
 
                 JSONArray cascadedRules = cascadedLegend.getCascadedJSONRules();
 
@@ -432,7 +431,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             Object value = exp.evaluate(feature, type);
             if (value != null && type.equals(Color.class)) {
                 Color c = (Color) value;
-                return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
+                return "#%02X%02X%02X".formatted(c.getRed(), c.getGreen(), c.getBlue());
             } else if (value != null && type.isAssignableFrom(Number.class)) {
                 Number n = (Number) value;
                 if (!Double.isNaN(n.doubleValue()) && !Double.isInfinite(n.doubleValue())) {
@@ -614,8 +613,8 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
     private JSONObject processGraphicalSymbol(GraphicalSymbol g, String iconUrl) {
         JSONObject jGraphic = new JSONObject();
 
-        if (g instanceof Mark) {
-            Mark m = ((Mark) g);
+        if (g instanceof Mark mark) {
+            Mark m = mark;
             Expression wkn = m.getWellKnownName();
             if (wkn != null) {
                 jGraphic.element(MARK, toJSONValue(wkn, String.class));
@@ -644,8 +643,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 }
                 jGraphic.element(FORMAT, em.getFormat());
             }
-        } else if (g instanceof ExternalGraphic) {
-            ExternalGraphic eg = (ExternalGraphic) g;
+        } else if (g instanceof ExternalGraphic eg) {
             try {
                 URL url = eg.getOnlineResource().getLinkage().toURL();
                 if (url.getProtocol().equals("file")) {
@@ -812,16 +810,16 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         if (geometry != null) {
             ret.element(GEOMETRY, toJSONValue(geometry, Geometry.class));
         }
-        if (symbolizer instanceof PointSymbolizer) {
-            ret = processPointSymbolizer(ret, (PointSymbolizer) symbolizer);
-        } else if (symbolizer instanceof LineSymbolizer) {
-            ret = processLineSymbolizer(ret, (LineSymbolizer) symbolizer);
-        } else if (symbolizer instanceof PolygonSymbolizer) {
-            ret = processPolygonSymbolizer(ret, (PolygonSymbolizer) symbolizer);
-        } else if (symbolizer instanceof RasterSymbolizer) {
-            ret = processRasterSymbolizer(ret, (RasterSymbolizer) symbolizer);
-        } else if (symbolizer instanceof TextSymbolizer) {
-            ret = processTextSymbolizer(ret, (TextSymbolizer) symbolizer);
+        if (symbolizer instanceof PointSymbolizer pointSymbolizer) {
+            ret = processPointSymbolizer(ret, pointSymbolizer);
+        } else if (symbolizer instanceof LineSymbolizer lineSymbolizer) {
+            ret = processLineSymbolizer(ret, lineSymbolizer);
+        } else if (symbolizer instanceof PolygonSymbolizer polygonSymbolizer) {
+            ret = processPolygonSymbolizer(ret, polygonSymbolizer);
+        } else if (symbolizer instanceof RasterSymbolizer rasterSymbolizer) {
+            ret = processRasterSymbolizer(ret, rasterSymbolizer);
+        } else if (symbolizer instanceof TextSymbolizer textSymbolizer) {
+            ret = processTextSymbolizer(ret, textSymbolizer);
         } else {
             LOGGER.warning("unknown symbolizer type " + symbolizer.getClass().getName());
         }
@@ -875,8 +873,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         }
         JSONObject jPlacement = new JSONObject();
         LabelPlacement placement = symbolizer.getLabelPlacement();
-        if (placement instanceof PointPlacement) {
-            PointPlacement pplacement = (PointPlacement) placement;
+        if (placement instanceof PointPlacement pplacement) {
 
             AnchorPoint ap = pplacement.getAnchorPoint();
             if (ap != null) {
@@ -890,8 +887,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 jPlacement.element(Y_DISPLACEMENT, toJSONValue(displacement.getDisplacementY(), Number.class));
             }
         }
-        if (placement instanceof LinePlacement) {
-            LinePlacement lPlacement = (LinePlacement) placement;
+        if (placement instanceof LinePlacement lPlacement) {
             jPlacement.element(PERPENDICULAR_OFFSET, toJSONValue(lPlacement.getPerpendicularOffset(), String.class));
         }
         ret.element(LABEL_PLACEMENT, jPlacement);

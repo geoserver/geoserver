@@ -16,7 +16,6 @@ import org.geoserver.platform.ServiceException;
  * Web Feature Service CreateStoredQuery operation.
  *
  * @author Justin Deoliveira, OpenGeo
- * @version $Id$
  */
 public class CreateStoredQuery {
 

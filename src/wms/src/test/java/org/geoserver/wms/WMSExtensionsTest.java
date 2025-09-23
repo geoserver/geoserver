@@ -29,7 +29,6 @@ import org.springframework.context.ApplicationContext;
  * Unit test for {@link WMSExtensions}
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  */
 public class WMSExtensionsTest {
 

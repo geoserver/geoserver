@@ -109,15 +109,13 @@ class ClickHouseDialect extends BasicSQLDialect {
     }
 
     private static Date convertValue(Object value, Class<?> binding) {
-        if (value instanceof LocalDate && binding.equals(java.sql.Date.class)) {
-            LocalDate d = (LocalDate) value;
+        if (value instanceof LocalDate d && binding.equals(java.sql.Date.class)) {
             Calendar c = Calendar.getInstance();
             c.clear();
             c.set(d.getYear(), d.getMonthValue() - 1, d.getDayOfMonth(), 0, 0, 0);
             return new java.sql.Date(c.getTimeInMillis());
-        } else if (value instanceof LocalDateTime && binding.equals(java.sql.Timestamp.class)) {
-            return java.sql.Timestamp.from(
-                    ((LocalDateTime) value).atZone(ZoneId.systemDefault()).toInstant());
+        } else if (value instanceof LocalDateTime time && binding.equals(java.sql.Timestamp.class)) {
+            return java.sql.Timestamp.from(time.atZone(ZoneId.systemDefault()).toInstant());
         }
         return null;
     }

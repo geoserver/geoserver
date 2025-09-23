@@ -50,7 +50,6 @@ import org.locationtech.jts.geom.Point;
  * Unit test for {@link GetMap}
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  * @since 2.5.x
  */
 public class GetMapTest {

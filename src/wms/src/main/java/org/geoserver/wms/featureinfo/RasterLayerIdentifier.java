@@ -141,13 +141,11 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             }
             plainRenderingIdentified |= tx == null;
             Object info = read(requestParams, reader, parameters, fts);
-            if (info instanceof GridCoverage2D) {
-                GridCoverage2D coverage = (GridCoverage2D) info;
+            if (info instanceof GridCoverage2D coverage) {
                 result.addAll(toFeatures(cinfo, reader, coverage, position, requestParams));
-            } else if (info instanceof FeatureCollection) {
+            } else if (info instanceof FeatureCollection fc) {
                 // the read used the whole WMS GetMap area (an RT may need more space than just the
                 // queried pixel to produce correct results), need to filter down the results
-                FeatureCollection fc = (FeatureCollection) info;
                 result.add((filterCollection(fc, requestParams)));
             } else {
                 if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Unable to load raster data for this request.");
@@ -213,8 +211,8 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
             coverage.dispose(true);
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
         return Collections.singletonList(pixel);
@@ -252,8 +250,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                 rasterMid.getOrdinate(1) + 2);
         final Rectangle integerRasterArea = rasterArea.getBounds();
         final GridEnvelope gridEnvelope = reader.getOriginalGridRange();
-        final Rectangle originalArea =
-                (gridEnvelope instanceof GridEnvelope2D) ? (GridEnvelope2D) gridEnvelope : new Rectangle();
+        final Rectangle originalArea = (gridEnvelope instanceof GridEnvelope2D ged) ? ged : new Rectangle();
         XRectangle2D.intersect(integerRasterArea, originalArea, integerRasterArea);
         // paranoiac check, did we fall outside the coverage raster area? This should
         // never really happne if the request is well formed.
@@ -413,8 +410,8 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
 
         // otherwise read, evaluate if a transformation is needed
         Expression transformation = getTransformation(visitor);
-        if (transformation != null && transformation instanceof RenderingTransformation) {
-            ((RenderingTransformation) transformation).customizeReadParams(reader, parameters);
+        if (transformation != null && transformation instanceof RenderingTransformation renderingTransformation) {
+            renderingTransformation.customizeReadParams(reader, parameters);
         }
         GridCoverage2D coverage = reader.read(parameters);
 

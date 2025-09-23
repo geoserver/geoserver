@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
@@ -16,7 +17,9 @@ import org.geotools.util.logging.Logging;
 
 public class StyleFormatLabel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 6348703587354586691L;
+
     static final Logger LOGGER = Logging.getLogger(StyleFormatLabel.class);
 
     public StyleFormatLabel(String id, IModel<?> formatModel, IModel<?> versionModel) {

@@ -7,6 +7,7 @@ package org.geoserver.wms.web.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.wicket.WicketRuntimeException;
@@ -20,6 +21,7 @@ import org.geotools.util.Version;
 /** Allows for editing a new style, includes file upload */
 public class StyleNewPage extends AbstractStylePage {
 
+    @Serial
     private static final long serialVersionUID = -6137191207739266238L;
 
     public StyleNewPage() {

@@ -224,9 +224,8 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
 
         if (isSimpleFeatureCollection(result)
                 && encoder.getConfiguration().hasProperty(GMLConfiguration.OPTIMIZED_ENCODING)) {
-            if (result instanceof CompositeFeatureCollection) {
-                return new GML3FeatureCollectionEncoderDelegate(
-                        ((CompositeFeatureCollection) result).simple(), encoder);
+            if (result instanceof CompositeFeatureCollection collection) {
+                return new GML3FeatureCollectionEncoderDelegate(collection.simple(), encoder);
             }
             return new GML3FeatureCollectionEncoderDelegate(DataUtilities.simple(result), encoder);
         } else {
@@ -235,8 +234,8 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
     }
 
     private boolean isSimpleFeatureCollection(FeatureCollection result) {
-        if (result instanceof CompositeFeatureCollection) {
-            return ((CompositeFeatureCollection) result).isSimple();
+        if (result instanceof CompositeFeatureCollection collection) {
+            return collection.isSimple();
         } else {
             return result instanceof SimpleFeatureCollection;
         }

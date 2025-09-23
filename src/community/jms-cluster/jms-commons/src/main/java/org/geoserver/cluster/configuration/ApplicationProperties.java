@@ -77,8 +77,8 @@ public class ApplicationProperties implements ApplicationContextAware {
      * @return The property value, or null if not found
      */
     public static String getProperty(String propertyName, ApplicationContext context) {
-        if (context instanceof WebApplicationContext) {
-            return getProperty(propertyName, ((WebApplicationContext) context).getServletContext());
+        if (context instanceof WebApplicationContext applicationContext) {
+            return getProperty(propertyName, applicationContext.getServletContext());
         } else {
             return getProperty(propertyName, (ServletContext) null);
         }

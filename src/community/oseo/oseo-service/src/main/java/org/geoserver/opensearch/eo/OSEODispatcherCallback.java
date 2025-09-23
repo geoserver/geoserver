@@ -67,8 +67,7 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
             // Some clients are sending the same search parameter twice
             // once with a value and once as an empty value.
             // Let's handle it gracefully with some cleanup
-            if (value instanceof String[]) {
-                String[] values = (String[]) value;
+            if (value instanceof String[] values) {
                 List<String> cleaned = new ArrayList<>();
 
                 for (String v : values) {

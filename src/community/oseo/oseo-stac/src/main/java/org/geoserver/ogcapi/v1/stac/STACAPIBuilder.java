@@ -101,8 +101,8 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
         Set uniqueValues = visitor.getUnique();
         return (List<String>) uniqueValues.stream()
                 .map(a -> {
-                    if (a instanceof Attribute) {
-                        return ((Attribute) a).getValue();
+                    if (a instanceof Attribute attribute) {
+                        return attribute.getValue();
                     } else {
                         return a.toString();
                     }

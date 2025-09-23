@@ -5,6 +5,7 @@
 package org.geoserver.metadata.data.service.impl;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FeatureCatalogGenerator implements ComplexAttributeGenerator {
 
+    @Serial
     private static final long serialVersionUID = 3179273148205046941L;
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTabPanel.class);

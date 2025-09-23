@@ -4,8 +4,11 @@
  */
 package org.geoserver.taskmanager.web;
 
+import java.io.Serial;
+
 public class TemplatesPage extends AbstractConfigurationsPage {
 
+    @Serial
     private static final long serialVersionUID = 6305202768149351987L;
 
     public TemplatesPage() {

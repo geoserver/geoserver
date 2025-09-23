@@ -65,8 +65,7 @@ public class AcceptableRange {
 
     @SuppressWarnings("unchecked")
     public Range getSearchRange(Object value) {
-        if (value instanceof Range) {
-            Range range = (Range) value;
+        if (value instanceof Range range) {
             Range before = getSearchRangeOnSingleValue(range.getMinValue());
             Range after = getSearchRangeOnSingleValue(range.getMaxValue());
             return before.union(after);

@@ -5,12 +5,14 @@
  */
 package org.geoserver.web.data.workspace;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.WorkspaceInfo;
 
 /** Simple choice renderer for {@link WorkspaceInfo} providing selection by name. */
 public class WorkspaceChoiceNameRenderer extends ChoiceRenderer<WorkspaceInfo> {
 
+    @Serial
     private static final long serialVersionUID = 9065816461497078542L;
 
     @Override

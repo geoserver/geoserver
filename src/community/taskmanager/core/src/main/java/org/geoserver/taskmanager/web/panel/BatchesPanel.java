@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.io.Serial;
 import java.time.DayOfWeek;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ import org.geotools.util.logging.Logging;
 
 // TODO WICKET8 - Verify this page works OK
 public class BatchesPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     private static final Logger LOGGER = Logging.getLogger(BatchesPanel.class);
@@ -92,6 +94,7 @@ public class BatchesPanel extends Panel {
         ((GSModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
         add(new AjaxLink<Object>("addNew") {
+            @Serial
             private static final long serialVersionUID = -9184383036056499856L;
 
             @Override
@@ -113,6 +116,7 @@ public class BatchesPanel extends Panel {
         // the removal button
         add(
                 remove = new AjaxLink<Object>("removeSelected") {
+                    @Serial
                     private static final long serialVersionUID = 3581476968062788921L;
 
                     @Override
@@ -143,6 +147,7 @@ public class BatchesPanel extends Panel {
                                     new ParamResourceModel("confirmDeleteBatchesDialog.title", BatchesPanel.this));
                             dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                                @Serial
                                 private static final long serialVersionUID = -5552087037163833563L;
 
                                 private String error = null;
@@ -209,6 +214,7 @@ public class BatchesPanel extends Panel {
 
         add(new AjaxLink<Object>("refresh") {
 
+            @Serial
             private static final long serialVersionUID = 3905640474193868255L;
 
             @Override
@@ -226,6 +232,7 @@ public class BatchesPanel extends Panel {
         add(new Form<>("form")
                 .add(
                         batchesPanel = new GeoServerTablePanel<Batch>("batchesPanel", batchesModel, true) {
+                            @Serial
                             private static final long serialVersionUID = -8943273843044917552L;
 
                             @Override
@@ -249,6 +256,7 @@ public class BatchesPanel extends Panel {
                                     if (findParent(Form.class) == null) {
                                         return new SimpleAjaxLink<String>(
                                                 id, (IModel<String>) property.getModel(itemModel)) {
+                                            @Serial
                                             private static final long serialVersionUID = -9184383036056499856L;
 
                                             @Override
@@ -263,6 +271,7 @@ public class BatchesPanel extends Panel {
                                     } else {
                                         return new SimpleAjaxSubmitLink(
                                                 id, (IModel<String>) property.getModel(itemModel)) {
+                                            @Serial
                                             private static final long serialVersionUID = -9184383036056499856L;
 
                                             @Override
@@ -294,6 +303,7 @@ public class BatchesPanel extends Panel {
                                 } else if (property == BatchesModel.STATUS) {
                                     return new SimpleAjaxLink<String>(
                                             id, (IModel<String>) property.getModel(itemModel)) {
+                                        @Serial
                                         private static final long serialVersionUID = -9184383036056499856L;
 
                                         @Override
@@ -326,6 +336,7 @@ public class BatchesPanel extends Panel {
                                         return new Label(id);
                                     } else {
                                         SimpleAjaxSubmitLink link = new SimpleAjaxSubmitLink(id, null) {
+                                            @Serial
                                             private static final long serialVersionUID = -9184383036056499856L;
 
                                             @Override
@@ -364,9 +375,9 @@ public class BatchesPanel extends Panel {
             if (minutes <= 60 && hour < 24) {
                 return new ParamResourceModel("Daily", this).getString()
                         + ", "
-                        + String.format("%02d", hour)
+                        + "%02d".formatted(hour)
                         + ":"
-                        + String.format("%02d", minutes);
+                        + "%02d".formatted(minutes);
             }
         } else {
             matcher = FrequencyUtil.WEEKLY_PATTERN.matcher(frequency);
@@ -379,9 +390,9 @@ public class BatchesPanel extends Panel {
                             + ", "
                             + day.getDisplayName(TextStyle.FULL, getLocale())
                             + ", "
-                            + String.format("%02d", hour)
+                            + "%02d".formatted(hour)
                             + ":"
-                            + String.format("%02d", minutes);
+                            + "%02d".formatted(minutes);
                 }
             } else {
                 matcher = FrequencyUtil.MONTHLY_PATTERN.matcher(frequency);
@@ -396,9 +407,9 @@ public class BatchesPanel extends Panel {
                                 + " "
                                 + day
                                 + ", "
-                                + String.format("%02d", hour)
+                                + "%02d".formatted(hour)
                                 + ":"
-                                + String.format("%02d", minutes);
+                                + "%02d".formatted(minutes);
                     }
                 }
             }

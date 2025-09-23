@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.data.impl;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -29,6 +30,7 @@ import org.geoserver.taskmanager.data.Task;
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"task", "batch"})})
 public class BatchElementImpl extends BaseImpl implements BatchElement {
 
+    @Serial
     private static final long serialVersionUID = 7690398584400545752L;
 
     @Id

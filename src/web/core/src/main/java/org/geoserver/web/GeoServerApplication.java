@@ -116,8 +116,7 @@ public class GeoServerApplication extends WebApplication
      * an attempt is made to look up an internationalized error message for it.
      */
     public static String getMessage(Component c, Exception e) {
-        if (e instanceof ValidationException) {
-            ValidationException ve = (ValidationException) e;
+        if (e instanceof ValidationException ve) {
             try {
                 if (ve.getParameters() == null) {
                     return new ParamResourceModel(ve.getKey(), c, ve.getParameters()).getString();
@@ -361,8 +360,8 @@ public class GeoServerApplication extends WebApplication
 
     /** Grabs the locale from cookies, if possible, otherwise defaults to English */
     public Locale getLocaleFromCookies(Request request) {
-        if (request instanceof WebRequest) {
-            List<Cookie> cookies = ((WebRequest) request).getCookies();
+        if (request instanceof WebRequest webRequest) {
+            List<Cookie> cookies = webRequest.getCookies();
 
             for (Cookie cookie : cookies) {
                 if (LANGUAGE_COOKIE_NAME.equals(cookie.getName())) {
@@ -451,14 +450,12 @@ public class GeoServerApplication extends WebApplication
         }
 
         private void processHandler(RequestCycle cycle, IRequestHandler handler) {
-            if (handler instanceof IPageRequestHandler) {
-                IPageRequestHandler pageHandler = (IPageRequestHandler) handler;
+            if (handler instanceof IPageRequestHandler pageHandler) {
                 Class<? extends IRequestablePage> pageClass = pageHandler.getPageClass();
                 for (WicketCallback callback : callbacks) {
                     callback.onRequestTargetSet(cycle, pageClass);
                 }
-            } else if (handler instanceof IRequestHandlerDelegate) {
-                IRequestHandlerDelegate delegator = (IRequestHandlerDelegate) handler;
+            } else if (handler instanceof IRequestHandlerDelegate delegator) {
                 processHandler(cycle, delegator.getDelegateHandler());
             }
         }

@@ -10,6 +10,7 @@ import static org.geoserver.filters.LoggingFilter.LOG_BODIES_ENABLED;
 import static org.geoserver.filters.LoggingFilter.LOG_HEADERS_ENABLED;
 import static org.geoserver.filters.LoggingFilter.LOG_REQUESTS_ENABLED;
 
+import java.io.Serial;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +59,7 @@ import org.springframework.context.ApplicationContext;
 // TODO WICKET8 - Verify this page works OK
 public class GlobalSettingsPage extends ServerAdminPage {
 
+    @Serial
     private static final long serialVersionUID = 4716657682337915996L;
 
     public static final ArrayList<String> AVAILABLE_CHARSETS =
@@ -277,6 +279,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
     }
 
     class ResourceErrorHandlingRenderer extends ChoiceRenderer<ResourceErrorHandling> {
+        @Serial
         private static final long serialVersionUID = 4183327535180465575L;
 
         @Override

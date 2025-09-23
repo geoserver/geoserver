@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps.validator;
 
+import java.io.Serial;
 import org.geoserver.wps.WPSException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
@@ -15,7 +16,9 @@ import org.springframework.validation.ObjectError;
  * @author Andrea Aime - GeoSolutions
  */
 public class ValidationException extends WPSException {
+    @Serial
     private static final long serialVersionUID = 1888292623044848453L;
+
     private Errors errors;
 
     public ValidationException(Errors errors, String locator) {

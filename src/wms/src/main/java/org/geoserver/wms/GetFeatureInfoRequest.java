@@ -14,7 +14,6 @@ import java.util.List;
  * to provide enough map context information about the map over the GetFeatureInfo request is performed.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GetFeatureInfoRequest extends WMSRequest {
     private static final String DEFAULT_EXCEPTION_FORMAT = "application/vnd.ogc.se_xml";

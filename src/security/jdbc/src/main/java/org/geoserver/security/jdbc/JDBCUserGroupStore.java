@@ -59,10 +59,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
         }
     }
 
-    /**
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupStore#initializeFromServer(org.geoserver.security.GeoServerUserGroupService)
-     */
+    /** @see org.geoserver.security.GeoServerUserGroupStore#initializeFromService(GeoServerUserGroupService) */
     @Override
     public void initializeFromService(GeoServerUserGroupService service) throws IOException {
         jdbcService = (JDBCUserGroupService) service;

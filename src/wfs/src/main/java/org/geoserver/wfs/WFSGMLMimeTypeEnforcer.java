@@ -45,15 +45,14 @@ public final class WFSGMLMimeTypeEnforcer extends AbstractDispatcherCallback {
         WFSInfo wfs = geoserver.getService(WFSInfo.class);
         GMLInfo gmlInfo =
                 wfs.getGML().get(WFSInfo.Version.negotiate(service.getVersion().toString()));
-        if (gmlInfo == null || !gmlInfo.getMimeTypeToForce().isPresent()) {
+        if (gmlInfo == null || gmlInfo.getMimeTypeToForce().isEmpty()) {
             // we don't need to force any specific MIME type
             return response;
         }
         // enforce the configured MIME type
         String mimeType = gmlInfo.getMimeTypeToForce().get();
-        LOGGER.info(String.format(
-                "Overriding MIME type '%s' with '%s' for WFS operation '%s'.",
-                responseMimeType, mimeType, operation.getId()));
+        LOGGER.info("Overriding MIME type '%s' with '%s' for WFS operation '%s'."
+                .formatted(responseMimeType, mimeType, operation.getId()));
         return new ResponseWrapper(response, mimeType);
     }
 

@@ -254,10 +254,11 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         // accounting for the capabilities of this class
         List<MediaType> result = new ArrayList<>();
         for (HttpMessageConverter<?> converter : this.messageConverters) {
-            if (converter instanceof ResponseMessageConverter && converter.canWrite(valueClass, null)) {
-                result.addAll(((ResponseMessageConverter) converter).getSupportedMediaTypes(valueClass, value));
-            } else if (converter instanceof GenericHttpMessageConverter && targetType != null) {
-                if (((GenericHttpMessageConverter<?>) converter).canWrite(targetType, valueClass, null)) {
+            if (converter instanceof ResponseMessageConverter messageConverter1
+                    && converter.canWrite(valueClass, null)) {
+                result.addAll(messageConverter1.getSupportedMediaTypes(valueClass, value));
+            } else if (converter instanceof GenericHttpMessageConverter<?> messageConverter && targetType != null) {
+                if (messageConverter.canWrite(targetType, valueClass, null)) {
                     result.addAll(converter.getSupportedMediaTypes());
                 }
             } else if (converter.canWrite(valueClass, null)) {

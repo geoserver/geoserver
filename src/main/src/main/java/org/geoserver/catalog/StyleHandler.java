@@ -107,7 +107,7 @@ public abstract class StyleHandler {
      * Parses a style resource.
      *
      * @param input The style input, see {@link #toReader(Object)} for accepted inputs.
-     * @param version Optional version of the format, maybe <code>null</code>
+     * @param version Optional version of the format, maybe {@code null}
      * @param resourceLocator Optional locator for resources (icons, etc...) referenced by the style, may be <code>null
      *     </code>.
      * @param entityResolver Optional entity resolver for XML based formats, may be <code>null
@@ -123,7 +123,7 @@ public abstract class StyleHandler {
      * <p>Handlers that don't support encoding should throw {@link java.lang.UnsupportedOperationException}.
      *
      * @param sld The style to encode.
-     * @param version The version of the format to use to encode the style, may be <code>null</code> .
+     * @param version The version of the format to use to encode the style, may be {@code null} .
      * @param pretty Flag controlling whether or not the style should be encoded in pretty form.
      * @param output The stream to write the encoded style to.
      */
@@ -175,28 +175,28 @@ public abstract class StyleHandler {
      * @param input A {@link Reader}, {@link java.io.InputStream}, {@link File}, or {@link Resource}.
      */
     protected Reader toReader(Object input) throws IOException {
-        if (input instanceof Reader) {
-            return (Reader) input;
+        if (input instanceof Reader reader) {
+            return reader;
         }
 
-        if (input instanceof InputStream) {
-            return new InputStreamReader((InputStream) input);
+        if (input instanceof InputStream stream) {
+            return new InputStreamReader(stream);
         }
 
-        if (input instanceof String) {
-            return new StringReader((String) input);
+        if (input instanceof String string) {
+            return new StringReader(string);
         }
 
-        if (input instanceof URL) {
-            return new InputStreamReader(((URL) input).openStream());
+        if (input instanceof URL rL) {
+            return new InputStreamReader(rL.openStream());
         }
 
-        if (input instanceof File) {
-            return new FileReader((File) input);
+        if (input instanceof File file) {
+            return new FileReader(file);
         }
 
-        if (input instanceof Resource) {
-            return toReader(((Resource) input).in());
+        if (input instanceof Resource resource) {
+            return toReader(resource.in());
         }
 
         throw new IllegalArgumentException("Unable to turn " + input + " into reader");

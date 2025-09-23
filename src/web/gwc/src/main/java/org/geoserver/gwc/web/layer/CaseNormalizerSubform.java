@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -23,6 +24,7 @@ import org.geowebcache.filter.parameters.CaseNormalizer.Case;
  */
 public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -197485768903404047L;
 
     private DropDownChoice<Locale> localeEntry;
@@ -42,6 +44,7 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
 
         localeEntry = new DropDownChoice<>("locale", localeModel, getLocales(), new ChoiceRenderer<>() {
 
+            @Serial
             private static final long serialVersionUID = -2122570049478633429L;
 
             @Override
@@ -58,6 +61,7 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
 
         caseEntry = new DropDownChoice<>("case", caseModel, Arrays.asList(Case.values()), new ChoiceRenderer<>() {
 
+            @Serial
             private static final long serialVersionUID = -129788130907421097L;
 
             @Override
@@ -78,8 +82,7 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
     @Override
     public void convertInput() {
         visitChildren((component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
+            if (component instanceof FormComponent<?> formComponent) {
                 formComponent.processInput();
             }
         });

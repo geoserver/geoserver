@@ -6,6 +6,7 @@
 package org.geoserver.security.web.auth;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -41,6 +42,7 @@ import org.geotools.util.logging.Logging;
  */
 public class SecurityFilterChainPage extends AbstractSecurityPage {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** logger */

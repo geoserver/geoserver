@@ -121,8 +121,7 @@ public class ResourceAccessManagerCSWTest extends CSWTestSupport {
         for (ResourceInfo ri : citeResources) {
             assertEquals(
                     1,
-                    xpath.getMatchingNodes(
-                                    String.format("//csw:SummaryRecord[dc:identifier='%s']", ri.prefixedName()), d)
+                    xpath.getMatchingNodes("//csw:SummaryRecord[dc:identifier='%s']".formatted(ri.prefixedName()), d)
                             .getLength());
         }
     }
@@ -145,8 +144,7 @@ public class ResourceAccessManagerCSWTest extends CSWTestSupport {
         for (ResourceInfo ri : citeResources) {
             assertEquals(
                     1,
-                    xpath.getMatchingNodes(
-                                    String.format("//csw:SummaryRecord[dc:identifier='%s']", ri.prefixedName()), d)
+                    xpath.getMatchingNodes("//csw:SummaryRecord[dc:identifier='%s']".formatted(ri.prefixedName()), d)
                             .getLength());
         }
     }

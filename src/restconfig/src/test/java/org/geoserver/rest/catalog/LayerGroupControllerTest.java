@@ -918,23 +918,25 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         try {
             StyleInfo styleName = new StyleInfoImpl(catalog);
             styleName.setName("theGroupStyleName");
-            String xml = "<layerGroup>"
-                    + "<layerGroupStyles>\n"
-                    + "    <LayerGroupStyle>\n"
-                    + "      <name>theGroupStyle</name>\n"
-                    + "      <internationalTitle/>\n"
-                    + "      <internationalAbstract/>\n"
-                    + "      <layers>\n"
-                    + "        <published type=\"layer\">Ponds</published>"
-                    + "        <published type=\"layer\">Forests</published>"
-                    + "      </layers>\n"
-                    + "      <styles>\n"
-                    + "        <style>polygon</style>\n"
-                    + "        <style/>\n"
-                    + "      </styles>\n"
-                    + "    </LayerGroupStyle>\n"
-                    + "  </layerGroupStyles>"
-                    + "</layerGroup>";
+            String xml =
+                    """
+                    <layerGroup>\
+                    <layerGroupStyles>
+                        <LayerGroupStyle>
+                          <name>theGroupStyle</name>
+                          <internationalTitle/>
+                          <internationalAbstract/>
+                          <layers>
+                            <published type="layer">Ponds</published>\
+                            <published type="layer">Forests</published>\
+                          </layers>
+                          <styles>
+                            <style>polygon</style>
+                            <style/>
+                          </styles>
+                        </LayerGroupStyle>
+                      </layerGroupStyles>\
+                    </layerGroup>""";
 
             MockHttpServletResponse response =
                     putAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups/citeLayerGroup", xml, "text/xml");
@@ -963,24 +965,27 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
     public void testPostJSONWithContainedGroupStyleNull() throws Exception {
         LayerGroupInfo lg = null;
         try {
-            String json = "{\n"
-                    + "  \"layerGroup\": {\n"
-                    + "    \"name\": \"layerGroupNullStyle\",\n"
-                    + "    \"publishables\": {\n"
-                    + "  \"published\": [\n"
-                    + "    {\n"
-                    + "      \"name\": \"sfLayerGroup\",\n"
-                    + "      \"@type\": \"layerGroup\"\n"
-                    + "    },"
-                    + "    {\n"
-                    + "      \"name\": \"citeLayerGroup\",\n"
-                    + "      \"@type\": \"layerGroup\"\n"
-                    + "    }"
-                    + "  ]\n"
-                    + "},\n"
-                    + "    \"styles\": null"
-                    + "  }\n"
-                    + "}";
+            String json =
+                    """
+                    {
+                      "layerGroup": {
+                        "name": "layerGroupNullStyle",
+                        "publishables": {
+                      "published": [
+                        {
+                          "name": "sfLayerGroup",
+                          "@type": "layerGroup"
+                        },\
+                        {
+                          "name": "citeLayerGroup",
+                          "@type": "layerGroup"
+                        }\
+                      ]
+                    },
+                        "styles": null\
+                      }
+                    }\
+                    """;
             MockHttpServletResponse response =
                     postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", json, "application/json");
             assertEquals(201, response.getStatus());

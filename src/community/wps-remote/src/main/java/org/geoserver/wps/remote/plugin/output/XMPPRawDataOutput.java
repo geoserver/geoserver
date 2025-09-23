@@ -127,19 +127,14 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         if (XMPPClient.PRIMITIVE_NAME_TYPE_MAP.get(type) != null) {
             Object sample = ((Object[]) XMPPClient.PRIMITIVE_NAME_TYPE_MAP.get(type))[2];
 
-            if (sample instanceof StreamRawData) {
-                final String fileName = FilenameUtils.getBaseName(((String) value))
-                        + "_"
-                        + pID
-                        + "."
-                        + ((StreamRawData) sample).getFileExtension();
+            if (sample instanceof StreamRawData data1) {
+                final String fileName =
+                        FilenameUtils.getBaseName(((String) value)) + "_" + pID + "." + data1.getFileExtension();
 
                 LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] StreamRawData:" + fileName);
 
                 value = new StreamRawData(
-                        ((StreamRawData) sample).getMimeType(),
-                        new FileInputStream(((String) value)),
-                        ((StreamRawData) sample).getFileExtension());
+                        data1.getMimeType(), new FileInputStream(((String) value)), data1.getFileExtension());
                 if (publish) {
                     final File tempFile = new File(FileUtils.getTempDirectory(), fileName);
                     FileUtils.copyInputStreamToFile(((StreamRawData) value).getInputStream(), tempFile);
@@ -164,28 +159,20 @@ public class XMPPRawDataOutput implements XMPPOutputType {
 
                     // need to re-open the stream
                     value = new StreamRawData(
-                            ((StreamRawData) sample).getMimeType(),
-                            new FileInputStream(tempFile),
-                            ((StreamRawData) sample).getFileExtension());
+                            data1.getMimeType(), new FileInputStream(tempFile), data1.getFileExtension());
                 }
 
                 LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] Value:" + value);
 
                 return value;
-            } else if (sample instanceof ResourceRawData) {
-                final String fileName = FilenameUtils.getBaseName(((String) value))
-                        + "_"
-                        + pID
-                        + "."
-                        + ((ResourceRawData) sample).getFileExtension();
+            } else if (sample instanceof ResourceRawData data) {
+                final String fileName =
+                        FilenameUtils.getBaseName(((String) value)) + "_" + pID + "." + data.getFileExtension();
 
                 LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] FileRawData:" + fileName);
 
                 File outputFile = getOutputFile(xmppClient, (String) value);
-                value = new ResourceRawData(
-                        Files.asResource(outputFile),
-                        ((ResourceRawData) sample).getMimeType(),
-                        ((ResourceRawData) sample).getFileExtension());
+                value = new ResourceRawData(Files.asResource(outputFile), data.getMimeType(), data.getFileExtension());
                 if (publish) {
                     try {
                         LayerInfo layer = xmppClient.importLayer(

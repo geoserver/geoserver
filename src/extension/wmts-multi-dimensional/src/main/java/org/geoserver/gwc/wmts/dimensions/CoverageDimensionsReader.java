@@ -93,9 +93,9 @@ abstract class CoverageDimensionsReader {
         } catch (Exception exception) {
             throw new RuntimeException("Error getting coverage reader.", exception);
         }
-        if (reader instanceof StructuredGridCoverage2DReader) {
+        if (reader instanceof StructuredGridCoverage2DReader dReader) {
             // good we have a structured coverage reader
-            return new WrapStructuredGridCoverageDimensions2DReader((StructuredGridCoverage2DReader) reader);
+            return new WrapStructuredGridCoverageDimensions2DReader(dReader);
         }
         // non structured reader let's do our best
         return new WrapNonStructuredReader(typeInfo, reader);
@@ -222,7 +222,7 @@ abstract class CoverageDimensionsReader {
             try {
                 return DATE_FORMATTER.get().parse(rawValue);
             } catch (Exception exception) {
-                throw new RuntimeException(String.format("Error parsing date '%s'.", rawValue), exception);
+                throw new RuntimeException("Error parsing date '%s'.".formatted(rawValue), exception);
             }
         }
 
@@ -270,9 +270,8 @@ abstract class CoverageDimensionsReader {
                 metaDataValue = reader.getMetadataValue(dimensionName.toUpperCase() + "_DOMAIN");
             } catch (Exception exception) {
                 throw new RuntimeException(
-                        String.format(
-                                "Error extract dimension '%s' values from raster '%s'.",
-                                dimensionName, typeInfo.getName()),
+                        "Error extract dimension '%s' values from raster '%s'."
+                                .formatted(dimensionName, typeInfo.getName()),
                         exception);
             }
             if (metaDataValue == null || metaDataValue.isEmpty()) {

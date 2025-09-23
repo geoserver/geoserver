@@ -59,22 +59,22 @@ import org.geotools.util.SuppressFBWarnings;
  */
 public class LegendUtils {
     /**
-     * Ensures that the provided argument is not <code>null</code>.
+     * Ensures that the provided argument is not {@code null}.
      *
-     * <p>If it <code>null</code> it must throw a {@link NullPointerException}.
+     * <p>If it {@code null} it must throw a {@link NullPointerException}.
      *
-     * @param argument argument to check for <code>null</code>.
+     * @param argument argument to check for {@code null}.
      */
     protected static void ensureNotNull(final Object argument) {
         ensureNotNull(argument, "Argument cannot be null");
     }
 
     /**
-     * Ensures that the provided argument is not <code>null</code>.
+     * Ensures that the provided argument is not {@code null}.
      *
-     * <p>If it <code>null</code> it must throw a {@link NullPointerException}.
+     * <p>If it {@code null} it must throw a {@link NullPointerException}.
      *
-     * @param argument argument to check for <code>null</code>.
+     * @param argument argument to check for {@code null}.
      * @param message leading message to print out in case the test fails.
      */
     protected static void ensureNotNull(final Object argument, final String message) {
@@ -123,7 +123,7 @@ public class LegendUtils {
 
     /** padding percentage factor at both sides of the legend. */
     public static final float hpaddingFactor = 0.15f;
-    /** top & bottom padding percentage factor for the legend */
+    /** top &amp; bottom padding percentage factor for the legend */
     public static final float vpaddingFactor = 0.15f;
 
     /** padding percentage factor at both sides of the legend. */
@@ -420,8 +420,8 @@ public class LegendUtils {
         final Map<String, Object> legendOptions = req.getLegendOptions();
         if (legendOptions == null) return DEFAULT_BG_COLOR;
         Object clr = legendOptions.get("bgColor");
-        if (clr instanceof Color) {
-            return (Color) clr;
+        if (clr instanceof Color color) {
+            return color;
         } else if (clr == null) {
             // return the default
             return DEFAULT_BG_COLOR;

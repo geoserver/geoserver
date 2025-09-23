@@ -34,7 +34,6 @@ import org.geoserver.platform.ServiceException;
  * @author Gabriel Rold?n, Axios
  * @author Justin Deoliveira, TOPP
  * @author Carlo Cancellieri Geo-Solutions SAS
- * @version $Id$
  */
 public class KvpUtils {
     /** Class logger */
@@ -563,8 +562,8 @@ public class KvpUtils {
         Object value = kvp.get(key);
         if (value == null) {
             return null;
-        } else if (value instanceof String) {
-            return (String) value;
+        } else if (value instanceof String string) {
+            return string;
         } else {
             String[] strings = (String[]) value;
             if (strings.length == 0) {
@@ -636,9 +635,9 @@ public class KvpUtils {
             } else {
                 String[] array;
                 Object oldValue = result.get(key);
-                if (oldValue instanceof String) {
+                if (oldValue instanceof String string) {
                     array = new String[2];
-                    array[0] = (String) oldValue;
+                    array[0] = string;
                     array[1] = value;
                 } else {
                     String[] oldArray = (String[]) oldValue;
@@ -753,9 +752,7 @@ public class KvpUtils {
             if (entry.getKey() instanceof String) {
                 if (paramname.equalsIgnoreCase((String) entry.getKey())) {
                     Object obj = entry.getValue();
-                    value = obj instanceof String
-                            ? (String) obj
-                            : (obj instanceof String[]) ? ((String[]) obj)[0].toLowerCase() : value;
+                    value = obj instanceof String s ? s : (obj instanceof String[] ss) ? ss[0].toLowerCase() : value;
                 }
             }
         }
@@ -781,8 +778,8 @@ public class KvpUtils {
         Object o = kvp.get(param);
         if (o == null) {
             return null;
-        } else if (o instanceof String) {
-            return (String) o;
+        } else if (o instanceof String string) {
+            return string;
         } else {
             String[] values = (String[]) o;
             if (values.length > 0) {

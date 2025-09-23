@@ -27,7 +27,6 @@ import org.locationtech.jts.geom.Polygon;
  * @see NameSpaceTranslatorFactory
  * @author dzwiers, Refractions Research, Inc.
  * @author $Author: dmzwiers $ (last modification)
- * @version $Id$
  */
 public class GMLSchemaTranslator extends NameSpaceTranslator {
     private Set<NameSpaceElement> elements;

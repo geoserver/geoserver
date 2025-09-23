@@ -37,7 +37,6 @@ import org.geotools.renderer.lite.StreamingRenderer;
  *
  * @author Gabriel Roldan
  * @author Simone Giannecchini - GeoSolutions SAS
- * @version $Id$
  */
 public class WMSMapContent extends MapContent {
     /** requested map image width in output units (pixels) */
@@ -279,11 +278,9 @@ public class WMSMapContent extends MapContent {
         Object obj = getUserData().get("keywords");
         if (obj == null) {
             return new String[0];
-        } else if (obj instanceof String) {
-            String keywords = (String) obj;
+        } else if (obj instanceof String keywords) {
             return keywords.split(",");
-        } else if (obj instanceof String[]) {
-            String[] keywords = (String[]) obj;
+        } else if (obj instanceof String[] keywords) {
             String[] copy = new String[keywords.length];
             System.arraycopy(keywords, 0, copy, 0, keywords.length);
             return copy;

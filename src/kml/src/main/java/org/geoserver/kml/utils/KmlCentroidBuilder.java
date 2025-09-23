@@ -61,8 +61,8 @@ public class KmlCentroidBuilder {
             }
         }
 
-        if (g instanceof GeometryCollection) {
-            g = selectRepresentativeGeometry((GeometryCollection) g);
+        if (g instanceof GeometryCollection collection) {
+            g = selectRepresentativeGeometry(collection);
         }
 
         if (g == null) {
@@ -70,16 +70,15 @@ public class KmlCentroidBuilder {
         } else if (g instanceof Point) {
             // simple case
             return g.getCoordinate();
-        } else if (g instanceof LineString) {
+        } else if (g instanceof LineString line) {
             // make sure the point we return is actually on the line
-            LineString line = (LineString) g;
             LengthIndexedLine lil = new LengthIndexedLine(line);
             return lil.extractPoint(line.getLength() / 2.0);
-        } else if (g instanceof Polygon) {
+        } else if (g instanceof Polygon polygon) {
             if (opts.isContain()) {
                 try {
-                    Point p = RendererUtilities.sampleForInternalPoint(
-                            (Polygon) g, null, null, null, -1, opts.getSamples());
+                    Point p =
+                            RendererUtilities.sampleForInternalPoint(polygon, null, null, null, -1, opts.getSamples());
                     if (p != null && !p.isEmpty()) {
                         return p.getCoordinate();
                     }

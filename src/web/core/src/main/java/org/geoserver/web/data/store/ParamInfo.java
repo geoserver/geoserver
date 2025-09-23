@@ -6,6 +6,7 @@
 /** */
 package org.geoserver.web.data.store;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +22,7 @@ import org.xml.sax.EntityResolver;
  */
 public class ParamInfo implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 886996604911751174L;
 
     private final String name;

@@ -310,24 +310,26 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testInsertImageSLD11() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" "
-                + "xmlns:se=\"http://www.opengis.net/se\">\n"
-                + "  <NamedLayer>\n"
-                + "    <se:Name>justaname</se:Name>\n"
-                + "    <UserStyle>\n"
-                + "      <se:Name>justaname</se:Name>\n"
-                + "      <se:FeatureTypeStyle>\n"
-                + "        <se:Rule>\n"
-                + "          <se:PointSymbolizer>\n"
-                + "             <se:Graphic>\n"
-                + "            </se:Graphic>\\n"
-                + "          </se:PointSymbolizer>\n"
-                + "        </se:Rule>\n"
-                + "      </se:FeatureTypeStyle>\n"
-                + "    </UserStyle>\n"
-                + "  </NamedLayer>\n"
-                + "</StyledLayerDescriptor>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" version="1.1.0" \
+                xmlns:se="http://www.opengis.net/se">
+                  <NamedLayer>
+                    <se:Name>justaname</se:Name>
+                    <UserStyle>
+                      <se:Name>justaname</se:Name>
+                      <se:FeatureTypeStyle>
+                        <se:Rule>
+                          <se:PointSymbolizer>
+                             <se:Graphic>
+                            </se:Graphic>\\n\
+                          </se:PointSymbolizer>
+                        </se:Rule>
+                      </se:FeatureTypeStyle>
+                    </UserStyle>
+                  </NamedLayer>
+                </StyledLayerDescriptor>""";
 
         tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
@@ -509,19 +511,19 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testValidateNamedLayers() throws Exception {
-        String xml = "<StyledLayerDescriptor version='1.0.0' "
-                + " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' "
-                + " xmlns='http://www.opengis.net/sld' "
-                + " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
-                + "  <NamedLayer>\n"
-                + "    <Name>Streams</Name>\n"
-                + // Reference the Streams layer
-                "  </NamedLayer>\n"
-                + "  <NamedLayer>\n"
-                + "    <Name>RoadSegments</Name>\n"
-                + // 2nd, valid layer
-                "  </NamedLayer>\n"
-                + "</StyledLayerDescriptor>";
+        String xml =
+                """
+                <StyledLayerDescriptor version='1.0.0' \
+                 xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' \
+                 xmlns='http://www.opengis.net/sld' \
+                 xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\
+                  <NamedLayer>
+                    <Name>Streams</Name>
+                  </NamedLayer>
+                  <NamedLayer>
+                    <Name>RoadSegments</Name>
+                  </NamedLayer>
+                </StyledLayerDescriptor>""";
 
         tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
@@ -531,19 +533,19 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testValidateNamedLayersInvalid() throws Exception {
-        String xml = "<StyledLayerDescriptor version='1.0.0' "
-                + " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' "
-                + " xmlns='http://www.opengis.net/sld' "
-                + " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
-                + "  <NamedLayer>\n"
-                + "    <Name>Streams</Name>\n"
-                + // Reference the Streams layer
-                "  </NamedLayer>\n"
-                + "  <NamedLayer>\n"
-                + "    <Name>Stream</Name>\n"
-                + // 2nd, invalid layer
-                "  </NamedLayer>\n"
-                + "</StyledLayerDescriptor>";
+        String xml =
+                """
+                <StyledLayerDescriptor version='1.0.0' \
+                 xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' \
+                 xmlns='http://www.opengis.net/sld' \
+                 xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\
+                  <NamedLayer>
+                    <Name>Streams</Name>
+                  </NamedLayer>
+                  <NamedLayer>
+                    <Name>Stream</Name>
+                  </NamedLayer>
+                </StyledLayerDescriptor>""";
 
         tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
@@ -737,26 +739,28 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testPreviewSLD11Legend() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" "
-                + "xmlns:se=\"http://www.opengis.net/se\">\n"
-                + "  <NamedLayer>\n"
-                + "    <se:Name>ne_110m_admin_0_countries</se:Name>\n"
-                + "    <UserStyle>\n"
-                + "      <se:Name>ne_110m_admin_0_countries</se:Name>\n"
-                + "      <se:FeatureTypeStyle>\n"
-                + "        <se:Rule>\n"
-                + "          <se:Name>Single symbol</se:Name>\n"
-                + "          <se:PolygonSymbolizer>\n"
-                + "            <se:Fill>\n"
-                + "              <se:SvgParameter name=\"fill\">#ff0000</se:SvgParameter>\n"
-                + "            </se:Fill>\n"
-                + "          </se:PolygonSymbolizer>\n"
-                + "        </se:Rule>\n"
-                + "      </se:FeatureTypeStyle>\n"
-                + "    </UserStyle>\n"
-                + "  </NamedLayer>\n"
-                + "</StyledLayerDescriptor>";
+        String xml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" version="1.1.0" \
+                xmlns:se="http://www.opengis.net/se">
+                  <NamedLayer>
+                    <se:Name>ne_110m_admin_0_countries</se:Name>
+                    <UserStyle>
+                      <se:Name>ne_110m_admin_0_countries</se:Name>
+                      <se:FeatureTypeStyle>
+                        <se:Rule>
+                          <se:Name>Single symbol</se:Name>
+                          <se:PolygonSymbolizer>
+                            <se:Fill>
+                              <se:SvgParameter name="fill">#ff0000</se:SvgParameter>
+                            </se:Fill>
+                          </se:PolygonSymbolizer>
+                        </se:Rule>
+                      </se:FeatureTypeStyle>
+                    </UserStyle>
+                  </NamedLayer>
+                </StyledLayerDescriptor>""";
 
         // tester.debugComponentTrees();
         tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
@@ -821,69 +825,74 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testValidateLineSymbolizerVendorOption() throws Exception {
 
-        String xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
-                + "<StyledLayerDescriptor version=\"1.0.0\"\n"
-                + "                       xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd\"\n"
-                + "                       xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
-                + "                       xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
-                + "  <NamedLayer>\n"
-                + "    <Name>line_vendor</Name>\n"
-                + "    <UserStyle>\n"
-                + "      <Title>A gold line style</Title>\n"
-                + "      <FeatureTypeStyle>\n"
-                + "        <Rule> \n"
-                + "          <Name>Vendor Style</Name> \n"
-                + "          <LineSymbolizer uom=\"http://www.opengeospatial.org/se/units/metre\">\n"
-                + "            <Stroke> \n"
-                + "              <GraphicStroke> \n"
-                + "                <Graphic> \n"
-                + "                  <Mark> \n"
-                + "                    <WellKnownName>wkt://COMPOUNDCURVE(CIRCULARSTRING(0 0, 0.5 0.5, 1 0), CIRCULARSTRING(1 0, 1.5 -0.5, 2 0))</WellKnownName> \n"
-                + "                  </Mark> \n"
-                + "                  <Size>1</Size> \n"
-                + "                </Graphic> \n"
-                + "              </GraphicStroke> \n"
-                + "            </Stroke> \n"
-                + "            <VendorOption name=\"markAlongLine\">true</VendorOption> \n"
-                + "          </LineSymbolizer> \n"
-                + "        </Rule> \n"
-                + "      </FeatureTypeStyle>\n"
-                + "    </UserStyle>\n"
-                + "  </NamedLayer>\n"
-                + "</StyledLayerDescriptor>\n";
+        String xml =
+                """
+                <?xml version="1.0" encoding="ISO-8859-1"?>
+                <StyledLayerDescriptor version="1.0.0"
+                                       xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
+                                       xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+                                       xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                  <NamedLayer>
+                    <Name>line_vendor</Name>
+                    <UserStyle>
+                      <Title>A gold line style</Title>
+                      <FeatureTypeStyle>
+                        <Rule>\s
+                          <Name>Vendor Style</Name>\s
+                          <LineSymbolizer uom="http://www.opengeospatial.org/se/units/metre">
+                            <Stroke>\s
+                              <GraphicStroke>\s
+                                <Graphic>\s
+                                  <Mark>\s
+                                    <WellKnownName>wkt://COMPOUNDCURVE(CIRCULARSTRING(0 0, 0.5 0.5, 1 0), CIRCULARSTRING(1 0, 1.5 -0.5, 2 0))</WellKnownName>\s
+                                  </Mark>\s
+                                  <Size>1</Size>\s
+                                </Graphic>\s
+                              </GraphicStroke>\s
+                            </Stroke>\s
+                            <VendorOption name="markAlongLine">true</VendorOption>\s
+                          </LineSymbolizer>\s
+                        </Rule>\s
+                      </FeatureTypeStyle>
+                    </UserStyle>
+                  </NamedLayer>
+                </StyledLayerDescriptor>
+                """;
 
         tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
         tester.executeAjaxEvent("validate", "click");
         tester.assertNoErrorMessage();
 
-        String xml11 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" xmlns:se=\"http://www.opengis.net/se\">\n"
-                + "  <NamedLayer>\n"
-                + "    <se:Name>ne_110m_admin_0_countries</se:Name>\n"
-                + "    <UserStyle>\n"
-                + "      <se:Name>ne_110m_admin_0_countries</se:Name>\n"
-                + "      <se:FeatureTypeStyle>\n"
-                + "        <se:Rule>\n"
-                + "          <se:Name>Single symbol</se:Name>\n"
-                + "          <se:LineSymbolizer uom=\"http://www.opengeospatial.org/se/units/metre\">\n"
-                + "            <se:Stroke> \n"
-                + "              <se:GraphicStroke> \n"
-                + "                <se:Graphic> \n"
-                + "                  <se:Mark> \n"
-                + "                    <se:WellKnownName>wkt://COMPOUNDCURVE(CIRCULARSTRING(0 0, 0.5 0.5, 1 0), CIRCULARSTRING(1 0, 1.5 -0.5, 2 0))</se:WellKnownName> \n"
-                + "                  </se:Mark> \n"
-                + "                  <se:Size>1</se:Size> \n"
-                + "                </se:Graphic> \n"
-                + "              </se:GraphicStroke> \n"
-                + "            </se:Stroke> \n"
-                + "            <se:VendorOption name=\"markAlongLine\">true</se:VendorOption> \n"
-                + "          </se:LineSymbolizer> \n"
-                + "        </se:Rule>\n"
-                + "      </se:FeatureTypeStyle>\n"
-                + "    </UserStyle>\n"
-                + "  </NamedLayer>\n"
-                + "</StyledLayerDescriptor>";
+        String xml11 =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" version="1.1.0" xmlns:se="http://www.opengis.net/se">
+                  <NamedLayer>
+                    <se:Name>ne_110m_admin_0_countries</se:Name>
+                    <UserStyle>
+                      <se:Name>ne_110m_admin_0_countries</se:Name>
+                      <se:FeatureTypeStyle>
+                        <se:Rule>
+                          <se:Name>Single symbol</se:Name>
+                          <se:LineSymbolizer uom="http://www.opengeospatial.org/se/units/metre">
+                            <se:Stroke>\s
+                              <se:GraphicStroke>\s
+                                <se:Graphic>\s
+                                  <se:Mark>\s
+                                    <se:WellKnownName>wkt://COMPOUNDCURVE(CIRCULARSTRING(0 0, 0.5 0.5, 1 0), CIRCULARSTRING(1 0, 1.5 -0.5, 2 0))</se:WellKnownName>\s
+                                  </se:Mark>\s
+                                  <se:Size>1</se:Size>\s
+                                </se:Graphic>\s
+                              </se:GraphicStroke>\s
+                            </se:Stroke>\s
+                            <se:VendorOption name="markAlongLine">true</se:VendorOption>\s
+                          </se:LineSymbolizer>\s
+                        </se:Rule>
+                      </se:FeatureTypeStyle>
+                    </UserStyle>
+                  </NamedLayer>
+                </StyledLayerDescriptor>""";
 
         tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml11);
 
@@ -938,41 +947,44 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testVendorOptionInsidePolygonSymbolizer() {
-        final String polygonSymbolizerXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\"\n"
-                + "                       xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
-                + "                       xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
-                + "                       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                + "                       version=\"1.0.0\"\n"
-                + "                       xsi:schemaLocation=\"http://www.opengis.net/sld StyledLayerDescriptor.xsd\">\n"
-                + "  <NamedLayer>\n"
-                + "    <Name>test</Name>\n"
-                + "    <UserStyle>\n"
-                + "      <Name>test</Name>\n"
-                + "      <Title>test</Title>\n"
-                + "      <FeatureTypeStyle>\n"
-                + "        <Rule>\n"
-                + "          <Name>test</Name>\n"
-                + "          <Title>test\n"
-                + "          </Title>\n"
-                + "          <PolygonSymbolizer>\n"
-                + "            <Fill>\n"
-                + "              <GraphicFill>\n"
-                + "                <Graphic>\n"
-                + "                  <ExternalGraphic>\n"
-                + "                    <OnlineResource xlink:type=\"simple\" xlink:href=\"rectangle.png\"/>\n"
-                + "                    <Format>image/png</Format>\n"
-                + "                  </ExternalGraphic>\n"
-                + "                </Graphic>\n"
-                + "              </GraphicFill>\n"
-                + "            </Fill>\n"
-                + "            <VendorOption name=\"graphic-margin\">10</VendorOption>\n"
-                + "          </PolygonSymbolizer>\n"
-                + "        </Rule>\n"
-                + "      </FeatureTypeStyle>\n"
-                + "    </UserStyle>\n"
-                + "  </NamedLayer>\n"
-                + "</StyledLayerDescriptor>\n";
+        final String polygonSymbolizerXml =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <StyledLayerDescriptor xmlns="http://www.opengis.net/sld"
+                                       xmlns:ogc="http://www.opengis.net/ogc"
+                                       xmlns:xlink="http://www.w3.org/1999/xlink"
+                                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                       version="1.0.0"
+                                       xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd">
+                  <NamedLayer>
+                    <Name>test</Name>
+                    <UserStyle>
+                      <Name>test</Name>
+                      <Title>test</Title>
+                      <FeatureTypeStyle>
+                        <Rule>
+                          <Name>test</Name>
+                          <Title>test
+                          </Title>
+                          <PolygonSymbolizer>
+                            <Fill>
+                              <GraphicFill>
+                                <Graphic>
+                                  <ExternalGraphic>
+                                    <OnlineResource xlink:type="simple" xlink:href="rectangle.png"/>
+                                    <Format>image/png</Format>
+                                  </ExternalGraphic>
+                                </Graphic>
+                              </GraphicFill>
+                            </Fill>
+                            <VendorOption name="graphic-margin">10</VendorOption>
+                          </PolygonSymbolizer>
+                        </Rule>
+                      </FeatureTypeStyle>
+                    </UserStyle>
+                  </NamedLayer>
+                </StyledLayerDescriptor>
+                """;
 
         tester.newFormTester("styleForm")
                 .setValue("styleEditor:editorContainer:editorParent:editor", polygonSymbolizerXml);

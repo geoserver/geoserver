@@ -209,24 +209,24 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     /** @see StyleVisitor#visit(Symbolizer) */
     @Override
     public void visit(Symbolizer sym) {
-        if (sym instanceof PointSymbolizer) {
-            visit((PointSymbolizer) sym);
+        if (sym instanceof PointSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof LineSymbolizer) {
-            visit((LineSymbolizer) sym);
+        if (sym instanceof LineSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof PolygonSymbolizer) {
-            visit((PolygonSymbolizer) sym);
+        if (sym instanceof PolygonSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof TextSymbolizer) {
-            visit((TextSymbolizer) sym);
+        if (sym instanceof TextSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof RasterSymbolizer) {
-            visit((RasterSymbolizer) sym);
+        if (sym instanceof RasterSymbolizer symbolizer) {
+            visit(symbolizer);
         }
     }
 
@@ -366,8 +366,8 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     @Override
     public void visit(Graphic gr) {
         for (GraphicalSymbol symbol : gr.graphicalSymbols()) {
-            if (symbol instanceof Symbol) {
-                ((Symbol) symbol).accept(this);
+            if (symbol instanceof Symbol symbol1) {
+                symbol1.accept(this);
             } else {
                 throw new RuntimeException("Don't know how to visit " + symbol);
             }
@@ -495,10 +495,10 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
         StyledLayer[] layers = sld.getStyledLayers();
 
         for (StyledLayer layer : layers) {
-            if (layer instanceof NamedLayer) {
-                ((NamedLayer) layer).accept(this);
-            } else if (layer instanceof UserLayer) {
-                ((UserLayer) layer).accept(this);
+            if (layer instanceof NamedLayer namedLayer) {
+                namedLayer.accept(this);
+            } else if (layer instanceof UserLayer userLayer) {
+                userLayer.accept(this);
             }
         }
     }
@@ -569,8 +569,8 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
         AttributeDescriptor ad = (AttributeDescriptor) expression.evaluate(featureType);
         if (ad != null) {
             propertyTypes.put(expression, ad.getType().getBinding());
-        } else if (data instanceof Class) {
-            propertyTypes.put(expression, (Class<?>) data);
+        } else if (data instanceof Class<?> class1) {
+            propertyTypes.put(expression, class1);
         } else {
             propertyTypes.put(expression, Object.class);
         }

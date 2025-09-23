@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.admin;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +30,9 @@ import org.geoserver.web.wicket.PercentageTextField;
 /** Edits the JAI configuration parameters */
 // TODO WICKET8 - Verify this page works OK
 public class JAIPage extends ServerAdminPage {
+    @Serial
     private static final long serialVersionUID = -1184717232184497578L;
+
     private final IModel<GeoServer> geoServerModel;
     private final IModel<JAIInfo> jaiModel;
 
@@ -64,6 +67,7 @@ public class JAIPage extends ServerAdminPage {
         addPngEncoderEditor(form);
 
         Button submit = new Button("submit") {
+            @Serial
             private static final long serialVersionUID = -2842881187264147131L;
 
             @Override
@@ -76,6 +80,7 @@ public class JAIPage extends ServerAdminPage {
         form.add(applyLink(form));
 
         Button cancel = new Button("cancel") {
+            @Serial
             private static final long serialVersionUID = 7917847596581898225L;
 
             @Override
@@ -121,6 +126,7 @@ public class JAIPage extends ServerAdminPage {
         // create the editor, eventually set a default value
         DropDownChoice<JAIInfo.PngEncoderType> editor =
                 new DropDownChoice<>("pngEncoderType", encoders, new ChoiceRenderer<>() {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override

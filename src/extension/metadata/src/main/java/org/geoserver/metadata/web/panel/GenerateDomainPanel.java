@@ -6,6 +6,7 @@ package org.geoserver.metadata.web.panel;
 
 import com.google.common.collect.Lists;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.geotools.util.logging.Logging;
 
 public class GenerateDomainPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -4252512711183089841L;
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTabPanel.class);
@@ -56,6 +58,7 @@ public class GenerateDomainPanel extends Panel {
                 new PropertyModel<>(getDefaultModel(), "method"),
                 Lists.newArrayList(false, true),
                 new IChoiceRenderer<>() {
+                    @Serial
                     private static final long serialVersionUID = 1966992066973104491L;
 
                     @Override
@@ -100,6 +103,7 @@ public class GenerateDomainPanel extends Panel {
         add(defAttributeNameChoice.setNullValid(false).setEnabled(false).setOutputMarkupId(true));
 
         methodChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 6321014584689914438L;
 
             @Override
@@ -117,6 +121,7 @@ public class GenerateDomainPanel extends Panel {
         });
 
         tableNameChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
             private static final long serialVersionUID = 6321014584689914438L;
 
             @Override

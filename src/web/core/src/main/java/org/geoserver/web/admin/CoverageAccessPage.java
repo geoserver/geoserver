@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.admin;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -30,12 +31,15 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /** Edits the Coverage configuration parameters */
 // TODO WICKET8 - Verify this page works OK
 public class CoverageAccessPage extends ServerAdminPage {
+    @Serial
     private static final long serialVersionUID = -5028265196560034398L;
+
     private IModel<?> geoServerModel;
     private IModel<CoverageAccessInfo> coverageModel;
 
     class PoolSizeValidator extends AbstractFormValidator {
 
+        @Serial
         private static final long serialVersionUID = -3435198454570572665L;
 
         @Override
@@ -121,6 +125,7 @@ public class CoverageAccessPage extends ServerAdminPage {
         form.add(imageIOCacheThreshold);
 
         Button submit = new Button("submit") {
+            @Serial
             private static final long serialVersionUID = 4149741045073254811L;
 
             @Override
@@ -133,6 +138,7 @@ public class CoverageAccessPage extends ServerAdminPage {
         form.add(applyLink(form));
 
         Button cancel = new Button("cancel") {
+            @Serial
             private static final long serialVersionUID = -57093747603810865L;
 
             @Override
@@ -175,6 +181,7 @@ public class CoverageAccessPage extends ServerAdminPage {
     /** Display and ID mapping adapter for QueueType. */
     // TODO: consider use of EnumChoiceRenderer<QueueType>
     private class QueueTypeRenderer extends ChoiceRenderer<QueueType> {
+        @Serial
         private static final long serialVersionUID = -702911785346928083L;
 
         @Override

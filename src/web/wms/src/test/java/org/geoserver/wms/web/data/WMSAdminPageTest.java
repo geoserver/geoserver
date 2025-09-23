@@ -309,8 +309,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("allowedURLsForAuthForwarding", allowedUrlForAuthForwarding);
         ft.submit("submit");
         String reportedInvalidURLs = "invalid-remote-url, htPP://invalidhttpurl";
-        tester.assertErrorMessages(
-                String.format("The provided values are not valid HTTP urls: [%s]", reportedInvalidURLs));
+        tester.assertErrorMessages("The provided values are not valid HTTP urls: [%s]".formatted(reportedInvalidURLs));
     }
 
     /** Comprehensive test as a drop-down with default value is a tricky component to test. */

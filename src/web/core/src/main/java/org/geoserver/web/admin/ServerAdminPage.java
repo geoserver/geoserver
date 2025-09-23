@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.admin;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
@@ -19,6 +20,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 /** @author Arne Kepp, The Open Planning Project */
 @SuppressWarnings("serial")
 public abstract class ServerAdminPage extends GeoServerSecuredPage {
+    @Serial
     private static final long serialVersionUID = 4712657652337914993L;
 
     public IModel<GeoServer> getGeoServerModel() {

@@ -50,7 +50,6 @@ import org.geotools.util.logging.Logging;
 /**
  * @author Gabriel Roldan
  * @since 1.8.x
- * @version $Id$
  */
 // TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")

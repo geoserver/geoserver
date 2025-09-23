@@ -702,14 +702,14 @@ public class MapMLFeatureUtil {
                 minLat = latLonBbox.getMinY();
                 maxLong = latLonBbox.getMaxX();
                 maxLat = latLonBbox.getMaxY();
-                extent = String.format(gcrsFormat, minLong, maxLat, maxLong, minLat);
+                extent = gcrsFormat.formatted(minLong, maxLat, maxLong, minLat);
             } else {
                 re = latLonBbox.transform(responseCRS, true);
                 minEasting = re.getMinX();
                 minNorthing = re.getMinY();
                 maxEasting = re.getMaxX();
                 maxNorthing = re.getMaxY();
-                extent = String.format(pcrsFormat, minEasting, maxNorthing, maxEasting, minNorthing);
+                extent = pcrsFormat.formatted(minEasting, maxNorthing, maxEasting, minNorthing);
             }
         } catch (Exception e) {
             if (tcrs != null) {
@@ -718,13 +718,13 @@ public class MapMLFeatureUtil {
                     minLat = tcrs.getBounds().getMin().y;
                     maxLong = tcrs.getBounds().getMax().x;
                     maxLat = tcrs.getBounds().getMax().y;
-                    extent = String.format(gcrsFormat, maxLong, maxLat, minLong, minLat);
+                    extent = gcrsFormat.formatted(maxLong, maxLat, minLong, minLat);
                 } else {
                     minEasting = tcrs.getBounds().getMin().x;
                     minNorthing = tcrs.getBounds().getMin().y;
                     maxEasting = tcrs.getBounds().getMax().x;
                     maxNorthing = tcrs.getBounds().getMax().y;
-                    extent = String.format(pcrsFormat, minEasting, maxNorthing, maxEasting, minNorthing);
+                    extent = pcrsFormat.formatted(minEasting, maxNorthing, maxEasting, minNorthing);
                 }
             }
         }
@@ -836,8 +836,7 @@ public class MapMLFeatureUtil {
                 return null;
             }
 
-            if (tileLayer instanceof GeoServerTileLayer && tileLayer.isEnabled()) {
-                GeoServerTileLayer geoServerTileLayer = (GeoServerTileLayer) tileLayer;
+            if (tileLayer instanceof GeoServerTileLayer geoServerTileLayer && tileLayer.isEnabled()) {
                 GeoServerTileLayerInfo info = geoServerTileLayer.getInfo();
 
                 // Get all MIME formats and filter for image types

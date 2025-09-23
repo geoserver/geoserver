@@ -173,8 +173,8 @@ public class FeatureDAO {
                                     Arrays.asList("Error rolling back after " + e.getMessage(), e1.getMessage())));
                 }
             }
-            if (e instanceof ServiceException) {
-                throw (ServiceException) e;
+            if (e instanceof ServiceException exception) {
+                throw exception;
             } else {
                 // We should only get a ServiceException if rollbackOnFailure is true, so this
                 // should never happen...
@@ -380,8 +380,8 @@ public class FeatureDAO {
                 return new EditResult(
                         null, false, FeatureServiceErrors.updateError(Collections.singletonList("Missing id field")));
             }
-            if (objectIdObject instanceof Long) {
-                objectId = (Long) objectIdObject;
+            if (objectIdObject instanceof Long long1) {
+                objectId = long1;
             } else {
                 objectId = Long.parseLong(objectIdObject.toString());
             }

@@ -23,8 +23,7 @@ public class CredentialsFromRequestHeaderFilterConfigValidator extends FilterCon
     @Override
     public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
 
-        if (config instanceof CredentialsFromRequestHeaderFilterConfig)
-            validateFilterConfig((CredentialsFromRequestHeaderFilterConfig) config);
+        if (config instanceof CredentialsFromRequestHeaderFilterConfig filterConfig) validateFilterConfig(filterConfig);
         else super.validateFilterConfig(config);
     }
 

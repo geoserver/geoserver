@@ -446,8 +446,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * @return The property value, or null if not found
      */
     public static String getProperty(String propertyName, ApplicationContext context) {
-        if (context instanceof WebApplicationContext) {
-            return getProperty(propertyName, ((WebApplicationContext) context).getServletContext());
+        if (context instanceof WebApplicationContext applicationContext) {
+            return getProperty(propertyName, applicationContext.getServletContext());
         } else {
             return getProperty(propertyName, (ServletContext) null);
         }
@@ -532,8 +532,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
             return fileCache.get(path); // override provided by GeoServerExtensionsHelper
         }
         ServletContext servletContext;
-        if (context instanceof WebApplicationContext
-                && (servletContext = ((WebApplicationContext) context).getServletContext()) != null) {
+        if (context instanceof WebApplicationContext applicationContext
+                && (servletContext = applicationContext.getServletContext()) != null) {
             String filepath = servletContext.getRealPath(path);
             if (filepath != null) {
                 File file = new File(filepath);

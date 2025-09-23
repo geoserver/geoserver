@@ -207,12 +207,10 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
             throws Exception {
         ListView list = (ListView) tester.getLastRenderedPage().get("servicesContainer:services");
         list.forEach(i -> {
-            if (i instanceof ListItem) {
-                ListItem<? extends Object> listItem = (ListItem<? extends Object>) i;
+            if (i instanceof ListItem<? extends Object> listItem) {
                 if (clazz.isInstance(listItem.getModelObject())) {
                     listItem.forEach(action -> {
-                        if (action instanceof AjaxLink) {
-                            AjaxLink link = (AjaxLink) action;
+                        if (action instanceof AjaxLink link) {
                             if (link.isEnabled()) {
                                 tester.executeAjaxEvent(link, "click");
                             }

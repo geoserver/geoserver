@@ -218,15 +218,23 @@ public class JDBCOpenSearchAccessTest {
     @After
     public void resetCollectionLayer() throws IOException, SQLException {
         String s1 = "DELETE from \"collection_layer\"";
-        String s2 = "INSERT into \"collection_layer\"\n"
-                + "(\"cid\", \"workspace\", \"layer\", \"separateBands\", \"bands\", \"browseBands\", \"heterogeneousCRS\", \"mosaicCRS\", \"defaultLayer\")\n"
-                + "VALUES(17, 'gs', 'sentinel2', 'true', 'B01,B02,B03,B04,B05,B06,B07,B08,B09,B10,B11,B12', 'B04,B03,B02', 'true', 'EPSG:4326', 'true')";
-        String s3 = "INSERT into collection_layer\n"
-                + "(\"cid\", \"workspace\", \"layer\", \"separateBands\", \"bands\", \"browseBands\", \"heterogeneousCRS\", \"mosaicCRS\", \"defaultLayer\")\n"
-                + "VALUES(31, 'gs', 'landsat8-SINGLE', 'false', null, null, 'true', 'EPSG:4326', 'true');\n";
-        String s4 = "INSERT into collection_layer\n"
-                + "(\"cid\", \"workspace\", \"layer\", \"separateBands\", \"bands\", \"browseBands\", \"heterogeneousCRS\", \"mosaicCRS\", \"defaultLayer\")\n"
-                + "VALUES(31, 'gs', 'landsat8-SEPARATE', 'true', 'B01,B02,B03,B04,B05,B06,B07,B08,B09', 'B04,B03,B02', 'true', 'EPSG:4326', 'false');";
+        String s2 =
+                """
+                INSERT into "collection_layer"
+                ("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS", "defaultLayer")
+                VALUES(17, 'gs', 'sentinel2', 'true', 'B01,B02,B03,B04,B05,B06,B07,B08,B09,B10,B11,B12', 'B04,B03,B02', 'true', 'EPSG:4326', 'true')""";
+        String s3 =
+                """
+                INSERT into collection_layer
+                ("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS", "defaultLayer")
+                VALUES(31, 'gs', 'landsat8-SINGLE', 'false', null, null, 'true', 'EPSG:4326', 'true');
+                """;
+        String s4 =
+                """
+                INSERT into collection_layer
+                ("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS", "defaultLayer")
+                VALUES(31, 'gs', 'landsat8-SEPARATE', 'true', 'B01,B02,B03,B04,B05,B06,B07,B08,B09', 'B04,B03,B02', 'true', 'EPSG:4326', 'false');\
+                """;
         try (Connection conn = store.getConnection(Transaction.AUTO_COMMIT);
                 Statement st = conn.createStatement()) {
             st.execute(s1);
@@ -850,9 +858,11 @@ public class JDBCOpenSearchAccessTest {
         expectations.put("sentinel2_eo_cloud_cover_idx", "USING btree (\"optCloudCover\")");
         expectations.put("sentinel2_geometry_idx", "USING gist (footprint)");
         expectations.put("sentinel2_keywords_idx", "USING gin (keywords)");
-        String sql = "SELECT indexname,indexdef\n"
-                + "FROM pg_indexes\n"
-                + "WHERE schemaname = 'public' and tablename = 'product' and indexname like 'sentinel2_%'";
+        String sql =
+                """
+                SELECT indexname,indexdef
+                FROM pg_indexes
+                WHERE schemaname = 'public' and tablename = 'product' and indexname like 'sentinel2_%'""";
         try (Connection cx = store.getConnection(Transaction.AUTO_COMMIT);
                 Statement st = cx.createStatement();
                 ResultSet rs = st.executeQuery(sql)) {

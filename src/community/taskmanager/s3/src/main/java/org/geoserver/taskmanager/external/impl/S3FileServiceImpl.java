@@ -8,6 +8,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
+import java.io.Serial;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,6 +21,7 @@ import java.net.URLEncoder;
  */
 public class S3FileServiceImpl extends AbstractS3FileServiceImpl {
 
+    @Serial
     private static final long serialVersionUID = -5960841858385823283L;
 
     private String alias;

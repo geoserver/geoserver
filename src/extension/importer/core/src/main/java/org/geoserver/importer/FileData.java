@@ -7,6 +7,7 @@ package org.geoserver.importer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
@@ -17,6 +18,7 @@ public class FileData extends ImportData {
     static Logger LOGGER = Logging.getLogger(FileData.class);
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** the file handle */

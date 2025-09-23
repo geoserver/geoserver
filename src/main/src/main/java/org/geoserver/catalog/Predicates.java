@@ -211,13 +211,13 @@ public class Predicates {
      */
     public static Filter and(Filter op1, Filter op2) {
         List<Filter> children = new ArrayList<>();
-        if (op1 instanceof And) {
-            children.addAll(((And) op1).getChildren());
+        if (op1 instanceof And and) {
+            children.addAll(and.getChildren());
         } else {
             children.add(op1);
         }
-        if (op2 instanceof And) {
-            children.addAll(((And) op2).getChildren());
+        if (op2 instanceof And and) {
+            children.addAll(and.getChildren());
         } else {
             children.add(op2);
         }
@@ -230,8 +230,8 @@ public class Predicates {
      * (simplifying out the double negation)
      */
     public static Filter not(Filter filter) {
-        if (filter instanceof Not) {
-            return ((Not) filter).getFilter();
+        if (filter instanceof Not not) {
+            return not.getFilter();
         }
         return factory.not(filter);
     }
@@ -274,13 +274,13 @@ public class Predicates {
      */
     public static Filter or(Filter op1, Filter op2) {
         List<Filter> children = new ArrayList<>();
-        if (op1 instanceof Or) {
-            children.addAll(((Or) op1).getChildren());
+        if (op1 instanceof Or or) {
+            children.addAll(or.getChildren());
         } else {
             children.add(op1);
         }
-        if (op2 instanceof Or) {
-            children.addAll(((Or) op2).getChildren());
+        if (op2 instanceof Or or) {
+            children.addAll(or.getChildren());
         } else {
             children.add(op2);
         }

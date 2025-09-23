@@ -6,6 +6,7 @@
 package org.geoserver.inspire.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.geoserver.inspire.InspireDirectoryManager;
  */
 public class AllLanguagesModel implements IModel<List<String>> {
 
+    @Serial
     private static final long serialVersionUID = -6324842325783657135L;
 
     private List<String> langs;

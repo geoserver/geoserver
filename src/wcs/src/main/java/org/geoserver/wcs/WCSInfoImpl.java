@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.catalog.DimensionInfo;
@@ -18,6 +19,7 @@ import org.geotools.coverage.grid.io.OverviewPolicy;
  */
 public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
 
+    @Serial
     private static final long serialVersionUID = 3721044439071286273L;
 
     List<String> srs = new ArrayList<>();

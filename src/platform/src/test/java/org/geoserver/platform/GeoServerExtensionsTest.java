@@ -32,7 +32,6 @@ import org.springframework.context.ApplicationContext;
  * Unit test suite for {@link GeoServerExtensions}
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  */
 public class GeoServerExtensionsTest {
 

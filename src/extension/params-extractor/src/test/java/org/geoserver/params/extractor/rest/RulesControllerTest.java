@@ -178,11 +178,13 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPutRuleXML() throws Exception {
-        String ruleXML = "<Rule id=\"0\"\n"
-                + "          position=\"5\"\n"
-                + "          parameter=\"foobar\"\n"
-                + "          remove=\"2\"\n"
-                + "          transform=\"abc='$2'\"/>";
+        String ruleXML =
+                """
+                <Rule id="0"
+                          position="5"
+                          parameter="foobar"
+                          remove="2"
+                          transform="abc='$2'"/>""";
         MockHttpServletResponse response =
                 putAsServletResponse("/rest/params-extractor/rules/0", ruleXML, "application/xml");
         assertEquals(200, response.getStatus());
@@ -200,13 +202,16 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPutRuleJson() throws Exception {
-        String ruleJSON = "{\"Rule\": {\n"
-                + "  \"id\": 0,\n"
-                + "  \"position\": 5,\n"
-                + "  \"parameter\": \"foobar\",\n"
-                + "  \"transform\": \"abc='$2'\",\n"
-                + "  \"remove\": 2\n"
-                + "}}";
+        String ruleJSON =
+                """
+                {"Rule": {
+                  "id": 0,
+                  "position": 5,
+                  "parameter": "foobar",
+                  "transform": "abc='$2'",
+                  "remove": 2
+                }}\
+                """;
         MockHttpServletResponse response =
                 putAsServletResponse("/rest/params-extractor/rules/0", ruleJSON, "application/json");
         assertEquals(200, response.getStatus());
@@ -225,11 +230,13 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPostRuleXML() throws Exception {
-        String ruleXML = "<Rule "
-                + "          position=\"5\"\n"
-                + "          parameter=\"foobar\"\n"
-                + "          remove=\"2\"\n"
-                + "          transform=\"abc='$2'\"/>";
+        String ruleXML =
+                """
+                <Rule \
+                          position="5"
+                          parameter="foobar"
+                          remove="2"
+                          transform="abc='$2'"/>""";
         MockHttpServletResponse response =
                 postAsServletResponse("/rest/params-extractor/rules", ruleXML, "application/xml");
         checkCreateWithPost(response);
@@ -237,12 +244,15 @@ public class RulesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPostEchoJSON() throws Exception {
-        String ruleJSON = "{\"Rule\": {\n"
-                + "  \"position\": 5,\n"
-                + "  \"parameter\": \"foobar\",\n"
-                + "  \"transform\": \"abc='$2'\",\n"
-                + "  \"remove\": 2\n"
-                + "}}";
+        String ruleJSON =
+                """
+                {"Rule": {
+                  "position": 5,
+                  "parameter": "foobar",
+                  "transform": "abc='$2'",
+                  "remove": 2
+                }}\
+                """;
         MockHttpServletResponse response =
                 postAsServletResponse("/rest/params-extractor/rules", ruleJSON, "application/json");
         checkCreateWithPost(response);

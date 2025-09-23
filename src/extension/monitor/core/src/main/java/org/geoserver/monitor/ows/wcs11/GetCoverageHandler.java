@@ -52,7 +52,7 @@ public class GetCoverageHandler extends RequestObjectHandler {
         try {
             crs = CRS.decode(crsName);
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, String.format("Could not decode CRS ID: %s", crsName), e);
+            LOGGER.log(Level.WARNING, "Could not decode CRS ID: %s".formatted(crsName), e);
             return null;
         }
 

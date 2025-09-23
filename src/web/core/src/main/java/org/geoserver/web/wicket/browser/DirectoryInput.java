@@ -5,6 +5,7 @@
 package org.geoserver.web.wicket.browser;
 
 import java.io.File;
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -21,7 +22,9 @@ import org.geoserver.web.wicket.GeoServerDialog;
 // TODO WICKET8 - Verify this page works OK
 public class DirectoryInput extends FileInput {
 
+    @Serial
     private static final long serialVersionUID = -8317791966175845831L;
+
     protected GeoServerDialog gsDialog;
 
     /** @param validators any extra validator that should be added to the input field, or {@code null} */
@@ -43,6 +46,7 @@ public class DirectoryInput extends FileInput {
     protected Component chooserButton(final String windowTitle) {
         AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
 
+            @Serial
             private static final long serialVersionUID = -2860146532287292092L;
 
             @Override
@@ -56,6 +60,7 @@ public class DirectoryInput extends FileInput {
                 gsDialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
                     /** */
+                    @Serial
                     private static final long serialVersionUID = 1576266249751904398L;
 
                     @Override

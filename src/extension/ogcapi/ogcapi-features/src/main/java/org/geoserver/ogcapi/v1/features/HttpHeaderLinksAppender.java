@@ -20,9 +20,9 @@ public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {
     @Override
     public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         // is this a feature response we are about to encode?
-        if (result instanceof FeaturesResponse) {
+        if (result instanceof FeaturesResponse featuresResponse) {
             HttpServletResponse httpResponse = request.getHttpResponse();
-            FeatureCollectionResponse fcr = ((FeaturesResponse) result).getResponse();
+            FeatureCollectionResponse fcr = featuresResponse.getResponse();
             String contentType = response.getMimeType(result, operation);
             if (fcr.getPrevious() != null) {
                 addLink(httpResponse, "prev", contentType, fcr.getPrevious());
@@ -36,7 +36,7 @@ public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {
     }
 
     private void addLink(HttpServletResponse httpResponse, String rel, String contentType, String href) {
-        String headerValue = String.format("<%s>; rel=\"%s\"; type=\"%s\"", href, rel, contentType);
+        String headerValue = "<%s>; rel=\"%s\"; type=\"%s\"".formatted(href, rel, contentType);
         httpResponse.addHeader("Link", headerValue);
     }
 }

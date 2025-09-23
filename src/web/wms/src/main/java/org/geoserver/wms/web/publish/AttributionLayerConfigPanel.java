@@ -6,6 +6,7 @@
 package org.geoserver.wms.web.publish;
 
 import java.awt.image.BufferedImage;
+import java.io.Serial;
 import java.net.URL;
 import java.net.URLConnection;
 import javax.imageio.ImageIO;
@@ -25,6 +26,7 @@ import org.geoserver.web.publish.PublishedConfigurationPanel;
 // TODO WICKET8 - Verify this page works OK
 public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<PublishedInfo> {
 
+    @Serial
     private static final long serialVersionUID = -5229831547353122190L;
 
     public AttributionLayerConfigPanel(String id, IModel<? extends PublishedInfo> model) {
@@ -69,6 +71,7 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
         add(width);
 
         add(new AjaxSubmitLink("verifyImage") {
+            @Serial
             private static final long serialVersionUID = 6814575194862084111L;
 
             @Override

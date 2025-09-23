@@ -83,10 +83,9 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
         FeatureCollection<T, F> result = null;
         if (fc != null) {
             if (limitedAttributeSize > 0 && fc.getSchema().getDescriptors().size() > limitedAttributeSize) {
-                if (fc instanceof SimpleFeatureCollection) {
+                if (fc instanceof SimpleFeatureCollection sfc) {
                     // the datastore did not honour the query properties?? It's broken, but we can
                     // fix it
-                    SimpleFeatureCollection sfc = (SimpleFeatureCollection) fc;
                     SimpleFeatureType target =
                             SimpleFeatureTypeBuilder.retype(sfc.getSchema(), mixed.getPropertyNames());
                     @SuppressWarnings("unchecked")
@@ -113,8 +112,7 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
             }
         }
         AccessLimits limits = policy.getLimits();
-        if (limits instanceof VectorAccessLimits) {
-            VectorAccessLimits vectorLimits = (VectorAccessLimits) limits;
+        if (limits instanceof VectorAccessLimits vectorLimits) {
             result = decoratesForClipping(vectorLimits, result);
         }
         return result;

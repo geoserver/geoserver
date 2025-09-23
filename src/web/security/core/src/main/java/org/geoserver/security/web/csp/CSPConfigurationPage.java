@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.net.HttpHeaders;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Serial;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -55,6 +56,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 /** Page for configuring the Content-Security-Policy HTTP response header. */
 public class CSPConfigurationPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -5935887226717780789L;
 
     private TextArea<String> testResultField;
@@ -77,6 +79,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
         form.add(new CSPPolicyPanel("policies", this.config));
         form.add(new TextArea<>("testUrl", new PropertyModel<>(this, "testUrl")));
         form.add(new AjaxSubmitLink("testLink") {
+            @Serial
             private static final long serialVersionUID = 1700932575669734348L;
 
             @Override
@@ -87,6 +90,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
         this.testResultField = new TextArea<>("testResult", new Model<>(""));
         form.add(this.testResultField.setOutputMarkupId(true).setEnabled(false));
         form.add(new SubmitLink("save", form) {
+            @Serial
             private static final long serialVersionUID = -8900006356449150190L;
 
             @Override
@@ -95,6 +99,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
             }
         });
         form.add(new Button("apply") {
+            @Serial
             private static final long serialVersionUID = -3327108081898697618L;
 
             @Override
@@ -103,6 +108,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
             }
         });
         form.add(new Button("cancel") {
+            @Serial
             private static final long serialVersionUID = 7567566240358171893L;
 
             @Override

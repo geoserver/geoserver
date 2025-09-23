@@ -149,9 +149,8 @@ public final class DomainModelBuilder {
         }
         DomainAttributeType domainAttributeType = getDomainAttributeType(attribType);
         if (domainAttributeType == null) {
-            LOGGER.warning(() -> String.format(
-                    "Attribute type '%s' is unsupported for attribute '%s'.",
-                    attributeMetadata.getType().toLowerCase(), attributeMetadata.getName()));
+            LOGGER.warning(() -> "Attribute type '%s' is unsupported for attribute '%s'."
+                    .formatted(attributeMetadata.getType().toLowerCase(), attributeMetadata.getName()));
             return null;
         } else {
             domainAttribute.setType(domainAttributeType);

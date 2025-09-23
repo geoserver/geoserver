@@ -41,7 +41,6 @@ import org.xml.sax.helpers.ParserAdapter;
  *
  * @authod Justin Deoliveira
  * @author Gabriel Roldan
- * @version $Id$
  * @since 1.7.x
  */
 public class FilterKvpParser extends KvpParser {

@@ -31,8 +31,7 @@ public class FilterFunction_gridCoverageProperty extends FunctionExpressionImpl 
 
         try { // attempt to get value and perform conversion
             arg0 = (getExpression(0).evaluate(feature, String.class));
-            if (feature instanceof GridCoverage2D) {
-                GridCoverage2D coverage = (GridCoverage2D) feature;
+            if (feature instanceof GridCoverage2D coverage) {
                 Object prop = coverage.getProperty(arg0);
                 if (prop != null) {
                     Number number = (Number) prop;

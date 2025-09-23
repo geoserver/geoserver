@@ -213,7 +213,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
             // HACK, stripping of namespace prefix
             for (Object property : node.getChildValues("PropertyName")) {
                 String propertyName;
-                if (property instanceof String) propertyName = (String) property;
+                if (property instanceof String string) propertyName = string;
                 else propertyName = ((PropertyName) property).getPropertyName();
 
                 query.getPropertyName().add(propertyName);

@@ -878,8 +878,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         NodeList nodeList = dom.getElementsByTagName("Layer");
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
-            if (node instanceof Element && node.getLocalName().equals("Layer")) {
-                Element el = (Element) node;
+            if (node instanceof Element el && node.getLocalName().equals("Layer")) {
                 Node title = getFirstElementByTagName(el, "Title");
                 if (title != null
                         && title.getFirstChild() != null

@@ -95,8 +95,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
         this.name = config.getName();
         initializeDSFromConfig(config);
 
-        if (config instanceof JDBCSecurityServiceConfig) {
-            JDBCSecurityServiceConfig jdbcConfig = (JDBCSecurityServiceConfig) config;
+        if (config instanceof JDBCSecurityServiceConfig jdbcConfig) {
 
             String fileNameDML = jdbcConfig.getPropertyFileNameDML();
             Resource file = checkORCreateJDBCPropertyFile(fileNameDML, getConfigRoot(), DEFAULT_DML_FILE);
@@ -106,7 +105,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             if (fileNameDDL != null && !fileNameDDL.isEmpty()) {
                 file = checkORCreateJDBCPropertyFile(fileNameDDL, getConfigRoot(), DEFAULT_DDL_FILE);
                 ddlProps = Util.loadUniversal(file.in());
-                createTablesIfRequired((JDBCSecurityServiceConfig) config);
+                createTablesIfRequired(jdbcConfig);
             }
         }
         this.adminRoleName = ((SecurityRoleServiceConfig) config).getAdminRoleName();

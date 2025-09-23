@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.importer;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
@@ -16,6 +17,7 @@ import org.geotools.feature.NameImpl;
  */
 public class LayerResource implements Comparable<LayerResource>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 7584589248746230483L;
 
     enum LayerStatus {

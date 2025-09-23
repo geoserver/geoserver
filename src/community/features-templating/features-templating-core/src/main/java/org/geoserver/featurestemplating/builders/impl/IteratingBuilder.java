@@ -127,8 +127,8 @@ public class IteratingBuilder extends SourceBuilder {
     public boolean canWrite(TemplateBuilderContext context) {
         Object o = context.getCurrentObj();
         boolean result;
-        if (o instanceof List) {
-            result = canWriteList((List) o, context);
+        if (o instanceof List list) {
+            result = canWriteList(list, context);
         } else if (o != null && o.getClass().isArray()) {
             result = canWriteArray(o, context);
         } else {

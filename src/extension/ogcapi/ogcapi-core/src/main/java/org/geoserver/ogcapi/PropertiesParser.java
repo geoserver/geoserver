@@ -36,8 +36,8 @@ public class PropertiesParser {
      * @throws IOException
      */
     protected void validate(List<String> names) throws IOException {
-        if (resource instanceof FeatureTypeInfo) {
-            FeatureType schema = ((FeatureTypeInfo) resource).getFeatureType();
+        if (resource instanceof FeatureTypeInfo info) {
+            FeatureType schema = info.getFeatureType();
             Set<String> availableNames = schema.getDescriptors().stream()
                     .map(p -> p.getName().getLocalPart())
                     .collect(Collectors.toSet());

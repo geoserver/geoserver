@@ -6,6 +6,7 @@ package org.geoserver.mapml;
 
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,7 +58,9 @@ import org.geowebcache.layer.TileLayer;
 public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<LayerInfo> {
     static final Logger LOGGER = Logging.getLogger(MapMLLayerConfigurationPanel.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     public static final String PNG_MIME_TYPE = "image/png";
     ListMultipleChoice<String> featureCaptionAttributes;
 
@@ -185,8 +188,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
                 try {
                     TileLayer tileLayer = gwc.getTileLayerByName(layer.prefixedName());
                     // if the useTiles flag is set and the cache is enabled we get cache mime types
-                    if (tileLayer instanceof GeoServerTileLayer && tileLayer.isEnabled()) {
-                        GeoServerTileLayer geoServerTileLayer = (GeoServerTileLayer) tileLayer;
+                    if (tileLayer instanceof GeoServerTileLayer geoServerTileLayer && tileLayer.isEnabled()) {
                         GeoServerTileLayerInfo info = geoServerTileLayer.getInfo();
                         mimeTypes.addAll(info.getMimeFormats().stream()
                                 .filter(mimeType ->
@@ -220,9 +222,8 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
                 layer.getResource().getMetadata().entrySet()) {
             String key = entry.getKey();
             Serializable md = entry.getValue();
-            if (md instanceof DimensionInfo) {
+            if (md instanceof DimensionInfo di) {
                 // skip disabled dimensions
-                DimensionInfo di = (DimensionInfo) md;
                 if (!di.isEnabled()) {
                     continue;
                 }
@@ -253,8 +254,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
             return Collections.emptyList();
         }
         try {
-            if (res instanceof FeatureTypeInfo) {
-                FeatureTypeInfo typeInfo = (FeatureTypeInfo) res;
+            if (res instanceof FeatureTypeInfo typeInfo) {
                 Catalog catalog = GeoServerApplication.get().getCatalog();
                 final ResourcePool resourcePool = catalog.getResourcePool();
                 // using loadAttributes to dodge the ResourcePool caches, the

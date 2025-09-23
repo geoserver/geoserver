@@ -6,6 +6,7 @@
 
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.geoserver.security.validation.FilterConfigException;
 
 /**
@@ -15,6 +16,7 @@ import org.geoserver.security.validation.FilterConfigException;
  */
 public class AuthenticationKeyFilterConfigException extends FilterConfigException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public AuthenticationKeyFilterConfigException(String errorId, Object... args) {

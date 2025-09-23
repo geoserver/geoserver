@@ -13,8 +13,8 @@ public class ResourceUndefined extends BaseMatcher<Resource> {
 
     @Override
     public boolean matches(Object item) {
-        if (item instanceof Resource) {
-            return ((Resource) item).getType() == Type.UNDEFINED;
+        if (item instanceof Resource resource) {
+            return resource.getType() == Type.UNDEFINED;
         }
         return false;
     }

@@ -34,20 +34,22 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
     private List<Integer> sridList = Arrays.asList(4326, -1, 0);
 
     /** Mapping file database parameters */
-    public static String DB_PARAMS = "<parameters>"
-            + "\n<Parameter>\n"
-            + "<name>dbtype</name>\n"
-            + "<value>geopkg</value>"
-            + "\n</Parameter>"
-            + "\n<Parameter>\n"
-            + "<name>database</name>\n"
-            + "<value>PATH_TO_BE_REPLACED</value>\n"
-            + "</Parameter>\n"
-            + "<Parameter>\n"
-            + "<name>Expose primary keys</name>\n"
-            + "<value>true</value>"
-            + "\n</Parameter>"
-            + "</parameters>"; //
+    public static String DB_PARAMS =
+            """
+            <parameters>
+            <Parameter>
+            <name>dbtype</name>
+            <value>geopkg</value>
+            </Parameter>
+            <Parameter>
+            <name>database</name>
+            <value>PATH_TO_BE_REPLACED</value>
+            </Parameter>
+            <Parameter>
+            <name>Expose primary keys</name>
+            <value>true</value>
+            </Parameter>\
+            </parameters>"""; //
 
     private String sql;
 
@@ -103,8 +105,8 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
                 String field;
                 String type;
                 for (PropertyDescriptor desc : schema.getDescriptors()) {
-                    if (desc instanceof GeometryDescriptor) {
-                        geoms.add((GeometryDescriptor) desc);
+                    if (desc instanceof GeometryDescriptor descriptor) {
+                        geoms.add(descriptor);
                     } else {
                         field = "\"" + desc.getName() + "\" ";
                         type = Classes.getShortName(desc.getType().getBinding());
@@ -164,8 +166,7 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
                     int valueIndex = 0;
                     for (Property prop : properties) {
                         Object value = prop.getValue();
-                        if (value instanceof Geometry) {
-                            Geometry geom = (Geometry) value;
+                        if (value instanceof Geometry geom) {
 
                             String s = toString(geom);
 

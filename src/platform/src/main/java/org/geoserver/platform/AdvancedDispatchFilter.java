@@ -33,8 +33,8 @@ public class AdvancedDispatchFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        if (request instanceof HttpServletRequest) {
-            request = new AdvancedDispatchHttpRequest((HttpServletRequest) request);
+        if (request instanceof HttpServletRequest servletRequest) {
+            request = new AdvancedDispatchHttpRequest(servletRequest);
         }
         chain.doFilter(request, response);
     }

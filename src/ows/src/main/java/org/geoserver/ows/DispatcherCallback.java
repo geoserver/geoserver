@@ -65,7 +65,7 @@ public interface DispatcherCallback {
      *
      * @param request The request.
      * @param operation The operation.
-     * @param result The result of the operation, may be <code>null</code>.
+     * @param result The result of the operation, may be {@code null}.
      */
     Object operationExecuted(Request request, Operation operation, Object result);
 

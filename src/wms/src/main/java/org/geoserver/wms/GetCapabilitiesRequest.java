@@ -10,7 +10,6 @@ package org.geoserver.wms;
  *
  * @author Rob Hranac, TOPP
  * @author Chris Holmes, TOPP
- * @version $Id$
  */
 public class GetCapabilitiesRequest extends WMSRequest {
 

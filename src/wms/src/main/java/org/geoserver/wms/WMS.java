@@ -399,11 +399,9 @@ public class WMS implements ApplicationContextAware {
                         treeSet.addAll(
                                 queryFeatureTypeElevations(mapLayerInfo.getFeature(), range, maxDimensionsToTest + 1));
                     }
-                } else if (elevation instanceof Double) {
+                } else if (elevation instanceof Double elevationSingle) {
                     // The queryElevations calls that check ranges are populating the treeset with
-                    // integers,
-                    // so we need to convert the double to an integer for this check
-                    Double elevationSingle = (Double) elevation;
+                    // integers, so we need to convert the double to an integer for this check
                     treeSet.add(elevationSingle.intValue());
                 } else {
                     treeSet.add(elevation);
@@ -1044,10 +1042,10 @@ public class WMS implements ApplicationContextAware {
         boolean queryable = false;
         List<PublishedInfo> layers = getLayersForQueryableChecks(layerGroup);
         for (PublishedInfo published : layers) {
-            if (published instanceof LayerInfo) {
-                queryable |= isQueryable((LayerInfo) published);
-            } else if (published instanceof LayerGroupInfo) {
-                queryable |= isQueryable((LayerGroupInfo) published);
+            if (published instanceof LayerInfo info1) {
+                queryable |= isQueryable(info1);
+            } else if (published instanceof LayerGroupInfo info) {
+                queryable |= isQueryable(info);
             }
         }
         return queryable;
@@ -1064,12 +1062,10 @@ public class WMS implements ApplicationContextAware {
      */
     private List<PublishedInfo> getLayersForQueryableChecks(LayerGroupInfo layerGroup) {
         // direct wrapper?
-        if (layerGroup instanceof AdvertisedCatalog.AdvertisedLayerGroup) {
-            AdvertisedCatalog.AdvertisedLayerGroup wrapper = (AdvertisedCatalog.AdvertisedLayerGroup) layerGroup;
+        if (layerGroup instanceof AdvertisedCatalog.AdvertisedLayerGroup wrapper) {
             layerGroup = wrapper.unwrap();
-        } else if (layerGroup instanceof Wrapper) {
+        } else if (layerGroup instanceof Wrapper wrapper) {
             // hidden inside some other wrapper?
-            Wrapper wrapper = (Wrapper) layerGroup;
             if (wrapper.isWrapperFor(AdvertisedCatalog.AdvertisedLayerGroup.class)) {
                 wrapper.unwrap(AdvertisedCatalog.AdvertisedLayerGroup.class);
                 AdvertisedCatalog.AdvertisedLayerGroup alg = (AdvertisedCatalog.AdvertisedLayerGroup) layerGroup;
@@ -1176,8 +1172,8 @@ public class WMS implements ApplicationContextAware {
 
                 if (pd.getName().getCode().equalsIgnoreCase("SORTING")) {
                     final ParameterValue pv = (ParameterValue) pd.createValue();
-                    if (pd instanceof ParameterDescriptor
-                            && String.class.equals(((ParameterDescriptor) pd).getValueClass())) {
+                    if (pd instanceof ParameterDescriptor descriptor
+                            && String.class.equals(descriptor.getValueClass())) {
                         // convert down to string
                         String sortBySpec = Arrays.stream(sortBy)
                                 .map(this::sortSpecification)
@@ -1822,9 +1818,8 @@ public class WMS implements ApplicationContextAware {
 
     private static void throwInvalidDimensionValue(GetMapRequest request, String dimension, String key) {
         throw new ServiceException(
-                String.format(
-                        "Could not find a match for '%s' value: '%s'",
-                        dimension, request.getRawKvp().get(key)),
+                "Could not find a match for '%s' value: '%s'"
+                        .formatted(dimension, request.getRawKvp().get(key)),
                 ServiceException.INVALID_DIMENSION_VALUE,
                 key);
     }

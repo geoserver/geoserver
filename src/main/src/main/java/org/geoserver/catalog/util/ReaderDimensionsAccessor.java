@@ -71,14 +71,14 @@ public class ReaderDimensionsAccessor {
     public static final Comparator<Object> TEMPORAL_COMPARATOR = (o1, o2) -> {
         // the domain can be a mix of dates and ranges
         if (o1 instanceof Date) {
-            if (o2 instanceof DateRange) {
-                return ((Date) o1).compareTo(((DateRange) o2).getMinValue());
+            if (o2 instanceof DateRange range) {
+                return ((Date) o1).compareTo(range.getMinValue());
             } else {
                 return ((Date) o1).compareTo((Date) o2);
             }
         } else if (o1 instanceof DateRange) {
-            if (o2 instanceof Date) {
-                return ((DateRange) o1).getMinValue().compareTo((Date) o2);
+            if (o2 instanceof Date date) {
+                return ((DateRange) o1).getMinValue().compareTo(date);
             } else {
                 return ((DateRange) o1).getMinValue().compareTo(((DateRange) o2).getMinValue());
             }
@@ -91,8 +91,8 @@ public class ReaderDimensionsAccessor {
     @SuppressWarnings("unchecked")
     public static final Comparator<Object> ELEVATION_COMPARATOR = (o1, o2) -> {
         if (o1 instanceof Double) {
-            if (o2 instanceof Double) {
-                return ((Double) o1).compareTo((Double) o2);
+            if (o2 instanceof Double double1) {
+                return ((Double) o1).compareTo(double1);
             } else if (o2 instanceof NumberRange) {
                 NumberRange<Double> nrd = (NumberRange<Double>) o2;
                 return ((Double) o1).compareTo(nrd.getMinValue());
@@ -159,8 +159,7 @@ public class ReaderDimensionsAccessor {
         }
 
         TreeSet<Object> result = null;
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+        if (reader instanceof StructuredGridCoverage2DReader sr) {
             result = getDimensionValuesInRange("time", range, maxEntries, sr);
         }
 
@@ -170,12 +169,12 @@ public class ReaderDimensionsAccessor {
             TreeSet<Object> fullDomain = getTimeDomain();
 
             for (Object o : fullDomain) {
-                if (o instanceof Date) {
-                    if (range.contains((Date) o)) {
+                if (o instanceof Date date) {
+                    if (range.contains(date)) {
                         result.add(o);
                     }
-                } else if (o instanceof DateRange) {
-                    if (range.intersects((DateRange) o)) {
+                } else if (o instanceof DateRange dateRange) {
+                    if (range.intersects(dateRange)) {
                         result.add(o);
                     }
                 }
@@ -302,8 +301,7 @@ public class ReaderDimensionsAccessor {
 
         // special optimization for structured coverage readers
         TreeSet<Object> result = null;
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+        if (reader instanceof StructuredGridCoverage2DReader sr) {
             result = getDimensionValuesInRange("elevation", range, maxEntries, sr);
         }
 
@@ -313,12 +311,12 @@ public class ReaderDimensionsAccessor {
             TreeSet<Object> fullDomain = getElevationDomain();
 
             for (Object o : fullDomain) {
-                if (o instanceof Double) {
-                    if (range.contains((Number) o)) {
+                if (o instanceof Number double1) {
+                    if (range.contains(double1)) {
                         result.add(o);
                     }
-                } else if (o instanceof NumberRange) {
-                    if (range.intersects((NumberRange) o)) {
+                } else if (o instanceof NumberRange numberRange) {
+                    if (range.intersects(numberRange)) {
                         result.add(o);
                     }
                 }
@@ -583,10 +581,10 @@ public class ReaderDimensionsAccessor {
         }
         if (a instanceof Date) {
             if (b instanceof Date) return ((Date) a).equals(b);
-            else if (b instanceof DateRange) return ((DateRange) b).contains((Date) a);
+            else if (b instanceof DateRange range) return range.contains((Date) a);
         } else if (a instanceof DateRange) {
-            if (b instanceof DateRange) return ((DateRange) a).intersects((DateRange) b);
-            else if (b instanceof Date) return ((DateRange) a).contains((Date) b);
+            if (b instanceof DateRange range) return ((DateRange) a).intersects(range);
+            else if (b instanceof Date date) return ((DateRange) a).contains(date);
         }
         return false;
     }
@@ -602,10 +600,10 @@ public class ReaderDimensionsAccessor {
         }
         if (a instanceof Double) {
             if (b instanceof Double) return ((Double) a).equals(b);
-            else if (b instanceof NumberRange) return ((NumberRange) b).contains((Number) a);
+            else if (b instanceof NumberRange range) return range.contains((Number) a);
         } else if (a instanceof NumberRange) {
-            if (b instanceof NumberRange) return ((NumberRange) a).intersects((NumberRange) b);
-            else if (b instanceof Double) return ((NumberRange) a).contains((Number) b);
+            if (b instanceof NumberRange range) return ((NumberRange) a).intersects(range);
+            else if (b instanceof Number double1) return ((NumberRange) a).contains(double1);
         }
         return false;
     }

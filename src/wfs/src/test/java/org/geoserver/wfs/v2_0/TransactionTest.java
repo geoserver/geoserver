@@ -1147,22 +1147,24 @@ public class TransactionTest extends WFS20TestSupport {
 
         try {
             // this comes from CITE WFS 2.0 tests... enough said
-            String xml = "<wfs:Transaction xmlns:wfs=\"http://www.opengis.net/wfs/2.0\"\n"
-                    + "                 xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
-                    + "                 service=\"WFS\"\n"
-                    + "                 version=\"2.0.0\">\n"
-                    + "  <wfs:Update xmlns:ns17=\"http://cite.opengeospatial.org/gmlsf\"\n"
-                    + "               typeName=\"ns17:AggregateGeoFeature\">\n"
-                    + "      <wfs:Property>\n"
-                    + "         <wfs:ValueReference action=\"replace\">gml:boundedBy</wfs:ValueReference>\n"
-                    + "         <wfs:Value>\n"
-                    + "            <Point xmlns=\"http://www.opengis.net/kml/2.2\">\n"
-                    + "               <coordinates>-123.1,49.25</coordinates>\n"
-                    + "            </Point>\n"
-                    + "         </wfs:Value>\n"
-                    + "      </wfs:Property>\n"
-                    + "  </wfs:Update>\n"
-                    + "</wfs:Transaction>";
+            String xml =
+                    """
+                    <wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                                     xmlns:gml="http://www.opengis.net/gml/3.2"
+                                     service="WFS"
+                                     version="2.0.0">
+                      <wfs:Update xmlns:ns17="http://cite.opengeospatial.org/gmlsf"
+                                   typeName="ns17:AggregateGeoFeature">
+                          <wfs:Property>
+                             <wfs:ValueReference action="replace">gml:boundedBy</wfs:ValueReference>
+                             <wfs:Value>
+                                <Point xmlns="http://www.opengis.net/kml/2.2">
+                                   <coordinates>-123.1,49.25</coordinates>
+                                </Point>
+                             </wfs:Value>
+                          </wfs:Property>
+                      </wfs:Update>
+                    </wfs:Transaction>""";
 
             MockHttpServletResponse response = postAsServletResponse("wfs", xml);
             assertEquals(400, response.getStatus());
@@ -1177,21 +1179,23 @@ public class TransactionTest extends WFS20TestSupport {
     @Test
     public void testUpdateOnSimpleXPath() throws Exception {
         // from CITE tests WFS 2.0 again
-        String xml = "<wfs:Transaction xmlns:wfs=\"http://www.opengis.net/wfs/2.0\"\n"
-                + "                 xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
-                + "                 xmlns:tns=\"http://cite.opengeospatial.org/gmlsf\"\n"
-                + "                 service=\"WFS\"\n"
-                + "                 version=\"2.0.0\">\n"
-                + "   <wfs:Update handle=\"Update\" typeName=\"tns:GenericEntity\">\n"
-                + "      <wfs:Property>\n"
-                + "         <wfs:ValueReference>tns:featureRef[1]</wfs:ValueReference>\n"
-                + "         <wfs:Value>TEST_VALUE</wfs:Value>\n"
-                + "      </wfs:Property>\n"
-                + "      <fes:Filter xmlns:fes=\"http://www.opengis.net/fes/2.0\">\n"
-                + "         <fes:ResourceId rid=\"GenericEntity.f004\"/>\n"
-                + "      </fes:Filter>\n"
-                + "   </wfs:Update>\n"
-                + "</wfs:Transaction>";
+        String xml =
+                """
+                <wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                                 xmlns:gml="http://www.opengis.net/gml/3.2"
+                                 xmlns:tns="http://cite.opengeospatial.org/gmlsf"
+                                 service="WFS"
+                                 version="2.0.0">
+                   <wfs:Update handle="Update" typeName="tns:GenericEntity">
+                      <wfs:Property>
+                         <wfs:ValueReference>tns:featureRef[1]</wfs:ValueReference>
+                         <wfs:Value>TEST_VALUE</wfs:Value>
+                      </wfs:Property>
+                      <fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">
+                         <fes:ResourceId rid="GenericEntity.f004"/>
+                      </fes:Filter>
+                   </wfs:Update>
+                </wfs:Transaction>""";
 
         Document dom = postAsDOM("wfs", xml);
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());

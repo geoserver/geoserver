@@ -67,11 +67,11 @@ public class ZipArchivePPIO extends BinaryPPIO {
     @Override
     public void encode(final Object output, OutputStream os) throws Exception {
         // avoid double zipping
-        if (output instanceof File && isZpFile((File) output)) {
+        if (output instanceof File file && isZpFile(file)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "File is already a zip, we have only to copy it");
             }
-            FileUtils.copyFile((File) output, os);
+            FileUtils.copyFile(file, os);
             return;
         }
 
@@ -79,11 +79,11 @@ public class ZipArchivePPIO extends BinaryPPIO {
         zipout.setLevel(compressionLevel);
 
         // directory
-        if (output instanceof File) {
+        if (output instanceof File file2) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Zipping the file");
             }
-            final File file = ((File) output);
+            final File file = file2;
             if (file.isDirectory()) {
                 IOUtils.zipDirectory(file, zipout, FileFilterUtils.trueFileFilter());
             } else {
@@ -92,16 +92,15 @@ public class ZipArchivePPIO extends BinaryPPIO {
             }
         } else {
             // list of files
-            if (output instanceof Collection) {
+            if (output instanceof Collection collection) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Zipping the collection");
                 }
                 // create temp dir
-                final Collection collection = (Collection) output;
                 for (Object obj : collection) {
-                    if (obj instanceof File) {
+                    if (obj instanceof File file1) {
                         // convert to file and add to zip
-                        final File file = ((File) obj);
+                        final File file = file1;
                         if (file.isDirectory()) {
                             IOUtils.zipDirectory(file, zipout, FileFilterUtils.trueFileFilter());
                         } else {

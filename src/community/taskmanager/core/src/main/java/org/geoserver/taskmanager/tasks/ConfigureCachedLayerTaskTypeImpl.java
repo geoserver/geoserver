@@ -85,8 +85,8 @@ public class ConfigureCachedLayerTaskTypeImpl implements TaskType {
             tileLayer = null;
         }
 
-        if (tileLayer instanceof GeoServerTileLayer) {
-            final GeoServerTileLayerInfo info = ((GeoServerTileLayer) tileLayer).getInfo();
+        if (tileLayer instanceof GeoServerTileLayer serverTileLayer) {
+            final GeoServerTileLayerInfo info = serverTileLayer.getInfo();
             final GSCachedLayerEncoder cachedLayerEncoder = new GSCachedLayerEncoder();
             cachedLayerEncoder.setName(layerName);
             cachedLayerEncoder.setEnabled(info.isEnabled());

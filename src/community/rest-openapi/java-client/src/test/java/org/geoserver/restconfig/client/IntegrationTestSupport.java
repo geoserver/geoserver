@@ -97,9 +97,8 @@ public class IntegrationTestSupport extends ExternalResource {
                 return true;
             } catch (Exception e) {
                 log.info(
-                        String.format(
-                                "GeoServer unavailable at URL %s: %s",
-                                this.client.api().getBasePath(), e.getMessage()),
+                        "GeoServer unavailable at URL %s: %s"
+                                .formatted(this.client.api().getBasePath(), e.getMessage()),
                         e);
             }
         }

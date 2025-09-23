@@ -6,6 +6,7 @@
 
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,10 +28,12 @@ import org.geowebcache.filter.parameters.FloatParameterFilter;
  */
 public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<FloatParameterFilter> {
 
+    @Serial
     private static final long serialVersionUID = -1715100884515717529L;
 
     private static final IConverter<Float> FLOAT = new IConverter<>() {
 
+        @Serial
         private static final long serialVersionUID = 5393727015187736272L;
 
         @Override
@@ -56,6 +59,7 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
 
     private static final IConverter<List<Float>> CONVERT = new IConverter<>() {
 
+        @Serial
         private static final long serialVersionUID = 6972092160668131862L;
 
         @Override
@@ -96,6 +100,7 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
 
         final TextArea<List<Float>> values = new TextArea<>("values", new PropertyModel<>(model, "values")) {
             /** serialVersionUID */
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @SuppressWarnings("unchecked")
@@ -112,6 +117,7 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
 
         final Component threshold = new TextField<Float>("threshold", new PropertyModel<>(model, "threshold")) {
             /** serialVersionUID */
+            @Serial
             private static final long serialVersionUID = 1L;
 
             // Want to use non-localized float parsing so we can handle exponential notation

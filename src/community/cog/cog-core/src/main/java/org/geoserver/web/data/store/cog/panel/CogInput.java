@@ -6,6 +6,7 @@ package org.geoserver.web.data.store.cog.panel;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
@@ -105,6 +106,7 @@ public class CogInput extends Panel {
                 }
 
                 GeoServerFileChooser chooser = new GeoServerFileChooser(dialog.getContentId(), new Model<File>(file)) {
+                    @Serial
                     private static final long serialVersionUID = -7096642192491726498L;
 
                     @Override

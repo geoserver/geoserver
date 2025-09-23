@@ -132,19 +132,21 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         String q = query("cgf", "0", "/updateFeatures?f=json");
 
-        String body = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 0,\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+        String body =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 0,
+                      "id" : "t0001",
+                    }
+                  }
+                ]""";
         JSON result = postUpdatesAsForm(q, body, true, null);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -171,18 +173,20 @@ public class FeatureLayerControllerTest extends ControllerTest {
         String q = query("cgf", "0", "/updateFeatures?f=json");
 
         // no id
-        String body = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+        String body =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "id" : "t0001",
+                    }
+                  }
+                ]""";
         JSON result = postUpdatesAsForm(q, body, false, null);
 
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
@@ -194,15 +198,17 @@ public class FeatureLayerControllerTest extends ControllerTest {
         assertEquals(1019, resultObj.getJSONObject("error").getInt("code"));
 
         // malformed geometry
-        body = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {},\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 0,\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+        body =
+                """
+                [
+                  {
+                  "geometry" : {},
+                    "attributes" : {
+                      "objectid" : 0,
+                      "id" : "t0001",
+                    }
+                  }
+                ]""";
         result = postUpdatesAsForm(q, body, false, null);
 
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
@@ -214,18 +220,20 @@ public class FeatureLayerControllerTest extends ControllerTest {
         assertEquals(1000, resultObj.getJSONObject("error").getInt("code"));
 
         // missing attribute
-        body = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 0\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+        body =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 0
+                    }
+                  }
+                ]""";
         result = postUpdatesAsForm(q, body, false, null);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -436,18 +444,20 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         String q = query("cgf", "0", "/addFeatures?f=json");
 
-        String body = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"id\" : \"t0002\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+        String body =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "id" : "t0002",
+                    }
+                  }
+                ]""";
         JSON result = postUpdatesAsForm(q, body, false, null);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -475,15 +485,17 @@ public class FeatureLayerControllerTest extends ControllerTest {
         String q = query("cgf", "0", "/addFeatures?f=json");
 
         // malformed geometry
-        String body = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {},\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 0,\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+        String body =
+                """
+                [
+                  {
+                  "geometry" : {},
+                    "attributes" : {
+                      "objectid" : 0,
+                      "id" : "t0001",
+                    }
+                  }
+                ]""";
         JSON result = postUpdatesAsForm(q, body, false, null);
 
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
@@ -495,18 +507,20 @@ public class FeatureLayerControllerTest extends ControllerTest {
         assertEquals(1000, resultObj.getJSONObject("error").getInt("code"));
 
         // missing attribute
-        body = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 0\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+        body =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 0
+                    }
+                  }
+                ]""";
         result = postUpdatesAsForm(q, body, false, null);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -517,19 +531,21 @@ public class FeatureLayerControllerTest extends ControllerTest {
         assertEquals(1000, resultObj.getJSONObject("error").getInt("code"));
 
         // duplicate objectid, should lead to a new feature with a new objectid
-        body = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 0,\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+        body =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 0,
+                      "id" : "t0001",
+                    }
+                  }
+                ]""";
         result = postUpdatesAsForm(q, body, false, null);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -552,46 +568,51 @@ public class FeatureLayerControllerTest extends ControllerTest {
         String q = query("cgf", "0", "/addFeatures?f=json");
 
         // 3 features, one invalid
-        String body = "[\n"
-                +
+        String body =
                 // valid
-                "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 1,\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "    }\n"
-                + "  },\n"
-                +
-                // invalid - missing attribute
-                "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 2\n"
-                + "    }\n"
-                + "  },\n"
-                +
-                // valid
-                "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 3,\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 1,
+                      "id" : "t0001",
+                    }
+                  },
+                """
+                        +
+                        // invalid - missing attribute
+                        """
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 2
+                    }
+                  },
+                """
+                        +
+                        // valid
+                        """
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 3,
+                      "id" : "t0001",
+                    }
+                  }
+                ]""";
         JSON result = postUpdatesAsForm(q, body, false, false);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -618,46 +639,51 @@ public class FeatureLayerControllerTest extends ControllerTest {
         String q = query("cgf", "0", "/addFeatures?f=json");
 
         // 3 features, one invalid
-        String body = "[\n"
-                +
+        String body =
                 // valid
-                "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 1,\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "    }\n"
-                + "  },\n"
-                +
-                // invalid - missing attribute
-                "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 2\n"
-                + "    }\n"
-                + "  },\n"
-                +
-                // valid
-                "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 3,\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 1,
+                      "id" : "t0001",
+                    }
+                  },
+                 """
+                        +
+                        // invalid - missing attribute
+                        """
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 2
+                    }
+                  },
+                  """
+                        +
+                        // valid
+                        """
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 3,
+                      "id" : "t0001",
+                    }
+                  }
+                ]""";
         JSON result = postUpdatesAsForm(q, body, false, true);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -766,32 +792,36 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         String q = query("cgf", "0", "/applyEdits?f=json&rollbackOnFailure=false&returnEditMoment=false");
 
-        String addsBody = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "\"objectid\" : 1535485437364,\n"
-                + "      \"id\" : \"t0002\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
-        String updatesBody = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "\"objectid\" : 0,\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+        String addsBody =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                "objectid" : 1535485437364,
+                      "id" : "t0002",
+                    }
+                  }
+                ]""";
+        String updatesBody =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                "objectid" : 0,
+                      "id" : "t0001",
+                    }
+                  }
+                ]""";
         String deletesBody = "0";
 
         JSON result = postServiceLayerEditsAsForm(q, deletesBody, addsBody, updatesBody);
@@ -847,31 +877,35 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         String q = serviceQuery("cgf", "/applyEdits?f=json&rollbackOnFailure=false&returnEditMoment=false");
 
-        String addsBodyLine = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"id\" : \"t0002\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
-        String updatesBodyLine = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPolyline\", "
-                + "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 0,\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+        String addsBodyLine =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "id" : "t0002",
+                    }
+                  }
+                ]""";
+        String updatesBodyLine =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPolyline", \
+                      "paths" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 0,
+                      "id" : "t0001",
+                    }
+                  }
+                ]""";
         String deletesBodyLine = "[0]";
 
         String layerEdit0 = "{\"id\":0,"
@@ -885,35 +919,39 @@ public class FeatureLayerControllerTest extends ControllerTest {
                 + deletesBodyLine
                 + "}";
 
-        String addsBodyPoint = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPoint\", "
-                + "      \"x\" : 50051, "
-                + "      \"y\" : 50051, "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"id\" : \"t0002\",\n"
-                + "      \"altitude\" : 400,\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
-        String updatesBodyPoint = "[\n"
-                + "  {\n"
-                + "  \"geometry\" : {"
-                + "      \"geometryType\":\"esriGeometryPoint\", "
-                + "      \"x\" : 50051, "
-                + "      \"y\" : 50051, "
-                + "      \"spatialReference\" : {\"wkid\" : 32615}"
-                + "    },\n"
-                + "    \"attributes\" : {\n"
-                + "      \"objectid\" : 0,\n"
-                + "      \"id\" : \"t0001\",\n"
-                + "      \"altitude\" : 350,\n"
-                + "    }\n"
-                + "  }\n"
-                + "]";
+        String addsBodyPoint =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPoint", \
+                      "x" : 50051, \
+                      "y" : 50051, \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "id" : "t0002",
+                      "altitude" : 400,
+                    }
+                  }
+                ]""";
+        String updatesBodyPoint =
+                """
+                [
+                  {
+                  "geometry" : {\
+                      "geometryType":"esriGeometryPoint", \
+                      "x" : 50051, \
+                      "y" : 50051, \
+                      "spatialReference" : {"wkid" : 32615}\
+                    },
+                    "attributes" : {
+                      "objectid" : 0,
+                      "id" : "t0001",
+                      "altitude" : 350,
+                    }
+                  }
+                ]""";
         String deletesBodyPoint = "[0]";
 
         String layerEdit4 = "{\"id\":4,"

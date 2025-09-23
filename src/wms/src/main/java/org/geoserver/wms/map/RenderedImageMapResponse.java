@@ -47,7 +47,6 @@ import org.springframework.util.Assert;
  *
  * @author Chris Holmes, TOPP
  * @author Simone Giannecchini, GeoSolutions
- * @version $Id$
  */
 public abstract class RenderedImageMapResponse extends AbstractMapResponse {
 
@@ -104,8 +103,8 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
                 formatImageOutputStream(image, output, mapContent);
                 output.flush();
             } finally {
-                if (image instanceof RenderedImageTimeDecorator) {
-                    ((RenderedImageTimeDecorator) image).getStatistics().renderingComplete();
+                if (image instanceof RenderedImageTimeDecorator decorator) {
+                    decorator.getStatistics().renderingComplete();
                 }
                 // let go of the coverages created for rendering
                 for (GridCoverage2D coverage : renderedCoverages) {

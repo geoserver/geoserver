@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerSSLFilter;
 
 /**
@@ -14,6 +15,7 @@ import org.geoserver.security.filter.GeoServerSSLFilter;
  */
 public class SSLFilterConfig extends SecurityFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** The SSL port to use for a HTTP redirect Default is 443 */

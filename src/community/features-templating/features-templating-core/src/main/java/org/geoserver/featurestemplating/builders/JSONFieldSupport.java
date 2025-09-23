@@ -54,17 +54,17 @@ public class JSONFieldSupport {
      */
     public static Object parseWhenJSON(Expression expression, Object contextObject, Object result) {
         try {
-            if (contextObject instanceof ComplexAttribute) {
+            if (contextObject instanceof ComplexAttribute attribute1) {
                 // see if there is an indication it was a JSON field
                 if (expression instanceof JsonPointerFunction
-                        || isJSONField(Optional.ofNullable(((ComplexAttribute) contextObject).getType())
+                        || isJSONField(Optional.ofNullable(attribute1.getType())
                                 .map(ct -> expression.evaluate(ct))
                                 .filter(d -> d instanceof PropertyDescriptor)
                                 .map(d -> (PropertyDescriptor) d))) {
                     return parseJSON(result);
                 }
-            } else if (result instanceof Attribute) {
-                if (isJSONField(Optional.of(((Attribute) result).getDescriptor()))) {
+            } else if (result instanceof Attribute attribute) {
+                if (isJSONField(Optional.of(attribute.getDescriptor()))) {
                     return parseJSON(result);
                 }
             }
@@ -130,8 +130,8 @@ public class JSONFieldSupport {
 
     /** Extracts the JSON string from the value, if possible */
     private static String getJSON(Object value) {
-        if (value instanceof Attribute) {
-            return Converters.convert(((Attribute) value).getValue(), String.class);
+        if (value instanceof Attribute attribute) {
+            return Converters.convert(attribute.getValue(), String.class);
         }
         return Converters.convert(value, String.class);
     }

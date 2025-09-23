@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +22,9 @@ import org.springframework.util.StringUtils;
  */
 public class RequestFilterChainWrapper implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     RequestFilterChain chain;
 
     public RequestFilterChainWrapper(RequestFilterChain chain) {

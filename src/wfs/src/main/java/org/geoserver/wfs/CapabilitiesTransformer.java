@@ -77,7 +77,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Gabriel Roldan, Axios Engineering
  * @author Chris Holmes
  * @author Justin Deoliveira
- * @version $Id$
  */
 public abstract class CapabilitiesTransformer extends TransformerBase {
     /** logger */

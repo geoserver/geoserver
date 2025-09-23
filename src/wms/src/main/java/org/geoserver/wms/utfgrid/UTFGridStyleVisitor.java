@@ -159,10 +159,10 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         // copy the symbols replacing them with a same sized mark filled with the color function
         List<GraphicalSymbol> symbolsCopy = new ArrayList<>();
         for (GraphicalSymbol gs : gr.graphicalSymbols()) {
-            if (gs instanceof Mark) {
-                Mark markCopy = copy((Mark) gs);
+            if (gs instanceof Mark mark1) {
+                Mark markCopy = copy(mark1);
                 symbolsCopy.add(markCopy);
-            } else if (gs instanceof ExternalGraphic) {
+            } else if (gs instanceof ExternalGraphic eg) {
                 if (gr.getSize() != null && !Expression.NIL.equals(gr.getSize())) {
                     Mark mark = sf.createMark(
                             ff.literal("square"), null, sf.createFill(colorFunction), sizeCopy, Expression.NIL);
@@ -170,7 +170,6 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
                 } else {
                     // it's using the default size, compute it if possible (might be using dynamic
                     // symbolizers...)
-                    ExternalGraphic eg = (ExternalGraphic) gs;
                     Literal sizeExpression = estimateGraphicSize(eg);
                     Mark mark = sf.createMark(
                             ff.literal("square"), null, sf.createFill(colorFunction), sizeExpression, Expression.NIL);
@@ -202,11 +201,9 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         PointSymbolizer testSymbolizer = sf.createPointSymbolizer(testGraphic, null);
         Style2D style = sldFactory.createStyle(null, testSymbolizer);
         int size = SLDStyleFactory.DEFAULT_MARK_SIZE;
-        if (style instanceof GraphicStyle2D) {
-            GraphicStyle2D gs2d = (GraphicStyle2D) style;
+        if (style instanceof GraphicStyle2D gs2d) {
             size = gs2d.getImage().getWidth();
-        } else if (style instanceof IconStyle2D) {
-            IconStyle2D is2d = (IconStyle2D) style;
+        } else if (style instanceof IconStyle2D is2d) {
             size = is2d.getIcon().getIconWidth();
         }
         Literal sizeExpression = ff.literal(size);
@@ -251,8 +248,8 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
             for (GraphicalSymbol gs : graphic.graphicalSymbols()) {
                 if (gs instanceof Mark) {
                     return ff.literal(SLDStyleFactory.DEFAULT_MARK_SIZE);
-                } else if (gs instanceof ExternalGraphic) {
-                    return estimateGraphicSize((ExternalGraphic) gs);
+                } else if (gs instanceof ExternalGraphic externalGraphic) {
+                    return estimateGraphicSize(externalGraphic);
                 }
             }
         }

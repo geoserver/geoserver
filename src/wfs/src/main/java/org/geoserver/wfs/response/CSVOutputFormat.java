@@ -132,10 +132,9 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                     }
                     String elName = att.getName().toString();
                     Object xsd = att.getUserData().get(XSDElementDeclaration.class);
-                    if (xsd instanceof XSDElementDeclaration) {
+                    if (xsd instanceof XSDElementDeclaration xsdEl) {
                         // get the prefixed name if possible
                         // otherwise defaults to the full name with namespace URI
-                        XSDElementDeclaration xsdEl = (XSDElementDeclaration) xsd;
                         elName = xsdEl.getQName();
                     }
                     elName = resolveNamespacePrefixName(elName);
@@ -163,15 +162,15 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 // dump fid
                 w.write(prepCSVField(f.getIdentifier().getID()));
                 w.write(csvSeparator);
-                if (f instanceof SimpleFeature) {
+                if (f instanceof SimpleFeature feature) {
                     // dump attributes
-                    for (int j = 0; j < ((SimpleFeature) f).getAttributeCount(); j++) {
-                        Object att = ((SimpleFeature) f).getAttribute(j);
+                    for (int j = 0; j < feature.getAttributeCount(); j++) {
+                        Object att = feature.getAttribute(j);
                         if (att != null) {
                             String value = formatters[j].format(att);
                             w.write(value);
                         }
-                        if (j < ((SimpleFeature) f).getAttributeCount() - 1) {
+                        if (j < feature.getAttributeCount() - 1) {
                             w.write(csvSeparator);
                         }
                     }
@@ -250,14 +249,12 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     private AttrFormatter[] getFormatters(FeatureType schema) {
-        if (schema instanceof SimpleFeatureType) {
+        if (schema instanceof SimpleFeatureType sft) {
             // prepare the formatter for numbers
             NumberFormat coordFormatter = NumberFormat.getInstance(Locale.US);
             coordFormatter.setMaximumFractionDigits(
                     getInfo().getGeoServer().getSettings().getNumDecimals());
             coordFormatter.setGroupingUsed(false);
-
-            SimpleFeatureType sft = (SimpleFeatureType) schema;
             AttrFormatter[] formatters = new AttrFormatter[sft.getAttributeCount()];
             int i = 0;
             for (AttributeDescriptor attributeDescriptor : sft.getAttributeDescriptors()) {
@@ -363,8 +360,8 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
             value = coordFormatter.format(att);
         } else if (att instanceof Date) {
             // serialize dates in ISO format
-            if (att instanceof java.sql.Date) value = DateUtil.serializeSqlDate((java.sql.Date) att);
-            else if (att instanceof java.sql.Time) value = DateUtil.serializeSqlTime((java.sql.Time) att);
+            if (att instanceof java.sql.Date date) value = DateUtil.serializeSqlDate(date);
+            else if (att instanceof java.sql.Time time) value = DateUtil.serializeSqlTime(time);
             else value = DateUtil.serializeDateTime((Date) att);
         } else {
             // everything else we just "toString"

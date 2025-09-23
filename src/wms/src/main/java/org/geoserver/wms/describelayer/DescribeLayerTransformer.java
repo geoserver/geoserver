@@ -26,7 +26,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * <code>org.geotools.xml.transform.TransformerBase</code> specialized in producing a WMS DescribeLayer responses.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class DescribeLayerTransformer extends TransformerBase {
     /** The base url upon URLs which point to 'me' should be based. */
@@ -79,7 +78,6 @@ public class DescribeLayerTransformer extends TransformerBase {
      * Sends SAX events to produce a DescribeLayer response document.
      *
      * @author Gabriel Roldan
-     * @version $Id$
      */
     private class DescribeLayerTranslator extends TranslatorSupport {
         /** Creates a new DescribeLayerTranslator object. */

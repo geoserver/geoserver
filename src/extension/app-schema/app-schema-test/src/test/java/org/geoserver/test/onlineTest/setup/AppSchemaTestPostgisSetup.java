@@ -140,8 +140,8 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                 String field;
                 String type;
                 for (PropertyDescriptor desc : schema.getDescriptors()) {
-                    if (desc instanceof GeometryDescriptor) {
-                        geoms.add((GeometryDescriptor) desc);
+                    if (desc instanceof GeometryDescriptor descriptor) {
+                        geoms.add(descriptor);
                     } else {
                         field = "\"" + desc.getName() + "\" ";
                         type = Classes.getShortName(desc.getType().getBinding());
@@ -216,10 +216,9 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                     int valueIndex = 0;
                     for (Property prop : properties) {
                         Object value = prop.getValue();
-                        if (value instanceof Geometry) {
-                            // use wkt writer to convert geometry to string, so third dimension can
-                            // be supported if present.
-                            Geometry geom = (Geometry) value;
+                        if (value instanceof Geometry geom) {
+                            // use wkt writer to convert geometry to string, so third dimension can be supported if
+                            // present.
                             value = new WKTWriter(
                                             Double.isNaN(geom.getCoordinate().getZ()) ? 2 : 3)
                                     .write(geom);

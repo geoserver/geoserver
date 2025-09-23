@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -33,6 +34,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  */
 // TODO WICKET8 - Verify this page works OK
 public abstract class ImportTemplatePanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     private GeoServerTablePanel<MetadataTemplate> templatesPanel;
@@ -112,6 +114,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
     private AjaxSubmitLink createImportAction(final DropDownChoice<MetadataTemplate> dropDown, GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
+            @Serial
             private static final long serialVersionUID = -8718015688839770852L;
 
             @Override
@@ -126,6 +129,7 @@ public abstract class ImportTemplatePanel extends Panel {
                     dialog.setTitle(new ParamResourceModel("confirmImportDialog.title", ImportTemplatePanel.this));
                     dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                        @Serial
                         private static final long serialVersionUID = -5552087037163833563L;
 
                         @Override
@@ -157,6 +161,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
     private AjaxSubmitLink createUnlinkAction() {
         return new AjaxSubmitLink("removeSelected") {
+            @Serial
             private static final long serialVersionUID = 3581476968062788921L;
 
             @Override
@@ -176,6 +181,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
         return new GeoServerTablePanel<>("templatesPanel", linkedTemplatesDataProvider, true) {
 
+            @Serial
             private static final long serialVersionUID = -8943273843044917552L;
 
             @Override

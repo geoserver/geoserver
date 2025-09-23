@@ -122,8 +122,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         // if not, let's see if we have a file data store factory that knows about the extension
         String extension = "." + format;
         for (DataAccessFactory dataAccessFactory : DataStoreUtils.getAvailableDataStoreFactories()) {
-            if (dataAccessFactory instanceof FileDataStoreFactorySpi) {
-                FileDataStoreFactorySpi factory = (FileDataStoreFactorySpi) dataAccessFactory;
+            if (dataAccessFactory instanceof FileDataStoreFactorySpi factory) {
                 for (String handledExtension : factory.getFileExtensions()) {
                     if (extension.equalsIgnoreCase(handledExtension)) {
                         return factory;
@@ -174,13 +173,13 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             for (DataAccessFactory.Param param : factory.getParametersInfo()) {
                 if (File.class.isAssignableFrom(param.getType())) {
                     Object result = param.lookUp(paramValues);
-                    if (result instanceof File) {
-                        directory = (File) result;
+                    if (result instanceof File file1) {
+                        directory = file1;
                     }
                 } else if (URL.class.isAssignableFrom(param.getType())) {
                     Object result = param.lookUp(paramValues);
-                    if (result instanceof URL) {
-                        directory = URLs.urlToFile((URL) result);
+                    if (result instanceof URL rL) {
+                        directory = URLs.urlToFile(rL);
                     }
                 }
 
@@ -358,10 +357,8 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             // if it is the case that the source does not match the target we need to
             // copy the data into the target
             if (!targetDataStoreFormat.equals(sourceDataStoreFormat)
-                    && (source instanceof DataStore && ds instanceof DataStore)) {
+                    && (source instanceof DataStore sourceDataStore && ds instanceof DataStore targetDataStore)) {
                 // copy over the feature types
-                DataStore sourceDataStore = (DataStore) source;
-                DataStore targetDataStore = (DataStore) ds;
                 for (String featureTypeName : sourceDataStore.getTypeNames()) {
 
                     // does the feature type already exist in the target?
@@ -665,11 +662,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 Optional<Resource> found =
                         Resources.list(uploadedFile, resource -> resource.name().endsWith("data.db")).stream()
                                 .findFirst();
-                if (!found.isPresent()) {
+                if (found.isEmpty()) {
                     // ouch no database file found just throw an exception
                     throw new RestException(
-                            String.format(
-                                    "H2 database file could not be found in directory '%s'.", f.getAbsolutePath()),
+                            "H2 database file could not be found in directory '%s'.".formatted(f.getAbsolutePath()),
                             HttpStatus.INTERNAL_SERVER_ERROR);
                 }
                 // we found the database file get the absolute path
@@ -680,8 +676,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             if (!matcher.matches()) {
                 // strange the database file is not ending in data.db
                 throw new RestException(
-                        String.format("Invalid H2 database file '%s'.", databaseFile),
-                        HttpStatus.INTERNAL_SERVER_ERROR);
+                        "Invalid H2 database file '%s'.".formatted(databaseFile), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             connectionParameters.put(JDBCDataStoreFactory.DATABASE.getName(), matcher.group(1));
         }

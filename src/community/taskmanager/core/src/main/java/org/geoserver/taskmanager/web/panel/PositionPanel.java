@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.io.Serial;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -19,6 +20,7 @@ import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 public class PositionPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = -4645368967597125299L;
 
     private ImageAjaxLink<Object> upLink;
@@ -33,6 +35,7 @@ public class PositionPanel extends Panel {
         upLink =
                 new ImageAjaxLink<Object>(
                         "up", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_up.png")) {
+                    @Serial
                     private static final long serialVersionUID = -4165434301439054175L;
 
                     @Override
@@ -61,6 +64,7 @@ public class PositionPanel extends Panel {
                 new ImageAjaxLink<Object>(
                         "down",
                         new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_down.png")) {
+                    @Serial
                     private static final long serialVersionUID = -8005026702401617344L;
 
                     @Override

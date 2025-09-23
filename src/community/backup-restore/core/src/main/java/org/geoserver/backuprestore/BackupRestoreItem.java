@@ -463,19 +463,19 @@ public abstract class BackupRestoreItem<T> {
 
     /** */
     private ResourceInfo unwrapSecured(ResourceInfo info) {
-        if (info instanceof SecuredFeatureTypeInfo) return ((SecuredFeatureTypeInfo) info).unwrap(ResourceInfo.class);
-        if (info instanceof SecuredCoverageInfo) return ((SecuredCoverageInfo) info).unwrap(ResourceInfo.class);
-        if (info instanceof SecuredWMSLayerInfo) return ((SecuredWMSLayerInfo) info).unwrap(ResourceInfo.class);
-        if (info instanceof SecuredWMTSLayerInfo) return ((SecuredWMTSLayerInfo) info).unwrap(ResourceInfo.class);
+        if (info instanceof SecuredFeatureTypeInfo typeInfo) return typeInfo.unwrap(ResourceInfo.class);
+        if (info instanceof SecuredCoverageInfo coverageInfo) return coverageInfo.unwrap(ResourceInfo.class);
+        if (info instanceof SecuredWMSLayerInfo layerInfo) return layerInfo.unwrap(ResourceInfo.class);
+        if (info instanceof SecuredWMTSLayerInfo layerInfo) return layerInfo.unwrap(ResourceInfo.class);
         return info;
     }
 
     /** */
     private StoreInfo unwrapSecured(StoreInfo info) {
-        if (info instanceof SecuredDataStoreInfo) return ((SecuredDataStoreInfo) info).unwrap(StoreInfo.class);
-        if (info instanceof SecuredWMSLayerInfo) return ((SecuredWMSLayerInfo) info).unwrap(StoreInfo.class);
-        if (info instanceof SecuredWMTSLayerInfo) return ((SecuredWMTSLayerInfo) info).unwrap(StoreInfo.class);
-        if (info instanceof SecuredCoverageStoreInfo) return ((SecuredCoverageStoreInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredDataStoreInfo storeInfo) return storeInfo.unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMSLayerInfo layerInfo) return layerInfo.unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMTSLayerInfo layerInfo) return layerInfo.unwrap(StoreInfo.class);
+        if (info instanceof SecuredCoverageStoreInfo storeInfo) return storeInfo.unwrap(StoreInfo.class);
         return info;
     }
 
@@ -712,30 +712,28 @@ public abstract class BackupRestoreItem<T> {
                 ((DataStoreInfoImpl) target).setMetadata(((StoreInfoImpl) source).getMetadata());
             }
 
-            if (source instanceof CoverageStoreInfoImpl) {
-                ((CoverageStoreInfoImpl) target).setURL(((CoverageStoreInfoImpl) source).getURL());
+            if (source instanceof CoverageStoreInfoImpl impl) {
+                ((CoverageStoreInfoImpl) target).setURL(impl.getURL());
             }
 
-            if (source instanceof WMSStoreInfoImpl) {
-                ((WMSStoreInfoImpl) target).setCapabilitiesURL(((WMSStoreInfoImpl) source).getCapabilitiesURL());
-                ((WMSStoreInfoImpl) target).setUsername(((WMSStoreInfoImpl) source).getUsername());
-                ((WMSStoreInfoImpl) target).setPassword(((WMSStoreInfoImpl) source).getPassword());
-                ((WMSStoreInfoImpl) target).setConnectTimeout(((WMSStoreInfoImpl) source).getConnectTimeout());
-                ((WMSStoreInfoImpl) target).setMaxConnections(((WMSStoreInfoImpl) source).getMaxConnections());
-                ((WMSStoreInfoImpl) target).setReadTimeout(((WMSStoreInfoImpl) source).getReadTimeout());
-                ((WMSStoreInfoImpl) target)
-                        .setUseConnectionPooling(((WMSStoreInfoImpl) source).isUseConnectionPooling());
+            if (source instanceof WMSStoreInfoImpl impl) {
+                ((WMSStoreInfoImpl) target).setCapabilitiesURL(impl.getCapabilitiesURL());
+                ((WMSStoreInfoImpl) target).setUsername(impl.getUsername());
+                ((WMSStoreInfoImpl) target).setPassword(impl.getPassword());
+                ((WMSStoreInfoImpl) target).setConnectTimeout(impl.getConnectTimeout());
+                ((WMSStoreInfoImpl) target).setMaxConnections(impl.getMaxConnections());
+                ((WMSStoreInfoImpl) target).setReadTimeout(impl.getReadTimeout());
+                ((WMSStoreInfoImpl) target).setUseConnectionPooling(impl.isUseConnectionPooling());
             }
 
-            if (source instanceof WMTSStoreInfoImpl) {
-                ((WMTSStoreInfoImpl) target).setCapabilitiesURL(((WMTSStoreInfoImpl) source).getCapabilitiesURL());
-                ((WMTSStoreInfoImpl) target).setUsername(((WMTSStoreInfoImpl) source).getUsername());
-                ((WMTSStoreInfoImpl) target).setPassword(((WMTSStoreInfoImpl) source).getPassword());
-                ((WMTSStoreInfoImpl) target).setConnectTimeout(((WMTSStoreInfoImpl) source).getConnectTimeout());
-                ((WMTSStoreInfoImpl) target).setMaxConnections(((WMTSStoreInfoImpl) source).getMaxConnections());
-                ((WMTSStoreInfoImpl) target).setReadTimeout(((WMTSStoreInfoImpl) source).getReadTimeout());
-                ((WMTSStoreInfoImpl) target)
-                        .setUseConnectionPooling(((WMTSStoreInfoImpl) source).isUseConnectionPooling());
+            if (source instanceof WMTSStoreInfoImpl impl) {
+                ((WMTSStoreInfoImpl) target).setCapabilitiesURL(impl.getCapabilitiesURL());
+                ((WMTSStoreInfoImpl) target).setUsername(impl.getUsername());
+                ((WMTSStoreInfoImpl) target).setPassword(impl.getPassword());
+                ((WMTSStoreInfoImpl) target).setConnectTimeout(impl.getConnectTimeout());
+                ((WMTSStoreInfoImpl) target).setMaxConnections(impl.getMaxConnections());
+                ((WMTSStoreInfoImpl) target).setReadTimeout(impl.getReadTimeout());
+                ((WMTSStoreInfoImpl) target).setUseConnectionPooling(impl.isUseConnectionPooling());
             }
         }
 
@@ -785,14 +783,14 @@ public abstract class BackupRestoreItem<T> {
         target.setSRS(source.getSRS());
         target.setTitle(source.getTitle());
 
-        if (source instanceof FeatureTypeInfoImpl) {
-            ((FeatureTypeInfoImpl) target).setMetadata(((FeatureTypeInfoImpl) source).getMetadata());
-            ((FeatureTypeInfoImpl) target).setMetadataLinks(((FeatureTypeInfoImpl) source).getMetadataLinks());
-            ((FeatureTypeInfoImpl) target).setAlias(((FeatureTypeInfoImpl) source).getAlias());
-            ((FeatureTypeInfoImpl) target).setAttributes(((FeatureTypeInfoImpl) source).getAttributes());
-            ((FeatureTypeInfoImpl) target).setDataLinks(((FeatureTypeInfoImpl) source).getDataLinks());
-            ((FeatureTypeInfoImpl) target).setKeywords(((FeatureTypeInfoImpl) source).getKeywords());
-            ((FeatureTypeInfoImpl) target).setResponseSRS(((FeatureTypeInfoImpl) source).getResponseSRS());
+        if (source instanceof FeatureTypeInfoImpl impl) {
+            ((FeatureTypeInfoImpl) target).setMetadata(impl.getMetadata());
+            ((FeatureTypeInfoImpl) target).setMetadataLinks(impl.getMetadataLinks());
+            ((FeatureTypeInfoImpl) target).setAlias(impl.getAlias());
+            ((FeatureTypeInfoImpl) target).setAttributes(impl.getAttributes());
+            ((FeatureTypeInfoImpl) target).setDataLinks(impl.getDataLinks());
+            ((FeatureTypeInfoImpl) target).setKeywords(impl.getKeywords());
+            ((FeatureTypeInfoImpl) target).setResponseSRS(impl.getResponseSRS());
         }
 
         return target;
@@ -819,17 +817,17 @@ public abstract class BackupRestoreItem<T> {
         target.setSRS(source.getSRS());
         target.setTitle(source.getTitle());
 
-        if (source instanceof CoverageInfoImpl) {
-            ((CoverageInfoImpl) target).setDataLinks(((CoverageInfoImpl) source).getDataLinks());
-            ((CoverageInfoImpl) target).setDimensions(((CoverageInfoImpl) source).getDimensions());
-            ((CoverageInfoImpl) target).setInterpolationMethods(((CoverageInfoImpl) source).getInterpolationMethods());
-            ((CoverageInfoImpl) target).setKeywords(((CoverageInfoImpl) source).getKeywords());
-            ((CoverageInfoImpl) target).setMetadata(((CoverageInfoImpl) source).getMetadata());
-            ((CoverageInfoImpl) target).setMetadataLinks(((CoverageInfoImpl) source).getMetadataLinks());
-            ((CoverageInfoImpl) target).setParameters(((CoverageInfoImpl) source).getParameters());
-            ((CoverageInfoImpl) target).setRequestSRS(((CoverageInfoImpl) source).getRequestSRS());
-            ((CoverageInfoImpl) target).setResponseSRS(((CoverageInfoImpl) source).getResponseSRS());
-            ((CoverageInfoImpl) target).setSupportedFormats(((CoverageInfoImpl) source).getSupportedFormats());
+        if (source instanceof CoverageInfoImpl impl) {
+            ((CoverageInfoImpl) target).setDataLinks(impl.getDataLinks());
+            ((CoverageInfoImpl) target).setDimensions(impl.getDimensions());
+            ((CoverageInfoImpl) target).setInterpolationMethods(impl.getInterpolationMethods());
+            ((CoverageInfoImpl) target).setKeywords(impl.getKeywords());
+            ((CoverageInfoImpl) target).setMetadata(impl.getMetadata());
+            ((CoverageInfoImpl) target).setMetadataLinks(impl.getMetadataLinks());
+            ((CoverageInfoImpl) target).setParameters(impl.getParameters());
+            ((CoverageInfoImpl) target).setRequestSRS(impl.getRequestSRS());
+            ((CoverageInfoImpl) target).setResponseSRS(impl.getResponseSRS());
+            ((CoverageInfoImpl) target).setSupportedFormats(impl.getSupportedFormats());
         }
 
         return target;
@@ -864,11 +862,11 @@ public abstract class BackupRestoreItem<T> {
         target.setTitle(source.getTitle());
         target.setType(source.getType());
 
-        if (source instanceof LayerInfoImpl) {
-            ((LayerInfoImpl) target).setAuthorityURLs(((LayerInfoImpl) source).getAuthorityURLs());
-            ((LayerInfoImpl) target).setIdentifiers(((LayerInfoImpl) source).getIdentifiers());
-            ((LayerInfoImpl) target).setMetadata(((LayerInfoImpl) source).getMetadata());
-            ((LayerInfoImpl) target).setStyles(((LayerInfoImpl) source).getStyles());
+        if (source instanceof LayerInfoImpl impl) {
+            ((LayerInfoImpl) target).setAuthorityURLs(impl.getAuthorityURLs());
+            ((LayerInfoImpl) target).setIdentifiers(impl.getIdentifiers());
+            ((LayerInfoImpl) target).setMetadata(impl.getMetadata());
+            ((LayerInfoImpl) target).setStyles(impl.getStyles());
         }
 
         return target;

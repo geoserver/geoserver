@@ -636,8 +636,7 @@ public abstract class FeatureTypeSchemaBuilder {
                     content.setElement(null);
 
                     // check for import of gml, skip over since we already imported it
-                    if (content instanceof XSDImport) {
-                        XSDImport imprt = (XSDImport) content;
+                    if (content instanceof XSDImport imprt) {
                         if (gmlNamespace.equals(imprt.getNamespace())) {
                             i.remove();
                         }
@@ -645,19 +644,18 @@ public abstract class FeatureTypeSchemaBuilder {
 
                     // check for duplicated elements and types
 
-                    if (content instanceof XSDElementDeclaration) {
-                        if (contains((XSDNamedComponent) content, schema.getElementDeclarations())) {
+                    if (content instanceof XSDElementDeclaration declaration) {
+                        if (contains(declaration, schema.getElementDeclarations())) {
                             i.remove();
                         }
-                    } else if (content instanceof XSDTypeDefinition) {
-                        if (contains((XSDNamedComponent) content, schema.getTypeDefinitions())) {
+                    } else if (content instanceof XSDTypeDefinition definition) {
+                        if (contains(definition, schema.getTypeDefinitions())) {
                             i.remove();
                         }
                     }
 
                     // check for element
-                    if (!hasElement && content instanceof XSDElementDeclaration) {
-                        XSDElementDeclaration element = (XSDElementDeclaration) content;
+                    if (!hasElement && content instanceof XSDElementDeclaration element) {
                         if (name.equals(element.getName())
                                 && featureTypeMeta.getNamespace().getURI().equals(element.getTargetNamespace())) {
                             hasElement = true;
@@ -677,12 +675,12 @@ public abstract class FeatureTypeSchemaBuilder {
                     // find the type of the element
                     List<XSDComplexTypeDefinition> candidates = new ArrayList<>();
                     for (XSDTypeDefinition type : ftSchema.getTypeDefinitions()) {
-                        if (type instanceof XSDComplexTypeDefinition) {
+                        if (type instanceof XSDComplexTypeDefinition definition) {
                             XSDTypeDefinition base = type.getBaseType();
                             while (base != null) {
                                 if (baseType.equals(base.getName()) && gmlNamespace.equals(base.getTargetNamespace())) {
 
-                                    candidates.add((XSDComplexTypeDefinition) type);
+                                    candidates.add(definition);
                                     break;
                                 }
                                 if (base.equals(base.getBaseType())) {
@@ -770,8 +768,7 @@ public abstract class FeatureTypeSchemaBuilder {
 
         Map<XSDElementDeclaration, InternationalString> annotationCache = new HashMap<>();
         for (PropertyDescriptor pd : complexType.getDescriptors()) {
-            if (pd instanceof AttributeDescriptor) {
-                AttributeDescriptor attribute = (AttributeDescriptor) pd;
+            if (pd instanceof AttributeDescriptor attribute) {
 
                 if (filterAttributeType(attribute)) {
                     GMLInfo gml = getGMLConfig(gs.getService(WFSInfo.class));
@@ -793,13 +790,13 @@ public abstract class FeatureTypeSchemaBuilder {
                 // first matching one, so it doesn't go through all profiles.
                 if (!(typeName.getLocalPart().equals(XS.ANYTYPE.getLocalPart())
                         && typeName.getNamespaceURI().equals(XS.NAMESPACE))) {
-                    if (attributeType instanceof ComplexType) {
+                    if (attributeType instanceof ComplexType type) {
                         // If non-simple complex property not in schema, recurse.
                         // Note that abstract types will of course not be resolved; these must be
                         // configured at global level, so they can be found by the
                         // encoder.
                         if (schema.resolveTypeDefinition(typeName.getNamespaceURI(), typeName.getLocalPart()) == null) {
-                            buildComplexSchemaContent((ComplexType) attributeType, schema, factory);
+                            buildComplexSchemaContent(type, schema, factory);
                         }
                     } else {
                         Class<?> binding = attributeType.getBinding();
@@ -889,10 +886,9 @@ public abstract class FeatureTypeSchemaBuilder {
     Name findTypeName(Class<?> binding) {
         for (Object profile : profiles) {
             Name name = null;
-            if (profile instanceof TypeMappingProfile) {
-                name = ((TypeMappingProfile) profile).name(binding);
-            } else if (profile instanceof Schema) {
-                Schema schema = (Schema) profile;
+            if (profile instanceof TypeMappingProfile mappingProfile) {
+                name = mappingProfile.name(binding);
+            } else if (profile instanceof Schema schema) {
                 for (Map.Entry<Name, AttributeType> e : schema.entrySet()) {
                     AttributeType at = e.getValue();
                     if (at.getBinding() != null && at.getBinding().equals(binding)) {

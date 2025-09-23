@@ -264,7 +264,7 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
             IOUtils.copy(input, output);
             return new String(output.toByteArray());
         } catch (IOException exception) {
-            throw new RuntimeException(String.format("Error reading style '%s'.", styleInfo.getName()));
+            throw new RuntimeException("Error reading style '%s'.".formatted(styleInfo.getName()));
         }
     }
 

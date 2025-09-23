@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.csp;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -26,6 +27,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /** Page for creating/modifying {@link CSPRule} objects. */
 public class CSPRulePage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 8806565936027357459L;
 
     private TextField<String> nameField;
@@ -47,6 +49,7 @@ public class CSPRulePage extends GeoServerSecuredPage {
         form.add(new TextArea<String>("filter", new PropertyModel<>(model, "filter")).add(new FilterValidator()));
         form.add(new TextArea<>("directives", new PropertyModel<>(model, "directives")));
         form.add(new SubmitLink("save", form) {
+            @Serial
             private static final long serialVersionUID = 7615174589339108727L;
 
             @Override
@@ -55,6 +58,7 @@ public class CSPRulePage extends GeoServerSecuredPage {
             }
         });
         form.add(new Button("cancel") {
+            @Serial
             private static final long serialVersionUID = 5040891804626008259L;
 
             @Override
@@ -82,6 +86,7 @@ public class CSPRulePage extends GeoServerSecuredPage {
 
     private class NameValidator implements IValidator<String> {
 
+        @Serial
         private static final long serialVersionUID = -6504547974652587614L;
 
         @Override
@@ -96,6 +101,7 @@ public class CSPRulePage extends GeoServerSecuredPage {
 
     private static class FilterValidator implements IValidator<String> {
 
+        @Serial
         private static final long serialVersionUID = -4027375126421815304L;
 
         @Override

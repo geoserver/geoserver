@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.Serial;
 import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.form.Form;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -58,9 +57,9 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
     }
 
     /**
-     * Callback method called when the submit button have been pressed and the parameters validation has succeed.
+     * Callback method called when the submit button have been pressed and the parameters validation has succeeded.
      *
-     * @see AbstractDataAccessPage#onSaveDataStore(Form)
+     * @see AbstractDataAccessPage#onSaveDataStore(DataStoreInfo, AjaxRequestTarget, boolean)
      */
     @Override
     protected final void onSaveDataStore(final DataStoreInfo info, AjaxRequestTarget target, boolean doReturn)

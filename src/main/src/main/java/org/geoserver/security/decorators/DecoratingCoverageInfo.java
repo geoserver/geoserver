@@ -37,8 +37,6 @@ import org.geotools.util.factory.Hints;
  * work
  *
  * @author Andrea Aime - TOPP
- * @param <T>
- * @param <F>
  */
 public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo> implements CoverageInfo {
 

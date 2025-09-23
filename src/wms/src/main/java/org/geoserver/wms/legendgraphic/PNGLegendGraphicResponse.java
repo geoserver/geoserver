@@ -36,7 +36,6 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
     /**
      * @param legend a {@link BufferedImageLegendGraphic}
      * @param output png image destination
-     * @see GetLegendGraphicProducer#writeTo(java.io.OutputStream)
      */
     @Override
     public void write(Object legend, OutputStream output, Operation operation) throws IOException, ServiceException {

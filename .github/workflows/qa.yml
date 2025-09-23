@@ -35,7 +35,7 @@ jobs:
         mvn -B -ntp -U -T1C -fae -Dspotless.action=check -Dpom.fmt.action=verify -Dqa -DskipTests -Prelease -f src/pom.xml clean install
     - name: Build community and online test modules without unit tests, but applying formatting checks
       run: |
-        mvn -B -ntp -nsu -U -T1C -fae -Dspotless.action=check -Dpom.fmt.action=verify -DskipTests -Prelease,communityRelease,app-schema-online-test -f src/community/pom.xml clean install
+        mvn -B -ntp -nsu -U -T1C -fae -Dspotless.action=check -Dpom.fmt.action=verify -DskipTests -Prelease,communityRelease -f src/community/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
       if: always()
       run: |

@@ -25,10 +25,7 @@ import org.xml.sax.InputSource;
  *
  * <p>This class is intended to be used as a library of XML relevant operation for the XMLConfigReader class.
  *
- * <p>
- *
  * @author dzwiers, Refractions Research, Inc.
- * @see XMLConfigReader
  */
 public class ReaderUtils {
     /** Used internally to create log information to detect errors. */
@@ -375,7 +372,7 @@ public class ReaderUtils {
      * @param attName The attribute of the child to obtain.
      * @param mandatory If its mandatory that the attribute exist.
      * @return The attribute value
-     * @throws Exception If mandatory is set it to <code>true</code> and the child or attribute do not exist.
+     * @throws Exception If mandatory is set it to {@code true} and the child or attribute do not exist.
      */
     public static String getChildAttribute(Element root, String childName, String attName, boolean mandatory)
             throws Exception {

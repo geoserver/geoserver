@@ -5,7 +5,9 @@
  */
 package org.geoserver.security.config;
 
+import java.io.File;
 import java.io.Serial;
+import org.geoserver.security.file.FileWatcher;
 
 /**
  * Security service configuration object that is persisted in a file.
@@ -54,10 +56,10 @@ public class FileBasedSecurityServiceConfig extends BaseSecurityNamedServiceConf
      * <p>This property is typically used in environments (such as a cluster) in which the underlying file may have been
      * modified out of process.
      *
-     * <p>A value of > 0 causes {@link FileWatcher} object to be created. A value of <= 0 disables any checking of the
-     * underlying file.
+     * <p>A value of &gt; 0 causes {@link FileWatcher} object to be created. A value of &lt;= 0 disables any checking of
+     * the underlying file.
      *
-     * <p>Hint: the granularity of {@link File} last access time is often a second, values < 1000 may not have the
+     * <p>Hint: the granularity of {@link File} last access time is often a second, values &lt; 1000 may not have the
      * desired effect.
      *
      * @param checkInterval The time interval in ms.

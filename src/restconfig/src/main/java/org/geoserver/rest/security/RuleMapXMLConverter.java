@@ -60,10 +60,10 @@ public class RuleMapXMLConverter extends MapXMLConverter {
     }
 
     /**
-     * Interpret XML and convert it back to a Map<String,String>
+     * Interpret XML and convert it back to a {@code Map<String,String>}
      *
      * @param elem a JDOM element
-     * @return the Map<String,String> produced by interpreting the XML
+     * @return the {@code Map<String,String>} produced by interpreting the XML
      */
     @Override
     protected Map<String, String> convert(Element elem) {

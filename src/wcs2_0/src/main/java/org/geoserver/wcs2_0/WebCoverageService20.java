@@ -18,7 +18,7 @@ import org.geotools.xml.transform.TransformerBase;
  * Web Coverage Services interface.
  *
  * <p>Each of the methods on this class corresponds to an operation as defined by the Web Coverage Specification. See
- * {@link "http://www.opengeospatial.org/standards/wcs"} for more details.
+ * {@see "http://www.opengeospatial.org/standards/wcs"} for more details.
  *
  * @author Emanuele Tajariol (etj) - GeoSolutions
  */

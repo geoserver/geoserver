@@ -18,7 +18,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
  * Base class for functional testing of the regionating code; sets up a proper testing enviroment with a real data dir
  * and a connection to a postgis data store
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow dwinslow@openplans.org
  */
 public abstract class RegionatingTestSupport extends GeoServerSystemTestSupport {
 

@@ -47,7 +47,7 @@ public class ColorMapLegendCreator {
      *
      * <p>The builder is not threa-safe.
      *
-     * <p>The correct way to use it is as follows: <code>
+     * <p>The correct way to use it is as follows: {@code
      * // colormap element
      * final ColorMap cmap = rasterSymbolizer.getColorMap();
      * final Builder cmapLegendBuilder= new ColorMapLegendCreator.Builder();
@@ -91,7 +91,7 @@ public class ColorMapLegendCreator {
      *
      * cMapLegendCreator=cmapLegendBuilder.create();
      * }
-     * </code>
+     * }
      *
      * @author Simone Giannecchini, GeoSolutions SAS
      */

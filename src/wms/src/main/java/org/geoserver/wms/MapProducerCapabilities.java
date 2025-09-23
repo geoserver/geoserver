@@ -6,7 +6,7 @@
 package org.geoserver.wms;
 
 /**
- * Class to record capabilities for a {@link RasterMapProducer}.
+ * Class to record capabilities for a RasterMapProducer.
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */

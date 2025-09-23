@@ -11,7 +11,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 /**
  * Data access facade for geoserver configuration.
  *
- * @author ETj <etj at geo-solutions.it>
+ * @author ETj etj at geo-solutions.it
  * @author Justin Deoliveira, OpenGeo
  */
 public interface GeoServerFacade {

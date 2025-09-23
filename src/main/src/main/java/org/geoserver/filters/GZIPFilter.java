@@ -12,7 +12,7 @@
  * the book and help support the authors, development of more free code,
  * and the JSP/Servlet/J2EE community.
  *
- * Modified by David Winslow <dwinslow@openplans.org> on 2007-12-13.
+ * Modified by David Winslow dwinslow@openplans.org on 2007-12-13.
  */
 
 package org.geoserver.filters;

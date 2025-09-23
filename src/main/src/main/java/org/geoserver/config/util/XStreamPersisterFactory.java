@@ -22,16 +22,10 @@ import org.springframework.context.ApplicationContextAware;
  * instance should do one of the following:
  *
  * <ol>
- *   <li>Use dependency injection via spring. Example:
- *       <pre>
- *       <bean id="myBean" class="com.xyz.MyBean">
- *         <constructor-arg ref="xstreamPersisterFactory"/>
- *       </bean>
- *     </pre>
- *   <li>Lookup via {@link GeoServerExtensions#bean(Class)}:
- *       <pre>
- *       XStreamPersisterFactory xpf = GeoServerExtension.bean(XStreamPeristerFactory.class);
- *     </pre>
+ *   <li>Use dependency injection via spring. Example: {@code <bean id="myBean" class="com.xyz.MyBean"> <constructor-arg
+ *       ref="xstreamPersisterFactory"/> </bean> }
+ *   <li>Lookup via {@link GeoServerExtensions#bean(Class)}: {@code XStreamPersisterFactory xpf =
+ *       GeoServerExtension.bean(XStreamPeristerFactory.class); }
  * </ol>
  *
  * @author Justin Deoliveira, OpenGeo
@@ -60,8 +54,8 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
      * <p>Preserves legacy Jettison 1.0.1 behavior when encoding single-element collections as a JSON object instead of
      * a single-element JSON array.
      *
-     * <p>Use {@link #createJSONPersister(true)} to force JSON encoding to always use JSON arrays regardless of
-     * collection size.
+     * <p>Use {@link #createJSONPersister(boolean)} with {@code true} to force JSON encoding to always use JSON arrays
+     * regardless of collection size.
      */
     public XStreamPersister createJSONPersister() {
         // preserve legacy single-element-array-as-object serialization

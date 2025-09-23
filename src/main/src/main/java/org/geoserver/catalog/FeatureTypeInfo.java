@@ -7,7 +7,6 @@ package org.geoserver.catalog;
 
 import java.io.IOException;
 import java.util.List;
-import org.geoserver.config.GeoServerInfo;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
@@ -59,7 +58,7 @@ public interface FeatureTypeInfo extends ResourceInfo {
     /**
      * A cap on the number of features that a query against this type can return.
      *
-     * <p>Note that this value should override the global default: {@link GeoServerInfo#getMaxFeatures()}.
+     * <p>Note that this value should override the global default.
      */
     int getMaxFeatures();
 
@@ -69,7 +68,7 @@ public interface FeatureTypeInfo extends ResourceInfo {
     /**
      * The number of decimal places to use when encoding floating point numbers from data of this feature type.
      *
-     * <p>Note that this value should override the global default: {@link GeoServerInfo#getNumDecimals()}.
+     * <p>Note that this value should override the global default.
      */
     int getNumDecimals();
 
@@ -136,11 +135,11 @@ public interface FeatureTypeInfo extends ResourceInfo {
     /**
      * Returns the underlying feature source instance.
      *
-     * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> may be used to report the progress of
-     * loading the feature source and also to report any errors or warnings that occur.
+     * <p>This method performs I/O and is potentially blocking. The {@code listener} may be used to report the progress
+     * of loading the feature source and also to report any errors or warnings that occur.
      *
      * @param listener A progress listener, may be {@code null}.
-     * @param hints Hints to use while loading the featuer source, may be {@code null}.
+     * @param hints Hints to use while loading the feature source, may be {@code null}.
      * @return The feature source.
      * @throws IOException Any I/O problems.
      */

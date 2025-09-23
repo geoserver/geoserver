@@ -31,7 +31,7 @@ import org.geotools.xml.transform.TransformerBase;
  * Web Feature Service implementation version 2.0.
  *
  * <p>Each of the methods on this class corresponds to an operation as defined by the Web Feature Specification. See
- * {@link "http://www.opengeospatial.org/standards/wfs"} for more details.
+ * {@see "http://www.opengeospatial.org/standards/wfs"} for more details.
  *
  * @author Justin Deoliveira, OpenGeo
  */

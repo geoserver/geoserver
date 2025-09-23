@@ -39,9 +39,9 @@ public abstract class NameSpaceTranslator {
      *
      * <p>Creates an instance of this translator for the given prefix.
      *
-     * @param prefix The prefix for which this tranlator will tranlate. A null prefix will affect the NameSpaceElements
-     *     returned by the access methods.
-     * @see #NameSpaceElement(String)
+     * @param prefix The prefix for which this translator will translate. A null prefix will affect the
+     *     NameSpaceElements returned by the access methods.
+     * @see #getElement(String)
      */
     public NameSpaceTranslator(String prefix) {
         this.prefix = prefix;

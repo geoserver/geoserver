@@ -25,7 +25,7 @@ import org.geoserver.ows.util.RequestUtils;
 /**
  * Filter to log requests for debugging or statistics-gathering purposes.
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow dwinslow@openplans.org
  */
 public class LoggingFilter implements GeoServerFilter {
     protected Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");

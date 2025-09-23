@@ -29,7 +29,7 @@ import org.springframework.beans.factory.BeanNameAware;
 /**
  * Class for Geoserver specific key management
  *
- * <p><strong>requires a master password</strong> form {@link MasterPasswordProviderImpl}
+ * <p><strong>requires a master password</strong> form {@link MasterPasswordProvider}
  *
  * <p>The type of the keystore is JCEKS and can be used/modified with java tools like "keytool" from the command line. *
  *

@@ -46,7 +46,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.HtmlLoginFilterChain;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
@@ -202,13 +201,6 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         RequestFilterChain www = chain.getRequestChainByName("web");
         www.setFilterNames("openidconnect", "anonymous");
 
-        HtmlLoginFilterChain lLoginAuthorizeChain =
-                new HtmlLoginFilterChain("/oauth2/authorization/**", "/login/oauth2/code/**");
-        lLoginAuthorizeChain.setAllowSessionCreation(true);
-        lLoginAuthorizeChain.setName("oauth2-endpoints");
-        lLoginAuthorizeChain.setFilterNames("openidconnect");
-        chain.getRequestChains().add(0, lLoginAuthorizeChain);
-
         manager.saveSecurityConfig(config);
     }
 
@@ -239,7 +231,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
                 .withRequestBody(containing("grant_type=authorization_code"))
                 .withRequestBody(containing("code=" + CODE))
                 .withRequestBody(containing(
-                        "redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fgeoserver%2Flogin%2Foauth2%2Fcode%2Foidc"))
+                        "redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fgeoserver%2Fweb%2Flogin%2Foauth2%2Fcode%2Foidc"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -282,7 +274,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         // then: "skip login dialog"/AEP is enabled -> spring's initiate login endpoint
         assertEquals(302, webResponse.getStatus());
         String location = webResponse.getHeader("Location");
-        String authStartPath = "oauth2/authorization/oidc";
+        String authStartPath = "web/oauth2/authorization/oidc";
         assertEquals(baseRedirectUri + authStartPath, location);
 
         // when: request to spring's initiate login endpoint is issued on same session
@@ -297,7 +289,8 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
 
         Map<String, Object> kvp = KvpUtils.parseQueryString(location);
         assertThat(kvp, Matchers.hasEntry("client_id", CLIENT_ID));
-        assertThat(kvp, Matchers.hasEntry("redirect_uri", "http://localhost:8080/geoserver/login/oauth2/code/oidc"));
+        assertThat(
+                kvp, Matchers.hasEntry("redirect_uri", "http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
         assertThat(kvp, Matchers.hasEntry("scope", "openid profile email phone address"));
         assertThat(kvp, Matchers.hasEntry("response_type", "code"));
 
@@ -308,7 +301,8 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         reqParamNonce = lNonce.toString();
 
         // make believe we authenticated and got the redirect back, with the code
-        MockHttpServletRequest codeRequest = createRequest("login/oauth2/code/oidc?code=" + CODE + "&state=" + state);
+        MockHttpServletRequest codeRequest =
+                createRequest("web/login/oauth2/code/oidc?code=" + CODE + "&state=" + state);
         codeRequest.setSession(lSession);
         executeOnSecurityFilters(codeRequest);
 

@@ -1643,11 +1643,6 @@ public class XStreamPersister {
      * Converter for all {@link CatalogInfo} resources. Obtains the appropriate catalog object in
      * {@link #instantiateNewInstance(HierarchicalStreamReader, UnmarshallingContext)} prior to reading in the XStream
      * request, so that primitive objects are appropriately initialized.
-     *
-     * <p>Supported implementations of {@link AbstractCatalogResource} must implement
-     * {@link XStreamPersister.Callback.getCatalogObject()} and {@link XStreamPersister.Callback.getObjectClass()} when
-     * providing an instance of {@link XStreamPersister.Callback} to {@link XStreamPersister} in
-     * {@link AbstractCatalogResource.configurePersister(XStreamPersister, DataFormat)}
      */
     protected class AbstractCatalogInfoConverter extends AbstractReflectionConverter {
         public AbstractCatalogInfoConverter(Class<?> clazz) {
@@ -2482,11 +2477,6 @@ public class XStreamPersister {
      * Converter for all {@link ServiceInfo} resources. Obtains the appropriate service object in
      * {@link #instantiateNewInstance(HierarchicalStreamReader, UnmarshallingContext)} prior to reading in the XStream
      * request, so that primitive objects are appropriately initialized.
-     *
-     * <p>Supported implementations of {@link ServiceSettingsResource} must implement
-     * {@link XStreamPersister.Callback.getServiceObject()} and {@link XStreamPersister.Callback.getObjectClass()} when
-     * providing an instance of {@link XStreamPersister.Callback} to {@link XStreamPersister} in
-     * {@link ServiceSettingsResource.configurePersister(XStreamPersister, DataFormat)}
      */
     public class ServiceInfoConverter extends AbstractReflectionConverter {
 

@@ -128,7 +128,7 @@ public class LegendUtils {
 
     /** padding percentage factor at both sides of the legend. */
     public static final float rowPaddingFactor = 0.15f;
-    /** top & bottom padding percentage factor for the legend */
+    /** top &amp; bottom padding percentage factor for the legend */
     public static final float columnPaddingFactor = 0.15f;
 
     /** padding percentage factor at both sides of the legend. */

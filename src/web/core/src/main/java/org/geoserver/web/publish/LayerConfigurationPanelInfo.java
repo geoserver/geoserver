@@ -14,7 +14,7 @@ import org.geoserver.catalog.PublishedInfo;
 /**
  * Extension point for sections of the configuration pages for individual layers.
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow dwinslow@openplans.org
  * @author Niels Charlier
  */
 public class LayerConfigurationPanelInfo extends PublishedConfigurationPanelInfo<LayerInfo> {

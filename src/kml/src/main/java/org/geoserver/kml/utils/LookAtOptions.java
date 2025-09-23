@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 
 /**
  * Data object to hold the KML <a
- * href="http://code.google.com/apis/kml/documentation/kmlreference.html#lookat">lookAt<a> properties as they come from
+ * href="http://code.google.com/apis/kml/documentation/kmlreference.html#lookat">lookAt</a> properties as they come from
  * the WMS GetMap's FORMAT_OPTIONS vendor specific parameter.
  *
  * <p>The following parameters are parsed at construction time and held by an instance of this class:
@@ -33,7 +33,7 @@ import org.locationtech.jts.geom.GeometryFactory;
  *   <li>HEADING: Double
  *   <li>TILT: Double
  *   <li>RANGE: Double
- *   <li>ALTITUDEMODE: String literal. One of <clampToGround|relativeToGround|absolute>
+ *   <li>ALTITUDEMODE: String literal. One of &lt;clampToGround|relativeToGround|absolute&gt;
  * </ul>
  *
  * All of them are optional, and {@code null} will be returned by it's matching accessor method if not provided.

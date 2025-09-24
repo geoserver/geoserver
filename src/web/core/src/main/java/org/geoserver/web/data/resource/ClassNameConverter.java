@@ -27,7 +27,7 @@ import org.locationtech.jts.geom.Polygon;
 
 class ClassNameConverter implements IConverter<Class> {
 
-    /** List of well known class names this component will auto-complete to */
+    /** List of well known class names this component will convert */
     private static final List<Class> BINDINGS = Arrays.asList(
                     // alphanumeric
                     String.class,

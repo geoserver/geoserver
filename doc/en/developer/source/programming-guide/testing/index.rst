@@ -525,10 +525,148 @@ If you are writing a new module you may want to consider creating a new support 
 extends one of the extended support classes. In general it is worth looking for a test that does something
 similar to the thing you want to test and using that as a template for your work.
 
+
++ GeoServerWicketTestSupport, requesting a simple panel, confirming output using component id
+
+.. code:: java
+
+  public class GraticuleStoreEditPanelTest extends GeoServerWicketTestSupport {
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // no data needed
+    }
+
+    @Before
+    public void loginBefore() {
+        super.login();
+    }
+
+    @Test
+    public void testCreateModify() throws Exception {
+        tester.startPage(new DataAccessNewPage(GraticuleDataStoreFactory.DISPLAY_NAME));
+        tester.assertNoErrorMessage();
+
+        tester.executeAjaxEvent(
+                "dataStoreForm:parametersPanel:configsContainer:gratpanel:generateBoundsFromCRS", "click");
+        FormTester ft = tester.newFormTester("dataStoreForm");
+        ft.setValue("parametersPanel:configsContainer:gratpanel:steps:border:border_body:paramValue", "10");
+        ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "graticule10");
+        ft.submit("save");
+
+        tester.assertNoErrorMessage();
+
+        // check the store has been created
+        DataStoreInfo graticule10 = getCatalog().getDataStoreByName("graticule10");
+        assertNotNull(graticule10);
+        Map<String, Serializable> parameters = graticule10.getConnectionParameters();
+        assertEquals("10", parameters.get(STEPS.key));
+        ReferencedEnvelope world = new ReferencedEnvelope(-180, 180, -90, 90, CRS.decode("EPSG:4326", true));
+        assertEquals(world, Converters.convert(parameters.get(BOUNDS.key), ReferencedEnvelope.class));
+
+        // open again, and save (used to fail due to empty bounds forced during panel construction)
+        tester.startPage(new DataAccessEditPage(graticule10.getId()));
+        tester.assertNoErrorMessage();
+        ft = tester.newFormTester("dataStoreForm");
+        ft.submit("save");
+        tester.assertNoErrorMessage();
+    }
+  }
+
+
++ GeoServerWicketTestSupport, requesting a page, clicking on a button, and confirming the output using component id
+
+.. code:: java
+
+   public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
+
+    @Test
+    public void testLoginFormAction() throws Exception {
+        logout();
+        tester.executeUrl("./wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage");
+        assertThat(tester.getLastRenderedPage(), instanceOf(AboutGeoServerPage.class));
+
+        String responseTxt = tester.getLastResponse().getDocument();
+        TagTester tagTester = TagTester.createTagByName(responseTxt, "form");
+        assertEquals("http://localhost/context/j_spring_security_check", tagTester.getAttribute("action"));
+    }
+    ...
+
++ WFSTestSupport, making a WFS request to a test data set:
+
+  .. code:: java
+
+      public class GetFeatureBboxTest extends WFSTestSupport {
+
+      @Test
+      public void testFeatureBoudingOn() throws Exception {
+          WFSInfo wfs = getWFS();
+          wfs.setFeatureBounding(true);
+          getGeoServer().save(wfs);
+
+          Document doc = getAsDOM("wfs?request=GetFeature&typeName="
+                  + getLayerId(SystemTestData.BUILDINGS)
+                  + "&version=1.0.0&service=wfs&propertyName=ADDRESS");
+          // print(doc);
+
+          // check it's a feature collection
+          assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
+          // check the collection has non null bounds
+          assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/gml:boundedBy/gml:Box)", doc);
+          // check that each feature has non null bounds
+          XpathEngine xpath = XMLUnit.newXpathEngine();
+          assertTrue(xpath.getMatchingNodes("//cite:Buildings/gml:boundedBy/gml:Box", doc)
+                          .getLength()
+                  > 0);
+      }
+
++ WMSTestSupport, adding a layer to test against, and checking output against reference image
+
+  .. code:: java
+
+    public class GetMapIntegrationTest extends WMSTestSupport {
+      ...
+      @Override
+      protected void setUpTestData(SystemTestData testData) throws Exception {
+          super.setUpTestData(testData);
+          testData.setUpWcs11RasterLayers();
+      }
+
+      @Override
+      protected void onSetUp(SystemTestData testData) throws Exception {
+          super.onSetUp(testData);
+          Catalog catalog = getCatalog();
+          testData.addStyle("Population", "Population.sld", GetMapIntegrationTest.class, catalog);
+          testData.addStyle("jiffleBandSelect", "jiffleBandSelect.sld", GetMapIntegrationTest.class, catalog);
+          testData.addVectorLayer(
+                  new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
+                  Collections.emptyMap(),
+                  "states.properties",
+                  getClass(),
+                  catalog);
+            ...
+
+      }
+      ...
+      @Test
+      public void testGetMapOpaqueGroup() throws Exception {
+          String url = "wms?LAYERS="
+                  + OPAQUE_GROUP
+                  + "&STYLES=&FORMAT=image%2Fpng"
+                  + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-0.0043,-0.0025,0.0043,0.0025";
+          BufferedImage imageGroup = getAsImage(url, "image/png");
+
+          ImageAssert.assertEquals(
+                  new File("./src/test/resources/org/geoserver/wms/wms_1_1_1/opaqueGroup.png"), imageGroup, 300);
+      }
+
+   
+
 Handling Logging
 ----------------
 
 GeoServer has a lot of log handling built in but in a default system much of the logging is surpressed 
+
 Writing Mock Tests
 ------------------
 

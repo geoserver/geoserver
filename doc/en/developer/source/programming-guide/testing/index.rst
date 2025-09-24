@@ -665,7 +665,21 @@ similar to the thing you want to test and using that as a template for your work
 Handling Logging
 ----------------
 
-GeoServer has a lot of log handling built in but in a default system much of the logging is surpressed 
+GeoServer has a lot of log handling built in but in a default system much of the logging is surpressed. The
+following code shows how to initialise GeoServer's logging system. In general this should only be done
+during testing of your code as excessive logging slows down the build for everyone.
+
+.. code:: java
+
+    GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
+    LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, "logs/geoserver.log");
+    String path = getDataDirectory().getResourceLoader().getBaseDirectory().getPath();
+    LoggingInfo logging = getGeoServer().getLogging();
+    final File logFile = new File(path, "logging.xml");
+    logging.setLocation("logs/geoserver.log");
+    logging.setStdOutLogging(true);
+    logging.setLevel("VERBOSE_LOGGING.xml");
+    getGeoServer().save(logging);
 
 Writing Mock Tests
 ------------------

@@ -869,7 +869,9 @@ public abstract class FeatureTypeSchemaBuilder {
                         .map(filter -> facetsFromFilter(filter, restrictionsVisitor))
                         .forEach(facets::addAll);
 
-                element.setAnonymousTypeDefinition(simple);
+                if (!facets.isEmpty()) {
+                    element.setAnonymousTypeDefinition(simple);
+                }
             }
         });
 
@@ -879,7 +881,15 @@ public abstract class FeatureTypeSchemaBuilder {
     @SuppressWarnings("unchecked")
     private List<XSDConstrainingFacet> facetsFromFilter(
             Filter filter, RestrictionToXSDConstrainingFacetVisitor restrictionsVisitor) {
-        return (List<XSDConstrainingFacet>) filter.accept(restrictionsVisitor, new ArrayList<>());
+
+        Object visitedFilter = filter.accept(restrictionsVisitor, new ArrayList<>());
+
+        if (filter.equals(visitedFilter)) {
+            /* the filter do not have a matching facet */
+            return List.of();
+        }
+
+        return (List<XSDConstrainingFacet>) visitedFilter;
     }
 
     XSDTypeDefinition resolveTypeInSchema(XSDSchema schema, Name typeName) {

@@ -6,9 +6,7 @@
 package org.vfny.geoserver.global;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.api.data.FeatureReader;
@@ -172,17 +170,14 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
         enforceFeatureUpdateValidation(new String[] {name}, new Object[] {attributeValue});
     }
 
-    private void enforceFeatureUpdateValidation(String[] names, Object[] attributeValues) {
-        Map<String, Object> updates = new HashMap<>();
-        for (int i = 0; i < names.length; i++) {
-            updates.put(names[i], attributeValues[i]);
-        }
+    private void enforceFeatureUpdateValidation(String[] attributeNames, Object[] attributeValues) {
+        for (int i = 0; i < attributeNames.length; i++) {
+            String name = attributeNames[i];
+            Object value = attributeValues[i];
 
-        for (AttributeDescriptor attributeDescriptor : schema.getAttributeDescriptors()) {
+            AttributeDescriptor attributeDescriptor = schema.getDescriptor(name);
 
-            Object value = updates.get(attributeDescriptor.getName().toString());
             Class<?> binding = attributeDescriptor.getType().getBinding();
-
             Object convertedValue = Converters.convert(value, binding);
 
             validateAttributeValue(attributeDescriptor, convertedValue);

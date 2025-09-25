@@ -177,6 +177,7 @@ public class SearchTest extends OSEOTestSupport {
     @Test
     public void testAllCollectionCountZero() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("oseo/search?count=0&httpAccept=" + ENCODED_ATOM_MIME);
+        System.out.println(response.getContentAsString());
         assertEquals(AtomSearchResponse.MIME, response.getContentType());
         assertEquals(200, response.getStatus());
 

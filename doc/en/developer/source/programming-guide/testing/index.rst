@@ -526,7 +526,10 @@ extends one of the extended support classes. In general it is worth looking for 
 similar to the thing you want to test and using that as a template for your work.
 
 
-+ GeoServerWicketTestSupport, requesting a simple panel, confirming output using component id
+GeoServerWicketTestSupport
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Requesting a simple panel, confirming output using component id
 
 .. code:: java
 
@@ -574,7 +577,7 @@ similar to the thing you want to test and using that as a template for your work
   }
 
 
-+ GeoServerWicketTestSupport, requesting a page, clicking on a button, and confirming the output using component id
+Requesting a page, confirming the output using component name:
 
 .. code:: java
 
@@ -592,7 +595,50 @@ similar to the thing you want to test and using that as a template for your work
     }
     ...
 
-+ WFSTestSupport, making a WFS request to a test data set:
+Requesting a page, pressing a button, confirming the output using component name:
+
+.. code:: java
+
+      public void testBasicActions() {
+        login();
+
+        // test that we can load the page
+        tester.startPage(new LayerPage());
+        tester.assertRenderedPage(LayerPage.class);
+        tester.assertNoErrorMessage();
+
+        // check it has two layers
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(2, table.getDataProvider().size());
+        List<String> workspaces = getWorkspaces(table);
+        assertTrue(workspaces.contains("cite"));
+        assertTrue(workspaces.contains("gs"));
+
+        // sort on workspace once (top to bottom)
+        String wsSortPath = "table:listContainer:sortableLinks:3:header:link";
+        tester.clickLink(wsSortPath, true);
+        workspaces = getWorkspaces(table);
+        assertEquals("cite", workspaces.get(0));
+        assertEquals("gs", workspaces.get(1));
+
+        // sort on workspace twice (bottom to top)
+        tester.clickLink(wsSortPath, true);
+        workspaces = getWorkspaces(table);
+        assertEquals("gs", workspaces.get(0));
+        assertEquals("cite", workspaces.get(1));
+
+        // select second layer
+
+        table.selectIndex(1);
+        assertEquals(1, table.getSelection().size());
+        LayerInfo li = (LayerInfo) table.getSelection().get(0);
+        assertEquals("cite", li.getResource().getStore().getWorkspace().getName());
+    }
+ 
+WFSTestSupport
+^^^^^^^^^^^^^^
+
+Making a WFS request to a test data set:
 
   .. code:: java
 
@@ -607,7 +653,6 @@ similar to the thing you want to test and using that as a template for your work
           Document doc = getAsDOM("wfs?request=GetFeature&typeName="
                   + getLayerId(SystemTestData.BUILDINGS)
                   + "&version=1.0.0&service=wfs&propertyName=ADDRESS");
-          // print(doc);
 
           // check it's a feature collection
           assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
@@ -620,7 +665,10 @@ similar to the thing you want to test and using that as a template for your work
                   > 0);
       }
 
-+ WMSTestSupport, adding a layer to test against, and checking output against reference image
+WMSTestSupport
+^^^^^^^^^^^^^^
+
+making a request and checking output against reference image
 
   .. code:: java
 

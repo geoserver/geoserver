@@ -18,8 +18,6 @@ import org.geotools.api.filter.Not;
 import org.geotools.api.filter.Or;
 import org.geotools.api.filter.PropertyIsBetween;
 import org.geotools.api.filter.PropertyIsEqualTo;
-import org.geotools.api.filter.PropertyIsGreaterThanOrEqualTo;
-import org.geotools.api.filter.PropertyIsLessThanOrEqualTo;
 import org.geotools.filter.visitor.AbstractFilterVisitor;
 
 @SuppressWarnings("unchecked")
@@ -72,26 +70,6 @@ public class RestrictionToXSDConstrainingFacetVisitor extends AbstractFilterVisi
         enumerationFacet.setLexicalValue(filter.getExpression2().toString());
 
         ((ArrayList<XSDConstrainingFacet>) extraData).add(enumerationFacet);
-        return extraData;
-    }
-
-    @Override
-    public Object visit(PropertyIsGreaterThanOrEqualTo filter, Object extraData) {
-        XSDMinInclusiveFacet minFacet = factory.createXSDMinInclusiveFacet();
-        minFacet.setValue(filter.getExpression2().toString());
-        minFacet.setLexicalValue(filter.getExpression2().toString());
-
-        ((ArrayList<XSDConstrainingFacet>) extraData).add(minFacet);
-        return extraData;
-    }
-
-    @Override
-    public Object visit(PropertyIsLessThanOrEqualTo filter, Object extraData) {
-        XSDMaxInclusiveFacet maxFacet = factory.createXSDMaxInclusiveFacet();
-        maxFacet.setValue(filter.getExpression2().toString());
-        maxFacet.setLexicalValue(filter.getExpression2().toString());
-
-        ((ArrayList<XSDConstrainingFacet>) extraData).add(maxFacet);
         return extraData;
     }
 }

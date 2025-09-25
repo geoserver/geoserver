@@ -17,7 +17,7 @@
 
   <properties>
 
-    <smack.version>4.0.5</smack.version>
+    <smack.version>4.1.9</smack.version>
     <vysper.version>0.7</vysper.version>
   </properties>
 

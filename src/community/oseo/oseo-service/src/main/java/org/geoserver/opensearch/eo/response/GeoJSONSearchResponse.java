@@ -84,7 +84,7 @@ public class GeoJSONSearchResponse extends Response {
 
     private void writeAdditionalFields(GeoJSONWriter w, SearchResults results) throws IOException {
         writeSimple(w, "id", getRequestedURL());
-        writeSimple(w, "totalResults", results.getTotalResults());
+        if (results.getTotalResults() != null) writeSimple(w, "totalResults", results.getTotalResults());
         Query query = results.getRequest().getQuery();
         writeSimple(w, "itemsPerPage", query.getMaxFeatures());
         // OpenSearch is 1-based, not zero based
@@ -137,7 +137,8 @@ public class GeoJSONSearchResponse extends Response {
         if (builder.getPrevious() != null)
             writeSingleLink(
                     w, "previous", new Link(builder.getPrevious(), "Previous results", GeoJSONSearchResponse.MIME));
-        writeSingleLink(w, "last", new Link(builder.getLast(), "Last results", GeoJSONSearchResponse.MIME));
+        if (builder.getLast() != null)
+            writeSingleLink(w, "last", new Link(builder.getLast(), "Last results", GeoJSONSearchResponse.MIME));
         w.writeEndObject();
     }
 

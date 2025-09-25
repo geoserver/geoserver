@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -198,6 +199,9 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         form.add(new HelpLink("productClassesHelp", this).setDialog(dialog));
 
         form.add(addLink());
+
+        CheckBox skipNumberMatched = new CheckBox("skipNumberMatched", new PropertyModel<>(info, "skipNumberMatched"));
+        form.add(skipNumberMatched);
     }
 
     private GeoServerAjaxFormLink addLink() {

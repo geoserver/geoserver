@@ -30,7 +30,6 @@ import org.geoserver.opensearch.eo.OSEOInfo;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.junit.Before;
 import org.junit.Test;
 
 public class ItemsTest extends STACTestSupport {
@@ -47,22 +46,29 @@ public class ItemsTest extends STACTestSupport {
         copyTemplate("/parentLink.json");
     }
 
-    @Before
-    public void clearConfiguration() throws Exception {
-        GeoServer gs = getGeoServer();
-        OSEOInfo service = gs.getService(OSEOInfo.class);
-        service.getGlobalQueryables().clear();
-        service.setSkipNumberMatched(false);
-        gs.save(service);
+    @Override
+    protected String getLogConfiguration() {
+        return "GEOTOOLS_DEVELOPER_LOGGING";
     }
 
     @Test
     public void testSentinelItemsJSON() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?limit=50", 200);
+        checkSentinelItemsJSON(json, Integer.valueOf(19));
+    }
 
+    @Test
+    public void testSentinelItemsJSONSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+
+        DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?limit=50", 200);
+        checkSentinelItemsJSON(json, null /* numberMatched not present */);
+    }
+
+    private void checkSentinelItemsJSON(DocumentContext json, Integer expectedNumberMatched) {
         // global properties
         assertEquals("FeatureCollection", json.read("type"));
-        assertEquals(Integer.valueOf(19), json.read("numberMatched"));
+        assertEquals(expectedNumberMatched, json.read("numberMatched"));
         assertEquals(Integer.valueOf(19), json.read("numberReturned"));
         assertEquals(STACService.STAC_VERSION, json.read("stac_version"));
 
@@ -193,6 +199,12 @@ public class ItemsTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksFirstPageSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingLinksFirstPage();
+    }
+
+    @Test
     public void testPagingLinksFirstPage() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?limit=5", 200);
 
@@ -211,6 +223,12 @@ public class ItemsTest extends STACTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2/items?limit=5&startIndex=5",
                 next.read("href"));
+    }
+
+    @Test
+    public void testPagingLinksSecondPageSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingLinksSecondPage();
     }
 
     @Test
@@ -240,6 +258,12 @@ public class ItemsTest extends STACTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2/items?startIndex=10&limit=5",
                 next.read("href"));
+    }
+
+    @Test
+    public void testPagingLinksLastPageSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingLinksLastPage();
     }
 
     @Test

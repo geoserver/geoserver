@@ -15,15 +15,17 @@ import org.geotools.feature.FeatureCollection;
  */
 public abstract class AbstractQueryResult {
 
+    private final boolean nextPage;
     private FeatureCollection items;
     private final int returned;
     private BigInteger numberMatched;
     private Map<String, RootBuilder> templateMap;
 
-    public AbstractQueryResult(FeatureCollection items, BigInteger numberMatched, int returned) {
+    public AbstractQueryResult(FeatureCollection items, BigInteger numberMatched, int returned, boolean nextPage) {
         this.items = items;
         this.numberMatched = numberMatched;
         this.returned = returned;
+        this.nextPage = nextPage;
     }
 
     public FeatureCollection getItems() {
@@ -44,5 +46,10 @@ public abstract class AbstractQueryResult {
 
     public void setTemplateMap(Map<String, RootBuilder> templateMap) {
         this.templateMap = templateMap;
+    }
+
+    /** Indicates whether there is a next page of results */
+    public boolean hasNextPage() {
+        return nextPage;
     }
 }

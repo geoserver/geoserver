@@ -66,4 +66,10 @@ public interface OSEOInfo extends ServiceInfo {
     void setAttribution(String attribution);
 
     List<String> getGlobalQueryables();
+
+    /** True if this feature type info is overriding the counting of numberMatched. */
+    boolean isSkipNumberMatched();
+
+    /** Set to true if this feature type info is overriding the default counting of numberMatched. */
+    void setSkipNumberMatched(boolean skipNumberMatched);
 }

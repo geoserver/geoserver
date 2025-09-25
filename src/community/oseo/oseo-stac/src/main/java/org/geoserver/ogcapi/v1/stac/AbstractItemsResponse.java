@@ -24,8 +24,8 @@ public abstract class AbstractItemsResponse extends AbstractQueryResult {
     boolean post;
     private Map<String, RootBuilder> templateMap;
 
-    public AbstractItemsResponse(FeatureCollection items, BigInteger numberMatched, int returned) {
-        super(items, numberMatched, returned);
+    public AbstractItemsResponse(FeatureCollection items, BigInteger numberMatched, int returned, boolean nextPage) {
+        super(items, numberMatched, returned, nextPage);
     }
 
     public String getNext() {

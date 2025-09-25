@@ -196,4 +196,21 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
             IOUtils.copy(is, os);
         }
     }
+
+    @Before
+    public void clearConfiguration() throws Exception {
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.getGlobalQueryables().clear();
+        service.setSkipNumberMatched(false);
+        gs.save(service);
+    }
+
+    /** Sets up the service to skip number matched */
+    protected void enableSkipNumberMatched() {
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.setSkipNumberMatched(true);
+        gs.save(service);
+    }
 }

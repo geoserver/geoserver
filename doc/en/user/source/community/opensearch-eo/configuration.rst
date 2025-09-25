@@ -29,6 +29,17 @@ Follow these steps:
 
   .. figure:: images/queryables.png
 
+* Skipping numberMatched
+
+  The OpenSearch/STAC module is capable of providing the number of matched results in the
+  STAC response, and the last page link in the OpenSearch one. However, this requires an additional
+  count query to be executed, which can be expensive on large datasets.
+
+  If you want to skip this additional query, you can check the "Skip numberMatched"
+  checkbox in the OS-EO service configuration page. This will make the STAC API skip the numberMatched
+  field and remove the last page link from the OpenSearch for EO ones.
+
+
 Advanced: adding product classes
 --------------------------------
 

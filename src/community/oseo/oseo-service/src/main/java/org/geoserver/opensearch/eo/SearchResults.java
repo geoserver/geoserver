@@ -19,13 +19,16 @@ public class SearchResults {
 
     FeatureCollection results;
 
-    private int totalResults;
+    private Integer totalResults;
 
-    public SearchResults(SearchRequest request, FeatureCollection results, int totalResults) {
+    private final boolean nextPage;
+
+    public SearchResults(SearchRequest request, FeatureCollection results, Integer totalResults, boolean nextPage) {
         super();
         this.request = request;
         this.results = results;
         this.totalResults = totalResults;
+        this.nextPage = nextPage;
     }
 
     /** The originating request */
@@ -39,8 +42,12 @@ public class SearchResults {
     }
 
     /** Total number of matched features */
-    public int getTotalResults() {
+    public Integer getTotalResults() {
         return totalResults;
+    }
+
+    public boolean hasNextPage() {
+        return nextPage;
     }
 
     @Override

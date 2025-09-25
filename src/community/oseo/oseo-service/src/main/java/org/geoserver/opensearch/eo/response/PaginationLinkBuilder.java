@@ -36,7 +36,7 @@ public class PaginationLinkBuilder {
         this.mimeType = mimeType;
         this.info = info;
 
-        int total = results.getTotalResults();
+        Integer total = results.getTotalResults();
         int startIndex = getQueryStartIndex(results) + 1;
         int itemsPerPage = request.getQuery().getMaxFeatures();
 
@@ -46,10 +46,10 @@ public class PaginationLinkBuilder {
         if (startIndex > 1) {
             previous = encodePaginationLink(Math.max(startIndex - itemsPerPage, 1), itemsPerPage);
         }
-        if (startIndex + itemsPerPage <= total) {
+        if (results.hasNextPage()) {
             next = encodePaginationLink(startIndex + itemsPerPage, itemsPerPage);
         }
-        last = encodePaginationLink(getLastPageStart(total, itemsPerPage), itemsPerPage);
+        if (total != null) last = encodePaginationLink(getLastPageStart(total, itemsPerPage), itemsPerPage);
     }
 
     private String encodePaginationLink(int startIndex, int itemsPerPage) {

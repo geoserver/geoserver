@@ -30,6 +30,7 @@ import org.geoserver.opensearch.eo.OSEOInfo;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ItemsTest extends STACTestSupport {
@@ -44,6 +45,15 @@ public class ItemsTest extends STACTestSupport {
         copyTemplate("/items-SAS1.json");
         copyTemplate("/box.json");
         copyTemplate("/parentLink.json");
+    }
+
+    @Before
+    public void clearConfiguration() throws Exception {
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.getGlobalQueryables().clear();
+        service.setSkipNumberMatched(false);
+        gs.save(service);
     }
 
     @Test
@@ -623,10 +633,6 @@ public class ItemsTest extends STACTestSupport {
                 "ogc/stac/v1/collections/SAS1/items?filter=s2:granule_id = 'S2A_OPER_MSI_L2A_TL_VGS1_20201206T095713_A028503_T37MDU_N02.143'",
                 200);
         assertThat((List<String>) doc2.read("features[*].id"), contains("SAS1_20180227102021.02"));
-
-        service.getGlobalQueryables().clear();
-        service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection"));
-        gs.save(service);
     }
 
     @Test

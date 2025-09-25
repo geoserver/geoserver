@@ -379,14 +379,18 @@ class QueryResultBuilder {
         // get the items
         FeatureCollection<FeatureType, Feature> items = source.getFeatures(q);
 
-        // the counts
-        Query matchedQuery = new Query(q);
-        matchedQuery.setMaxFeatures(-1);
-        matchedQuery.setStartIndex(0);
-        int matched = source.getCount(matchedQuery);
+        // the counts if necessary
+        OSEOInfo oseo = getService();
+        BigInteger matched = null;
+        if (!oseo.isSkipNumberMatched()) {
+            Query matchedQuery = new Query(q);
+            matchedQuery.setMaxFeatures(-1);
+            matchedQuery.setStartIndex(0);
+            matched = BigInteger.valueOf(source.getCount(matchedQuery));
+        }
         int returned = items.size();
 
-        return new QueryResult(q, items, BigInteger.valueOf(matched), returned);
+        return new QueryResult(q, items, matched, returned);
     }
 
     private Filter buildTimeFilter(String time) throws ParseException, IOException {

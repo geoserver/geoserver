@@ -40,5 +40,6 @@ jobs:
       run: |
         mvn --% -B -ntp -U -T2 -Dall -Prelease,windows-github-build -f src/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
+      if: always()
       run: |
         cmd --% /c for /f %i in ('dir /a:d /s /b %userprofile%\*SNAPSHOT*') do rd /s /q %i

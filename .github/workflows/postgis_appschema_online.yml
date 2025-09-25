@@ -56,5 +56,6 @@ jobs:
           EOT
           mvn -B clean install -nsu --file src/pom.xml -Prelease,app-schema-online-test -pl :gs-app-schema-postgis-test -Dspotless.apply.skip=true
       - name: Remove SNAPSHOT jars from repository
+        if: always()
         run: |
           find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {} 

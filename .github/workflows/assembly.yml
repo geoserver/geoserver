@@ -102,5 +102,6 @@ jobs:
         sleep 5
         echo "🎉 Binary package smoke test completed successfully"
     - name: Remove SNAPSHOT jars from repository
+      if: always()
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

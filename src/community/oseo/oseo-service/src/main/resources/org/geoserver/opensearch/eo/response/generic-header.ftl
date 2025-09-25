@@ -14,7 +14,9 @@
       xmlns:sar="http://www.opengis.net/sar/2.1" xmlns:sch="http://www.ascc.net/xml/schematron"
       xmlns:ssp="http://www.opengis.net/ssp/2.1" xmlns:time="http://a9.com/-/opensearch/extensions/time/1.0"
       xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <os:totalResults>${searchResults.totalResults}</os:totalResults>
+    <#if searchResults.totalResults??>
+        <os:totalResults>${searchResults.totalResults}</os:totalResults>
+    </#if>
     <#if query.startIndex??>
         <os:startIndex>${query.startIndex + 1}</os:startIndex>
     <#else>
@@ -39,7 +41,9 @@
     <#if builder.next??>
         <link href="${builder.next}" rel="next" type="application/atom+xml" />
     </#if>
-    <link href="${builder.last}" rel="last" type="application/atom+xml" />
+    <#if builder.last??>
+        <link href="${builder.last}" rel="last" type="application/atom+xml" />
+    </#if>
     <#if request.parentIdentifier??>
         <link href="${oseoLink('search/description', 'parentId', request.parentIdentifier)}" rel="search" type="application/opensearchdescription+xml" />
     <#else>

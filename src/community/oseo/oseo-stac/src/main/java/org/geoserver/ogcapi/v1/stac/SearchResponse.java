@@ -12,7 +12,7 @@ import org.geotools.feature.FeatureCollection;
 @JsonIgnoreType
 public class SearchResponse extends AbstractItemsResponse {
 
-    public SearchResponse(FeatureCollection items, BigInteger numberMatched, int returned) {
-        super(items, numberMatched, returned);
+    public SearchResponse(FeatureCollection items, BigInteger numberMatched, int returned, boolean nextPage) {
+        super(items, numberMatched, returned, nextPage);
     }
 }

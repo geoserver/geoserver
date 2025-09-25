@@ -33,6 +33,7 @@ import org.geoserver.platform.resource.Resource;
 import org.hamcrest.Matchers;
 import org.jsoup.select.Elements;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 public class STACTestSupport extends OGCApiTestSupport {
@@ -83,6 +84,23 @@ public class STACTestSupport extends OGCApiTestSupport {
     @BeforeClass
     public static void checkOnLine() {
         GeoServerOpenSearchTestSupport.checkOnLine();
+    }
+
+    @Before
+    public void clearConfiguration() throws Exception {
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.getGlobalQueryables().clear();
+        service.setSkipNumberMatched(false);
+        gs.save(service);
+    }
+
+    /** Sets up the service to skip number matched */
+    protected void enableSkipNumberMatched() {
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.setSkipNumberMatched(true);
+        gs.save(service);
     }
 
     /**

@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi;
 
+import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -20,14 +21,49 @@ public class PaginationLinksBuilder {
     private final long startIndex;
     private final int maxFeatures;
     private final int returned;
-    private final long matched;
+    private final boolean hasNextPage;
 
+    /**
+     * Constructor variant that can be used when the number of matched features is known exactly, will use it to
+     * determine the presence of a next page
+     */
     public PaginationLinksBuilder(String path, long startIndex, int limit, int returned, long matched) {
         this.path = path;
         this.startIndex = startIndex;
         this.maxFeatures = limit;
         this.returned = returned;
-        this.matched = matched;
+        // if nothing is returned or we returned less than a page, there is no next page
+        this.hasNextPage = returned > 0 && (startIndex + returned < matched);
+    }
+
+    /**
+     * Constructor variant that can take the number of matched features as a BigInteger and a flag for the presence of a
+     * next page, and will use the one that's not null to compute the next link
+     */
+    public PaginationLinksBuilder(
+            String path, long startIndex, int limit, int returned, BigInteger matched, Boolean hasNextPage) {
+        this.path = path;
+        this.startIndex = startIndex;
+        this.maxFeatures = limit;
+        this.returned = returned;
+        if (matched != null) {
+            // if nothing is returned, or we returned less than a page, there is no next page
+            this.hasNextPage = returned > 0 && (startIndex + returned < matched.longValue());
+        } else {
+            this.hasNextPage = Boolean.TRUE.equals(hasNextPage);
+        }
+    }
+
+    /**
+     * Constructor variant that can be used when the number of matched features is not known, but we know whether there
+     * is a next page or not
+     */
+    public PaginationLinksBuilder(String path, long startIndex, int limit, int returned, boolean hasNextPage) {
+        this.path = path;
+        this.startIndex = startIndex;
+        this.maxFeatures = limit;
+        this.returned = returned;
+        this.hasNextPage = hasNextPage;
     }
 
     /** Returns a HREF to the previous page */
@@ -68,7 +104,7 @@ public class PaginationLinksBuilder {
     /** Map of KVP for the next link. Can be used in POST links generation. */
     public Map<String, Object> getNextMap(boolean includeQueryMap) {
         // if nothing is returned or we returned less than a page, there is no next page
-        if (returned == 0 || (startIndex + returned >= matched)) return null;
+        if (!hasNextPage) return null;
 
         Map<String, Object> kvp = new LinkedHashMap<>();
         if (includeQueryMap) kvp.putAll(APIRequestInfo.get().getSimpleQueryMap());

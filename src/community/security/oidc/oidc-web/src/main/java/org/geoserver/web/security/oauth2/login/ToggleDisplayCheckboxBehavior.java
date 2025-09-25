@@ -66,7 +66,7 @@ public class ToggleDisplayCheckboxBehavior extends Behavior {
                 + "').parent().find(\"ul li input\").on('change',function() { \n"
                 + "   var element1 = $('#"
                 + targetComponent.getMarkupId(true) + "');\n"
-                + " var element = element1.parent().find(\"ul li input\")[0];\n"
+                + "    var element = element1.parent().find(\"ul li input\")[0];\n"
                 + "    if (element.checked) {\n"
                 + "        element1.addClass('display-block');\n"
                 + "        element1.removeClass('display-none');\n"
@@ -75,6 +75,9 @@ public class ToggleDisplayCheckboxBehavior extends Behavior {
                 + "        element1.removeClass('display-block');\n"
                 + "   }\n"
                 + "} \n);\n\n";
+
+        script += "$('#" + targetComponent.getMarkupId(true)
+                + "').parent().find(\"ul li input\").trigger(\"change\"); // ensure in correct state";
 
         script += "\n";
         response.render(OnDomReadyHeaderItem.forScript(script));

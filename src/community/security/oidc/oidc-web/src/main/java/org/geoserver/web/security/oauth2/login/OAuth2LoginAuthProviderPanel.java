@@ -314,4 +314,12 @@ public class OAuth2LoginAuthProviderPanel
     public IModel<GeoServerOAuth2LoginFilterConfig> getConfigModel() {
         return this.configModel;
     }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+
+        // add css
+        response.render(CssHeaderItem.forCSS(oidcPanelCSS, "oidcPanelCSS"));
+    }
 }

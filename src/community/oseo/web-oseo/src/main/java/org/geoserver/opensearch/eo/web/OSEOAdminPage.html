@@ -89,6 +89,21 @@
             </li>
         </ul>
     </fieldset>
+    <fieldset>
+        <legend>
+               <span>
+                  <wicket:message key="responseConfiguration">responseConfiguration</wicket:message>
+               </span>
+        </legend>
+        <ul class="choiceList">
+            <li>
+                <input id="skipNumberMatched" wicket:id="skipNumberMatched" type="checkbox"></input>
+                <label for="skipNumberMatched">
+                    <wicket:message key="skipNumberMatched">skipNumberMatched</wicket:message>
+                </label>
+            </li>
+        </ul>
+    </fieldset>
     <wicket:fragment wicket:id="text">
         <input type="text" wicket:id="text"/>
     </wicket:fragment>

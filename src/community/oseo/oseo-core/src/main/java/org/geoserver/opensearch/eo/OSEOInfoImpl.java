@@ -28,6 +28,8 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
     List<String> globalQueryables = new ArrayList<>();
 
+    boolean skipNumberMatched = false;
+
     @Override
     public int getRecordsPerPage() {
         return recordsPerPage == 0 ? DEFAULT_RECORDS_PER_PAGE : recordsPerPage;
@@ -104,5 +106,14 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     @Override
     public void setAggregatesCacheTTLUnit(String aggregatesCacheTTLUnit) {
         this.aggregatesCacheTTLUnit = aggregatesCacheTTLUnit;
+    }
+
+    public boolean isSkipNumberMatched() {
+        return skipNumberMatched;
+    }
+
+    @Override
+    public void setSkipNumberMatched(boolean skipNumberMatched) {
+        this.skipNumberMatched = skipNumberMatched;
     }
 }

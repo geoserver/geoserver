@@ -32,23 +32,17 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
         final Map kvp = request.getKvp();
         final Map rawKvp = request.getRawKvp();
         if ("oseo".equalsIgnoreCase(request.getService())) {
-            if (kvp.isEmpty()) {
-                if ("description".equals(request.getRequest())) {
-                    kvp.put("service", "oseo");
-                    // the raw kvp is normally not even initialized
-                    request.setRawKvp(kvp);
-                } else if ("search".equals(request.getRequest())) {
-                    kvp.put("service", "oseo");
-                    if (!kvp.containsKey("httpAccept")) kvp.put("httpAccept", AtomSearchResponse.MIME);
-                }
-                // make sure the raw kvp is not empty, ever (the current code
-                // leaves it empty if the request has no search params)
-                request.setRawKvp(kvp);
-            } else {
-                // skip everything that has an empty value, in OpenSearch it should be ignored
-                // (clients following the template to the letter will create keys with empty value)
-                cleanupRequestParams(request, rawKvp, kvp);
+            if ("description".equalsIgnoreCase(request.getRequest())) {
+                kvp.put("service", "oseo");
+                kvp.put("request", "description");
+            } else if ("search".equalsIgnoreCase(request.getRequest())) {
+                kvp.put("service", "oseo");
+                kvp.put("request", "search");
+                if (!kvp.containsKey("httpAccept")) kvp.put("httpAccept", AtomSearchResponse.MIME);
             }
+            // skip everything that has an empty value, in OpenSearch it should be ignored
+            // (clients following the template to the letter will create keys with empty value)
+            cleanupRequestParams(request, rawKvp, kvp);
 
             // backwards compatibility, parentId got renamed to parentIdentifier
             if (rawKvp != null && rawKvp.containsKey(PARENT_ID) && !rawKvp.containsKey(PARENT_IDENTIFIER)) {
@@ -62,6 +56,9 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
     }
 
     private void cleanupRequestParams(Request request, Map rawKvp, Map kvp) {
+        if (rawKvp == null) {
+            return;
+        }
         for (String key : new HashSet<>(request.getRawKvp().keySet())) {
             Object value = rawKvp.get(key);
             // Some clients are sending the same search parameter twice

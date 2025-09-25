@@ -265,7 +265,7 @@ test class. For instance, consider the following:
 
 Since this is a one time setup, the onSetUp method is only executed once, before the test1 
 method. When the test2 method is executed it is actually a new instance of the test class, 
-but the onTestSetup is not re-executed. The proper way to this initialization would be:
+but the ``onTestSetup`` is not re-executed. The proper way to this initialization would be:
 
 .. code-block:: java
 
@@ -525,6 +525,54 @@ If you are writing a new module you may want to consider creating a new support 
 extends one of the extended support classes. In general it is worth looking for a test that does something
 similar to the thing you want to test and using that as a template for your work.
 
+GeoServerMockTestSupport
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+A request that needs a catalog item is provided via a mock class.
+
+.. code:: java
+
+  public class WMSValidatorTest extends GeoServerMockTestSupport {
+
+    @Override
+    protected MockTestData createTestData() throws Exception {
+        MockTestData td = new MockTestData();
+        td.setMockCreator(new MockCreator() {
+
+            @Override
+            public void onResource(String name, ResourceInfo r, StoreInfo s, MockCatalogBuilder b) {
+                if (name.equals("Buildings")) {
+                    FeatureTypeInfo info = (FeatureTypeInfo) r;
+                    AttributeTypeInfoImpl geom1 = new AttributeTypeInfoImpl();
+                    geom1.setName("geom");
+                    EasyMock.expect(info.getAttributes())
+                            .andReturn(Arrays.asList(geom1))
+                            .anyTimes();
+                    AttributeTypeInfoImpl geom2 = new AttributeTypeInfoImpl();
+                    geom2.setName("geom");
+                    geom2.setBinding(Polygon.class);
+                    try {
+                        EasyMock.expect(info.attributes())
+                                .andReturn(Arrays.asList(geom2))
+                                .anyTimes();
+                    } catch (IOException e) {
+                        // will not happen
+                    }
+                }
+                super.onResource(name, r, s, b);
+            }
+        });
+
+        return td;
+    }
+
+    @Test
+    public void testGeometryCheckLegacyDataDir() {
+        // used to NPE
+        LayerInfo layer = getCatalog().getLayerByName("Buildings");
+        new WMSValidator().validate(layer, false);
+    }
+  }
 
 GeoServerWicketTestSupport
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

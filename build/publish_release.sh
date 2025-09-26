@@ -71,6 +71,7 @@ git checkout -b rel_$tag $tag
 # deploy the release to maven repo
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
+   mvn clean install -P allExtensions -DskipTests $MAVEN_FLAGS 
    mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS 
 else
    echo "Skipping mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS"
@@ -79,7 +80,8 @@ fi
 if [ -z $SKIP_COMMUNITY ]; then
    pushd community > /dev/null
    set +e
-   mvn clean deploy -P communityRelease -DskipTests $MAVEN_FLAGS || true
+   mvn clean install -P communityRelease -DskipTests $MAVEN_FLAGS || true
+   mvn deploy -P communityRelease -DskipTests $MAVEN_FLAGS || true
    set -e
    popd > /dev/null
 else

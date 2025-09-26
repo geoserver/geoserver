@@ -361,7 +361,7 @@ for a in `ls $artifacts/*.zip | grep -v plugin`; do
 done
 
 echo "generated artifacts:"
-ls -la $dist
+ls -lha $dist
 
 # git commit changes on the release branch
 pushd .. > /dev/null

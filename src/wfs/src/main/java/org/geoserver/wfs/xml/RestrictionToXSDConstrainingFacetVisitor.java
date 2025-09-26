@@ -12,14 +12,26 @@ import org.eclipse.xsd.XSDEnumerationFacet;
 import org.eclipse.xsd.XSDFactory;
 import org.eclipse.xsd.XSDMaxInclusiveFacet;
 import org.eclipse.xsd.XSDMinInclusiveFacet;
-import org.geotools.api.filter.And;
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geotools.api.filter.Filter;
-import org.geotools.api.filter.Not;
 import org.geotools.api.filter.Or;
 import org.geotools.api.filter.PropertyIsBetween;
 import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.filter.visitor.AbstractFilterVisitor;
 
+/**
+ * This visitor is dedicated to translate known {@link Filter}s generated from {@link AttributeTypeInfo} restrictions,
+ * into {@link XSDConstrainingFacet}s to be exposed in a WFS DescribeFeatureType response.
+ *
+ * <p>The filters that this visitor will accept are:
+ *
+ * <ul>
+ *   <li>{@link PropertyIsEqualTo}, representing each element of {@link AttributeTypeInfo#getOptions() options
+ *       restriction}
+ *   <li>{@link Or}, to chain options equality checks
+ *   <li>{@link PropertyIsBetween}, representing the {@link AttributeTypeInfo#getRange() range restriction}
+ * </ul>
+ */
 @SuppressWarnings("unchecked")
 public class RestrictionToXSDConstrainingFacetVisitor extends AbstractFilterVisitor {
     private final XSDFactory factory;
@@ -29,18 +41,8 @@ public class RestrictionToXSDConstrainingFacetVisitor extends AbstractFilterVisi
     }
 
     @Override
-    public Object visit(And filter, Object extraData) {
-        return visitChildren(filter.getChildren(), extraData);
-    }
-
-    @Override
     public Object visit(Or filter, Object extraData) {
         return visitChildren(filter.getChildren(), extraData);
-    }
-
-    @Override
-    public Object visit(Not filter, Object extraData) {
-        return visitChildren(List.of(filter.getFilter()), extraData);
     }
 
     private Object visitChildren(List<Filter> children, Object extraData) {

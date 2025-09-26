@@ -82,6 +82,7 @@ if [ -z $SKIP_COMMUNITY ]; then
    set +e
    mvn clean install -P communityRelease -DskipTests $MAVEN_FLAGS || true
    mvn deploy -P communityRelease -DskipTests $MAVEN_FLAGS || true
+
    set -e
    popd > /dev/null
 else

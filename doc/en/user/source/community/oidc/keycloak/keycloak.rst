@@ -1,4 +1,4 @@
-.. _security_tutorials_keycloak:
+.. _security_tutorials_keycloak_oicd:
 
 Authentication with Keycloak
 ============================

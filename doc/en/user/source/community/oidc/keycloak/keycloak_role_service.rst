@@ -1,4 +1,4 @@
-.. _security_tutorials_keycloak_role_service:
+.. _security_tutorials_keycloak_role_service_oicd:
 
 Keycloak Role Service
 =====================

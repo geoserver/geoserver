@@ -130,6 +130,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
     StyleFactory SF = CommonFactoryFinder.getStyleFactory();
 
+    public static QName BACKGROUND = new QName(MockData.WCS_URI, "background", MockData.WCS_PREFIX);
+
     public static QName TAZ_BYTE = new QName(MockData.WCS_URI, "tazbyte", MockData.WCS_PREFIX);
 
     public static QName SIX_BANDS = new QName(MockData.WCS_URI, "sixbands", MockData.WCS_PREFIX);
@@ -867,6 +869,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         testData.addStyle(NORMALIZED_STYLE, "normalized.sld", getClass(), getCatalog());
         testData.addRasterLayer(
                 TIFF_3035, "3035.zip", "tif", null, RenderedImageMapOutputFormatTest.class, getCatalog());
+        testData.addRasterLayer(
+                BACKGROUND, "nebackground.tif", "tif", null, RenderedImageMapOutputFormatTest.class, getCatalog());
 
         testData.addStyle(STRAIGHT_VERTICAL_LINE_STYLE, "verticalline.sld", getClass(), getCatalog());
         Map<LayerProperty, Object> properties = new HashMap<>();
@@ -1629,6 +1633,41 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         assertTrue(tile.getWidth() < mapWidth);
         assertTrue(tile.getHeight() < mapHeight);
 
+        ImageUtilities.disposePlanarImageChain(op);
+        imageMap.dispose();
+    }
+
+    @Test
+    public void testAlphaBandOnROILookup() throws Exception {
+        final int mapWidth = 532;
+        final int mapHeight = 532;
+        GetMapRequest request = new GetMapRequest();
+        CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+        ReferencedEnvelope bbox =
+                new ReferencedEnvelope(new Envelope(88.242188, 181.757813, -1.757813, 91.757813), crs);
+        request.setBbox(bbox);
+        request.setHeight(mapHeight);
+        request.setWidth(mapWidth);
+        request.setSRS("urn:x-ogc:def:crs:EPSG:4326");
+        request.setFormat("image/png");
+        request.setTransparent(true);
+
+        final WMSMapContent map = new WMSMapContent(request);
+        map.setMapHeight(mapHeight);
+        map.setMapWidth(mapWidth);
+        map.setBgColor(BG_COLOR);
+        map.setTransparent(true);
+        map.getViewport().setBounds(bbox);
+        addRasterToMap(map, BACKGROUND);
+        map.getViewport().setBounds(bbox);
+
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        RenderedOp op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
+        assertEquals(mapWidth, op.getWidth());
+        assertEquals(mapHeight, op.getHeight());
+        Raster tile = op.getTile(0, 0);
+        assertNotNull(tile);
+        assertTrue(op.getColorModel().hasAlpha());
         ImageUtilities.disposePlanarImageChain(op);
         imageMap.dispose();
     }

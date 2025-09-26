@@ -1164,6 +1164,49 @@ public class TransactionTest extends WFSTestSupport {
                 "Update error: Restriction evaluation failed for the value of attribute 'name' ("));
     }
 
+    @Test
+    public void testUpdateWithTypeMismatch() throws Exception {
+
+        TestFeatureStoreContext testFeatureStoreContext = createTestFeatureStoreContext();
+        SimpleFeatureStore featureStore = testFeatureStoreContext.featureStore;
+        FeatureTypeInfo featureTypeInfo = testFeatureStoreContext.featureTypeInfo;
+
+        getCatalog().add(featureTypeInfo);
+
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureStore.getSchema());
+        featureBuilder.add("name");
+        featureBuilder.add(null);
+        featureBuilder.add(Math.PI);
+
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
+        featureCollection.add(featureBuilder.buildFeature(null));
+        featureStore.addFeatures(featureCollection);
+
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
+                + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + " xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "'>"
+                + "<wfs:Update typeName='gs:bar'>"
+                + " <wfs:Property>"
+                + "    <wfs:Name>radius</wfs:Name>"
+                + "    <wfs:Value>ABC</wfs:Value>"
+                + " </wfs:Property>"
+                + " <ogc:Filter>"
+                + "    <ogc:FeatureId fid='bar.1'/>"
+                + " </ogc:Filter>"
+                + "</wfs:Update>"
+                + "</wfs:Transaction>";
+
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+        NodeList exceptionElements = dom.getElementsByTagName("ows:ExceptionText");
+        assertEquals(1, exceptionElements.getLength());
+        String exceptionText = exceptionElements.item(0).getTextContent();
+        assertTrue(exceptionText.startsWith("Invalid value for property"));
+    }
+
     /** Tests XML entity expansion limit on parsing with system property configuration. */
     @Test
     public void testEntityExpansionLimitOnTransaction() throws Exception {
@@ -1234,8 +1277,6 @@ public class TransactionTest extends WFSTestSupport {
         featureTypeBuilder.setName("bar");
         featureTypeBuilder.add("name", String.class);
         featureTypeBuilder.add("geom", Point.class);
-        //        featureTypeBuilder.nillable(false);
-        //        featureTypeBuilder.minOccurs(1);
         featureTypeBuilder.add("radius", Double.class);
 
         store.createSchema(featureTypeBuilder.buildFeatureType());

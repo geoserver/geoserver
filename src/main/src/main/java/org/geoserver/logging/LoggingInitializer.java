@@ -40,21 +40,24 @@ public class LoggingInitializer implements GeoServerInitializer, ApplicationCont
     @Override
     public void onReload() {
 
-        LoggingInfo previousLogging = listener.getCurrentLogging();
-        LoggingInfo newLogging = geoServer.getLogging();
+        if (!LoggingUtils.relinquishLog4jControl) {
 
-        if (previousLogging != null && !previousLogging.equals(newLogging)) {
-            // No need to re-init logging when nothing changed
-            try {
-                String logLocation = LoggingUtils.getLogFileLocation(newLogging.getLocation(), servletContext);
+            LoggingInfo previousLogging = listener.getCurrentLogging();
+            LoggingInfo newLogging = geoServer.getLogging();
 
-                LoggingUtils.initLogging(
-                        resourceLoader, newLogging.getLevel(), !newLogging.isStdOutLogging(), false, logLocation);
+            if (previousLogging != null && !previousLogging.equals(newLogging)) {
+                // No need to re-init logging when nothing changed
+                try {
+                    String logLocation = LoggingUtils.getLogFileLocation(newLogging.getLocation(), servletContext);
 
-                newLogging.setLocation(logLocation);
-                listener.setCurrentLogging(newLogging);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                    LoggingUtils.initLogging(
+                            resourceLoader, newLogging.getLevel(), !newLogging.isStdOutLogging(), false, logLocation);
+
+                    newLogging.setLocation(logLocation);
+                    listener.setCurrentLogging(newLogging);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

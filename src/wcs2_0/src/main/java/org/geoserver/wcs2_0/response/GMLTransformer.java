@@ -461,7 +461,7 @@ class GMLTransformer extends TransformerBase {
                 startMetadataTag(TAG.ELEVATION_DOMAIN, null, elevationDimension, helper);
                 final DimensionPresentation presentation = elevationDimension.getPresentation();
                 switch (presentation) {
-                        // Where _er_ means elevation range
+                    // Where _er_ means elevation range
                     case CONTINUOUS_INTERVAL:
                         encodeInterval(helper.getBeginElevation(), helper.getEndElevation(), null, null);
                         break;

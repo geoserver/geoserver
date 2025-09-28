@@ -402,7 +402,7 @@ public class ProcessesService {
         } else if (result
                 instanceof
                 net.opengis.wfs20.FeatureCollectionType
-                fct) { // these input happen while deserializing an async response
+                        fct) { // these input happen while deserializing an async response
             FeatureCollection<?, ?> fc =
                     (FeatureCollection<?, ?>) fct.getMember().get(0);
             writeXMLOutput(generator, new XMLEncoderDelegate(new WFSPPIO.WFS20(), fc));

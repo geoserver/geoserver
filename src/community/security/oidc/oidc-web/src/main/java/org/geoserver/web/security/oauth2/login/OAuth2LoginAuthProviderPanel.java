@@ -23,6 +23,8 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -69,6 +71,7 @@ public class OAuth2LoginAuthProviderPanel
     private static final String PREFIX_OIDC = "oidc";
 
     public static String oidcPanelCSS;
+    public static String oidcPanelJS;
 
     static {
         try {
@@ -76,7 +79,10 @@ public class OAuth2LoginAuthProviderPanel
                     OAuth2LoginAuthProviderPanel.class.getResourceAsStream(
                             "/org/geoserver/web/security/oauth2/login/css/oidc.css"),
                     StandardCharsets.UTF_8));
-
+            oidcPanelJS = CharStreams.toString(new InputStreamReader(
+                    OAuth2LoginAuthProviderPanel.class.getResourceAsStream(
+                            "/org/geoserver/web/security/oauth2/login/js/oidc.js"),
+                    StandardCharsets.UTF_8));
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, e.getMessage());
         }
@@ -108,14 +114,6 @@ public class OAuth2LoginAuthProviderPanel
             add(new HelpLink("oidcDiscoveryUriKeyHelp", this).setDialog(dialog));
         }
 
-        @Override
-        public void renderHead(IHeaderResponse response) {
-            super.renderHead(response);
-
-            // add css
-            response.render(CssHeaderItem.forCSS(oidcPanelCSS, "oidcPanelCSS"));
-        }
-
         private void discover(String discoveryURL, AjaxRequestTarget target) {
             GeoServerOAuth2LoginFilterConfig model = (GeoServerOAuth2LoginFilterConfig)
                     OAuth2LoginAuthProviderPanel.this.getForm().getModelObject();
@@ -133,9 +131,30 @@ public class OAuth2LoginAuthProviderPanel
     static class TokenClaimPanel extends Panel {
         private static final long serialVersionUID = 1L;
 
-        public TokenClaimPanel(String id) {
+        @Override
+        public void renderHead(IHeaderResponse response) {
+            super.renderHead(response);
+
+            // when wicket loads the page, we want this to fire AFTER the
+            // elements are in the dom.  This is so the converter is run
+            // when the page first loads (and table is updated).
+            String script = " roleConverterStringChanged();\n";
+            script += "$('#roleConverterString').on('input',function() { roleConverterStringChanged(this); } \n);\n\n";
+
+            response.render(OnDomReadyHeaderItem.forScript(script));
+
+            // add css
+            response.render(CssHeaderItem.forCSS(oidcPanelCSS, "oidcPanelCSS"));
+
+            // add js script
+            response.render(JavaScriptContentHeaderItem.forScript(oidcPanelJS, "oidcAuthFilterPanelJS"));
+        }
+
+        public TokenClaimPanel(String id, RoleSource model) {
             super(id, new Model<>());
             add(new TextField<String>("tokenRolesClaim").setRequired(true));
+            add(new TextField<String>("roleConverterString").setRequired(false));
+            add(new CheckBox("onlyExternalListedRoles").setRequired(false));
         }
     }
 
@@ -299,7 +318,7 @@ public class OAuth2LoginAuthProviderPanel
     @Override
     protected Panel getRoleSourcePanel(RoleSource model) {
         if (IdToken.equals(model) || AccessToken.equals(model) || UserInfo.equals(model)) {
-            return new TokenClaimPanel("panel");
+            return new TokenClaimPanel("panel", model);
         }
         return super.getRoleSourcePanel(model);
     }

@@ -11,14 +11,18 @@ import static java.util.stream.Collectors.toList;
 import static org.geoserver.security.filter.GeoServerRoleResolvers.PRE_AUTH_ROLE_SOURCE_RESOLVER;
 import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
 import static org.geoserver.security.impl.GeoServerUser.ROOT_USERNAME;
+import static org.geoserver.security.jwtheaders.roles.JwtHeadersRolesExtractor.asStringList;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_MICROSOFT;
 
+import com.nimbusds.jose.JWSObject;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -31,6 +35,9 @@ import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverParam;
 import org.geoserver.security.filter.GeoServerRoleResolvers.RoleResolver;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
+import org.geoserver.security.jwtheaders.JwtConfiguration;
+import org.geoserver.security.jwtheaders.roles.RoleConverter;
+import org.geoserver.security.jwtheaders.username.JwtHeaderUserNameExtractor;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
 import org.geotools.util.logging.Logging;
@@ -52,6 +59,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 public class GeoServerOAuth2RoleResolver implements RoleResolver {
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerOAuth2RoleResolver.class);
+    RoleConverter roleConverter;
 
     public static final class OAuth2ResolverParam extends ResolverParam {
 
@@ -85,6 +93,11 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
     public GeoServerOAuth2RoleResolver(GeoServerOAuth2LoginFilterConfig pConfig) {
         super();
         config = pConfig;
+        // this is for using the other library
+        JwtConfiguration jwtConfiguration = new JwtConfiguration();
+        jwtConfiguration.setRoleConverterString(config.getRoleConverterString());
+        jwtConfiguration.setOnlyExternalListedRoles(config.isOnlyExternalListedRoles());
+        roleConverter = new RoleConverter(jwtConfiguration);
     }
 
     @Override
@@ -154,7 +167,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
         OAuth2UserRequest lUsrRequest = ((OAuth2ResolverParam) pParam).getUserRequest();
         OAuth2AccessToken lAccessToken = lUsrRequest.getAccessToken();
         String lClaimName = config.getTokenRolesClaim();
-        Collection<String> lRoles = new ArrayList<>();
+        List<String> lRoles = new ArrayList<>();
         Set<String> lScopes = lAccessToken.getScopes();
         if (LOGGER.isLoggable(Level.FINE)) {
             String lMsg = "Analyzing access token for roles. Claim: %s. Scopes: %s, additionals: %s";
@@ -162,11 +175,31 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
             LOGGER.fine(format(lMsg, lClaimName, lScopeTxt, lUsrRequest.getAdditionalParameters()));
         }
         if ("scope".equals(lClaimName)) {
-            lRoles = lAccessToken.getScopes();
+            lRoles = new ArrayList<>(lAccessToken.getScopes());
         } else {
             Object lObject = lUsrRequest.getAdditionalParameters().get(lClaimName);
-            lRoles = toStringList(lObject, pParam);
+            lRoles = new ArrayList<>(toStringList(lObject, pParam));
+            if (lRoles == null || lRoles.isEmpty()) {
+                // we assume access token is a JWT and get the internal claims
+                JWSObject jwsObject = null;
+                try {
+                    jwsObject = JWSObject.parse(lAccessToken.getTokenValue());
+                    if (jwsObject != null) {
+                        Map<String, Object> claims = jwsObject.getPayload().toJSONObject();
+                        lRoles = asStringList(JwtHeaderUserNameExtractor.getClaim(claims, lClaimName));
+                    }
+                } catch (ParseException e) {
+                    LOGGER.log(
+                            SEVERE,
+                            "could not parse Access Token as JWT - Is the remote IDP responding with non-JWT Access Tokens!"); // likely not a JWT
+                }
+            }
         }
+        lRoles = this.roleConverter.convert(lRoles);
+        if (!lRoles.contains("ROLE_AUTHENTICATED")) {
+            lRoles.add("ROLE_AUTHENTICATED");
+        }
+
         return lRoles.stream().map(r -> new GeoServerRole(r)).collect(toList());
     }
 
@@ -187,9 +220,14 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
             String lMsg = "Analyzing access token for roles. Claim: %s. Claims: %s";
             LOGGER.fine(format(lMsg, lClaimName, lIdToken.getClaims()));
         }
-        List<String> lClaimList = lIdToken.getClaimAsStringList(lClaimName);
+        List<String> lClaimList = asStringList(JwtHeaderUserNameExtractor.getClaim(lIdToken.getClaims(), lClaimName));
+
         if (lClaimList != null) {
+            lClaimList = this.roleConverter.convert(lClaimList);
             lRoles.addAll(lClaimList);
+        }
+        if (!lRoles.contains("ROLE_AUTHENTICATED")) {
+            lRoles.add("ROLE_AUTHENTICATED");
         }
         return lRoles.stream().map(r -> new GeoServerRole(r)).collect(toList());
     }
@@ -200,7 +238,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
         OAuth2User lUser = lService.loadUser(lUsrRequest);
 
         String lClaimName = config.getTokenRolesClaim();
-        Collection<String> lRoles = new ArrayList<>();
+        List<String> lRoles = new ArrayList<>();
 
         if (LOGGER.isLoggable(Level.FINE)) {
             String lMsg = "Analyzing userInfo for roles. Claim: %s. User: %s";
@@ -210,8 +248,11 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
             Collection<? extends GrantedAuthority> authorities = lUser.getAuthorities();
             lRoles = authorities.stream().map(a -> a.getAuthority()).collect(toList());
         } else {
-            Object lObject = lUser.getAttribute(lClaimName);
-            lRoles = toStringList(lObject, pParam);
+            lRoles = asStringList(JwtHeaderUserNameExtractor.getClaim(lUser.getAttributes(), lClaimName));
+            lRoles = this.roleConverter.convert(lRoles);
+        }
+        if (!lRoles.contains("ROLE_AUTHENTICATED")) {
+            lRoles.add("ROLE_AUTHENTICATED");
         }
         return lRoles.stream().map(r -> new GeoServerRole(r)).collect(toList());
     }

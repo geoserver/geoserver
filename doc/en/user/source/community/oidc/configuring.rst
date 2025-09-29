@@ -3,6 +3,27 @@
 OAUTH2/OIDC configuration
 =========================
 
+#. Start GeoServer and login to the web admin interface as the ``admin`` user.
+#. Click the ``Authentication`` link located under the ``Security`` section of
+   the navigation sidebar.
+
+   .. figure:: img/filter1.jpg
+      :align: center
+
+#. Scroll down to the ``Authentication Filters`` panel and click the ``Add new`` link.
+
+   .. figure:: img/filter2.jpg
+      :align: center
+
+#. Click the ``OpenID Connect Login`` link.
+
+   .. figure:: img/filter3.png
+      :align: center
+
+#. Select the service(s) that you want to use a login source
+
+   .. figure:: img/logins.png
+      :align: center
 
 Extracting Roles from the OIDC IDP
 ----------------------------------

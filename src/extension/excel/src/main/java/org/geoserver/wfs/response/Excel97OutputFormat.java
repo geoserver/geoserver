@@ -1,13 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2014 - 2025 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.response;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.geoserver.config.GeoServer;
+import org.geoserver.excel.ExcelWriter;
 
 /**
  * Excel 97-2003 WFS output format
@@ -16,21 +14,15 @@ import org.geoserver.config.GeoServer;
  */
 public class Excel97OutputFormat extends ExcelOutputFormat {
 
-    /**
-     * Constructor setting the format type as "excel" in addition to file extension, mime type, and row and column
-     * limits
-     */
+    /** Constructor setting the format type as "excel" in addition to file extension, and mime type */
     public Excel97OutputFormat(GeoServer gs) {
         super(gs, "excel");
-        rowLimit = (int) Math.pow(2, 16); // 65,536
-        colLimit = (int) Math.pow(2, 8); // 256
         fileExtension = "xls";
         mimeType = "application/msexcel";
     }
 
-    /** Returns a new HSSFWorkbook workbook */
     @Override
-    protected Workbook getNewWorkbook() {
-        return new HSSFWorkbook();
+    protected ExcelWriter.ExcelFormat excelFormat() {
+        return ExcelWriter.ExcelFormat.XLS;
     }
 }

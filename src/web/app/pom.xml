@@ -971,6 +971,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>xlsxppio</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-wps-xlsx-ppio</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>gpxppio</id>
       <dependencies>
         <dependency>

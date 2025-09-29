@@ -414,6 +414,11 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-wps-xlsx-ppio</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-metadata</artifactId>
       <version>${project.version}</version>
     </dependency>

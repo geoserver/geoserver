@@ -5,7 +5,6 @@
 package org.geoserver.security.oauth2.common;
 
 import static java.lang.String.format;
-import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -18,7 +17,13 @@ import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrat
 import com.nimbusds.jose.JWSObject;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -184,7 +189,9 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
                         lRoles = asStringList(JwtHeaderUserNameExtractor.getClaim(claims, lClaimName));
                     }
                 } catch (ParseException e) {
-                    LOGGER.log(INFO, "could not parse Access Token as JWT!"); // likely not a JWT
+                    LOGGER.log(
+                            SEVERE,
+                            "could not parse Access Token as JWT - Is the remote IDP responding with non-JWT Access Tokens!"); // likely not a JWT
                 }
             }
         }

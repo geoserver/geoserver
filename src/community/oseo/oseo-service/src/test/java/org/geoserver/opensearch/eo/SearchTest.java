@@ -245,12 +245,22 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testPagingFullPages() throws Exception {
+        testPagingFullPages(false);
+    }
+
+    @Test
+    public void testPagingFullPagesSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingFullPages(true);
+    }
+
+    private void testPagingFullPages(boolean skipMatched) throws Exception {
         // first page
         Document dom = getAsDOM("oseo/search?count=1");
         assertHasLink(dom, "self", 1, 1);
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "next", 2, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SAS1")));
@@ -261,7 +271,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 1, 1);
         assertHasLink(dom, "next", 3, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SAS9")));
 
@@ -271,7 +281,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 2, 1);
         assertHasLink(dom, "next", 4, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
 
@@ -281,7 +291,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 3, 1);
         assertHasLink(dom, "next", 5, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("gsTestCollection")));
 
@@ -291,7 +301,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 4, 1);
         assertHasLink(dom, "next", 6, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
 
@@ -300,7 +310,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "self", 6, 1);
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 5, 1);
-        assertHasLink(dom, "last", 6, 1);
+        if (!skipMatched) assertHasLink(dom, "last", 6, 1);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
@@ -308,12 +318,22 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testPagingPartialPages() throws Exception {
+        testPagingPartialPages(false);
+    }
+
+    @Test
+    public void testPagingPartialPagesSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingPartialPages(true);
+    }
+
+    private void testPagingPartialPages(boolean skipMatched) throws Exception {
         // first page
         Document dom = getAsDOM("oseo/search?count=2");
         assertHasLink(dom, "self", 1, 2);
         assertHasLink(dom, "first", 1, 2);
         assertHasLink(dom, "next", 3, 2);
-        assertHasLink(dom, "last", 5, 2);
+        if (!skipMatched) assertHasLink(dom, "last", 5, 2);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SAS1")));
@@ -325,7 +345,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "self", 3, 2);
         assertHasLink(dom, "first", 1, 2);
         assertHasLink(dom, "previous", 1, 2);
-        assertHasLink(dom, "last", 5, 2);
+        if (!skipMatched) assertHasLink(dom, "last", 5, 2);
         assertHasLink(dom, "next", 5, 2);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
@@ -337,7 +357,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "self", 5, 2);
         assertHasLink(dom, "first", 1, 2);
         assertHasLink(dom, "previous", 3, 2);
-        assertHasLink(dom, "last", 5, 2);
+        if (!skipMatched) assertHasLink(dom, "last", 5, 2);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));

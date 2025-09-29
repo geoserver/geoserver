@@ -46,13 +46,29 @@ public class ItemsTest extends STACTestSupport {
         copyTemplate("/parentLink.json");
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "GEOTOOLS_DEVELOPER_LOGGING";
+    }
+
     @Test
     public void testSentinelItemsJSON() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?limit=50", 200);
+        checkSentinelItemsJSON(json, Integer.valueOf(19));
+    }
 
+    @Test
+    public void testSentinelItemsJSONSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+
+        DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?limit=50", 200);
+        checkSentinelItemsJSON(json, null /* numberMatched not present */);
+    }
+
+    private void checkSentinelItemsJSON(DocumentContext json, Integer expectedNumberMatched) {
         // global properties
         assertEquals("FeatureCollection", json.read("type"));
-        assertEquals(Integer.valueOf(19), json.read("numberMatched"));
+        assertEquals(expectedNumberMatched, json.read("numberMatched"));
         assertEquals(Integer.valueOf(19), json.read("numberReturned"));
         assertEquals(STACService.STAC_VERSION, json.read("stac_version"));
 
@@ -183,6 +199,12 @@ public class ItemsTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksFirstPageSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingLinksFirstPage();
+    }
+
+    @Test
     public void testPagingLinksFirstPage() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?limit=5", 200);
 
@@ -201,6 +223,12 @@ public class ItemsTest extends STACTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2/items?limit=5&startIndex=5",
                 next.read("href"));
+    }
+
+    @Test
+    public void testPagingLinksSecondPageSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingLinksSecondPage();
     }
 
     @Test
@@ -230,6 +258,12 @@ public class ItemsTest extends STACTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2/items?startIndex=10&limit=5",
                 next.read("href"));
+    }
+
+    @Test
+    public void testPagingLinksLastPageSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        testPagingLinksLastPage();
     }
 
     @Test
@@ -623,10 +657,6 @@ public class ItemsTest extends STACTestSupport {
                 "ogc/stac/v1/collections/SAS1/items?filter=s2:granule_id = 'S2A_OPER_MSI_L2A_TL_VGS1_20201206T095713_A028503_T37MDU_N02.143'",
                 200);
         assertThat((List<String>) doc2.read("features[*].id"), contains("SAS1_20180227102021.02"));
-
-        service.getGlobalQueryables().clear();
-        service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection"));
-        gs.save(service);
     }
 
     @Test

@@ -46,6 +46,7 @@ import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.geojson.GeoJSONReader;
+import org.geotools.data.store.MaxFeaturesFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -376,17 +377,44 @@ class QueryResultBuilder {
     }
 
     private QueryResult queryItems(FeatureSource<FeatureType, Feature> source, Query q) throws IOException {
-        // get the items
-        FeatureCollection<FeatureType, Feature> items = source.getFeatures(q);
+        // the counts if necessary
+        OSEOInfo oseo = getService();
+        BigInteger matched = null;
+        boolean nextPage;
+        FeatureCollection<FeatureType, Feature> items;
+        int returned;
+        if (oseo.isSkipNumberMatched()) {
+            if (q.getMaxFeatures() == Query.DEFAULT_MAX) {
+                items = source.getFeatures(q);
+                returned = items.size();
+                nextPage = false;
+            } else {
+                // get the items, plus one to check for next page
+                Query nextQuery = new Query(q);
+                nextQuery.setMaxFeatures(q.getMaxFeatures() + 1);
+                items = source.getFeatures(nextQuery);
+                returned = items.size();
+                if (returned > q.getMaxFeatures()) {
+                    nextPage = true;
+                    items = new MaxFeaturesFeatureCollection<>(items, q.getMaxFeatures());
+                    returned = q.getMaxFeatures();
+                } else {
+                    nextPage = false;
+                }
+            }
+        } else {
+            Query matchedQuery = new Query(q);
+            matchedQuery.setMaxFeatures(-1);
+            matchedQuery.setStartIndex(0);
+            matchedQuery.setSortBy(SortBy.UNSORTED); // no need to sort for counting
+            matched = BigInteger.valueOf(source.getCount(matchedQuery));
 
-        // the counts
-        Query matchedQuery = new Query(q);
-        matchedQuery.setMaxFeatures(-1);
-        matchedQuery.setStartIndex(0);
-        int matched = source.getCount(matchedQuery);
-        int returned = items.size();
+            items = source.getFeatures(q);
+            returned = items.size();
+            nextPage = (q.getStartIndex() + returned < matched.intValue());
+        }
 
-        return new QueryResult(q, items, BigInteger.valueOf(matched), returned);
+        return new QueryResult(q, items, matched, returned, nextPage);
     }
 
     private Filter buildTimeFilter(String time) throws ParseException, IOException {

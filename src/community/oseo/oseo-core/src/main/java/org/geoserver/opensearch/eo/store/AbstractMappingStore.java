@@ -34,6 +34,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.opensearch.eo.ListComplexFeatureCollection;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.api.data.DataAccess;
 import org.geotools.api.data.DataSourceException;
 import org.geotools.api.data.DataStore;
@@ -99,6 +101,9 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     static final Set<String> SERVICE_NAMES = Set.of("wms", "maps", "wcs", "coverages", "wmts", "tiles");
 
     static final Logger LOGGER = Logging.getLogger(AbstractMappingStore.class);
+    private static final int MAX_MEMORY_FEATURES =
+            Integer.parseInt(Optional.ofNullable(GeoServerExtensions.getProperty("OSEO_MAX_MEMORY_FEATURES"))
+                    .orElse("1000"));
     private final FeatureType servicesType;
 
     /**
@@ -518,6 +523,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public FeatureCollection<FeatureType, Feature> getFeatures(Query query) throws IOException {
         // fast path for query with no paging or with no joins
         if (!needsJoins(query) || (query.getStartIndex() == null && query.getMaxFeatures() == Integer.MAX_VALUE)) {
@@ -554,7 +560,15 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         // the mapper state allows the simple to complex map funcion to retain state across
         // feature mappings (e.g. for caching)
         HashMap<String, Object> mapperState = new HashMap<>();
-        return new MappingFeatureCollection(schema, fc, it -> mapToComplexFeature(it, mapperState));
+        MappingFeatureCollection mc =
+                new MappingFeatureCollection(schema, fc, it -> mapToComplexFeature(it, mapperState));
+
+        // the collection is counted on, and potentially iterated multiple times, so cache it in memory if not too big
+        if (query.getMaxFeatures() < MAX_MEMORY_FEATURES) {
+            return new ListComplexFeatureCollection(mc.getSchema(), DataUtilities.list(mc));
+        } else {
+            return mc;
+        }
     }
 
     /** Maps the underlying features (eventually joined) to the output complex feature */

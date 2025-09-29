@@ -361,11 +361,21 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksFirstSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksFirst(null);
+    }
+
+    @Test
     public void testPagingLinksFirst() throws Exception {
+        checkPagingLinksFirst(4);
+    }
+
+    private void checkPagingLinksFirst(Integer expectedNumberMatched) throws Exception {
         String requestPath = "ogc/stac/v1/search?collections=SAS1%2CLANDSAT8"
                 + "&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, self and next
@@ -385,11 +395,21 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksSecondSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksSecond(null);
+    }
+
+    @Test
     public void testPagingLinksSecond() throws Exception {
+        checkPagingLinksSecond(4);
+    }
+
+    private void checkPagingLinksSecond(Integer expectedNumberMatched) throws Exception {
         String requestPath = "ogc/stac/v1/search?collections=SAS1%2CLANDSAT8"
                 + "&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1&startIndex=1";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // three links expected, prev, self and next
@@ -416,11 +436,21 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksLastSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksLast(null);
+    }
+
+    @Test
     public void testPagingLinksLast() throws Exception {
+        checkPagingLinksPostSecond(4);
+    }
+
+    private void checkPagingLinksLast(Integer expectedNumberMatched) throws Exception {
         String requestPath = "ogc/stac/v1/search?collections=SAS1%2CLANDSAT8"
                 + "&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1&startIndex=2";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, prev, self
@@ -440,7 +470,17 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksPostFirstSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksPostFirst(null);
+    }
+
+    @Test
     public void testPagingLinksPostFirst() throws Exception {
+        checkPagingLinksPostFirst(4);
+    }
+
+    private void checkPagingLinksPostFirst(Integer expectedNumberMatched) throws Exception {
         String request =
                 """
                 {
@@ -454,7 +494,7 @@ public class SearchTest extends STACTestSupport {
                 }\
                 """;
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, self and next
@@ -477,7 +517,17 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksPostSecondSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksPostSecond(null);
+    }
+
+    @Test
     public void testPagingLinksPostSecond() throws Exception {
+        checkPagingLinksPostSecond(4);
+    }
+
+    private void checkPagingLinksPostSecond(Integer expectedNumberMatched) throws Exception {
         String request =
                 """
                 {
@@ -492,7 +542,7 @@ public class SearchTest extends STACTestSupport {
                 }\
                 """;
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // three links expected, prev, self and next
@@ -523,7 +573,17 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksPostLastSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksPostLast(null);
+    }
+
+    @Test
     public void testPagingLinksPostLast() throws Exception {
+        checkPagingLinksPostLast(4);
+    }
+
+    private void checkPagingLinksPostLast(Integer expectedNumberMatched) throws Exception {
         String request =
                 """
                 {
@@ -538,7 +598,7 @@ public class SearchTest extends STACTestSupport {
                 }\
                 """;
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, prev, self

@@ -1373,6 +1373,7 @@
             <descriptor>release/ext-web-resource.xml</descriptor>
             <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor>
             <descriptor>release/ext-wps-download.xml</descriptor>
+            <descriptor>release/ext-wps-excel.xml</descriptor>
             <descriptor>release/ext-wps-hazelcast.xml</descriptor>
             <descriptor>release/ext-wps-jdbc.xml</descriptor>
             <descriptor>release/ext-wps.xml</descriptor>

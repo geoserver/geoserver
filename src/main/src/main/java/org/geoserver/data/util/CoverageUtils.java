@@ -482,7 +482,7 @@ public class CoverageUtils {
                 ImageMosaicFormat.USE_IMAGEN_IMAGEREAD.getName().toString();
         String USE_JAI_IMAGEREAD = "USE_JAI_IMAGEREAD";
         if (parameters.keySet().contains(USE_JAI_IMAGEREAD)) {
-            parameters.put(USE_IMAGEN_IMAGEREAD, parameters.get(USE_JAI_IMAGEREAD));
+            parameters.put(USE_IMAGEN_IMAGEREAD, parameters.get(USE_IMAGEN_IMAGEREAD));
         }
 
         // make sure mosaics with many superimposed tiles won't blow up with

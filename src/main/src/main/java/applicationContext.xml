@@ -159,8 +159,8 @@
     <!-- classpath publisher, allows resources in the classpath to be published as static files -->
     <bean id="classpathPublisher" class="org.geoserver.ows.ClasspathPublisher"/>
     
-  <!-- jai initializer -->
-  <bean id="jaiInitializer" class="org.geoserver.jai.JAIInitializer"/>
+  <!-- ImageN initializer -->
+  <bean id="imageNInitializer" class="org.geoserver.jai.ImageNInitializer"/>
   
   <!-- coverage access initializer -->
   <bean id="coverageAccessInitializer" class="org.geoserver.coverage.CoverageAccessInitializer">

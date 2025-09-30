@@ -37,16 +37,16 @@ Settings:
   <li>Online Resource:  "${properties.settings.onlineResource!}"</li>
 </ul>
 
-JAI Configuration:
+Image Processing Configuration:
 
 <ul>
-  <li>Interpolation:  "${properties.jAI.allowInterpolation}"</li>
-  <li>Recycling:  "${properties.jAI.recycling}"</li>
-  <li>Tile Priority:  "${properties.jAI.tilePriority}"</li>
-  <li>Tile Threads:  "${properties.jAI.tileThreads}"</li>
-  <li>Memory Capacity:  "${properties.jAI.memoryCapacity}"</li>
-  <li>Memory Threshold:  "${properties.jAI.memoryThreshold}"</li>
-  <li>PNG Encoder:  "${properties.jAI.pngEncoderType}"</li>
+  <li>Interpolation:  "${properties.imageProcessing.allowInterpolation}"</li>
+  <li>Recycling:  "${properties.imageProcessing.recycling}"</li>
+  <li>Tile Priority:  "${properties.imageProcessing.tilePriority}"</li>
+  <li>Tile Threads:  "${properties.imageProcessing.tileThreads}"</li>
+  <li>Memory Capacity:  "${properties.imageProcessing.memoryCapacity}"</li>
+  <li>Memory Threshold:  "${properties.imageProcessing.memoryThreshold}"</li>
+  <li>PNG Encoder:  "${properties.imageProcessing.pngEncoderType}"</li>
 </ul>
 
 Coverage Access Settings:

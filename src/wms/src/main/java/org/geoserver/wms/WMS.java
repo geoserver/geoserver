@@ -51,7 +51,7 @@ import org.geoserver.catalog.impl.AdvertisedCatalog;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.data.DimensionFilterBuilder;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -448,15 +448,15 @@ public class WMS implements ApplicationContextAware {
         return getServiceInfo().isFeaturesReprojectionDisabled();
     }
 
-    public JAIInfo.PngEncoderType getPNGEncoderType() {
-        JAIInfo jaiInfo = getJaiInfo();
+    public ImageProcessingInfo.PngEncoderType getPNGEncoderType() {
+        ImageProcessingInfo jaiInfo = getJaiInfo();
         return jaiInfo.getPngEncoderType();
     }
 
-    private JAIInfo getJaiInfo() {
+    private ImageProcessingInfo getJaiInfo() {
         GeoServer geoServer = getGeoServer();
         GeoServerInfo global = geoServer.getGlobal();
-        return global.getJAI();
+        return global.getImageProcessing();
     }
 
     public Charset getCharSet() {

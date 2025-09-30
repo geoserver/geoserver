@@ -44,11 +44,11 @@ public interface GeoServerInfo extends Info {
     @Deprecated
     void setUseHeadersProxyURL(Boolean useHeadersProxyURL);
 
-    /** The Java Advanced Imaging configuration. */
-    JAIInfo getJAI();
+    /** The Image Processing configuration. */
+    ImageProcessingInfo getImageProcessing();
 
-    /** Sets the Java Advanced Imaging configuration. */
-    void setJAI(JAIInfo jai);
+    /** Sets the Image Processing configuration. */
+    void setImageProcessing(ImageProcessingInfo jai);
 
     /** The Coverage Access configuration. */
     CoverageAccessInfo getCoverageAccess();

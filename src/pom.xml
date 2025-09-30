@@ -179,7 +179,7 @@
       <!--
         Import the GeoTools platform-dependencies BOM to get consistent third-party dependency versions
         Provides managed versions for several libraries across projects, such as jackson, commons-logging/pool/lang3/cli/text/dbcp,
-        JTS, guava, imageio-ext, jai-ext, and more.
+        JTS, guava, imageio-ext, imageN, and more.
       -->
       <dependency>
         <groupId>org.geotools</groupId>

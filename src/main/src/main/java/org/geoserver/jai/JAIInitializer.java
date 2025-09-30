@@ -12,7 +12,7 @@ import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerInitializer;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 
 /**
  * Initializes ImageN functionality from configuration.
@@ -29,7 +29,7 @@ public class JAIInitializer implements GeoServerInitializer {
 
     @Override
     public void initialize(GeoServer geoServer) throws Exception {
-        initJAI(geoServer.getGlobal().getJAI());
+        initJAI(geoServer.getGlobal().getImageProcessing());
 
         geoServer.addListener(new ConfigurationListenerAdapter() {
 
@@ -41,19 +41,19 @@ public class JAIInitializer implements GeoServerInitializer {
                     // instead of JAI
                     // Make sure to proceed with ImageN init
                     // only in case the global change involved that section
-                    initJAI(global.getJAI());
+                    initJAI(global.getImageProcessing());
                 }
             }
         });
     }
 
     @SuppressWarnings("PMD.CloseResource")
-    void initJAI(JAIInfo jai) {
-        ImageN jaiDef = ImageN.getDefaultInstance();
-        jai.setJAI(jaiDef);
+    void initJAI(ImageProcessingInfo imageProcessing) {
+        ImageN imageN = ImageN.getDefaultInstance();
+        imageProcessing.setJAI(imageN);
 
         // setting ImageN wide hints
-        jaiDef.setRenderingHint(ImageN.KEY_CACHED_TILE_RECYCLING_ENABLED, jai.isRecycling());
+        imageN.setRenderingHint(ImageN.KEY_CACHED_TILE_RECYCLING_ENABLED, imageProcessing.isRecycling());
 
         // force the tile cache to be the one provided by GeoServer
         TileCache oldTileCache = jai.getTileCache();
@@ -63,31 +63,33 @@ public class JAIInitializer implements GeoServerInitializer {
         }
 
         // tile factory and recycler
-        if (jai.isRecycling() && !(jaiDef.getRenderingHint(ImageN.KEY_TILE_FACTORY) instanceof ConcurrentTileFactory)) {
+        if (imageProcessing.isRecycling()
+                && !(imageN.getRenderingHint(ImageN.KEY_TILE_FACTORY) instanceof ConcurrentTileFactory)) {
             final ConcurrentTileFactory recyclingFactory = new ConcurrentTileFactory();
-            jaiDef.setRenderingHint(ImageN.KEY_TILE_FACTORY, recyclingFactory);
-            jaiDef.setRenderingHint(ImageN.KEY_TILE_RECYCLER, recyclingFactory);
+            imageN.setRenderingHint(ImageN.KEY_TILE_FACTORY, recyclingFactory);
+            imageN.setRenderingHint(ImageN.KEY_TILE_RECYCLER, recyclingFactory);
         } else {
-            if (!jai.isRecycling()) {
+            if (!imageProcessing.isRecycling()) {
                 final PassThroughTileFactory passThroughFactory = new PassThroughTileFactory();
-                jaiDef.setRenderingHint(ImageN.KEY_TILE_FACTORY, passThroughFactory);
-                jaiDef.setRenderingHint(ImageN.KEY_TILE_RECYCLER, passThroughFactory);
+                imageN.setRenderingHint(ImageN.KEY_TILE_FACTORY, passThroughFactory);
+                imageN.setRenderingHint(ImageN.KEY_TILE_RECYCLER, passThroughFactory);
             }
         }
 
         // Setting up Cache Capacity
-        TileCache jaiCache = jaiDef.getTileCache();
-        jai.setTileCache(jaiCache);
+        TileCache jaiCache = imageN.getTileCache();
+        imageProcessing.setTileCache(jaiCache);
 
-        long jaiMemory = (long) (jai.getMemoryCapacity() * Runtime.getRuntime().maxMemory());
+        long jaiMemory = (long)
+                (imageProcessing.getMemoryCapacity() * Runtime.getRuntime().maxMemory());
         jaiCache.setMemoryCapacity(jaiMemory);
 
         // Setting up Cache Threshold
-        jaiCache.setMemoryThreshold((float) jai.getMemoryThreshold());
+        jaiCache.setMemoryThreshold((float) imageProcessing.getMemoryThreshold());
 
-        jaiDef.getTileScheduler().setParallelism(jai.getTileThreads());
-        jaiDef.getTileScheduler().setPrefetchParallelism(jai.getTileThreads());
-        jaiDef.getTileScheduler().setPriority(jai.getTilePriority());
-        jaiDef.getTileScheduler().setPrefetchPriority(jai.getTilePriority());
+        imageN.getTileScheduler().setParallelism(imageProcessing.getTileThreads());
+        imageN.getTileScheduler().setPrefetchParallelism(imageProcessing.getTileThreads());
+        imageN.getTileScheduler().setPriority(imageProcessing.getTilePriority());
+        imageN.getTileScheduler().setPrefetchPriority(imageProcessing.getTilePriority());
     }
 }

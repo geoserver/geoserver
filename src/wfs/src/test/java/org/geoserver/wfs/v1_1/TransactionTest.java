@@ -10,16 +10,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.impl.AttributeTypeInfoImpl;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
@@ -31,6 +35,7 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gml3.GML;
+import org.geotools.util.NumberRange;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Point;
@@ -49,6 +54,7 @@ public class TransactionTest extends WFSTestSupport {
     @Before
     public void revert() throws Exception {
         revertLayer(CiteTestData.ROAD_SEGMENTS);
+        removeStore("gs", "foo");
         getTestData().addVectorLayer(WITH_GML, Collections.emptyMap(), getClass(), getCatalog());
     }
 
@@ -478,7 +484,7 @@ public class TransactionTest extends WFSTestSupport {
                 + "</wfs:Transaction>";
 
         Document dom = postAsDOM("wfs", xml);
-        print(dom);
+        //  print(dom);
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
 
         assertEquals(
@@ -541,22 +547,22 @@ public class TransactionTest extends WFSTestSupport {
 
     @Test
     public void testUpdateForcedSRS() throws Exception {
-        testUpdate("srsName=\"EPSG:4326\"", this::updateSrsOnGeometry);
-        testUpdate("srsName=\"EPSG:4326\"", this::updateSrsOnRoot);
+        testUpdateSrs("srsName=\"EPSG:4326\"", this::updateSrsOnGeometry);
+        testUpdateSrs("srsName=\"EPSG:4326\"", this::updateSrsOnRoot);
     }
 
     @Test
     public void testUpdateForcedUrnSRS() throws Exception {
-        testUpdate("srsName=\"urn:x-ogc:def:crs:EPSG:6.11.2:4326\"", this::updateSrsOnGeometry);
-        testUpdate("srsName=\"urn:x-ogc:def:crs:EPSG:6.11.2:4326\"", this::updateSrsOnRoot);
+        testUpdateSrs("srsName=\"urn:x-ogc:def:crs:EPSG:6.11.2:4326\"", this::updateSrsOnGeometry);
+        testUpdateSrs("srsName=\"urn:x-ogc:def:crs:EPSG:6.11.2:4326\"", this::updateSrsOnRoot);
     }
 
     @Test
     public void testUpdateNoSRS() throws Exception {
-        testUpdate("", this::updateSrsOnGeometry);
+        testUpdateSrs("", this::updateSrsOnGeometry);
     }
 
-    private void testUpdate(String srs, Function<String, String> updateStatementBuilder) throws Exception {
+    private void testUpdateSrs(String srs, Function<String, String> updateStatementBuilder) throws Exception {
         String xml = updateStatementBuilder.apply(srs);
 
         Document dom = postAsDOM("wfs", xml);
@@ -816,30 +822,9 @@ public class TransactionTest extends WFSTestSupport {
     @Test
     public void testInsertUseExistingId() throws Exception {
         // create a store that can actually handle user specified ids
-        // TODO: factor this out into base class or something
-        Catalog cat = getCatalog();
-        DataStoreInfo ds = cat.getFactory().createDataStore();
-        ds.setName("foo");
-        ds.setWorkspace(cat.getDefaultWorkspace());
-        ds.setEnabled(true);
+        TestFeatureStoreContext testFeatureStoreContext = createTestFeatureStoreContext();
+        SimpleFeatureStore fs = testFeatureStoreContext.featureStore;
 
-        Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
-        cat.add(ds);
-
-        DataStore store = (DataStore) ds.getDataStore(null);
-        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-        tb.setName("bar");
-        tb.add("name", String.class);
-        tb.add("geom", Point.class);
-
-        store.createSchema(tb.buildFeatureType());
-
-        CatalogBuilder cb = new CatalogBuilder(cat);
-        cb.setStore(ds);
-
-        SimpleFeatureStore fs = (SimpleFeatureStore) store.getFeatureSource("bar");
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(fs.getSchema());
         b.add("one");
         b.add(new WKTReader().read("POINT(1 1)"));
@@ -848,8 +833,7 @@ public class TransactionTest extends WFSTestSupport {
         fc.add(b.buildFeature(null));
         fs.addFeatures(fc);
 
-        FeatureTypeInfo ft = cb.buildFeatureType(fs);
-        cat.add(ft);
+        getCatalog().add(testFeatureStoreContext.featureTypeInfo);
 
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
                 + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
@@ -1011,6 +995,218 @@ public class TransactionTest extends WFSTestSupport {
         checkOws10Exception(dom, "InvalidParameterValue");
     }
 
+    @Test
+    public void testInsertWithRestrictions() throws Exception {
+
+        TestFeatureStoreContext testFeatureStoreContext = createTestFeatureStoreContext();
+        FeatureTypeInfo featureTypeInfo = testFeatureStoreContext.featureTypeInfo;
+
+        AttributeTypeInfo restrictedAttribute = new AttributeTypeInfoImpl();
+        restrictedAttribute.setName("radius");
+        restrictedAttribute.setRange(NumberRange.create(Math.E, Math.PI));
+
+        featureTypeInfo.getAttributes().add(restrictedAttribute);
+
+        getCatalog().add(featureTypeInfo);
+
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
+                + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + " xmlns:gml=\"http://www.opengis.net/gml\" "
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "'>"
+                + "<wfs:Insert>"
+                + " <gs:bar gml:id='bar.1234'>"
+                + "    <gs:radius>3.001</gs:radius>"
+                + " </gs:bar>"
+                + "</wfs:Insert>"
+                + "</wfs:Transaction>";
+
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
+        XMLAssert.assertXpathExists("//ogc:FeatureId[@fid = 'bar.1']", dom);
+        dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&featureId=bar.1");
+        XMLAssert.assertXpathExists("//gs:bar[@gml:id = 'bar.1']", dom);
+        XMLAssert.assertXpathEvaluatesTo("3.001", "//gs:radius", dom);
+    }
+
+    @Test
+    public void testInsertViolatingRestrictions() throws Exception {
+
+        TestFeatureStoreContext testFeatureStoreContext = createTestFeatureStoreContext();
+        FeatureTypeInfo featureTypeInfo = testFeatureStoreContext.featureTypeInfo;
+
+        AttributeTypeInfo restrictedAttribute = new AttributeTypeInfoImpl();
+        restrictedAttribute.setName("radius");
+        restrictedAttribute.setRange(NumberRange.create(Math.E, Math.PI));
+
+        featureTypeInfo.getAttributes().add(restrictedAttribute);
+
+        getCatalog().add(featureTypeInfo);
+
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
+                + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + " xmlns:gml=\"http://www.opengis.net/gml\" "
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "'>"
+                + "<wfs:Insert>"
+                + " <gs:bar gml:id='bar.1234'>"
+                + "    <gs:radius>1234</gs:radius>"
+                + " </gs:bar>"
+                + "</wfs:Insert>"
+                + "</wfs:Transaction>";
+
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+        NodeList exceptionElements = dom.getElementsByTagName("ows:ExceptionText");
+        assertEquals(1, exceptionElements.getLength());
+        String exceptionText = exceptionElements.item(0).getTextContent();
+        assertTrue(exceptionText.startsWith(
+                "Insert error: Restriction evaluation failed for attribute 'radius' of feature 'bar.1234' ("));
+    }
+
+    @Test
+    public void testUpdateWithRestrictions() throws Exception {
+
+        TestFeatureStoreContext testFeatureStoreContext = createTestFeatureStoreContext();
+        SimpleFeatureStore featureStore = testFeatureStoreContext.featureStore;
+        FeatureTypeInfo featureTypeInfo = testFeatureStoreContext.featureTypeInfo;
+
+        AttributeTypeInfo restrictedAttribute = new AttributeTypeInfoImpl();
+        restrictedAttribute.setName("name");
+        restrictedAttribute.setBinding(String.class);
+        restrictedAttribute.setOptions(List.of("A", "B"));
+
+        featureTypeInfo.getAttributes().add(restrictedAttribute);
+
+        getCatalog().add(featureTypeInfo);
+
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureStore.getSchema());
+        featureBuilder.add("A");
+        featureCollection.add(featureBuilder.buildFeature(null));
+
+        featureStore.addFeatures(featureCollection);
+
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
+                + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + " xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "'>"
+                + "<wfs:Update typeName='gs:bar'>"
+                + " <wfs:Property>"
+                + "    <wfs:Name>name</wfs:Name>"
+                + "    <wfs:Value>B</wfs:Value>"
+                + " </wfs:Property>"
+                + " <ogc:Filter>"
+                + "    <ogc:FeatureId fid='bar.1'/>"
+                + " </ogc:Filter>"
+                + "</wfs:Update>"
+                + "</wfs:Transaction>";
+
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
+        XMLAssert.assertXpathEvaluatesTo("1", "//wfs:totalUpdated", dom);
+
+        dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&featureId=bar.1");
+        XMLAssert.assertXpathExists("//gs:bar[@gml:id = 'bar.1']", dom);
+        XMLAssert.assertXpathEvaluatesTo("B", "//gml:name", dom);
+    }
+
+    @Test
+    public void testUpdateViolatingRestrictions() throws Exception {
+
+        TestFeatureStoreContext testFeatureStoreContext = createTestFeatureStoreContext();
+        SimpleFeatureStore featureStore = testFeatureStoreContext.featureStore;
+        FeatureTypeInfo featureTypeInfo = testFeatureStoreContext.featureTypeInfo;
+
+        AttributeTypeInfo restrictedAttribute = new AttributeTypeInfoImpl();
+        restrictedAttribute.setName("name");
+        restrictedAttribute.setBinding(String.class);
+        restrictedAttribute.setOptions(List.of("A", "B"));
+
+        featureTypeInfo.getAttributes().add(restrictedAttribute);
+
+        getCatalog().add(featureTypeInfo);
+
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureStore.getSchema());
+        featureBuilder.add("A");
+
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
+        featureCollection.add(featureBuilder.buildFeature(null));
+        featureStore.addFeatures(featureCollection);
+
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
+                + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + " xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "'>"
+                + "<wfs:Update typeName='gs:bar'>"
+                + " <wfs:Property>"
+                + "    <wfs:Name>name</wfs:Name>"
+                + "    <wfs:Value>C</wfs:Value>"
+                + " </wfs:Property>"
+                + " <ogc:Filter>"
+                + "    <ogc:FeatureId fid='bar.1'/>"
+                + " </ogc:Filter>"
+                + "</wfs:Update>"
+                + "</wfs:Transaction>";
+
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+        NodeList exceptionElements = dom.getElementsByTagName("ows:ExceptionText");
+        assertEquals(1, exceptionElements.getLength());
+        String exceptionText = exceptionElements.item(0).getTextContent();
+        assertTrue(exceptionText.startsWith(
+                "Update error: Restriction evaluation failed for the value of attribute 'name' ("));
+    }
+
+    @Test
+    public void testUpdateWithTypeMismatch() throws Exception {
+
+        TestFeatureStoreContext testFeatureStoreContext = createTestFeatureStoreContext();
+        SimpleFeatureStore featureStore = testFeatureStoreContext.featureStore;
+        FeatureTypeInfo featureTypeInfo = testFeatureStoreContext.featureTypeInfo;
+
+        getCatalog().add(featureTypeInfo);
+
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureStore.getSchema());
+        featureBuilder.add("name");
+        featureBuilder.add(null);
+        featureBuilder.add(Math.PI);
+
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
+        featureCollection.add(featureBuilder.buildFeature(null));
+        featureStore.addFeatures(featureCollection);
+
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
+                + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + " xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "'>"
+                + "<wfs:Update typeName='gs:bar'>"
+                + " <wfs:Property>"
+                + "    <wfs:Name>radius</wfs:Name>"
+                + "    <wfs:Value>ABC</wfs:Value>"
+                + " </wfs:Property>"
+                + " <ogc:Filter>"
+                + "    <ogc:FeatureId fid='bar.1'/>"
+                + " </ogc:Filter>"
+                + "</wfs:Update>"
+                + "</wfs:Transaction>";
+
+        Document dom = postAsDOM("wfs", xml);
+        assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+        NodeList exceptionElements = dom.getElementsByTagName("ows:ExceptionText");
+        assertEquals(1, exceptionElements.getLength());
+        String exceptionText = exceptionElements.item(0).getTextContent();
+        assertTrue(exceptionText.startsWith("Invalid value for property"));
+    }
+
     /** Tests XML entity expansion limit on parsing with system property configuration. */
     @Test
     public void testEntityExpansionLimitOnTransaction() throws Exception {
@@ -1055,5 +1251,51 @@ public class TransactionTest extends WFSTestSupport {
                     </xxx_all_service_city>
                   </Insert>
                 </Transaction>""";
+    }
+
+    private TestFeatureStoreContext createTestFeatureStoreContext() throws IOException {
+        Catalog catalog = getCatalog();
+
+        DataStoreInfo dataStoreInfo = catalog.getFactory().createDataStore();
+        dataStoreInfo.setName("foo");
+        dataStoreInfo.setWorkspace(catalog.getDefaultWorkspace());
+        dataStoreInfo.setEnabled(true);
+        Map<String, Serializable> params = dataStoreInfo.getConnectionParameters();
+        params.put("dbtype", "h2");
+        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+        catalog.add(dataStoreInfo);
+
+        DataStore store = (DataStore) dataStoreInfo.getDataStore(null);
+
+        try {
+            store.removeSchema("bar");
+        } catch (IllegalArgumentException ex) {
+            /* ignore exception if schema does not exist */
+        }
+
+        SimpleFeatureTypeBuilder featureTypeBuilder = new SimpleFeatureTypeBuilder();
+        featureTypeBuilder.setName("bar");
+        featureTypeBuilder.add("name", String.class);
+        featureTypeBuilder.add("geom", Point.class);
+        featureTypeBuilder.add("radius", Double.class);
+
+        store.createSchema(featureTypeBuilder.buildFeatureType());
+
+        CatalogBuilder catalogBuilder = new CatalogBuilder(catalog);
+        catalogBuilder.setStore(dataStoreInfo);
+
+        SimpleFeatureStore featureStore = (SimpleFeatureStore) store.getFeatureSource("bar");
+
+        return new TestFeatureStoreContext(featureStore, catalogBuilder.buildFeatureType(featureStore));
+    }
+
+    public static final class TestFeatureStoreContext {
+        private final SimpleFeatureStore featureStore;
+        private final FeatureTypeInfo featureTypeInfo;
+
+        public TestFeatureStoreContext(SimpleFeatureStore featureStore, FeatureTypeInfo featureTypeInfo) {
+            this.featureStore = featureStore;
+            this.featureTypeInfo = featureTypeInfo;
+        }
     }
 }

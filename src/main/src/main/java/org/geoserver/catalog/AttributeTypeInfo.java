@@ -7,9 +7,11 @@ package org.geoserver.catalog;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.util.InternationalString;
+import org.geotools.util.NumberRange;
 
 /**
  * An attribute exposed by a {@link FeatureTypeInfo}.
@@ -79,10 +81,22 @@ public interface AttributeTypeInfo extends Serializable {
     /** Sets the attribute length */
     void setLength(Integer length);
 
+    /** Returns the {@link NumberRange} restriction for the value of this attribute, or null if none. */
+    NumberRange<? extends Number> getRange();
+
+    /** Sets the {@link NumberRange} restriction for the value of this attribute */
+    void setRange(NumberRange<? extends Number> range);
+
+    /** Returns the list of valid values for this attribute, or null if none. */
+    List<Object> getOptions();
+
+    /** Sets the list of valid values for this attribute. */
+    void setOptions(List<Object> options);
+
     /**
      * The same as {@link Object#equals(Object)}, except doesn't compare {@link FeatureTypeInfo}s, to avoid recursion.
      */
-    boolean equalsIngnoreFeatureType(Object obj);
+    boolean equalsIgnoreFeatureType(Object obj);
 
     /**
      * Returns the actual value of source, eventually null if not set yet (unlike #getsSource(), which returns the

@@ -27,7 +27,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected SettingsInfo settings = new SettingsInfoImpl();
 
-    protected JAIInfo jai = new JAIInfoImpl();
+    protected JAIInfo imageProcessing = new JAIInfoImpl();
 
     protected CoverageAccessInfo coverageAccess = new CoverageAccessInfoImpl();
 
@@ -110,12 +110,12 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     @Override
     public JAIInfo getJAI() {
-        return jai;
+        return imageProcessing;
     }
 
     @Override
     public void setJAI(JAIInfo jai) {
-        this.jai = jai;
+        this.imageProcessing = jai;
     }
 
     @Override

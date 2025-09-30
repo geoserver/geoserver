@@ -226,7 +226,7 @@ public class StatusPanel extends Panel {
         GeoServerInfo geoServerInfo = parent.getGeoServer().getGlobal();
         ImageProcessingInfo jaiInfo = geoServerInfo.getImageProcessing();
         @SuppressWarnings("PMD.CloseResource")
-        ImageN jai = jaiInfo.getJAI();
+        ImageN imagen = jaiInfo.getJAI();
         CoverageAccessInfo coverageAccess = geoServerInfo.getCoverageAccess();
         TileCache jaiCache = jaiInfo.getTileCache();
 
@@ -237,10 +237,10 @@ public class StatusPanel extends Panel {
             values.put(KEY_JAI_MEM_USAGE, "-");
         }
         values.put(KEY_JAI_MEM_THRESHOLD, Integer.toString((int) (100.0f * jaiCache.getMemoryThreshold())) + "%");
-        values.put(KEY_JAI_TILE_THREADS, jai.getTileScheduler().getParallelism());
+        values.put(KEY_JAI_TILE_THREADS, imagen.getTileScheduler().getParallelism());
         values.put(
                 KEY_JAI_TILE_THREAD_PRIORITY,
-                Integer.toString(jai.getTileScheduler().getPriority()));
+                Integer.toString(imagen.getTileScheduler().getPriority()));
 
         values.put(KEY_COVERAGEACCESS_CORE_POOL_SIZE, coverageAccess.getCorePoolSize());
         values.put(KEY_COVERAGEACCESS_MAX_POOL_SIZE, coverageAccess.getMaxPoolSize());

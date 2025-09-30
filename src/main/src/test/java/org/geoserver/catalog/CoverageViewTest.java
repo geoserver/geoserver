@@ -118,7 +118,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         coverageInfo.getDimensions().get(0).setName("Red");
         coverageInfo.getDimensions().get(1).setName("Green");
         coverageInfo.getDimensions().get(2).setName("Blue");
@@ -133,7 +133,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(BANDS_FLAGS_VIEW, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
     }
 
@@ -279,7 +279,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo("waterView", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
         final MetadataMap metadata = coverageInfo.getMetadata();
         final CoverageView metadataCoverageView = (CoverageView) metadata.get(CoverageView.COVERAGE_VIEW);
@@ -856,7 +856,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(name, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
 
         return cat.getCoverage(coverageInfo.getId());

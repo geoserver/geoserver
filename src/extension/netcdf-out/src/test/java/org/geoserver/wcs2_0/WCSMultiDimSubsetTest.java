@@ -70,7 +70,7 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
         setupRasterDimension(coverageName, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         CoverageInfo info = getCatalog().getCoverageByName(coverageName);
         // Add this to prevent resource locking due to deferred disposal
-        info.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        info.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         getCatalog().save(info);
 
         /* MSG (Europe) IR 12.0 image using EPSG:4087 - WGS 84 / World Equidistant Cylindrical CRS */
@@ -80,7 +80,7 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
         setupRasterDimension(coverageName, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         info = getCatalog().getCoverageByName(coverageName);
         // Add this to prevent resource locking due to deferred disposal
-        info.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        info.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         getCatalog().save(info);
 
         /* world test data without a native SRS. Forcing use of declared CRS */
@@ -90,7 +90,7 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
         info.setNativeBoundingBox(ReferencedEnvelope.create(bbox, null));
         info.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         // Add this to prevent resource locking due to deferred disposal
-        info.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        info.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         getCatalog().save(info);
     }
 
@@ -107,7 +107,7 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
             // source
             CoverageInfo coverageInfo = this.getCatalog().getCoverageByName(LAMBERTMOSAIC.getLocalPart());
             coverageReader = coverageInfo.getGridCoverageReader(null, null);
-            final ParameterValue<Boolean> useJAI = ImageMosaicFormat.USE_JAI_IMAGEREAD.createValue();
+            final ParameterValue<Boolean> useJAI = ImageMosaicFormat.USE_IMAGEN_IMAGEREAD.createValue();
             useJAI.setValue(false);
             sourceCoverage = (GridCoverage2D) coverageReader.read(useJAI);
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();

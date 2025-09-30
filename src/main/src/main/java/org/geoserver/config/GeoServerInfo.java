@@ -48,7 +48,7 @@ public interface GeoServerInfo extends Info {
     ImageProcessingInfo getImageProcessing();
 
     /** Sets the Image Processing configuration. */
-    void setImageProcessing(ImageProcessingInfo jai);
+    void setImageProcessing(ImageProcessingInfo imagen);
 
     /** The Coverage Access configuration. */
     CoverageAccessInfo getCoverageAccess();

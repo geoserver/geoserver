@@ -783,7 +783,7 @@ class RasterDownload {
         boolean replacedJai = false;
         for (GeneralParameterValue pv : readParameters) {
             String pdCode = pv.getDescriptor().getName().getCode();
-            if (AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode().equals(pdCode)) {
+            if (AbstractGridFormat.USE_IMAGEN_IMAGEREAD.getName().getCode().equals(pdCode)) {
                 replacedJai = true;
                 ParameterValue pvalue = (ParameterValue) pv;
                 pvalue.setValue(Boolean.TRUE);
@@ -796,7 +796,7 @@ class RasterDownload {
                     parameterDescriptors,
                     readParameters,
                     Boolean.TRUE,
-                    AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode());
+                    AbstractGridFormat.USE_IMAGEN_IMAGEREAD.getName().getCode());
         }
 
         // Setting band selection parameter

@@ -87,7 +87,7 @@ class ImageReader {
                 parameterDescriptors,
                 readParameters,
                 true,
-                AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode());
+                AbstractGridFormat.USE_IMAGEN_IMAGEREAD.getName().getCode());
 
         // grab the original grid geometry
         Filter readFilter = getReadFilter(readParameters);

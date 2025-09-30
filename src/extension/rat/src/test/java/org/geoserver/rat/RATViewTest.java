@@ -61,7 +61,7 @@ public class RATViewTest extends GeoServerSystemTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         coverageInfo.getDimensions().get(0).setName("Red");
         coverageInfo.getDimensions().get(1).setName("Green");
         coverageInfo.getDimensions().get(2).setName("Blue");

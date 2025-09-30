@@ -453,7 +453,7 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
         // Adding the coverageView to the catalog
         final String layerName = "waterview";
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(layerName, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         coverageInfo.getMetadata().put(WCSEOMetadata.DATASET.key, true);
         catalog.add(coverageInfo);
 

@@ -58,7 +58,7 @@ public interface ImageProcessingInfo extends Cloneable, Serializable {
     /** The jai instance. */
     ImageN getJAI();
 
-    void setJAI(ImageN jai);
+    void setJAI(ImageN imagen);
 
     /** The jai tile cache. */
     TileCache getTileCache();

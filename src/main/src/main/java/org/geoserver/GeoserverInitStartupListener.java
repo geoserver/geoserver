@@ -314,7 +314,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 }
             }
 
-            // unload everything that ImageN ImageIO can still refer to
+            // unload everything that ImageIO can still refer to
             // We need to store them and unregister later to avoid concurrent modification
             // exceptions
             final IIORegistry ioRegistry = IIORegistry.getDefaultInstance();

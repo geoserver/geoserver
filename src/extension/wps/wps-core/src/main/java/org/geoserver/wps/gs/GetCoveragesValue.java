@@ -158,7 +158,8 @@ public class GetCoveragesValue implements GeoServerProcess {
                         reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER),
                         reader.getCoordinateReferenceSystem()));
 
-        String useJaiImageRead = ImageMosaicFormat.USE_JAI_IMAGEREAD.getName().toString();
+        String useJaiImageRead =
+                ImageMosaicFormat.USE_IMAGEN_IMAGEREAD.getName().toString();
         if (parameters.keySet().contains(useJaiImageRead)) {
             parameters.put(useJaiImageRead, false);
         }

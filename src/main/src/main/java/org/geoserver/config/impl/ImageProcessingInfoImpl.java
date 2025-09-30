@@ -126,7 +126,7 @@ public class ImageProcessingInfoImpl implements Serializable, ImageProcessingInf
     }
 
     @Override
-    public void setJAI(ImageN jai) {
+    public void setJAI(ImageN imagen) {
         // do nothing. REVISIT: we're using the singleton ImageN instance and guess there's no way to
         // get a non singleton one, so does this method make sense at all? In any case, this class
         // is meant to be serializable, hence the change in getJAI() to return the singleton

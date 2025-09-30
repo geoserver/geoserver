@@ -14,7 +14,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.filters.LoggingFilter;
@@ -27,7 +27,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected SettingsInfo settings = new SettingsInfoImpl();
 
-    protected JAIInfo imageProcessing = new JAIInfoImpl();
+    protected ImageProcessingInfo imageProcessing = new ImageProcessingInfoImpl();
 
     protected CoverageAccessInfo coverageAccess = new CoverageAccessInfoImpl();
 
@@ -109,12 +109,12 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     }
 
     @Override
-    public JAIInfo getJAI() {
+    public ImageProcessingInfo getImageProcessing() {
         return imageProcessing;
     }
 
     @Override
-    public void setJAI(JAIInfo jai) {
+    public void setImageProcessing(ImageProcessingInfo jai) {
         this.imageProcessing = jai;
     }
 

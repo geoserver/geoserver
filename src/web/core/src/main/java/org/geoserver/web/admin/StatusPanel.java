@@ -30,7 +30,7 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.api.data.DataAccess;
@@ -155,7 +155,8 @@ public class StatusPanel extends Panel {
 
             @Override
             public void onClick() {
-                TileCache jaiCache = parent.getGeoServer().getGlobal().getJAI().getTileCache();
+                TileCache jaiCache =
+                        parent.getGeoServer().getGlobal().getImageProcessing().getTileCache();
                 final long capacityBefore = jaiCache.getMemoryCapacity();
                 jaiCache.flush();
                 jaiCache.setMemoryCapacity(0); // to be sure we realease all tiles
@@ -223,7 +224,7 @@ public class StatusPanel extends Panel {
                         + ")");
 
         GeoServerInfo geoServerInfo = parent.getGeoServer().getGlobal();
-        JAIInfo jaiInfo = geoServerInfo.getJAI();
+        ImageProcessingInfo jaiInfo = geoServerInfo.getImageProcessing();
         @SuppressWarnings("PMD.CloseResource")
         ImageN jai = jaiInfo.getJAI();
         CoverageAccessInfo coverageAccess = geoServerInfo.getCoverageAccess();

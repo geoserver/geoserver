@@ -131,7 +131,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
@@ -139,7 +139,7 @@ import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
-import org.geoserver.config.impl.JAIInfoImpl;
+import org.geoserver.config.impl.ImageProcessingInfoImpl;
 import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.impl.SettingsInfoImpl;
@@ -324,7 +324,7 @@ public class XStreamPersister {
         xs.alias("global", GeoServerInfo.class);
         xs.alias("settings", SettingsInfo.class);
         xs.alias("logging", LoggingInfo.class);
-        xs.alias("jai", JAIInfo.class);
+        xs.alias("jai", ImageProcessingInfo.class);
         xs.alias("coverageAccess", CoverageAccessInfo.class);
         xs.alias("catalog", Catalog.class);
         xs.alias("namespace", NamespaceInfo.class);
@@ -437,9 +437,11 @@ public class XStreamPersister {
                 impl(CoverageInfo.class), "interpolationMethods", new LaxCollectionConverter(xs.getMapper()));
         xs.registerLocalConverter(impl(CoverageInfo.class), "dimensions", new LaxCollectionConverter(xs.getMapper()));
 
-        // JAIInfo
+        // ImageProcessingInfo
         xs.registerLocalConverter(
-                impl(JAIInfo.class), "pngEncoderType", new EnumWithDefaultConverter(JAIInfo.PngEncoderType.JDK));
+                impl(ImageProcessingInfo.class),
+                "pngEncoderType",
+                new EnumWithDefaultConverter(ImageProcessingInfo.PngEncoderType.JDK));
 
         // CoverageDimensionInfo
         xs.registerLocalConverter(impl(CoverageDimensionInfo.class), "range", new NumberRangeConverter());
@@ -539,7 +541,7 @@ public class XStreamPersister {
         // setup white list of accepted classes
         xs.allowTypeHierarchy(Info.class);
         xs.allowTypeHierarchy(Multimap.class);
-        xs.allowTypeHierarchy(JAIInfo.class);
+        xs.allowTypeHierarchy(ImageProcessingInfo.class);
         xs.allowTypeHierarchy(CoverageAccessInfo.class);
         xs.allowTypes(new Class[] {DynamicProxyMapper.DynamicProxy.class});
         xs.allowTypes(new String[] {"java.util.Collections$SingletonList"});
@@ -705,7 +707,7 @@ public class XStreamPersister {
         xs.addDefaultImplementation(GeoServerInfoImpl.class, GeoServerInfo.class);
         xs.addDefaultImplementation(SettingsInfoImpl.class, SettingsInfo.class);
         xs.addDefaultImplementation(LoggingInfoImpl.class, LoggingInfo.class);
-        xs.addDefaultImplementation(JAIInfoImpl.class, JAIInfo.class);
+        xs.addDefaultImplementation(ImageProcessingInfoImpl.class, ImageProcessingInfo.class);
         xs.addDefaultImplementation(CoverageAccessInfoImpl.class, CoverageAccessInfo.class);
         xs.addDefaultImplementation(ContactInfoImpl.class, ContactInfo.class);
         xs.addDefaultImplementation(AttributionInfoImpl.class, AttributionInfo.class);

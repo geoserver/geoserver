@@ -11,7 +11,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.converters.XStreamMessageConverter;
@@ -97,7 +97,7 @@ public class SettingsController extends AbstractGeoServerController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<>(clazz, Arrays.asList(JAIInfo.class, CoverageAccessInfo.class));
+        return new ObjectToMapWrapper<>(clazz, Arrays.asList(ImageProcessingInfo.class, CoverageAccessInfo.class));
     }
 
     @Override

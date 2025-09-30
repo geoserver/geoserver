@@ -14,10 +14,10 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFactory;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.impl.JAIInfoImpl;
+import org.geoserver.config.impl.ImageProcessingInfoImpl;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 
@@ -116,13 +116,16 @@ public class LegacyConfigurationImporter {
         info.getSettings().setContact(contactInfo);
 
         // jai
-        JAIInfo jai = new JAIInfoImpl();
-        jai.setMemoryCapacity((Double) value(global.get("JaiMemoryCapacity"), JAIInfoImpl.DEFAULT_MemoryCapacity));
-        jai.setMemoryThreshold((Double) value(global.get("JaiMemoryThreshold"), JAIInfoImpl.DEFAULT_MemoryThreshold));
-        jai.setTileThreads((Integer) value(global.get("JaiTileThreads"), JAIInfoImpl.DEFAULT_TileThreads));
-        jai.setTilePriority((Integer) value(global.get("JaiTilePriority"), JAIInfoImpl.DEFAULT_TilePriority));
-        jai.setRecycling((Boolean) value(global.get("JaiRecycling"), JAIInfoImpl.DEFAULT_Recycling));
-        info.setJAI(jai);
+        ImageProcessingInfo jai = new ImageProcessingInfoImpl();
+        jai.setMemoryCapacity(
+                (Double) value(global.get("JaiMemoryCapacity"), ImageProcessingInfoImpl.DEFAULT_MemoryCapacity));
+        jai.setMemoryThreshold(
+                (Double) value(global.get("JaiMemoryThreshold"), ImageProcessingInfoImpl.DEFAULT_MemoryThreshold));
+        jai.setTileThreads((Integer) value(global.get("JaiTileThreads"), ImageProcessingInfoImpl.DEFAULT_TileThreads));
+        jai.setTilePriority(
+                (Integer) value(global.get("JaiTilePriority"), ImageProcessingInfoImpl.DEFAULT_TilePriority));
+        jai.setRecycling((Boolean) value(global.get("JaiRecycling"), ImageProcessingInfoImpl.DEFAULT_Recycling));
+        info.setImageProcessing(jai);
 
         geoServer.setGlobal(info);
 

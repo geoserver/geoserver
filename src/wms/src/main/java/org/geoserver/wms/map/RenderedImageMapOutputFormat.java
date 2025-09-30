@@ -26,7 +26,7 @@ import org.eclipse.imagen.Interpolation;
 import org.eclipse.imagen.InterpolationBicubic2;
 import org.eclipse.imagen.InterpolationBilinear;
 import org.eclipse.imagen.InterpolationNearest;
-import org.eclipse.imagen.LookupTableJAI;
+import org.eclipse.imagen.LookupTableImageN;
 import org.eclipse.imagen.media.lookup.LookupTable;
 import org.eclipse.imagen.media.lookup.LookupTableFactory;
 import org.geoserver.catalog.LayerInfo;
@@ -109,7 +109,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private static final int KB = 1024;
 
     /** The lookup table used for data type transformation (it's really the identity one) */
-    private static LookupTableJAI IDENTITY_TABLE = new LookupTableJAI(getTable());
+    private static LookupTableImageN IDENTITY_TABLE = new LookupTableImageN(getTable());
 
     private Function<WMSMapContent, LabelCache> labelCache = null;
 

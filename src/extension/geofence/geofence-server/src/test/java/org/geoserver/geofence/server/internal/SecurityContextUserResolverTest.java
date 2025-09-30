@@ -2,8 +2,12 @@ package org.geoserver.geofence.server.internal;
 
 import java.util.Collection;
 import java.util.Collections;
+import org.apache.commons.lang3.JavaVersion;
+import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.security.impl.GeoServerRole;
 import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
@@ -12,6 +16,12 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityContextUserResolverTest {
+
+    @BeforeClass
+    public static void checkJDK() {
+        // won't work with Java 25 due to bytebuddy needed by Hibernate being too old
+        Assume.assumeFalse(SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_23));
+    }
 
     @Test
     public void existsUser() {

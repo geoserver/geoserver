@@ -126,7 +126,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                 case NO_CRS:
                     // provide link to choose crs
                     return new NoCRSPanel(id, itemModel);
-                    // return createFixCRSLink(id, itemModel);
+                // return createFixCRSLink(id, itemModel);
                 case READY:
                     // return advanced option link
                     // for now disable if this is not a vector layer
@@ -245,8 +245,8 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                 case NO_FORMAT:
                 case BAD_FORMAT:
                     return "warning-link";
-                    // case ERROR:
-                    //    return "error-link";
+                // case ERROR:
+                //    return "error-link";
                 case CANCELED:
                     return "cancel-link";
                 case PENDING:

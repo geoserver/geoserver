@@ -195,7 +195,7 @@ paths:
 #            value of "none" to avoid configuring coverages.
 #          schema:
 #            type: string
-#        - name: USE_JAI_IMAGEREAD
+#        - name: USE_IMAGEN_IMAGEREAD
 #          in: query
 #          required: false
 #          description: Whether to use deferred loading while configuring the coverage/layer.

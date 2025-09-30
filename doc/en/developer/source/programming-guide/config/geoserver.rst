@@ -55,7 +55,7 @@ GeoServerInfo
 
 Manages some of the global configuration options:
 
-* ``JAIInfo`` image processing settings
+* ``ImageProcessingInfo`` image processing settings
 * ``CoverageAccessInfo`` image access settings
 * Admin username and password
 * resourceErrorHandling: Policy for handling misconfigured layers

@@ -93,4 +93,4 @@ Additionally:
 
 * Snippets from the Prototype library (www.prototypejs.org) under a MIT license.
 
-* The build process will download jars from JAI ImageIO (BSD), Jetty (Jetty License), EMF (EPL), XSD (EPL). Several projects using the Apache License 2.0: Spring, Apache Commons, Log4j, Batik, Xerces.
+* The build process will download jars from ImageN, ImageIO (BSD), Jetty (Jetty License), EMF (EPL), XSD (EPL). Several projects using the Apache License 2.0: Spring, Apache Commons, Log4j, Batik, Xerces.

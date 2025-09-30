@@ -362,6 +362,7 @@ public class XStreamPersister {
         xs.omitField(impl(GeoServerInfo.class), "clientProperties");
         xs.omitField(impl(GeoServerInfo.class), "geoServer");
         xs.registerLocalConverter(impl(GeoServerInfo.class), "metadata", new MetadataMapConverter());
+        xs.aliasField("jai", GeoServerInfoImpl.class, "imageProcessing");
 
         // ServiceInfo
         xs.omitField(impl(ServiceInfo.class), "clientProperties");

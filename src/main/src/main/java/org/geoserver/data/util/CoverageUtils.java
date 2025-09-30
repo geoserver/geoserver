@@ -478,6 +478,12 @@ public class CoverageUtils {
         if (customParameters != null) {
             parameters.putAll(customParameters);
         }
+        String USE_IMAGEN_IMAGEREAD =
+                ImageMosaicFormat.USE_IMAGEN_IMAGEREAD.getName().toString();
+        String USE_JAI_IMAGEREAD = "USE_JAI_IMAGEREAD";
+        if (parameters.keySet().contains(USE_JAI_IMAGEREAD)) {
+            parameters.put(USE_IMAGEN_IMAGEREAD, parameters.get(USE_JAI_IMAGEREAD));
+        }
 
         // make sure mosaics with many superimposed tiles won't blow up with
         // a "too many open files" exception
@@ -489,10 +495,10 @@ public class CoverageUtils {
         if (directRead) {
             // Since the read sample image won't be greater than 5x5 pixels and we are limiting the
             // number of granules to 1, we may do direct read instead of using JAI
-            String useJaiImageRead =
+            String useImageNImageRead =
                     ImageMosaicFormat.USE_IMAGEN_IMAGEREAD.getName().toString();
-            if (parameters.keySet().contains(useJaiImageRead)) {
-                parameters.put(useJaiImageRead, false);
+            if (parameters.keySet().contains(useImageNImageRead)) {
+                parameters.put(useImageNImageRead, false);
             }
         }
 

@@ -545,7 +545,7 @@ public class SearchTest extends STACTestSupport {
     }
 
     private void checkPagingLinksPostLast(Integer expectedNumberMatched) throws Exception {
-                String request = "{\n"
+        String request = "{\n"
                 + "  \"collections\": [\n"
                 + "    \"SAS1\",\n"
                 + "    \"LANDSAT8\"\n"

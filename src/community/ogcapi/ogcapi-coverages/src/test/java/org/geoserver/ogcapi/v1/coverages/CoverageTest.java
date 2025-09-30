@@ -127,7 +127,7 @@ public class CoverageTest extends CoveragesTestSupport {
         GeoTiffReader reader = new GeoTiffReader(file);
         try {
             // set for immediate load, no need to release files after
-            ParameterValue<Boolean> deferredLoad = GeoTiffFormat.USE_JAI_IMAGEREAD.createValue();
+            ParameterValue<Boolean> deferredLoad = GeoTiffFormat.USE_IMAGEN_IMAGEREAD.createValue();
             deferredLoad.setValue(false);
             return reader.read(new GeneralParameterValue[] {deferredLoad});
         } finally {

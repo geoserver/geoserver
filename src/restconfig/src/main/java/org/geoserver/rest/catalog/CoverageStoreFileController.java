@@ -128,7 +128,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             @PathVariable UploadMethod method,
             @PathVariable String format,
             @RequestParam(name = "configure", required = false) String configure,
-            @RequestParam(name = "USE_JAI_IMAGEREAD", required = false) Boolean useJaiImageRead,
+            @RequestParam(name = "USE_IMAGEN_IMAGEREAD", required = false) Boolean useJaiImageRead,
             @RequestParam(name = "coverageName", required = false) String coverageName,
             @RequestParam(required = false) String filename,
             HttpServletRequest request)
@@ -242,7 +242,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             final Map<String, Serializable> customParameters = new HashMap<>();
             if (useJaiImageRead != null) {
                 customParameters.put(
-                        AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), useJaiImageRead);
+                        AbstractGridFormat.USE_IMAGEN_IMAGEREAD.getName().toString(), useJaiImageRead);
             }
 
             // check if the name of the coverage was specified

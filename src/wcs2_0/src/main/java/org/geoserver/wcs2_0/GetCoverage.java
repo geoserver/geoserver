@@ -1107,7 +1107,8 @@ public class GetCoverage {
                 CoverageUtils.getParameters(readParametersDescriptor, cinfo.getParameters());
         readParameters = (readParameters != null ? readParameters : new GeneralParameterValue[0]);
         // work in streaming fashion when ImageN is involved
-        readParameters = WCSUtils.replaceParameter(readParameters, Boolean.TRUE, AbstractGridFormat.USE_JAI_IMAGEREAD);
+        readParameters =
+                WCSUtils.replaceParameter(readParameters, Boolean.TRUE, AbstractGridFormat.USE_IMAGEN_IMAGEREAD);
 
         // handle "time"
         if (request.getTemporalSubset() != null) {

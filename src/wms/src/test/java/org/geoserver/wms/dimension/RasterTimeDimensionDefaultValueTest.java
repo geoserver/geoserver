@@ -340,7 +340,11 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
                 if (format instanceof ImageMosaicFormat) {
                     // make sure we work in immediate mode
                     coverage.getParameters()
-                            .put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
+                            .put(
+                                    AbstractGridFormat.USE_IMAGEN_IMAGEREAD
+                                            .getName()
+                                            .getCode(),
+                                    Boolean.FALSE);
                 }
             } catch (Exception e) {
                 throw new IOException(e);

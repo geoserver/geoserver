@@ -357,8 +357,8 @@ public class ImportProcess implements GeoServerProcess {
             // coverage read params
             final Map<String, Serializable> customParameters = new HashMap<>();
             /*
-             * String useJAIImageReadParam = "USE_JAI_IMAGEREAD"; if (useJAIImageReadParam != null) {
-             * customParameters.put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.valueOf(useJAIImageReadParam)); }
+             * String useJAIImageReadParam = "USE_IMAGEN_IMAGEREAD"; if (useJAIImageReadParam != null) {
+             * customParameters.put(AbstractGridFormat.USE_IMAGEN_IMAGEREAD.getName().toString(), Boolean.valueOf(useJAIImageReadParam)); }
              */
 
             CoverageInfo cinfo = cb.buildCoverage(reader, customParameters);

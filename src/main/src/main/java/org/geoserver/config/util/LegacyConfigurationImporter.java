@@ -116,16 +116,17 @@ public class LegacyConfigurationImporter {
         info.getSettings().setContact(contactInfo);
 
         // jai
-        ImageProcessingInfo jai = new ImageProcessingInfoImpl();
-        jai.setMemoryCapacity(
+        ImageProcessingInfo imagen = new ImageProcessingInfoImpl();
+        imagen.setMemoryCapacity(
                 (Double) value(global.get("JaiMemoryCapacity"), ImageProcessingInfoImpl.DEFAULT_MemoryCapacity));
-        jai.setMemoryThreshold(
+        imagen.setMemoryThreshold(
                 (Double) value(global.get("JaiMemoryThreshold"), ImageProcessingInfoImpl.DEFAULT_MemoryThreshold));
-        jai.setTileThreads((Integer) value(global.get("JaiTileThreads"), ImageProcessingInfoImpl.DEFAULT_TileThreads));
-        jai.setTilePriority(
+        imagen.setTileThreads(
+                (Integer) value(global.get("JaiTileThreads"), ImageProcessingInfoImpl.DEFAULT_TileThreads));
+        imagen.setTilePriority(
                 (Integer) value(global.get("JaiTilePriority"), ImageProcessingInfoImpl.DEFAULT_TilePriority));
-        jai.setRecycling((Boolean) value(global.get("JaiRecycling"), ImageProcessingInfoImpl.DEFAULT_Recycling));
-        info.setImageProcessing(jai);
+        imagen.setRecycling((Boolean) value(global.get("JaiRecycling"), ImageProcessingInfoImpl.DEFAULT_Recycling));
+        info.setImageProcessing(imagen);
 
         geoServer.setGlobal(info);
 

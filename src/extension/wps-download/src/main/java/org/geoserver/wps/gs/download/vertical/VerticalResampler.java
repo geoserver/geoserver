@@ -16,7 +16,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.OperationRegistry;
 import org.eclipse.imagen.PlanarImage;
 import org.eclipse.imagen.media.range.NoDataContainer;
@@ -111,7 +111,7 @@ public class VerticalResampler {
             }
         }
 
-        OperationRegistry registry = JAI.getDefaultInstance().getOperationRegistry();
+        OperationRegistry registry = ImageN.getDefaultInstance().getOperationRegistry();
         VerticalTransformDescriptor descriptor = new VerticalTransformDescriptor();
         registry.registerDescriptor(descriptor);
         registry.registerFactory(

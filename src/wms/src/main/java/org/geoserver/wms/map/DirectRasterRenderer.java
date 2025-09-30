@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 import org.eclipse.imagen.ImageLayout;
 import org.eclipse.imagen.Interpolation;
 import org.eclipse.imagen.InterpolationNearest;
-import org.eclipse.imagen.JAI;
 import org.eclipse.imagen.PlanarImage;
 import org.eclipse.imagen.ROI;
 import org.eclipse.imagen.ROIShape;
@@ -220,7 +219,7 @@ class DirectRasterRenderer {
 
     /**
      * Renders a single coverage as the final RenderedImage to be encoded, skipping all of the Java2D machinery and
-     * using a pure JAI chain of transformations instead. This considerably improves both scalability and performance
+     * using a pure ImageN chain of transformations instead. This considerably improves both scalability and performance
      *
      * @return the result of rendering the coverage, or null if there was no coverage, or the coverage could not be
      *     renderer for some reason
@@ -239,7 +238,7 @@ class DirectRasterRenderer {
         final ReadingContext context = new ReadingContext();
         RenderedImage image = null;
         GridCoverage2D coverage = null;
-        RenderingHints interpolationHints = new RenderingHints(JAI.KEY_INTERPOLATION, interpolation);
+        RenderingHints interpolationHints = new RenderingHints(ImageN.KEY_INTERPOLATION, interpolation);
         try {
             final Color readerBgColor = transparent ? null : bgColor;
             CoordinateReferenceSystem mapCRS = mapEnvelope.getCoordinateReferenceSystem();
@@ -369,7 +368,7 @@ class DirectRasterRenderer {
                         cm = icm;
                         ImageLayout ilColorModel = new ImageLayout(image);
                         ilColorModel.setColorModel(icm);
-                        RenderingHints hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, ilColorModel);
+                        RenderingHints hints = new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, ilColorModel);
                         worker.setRenderingHints(hints);
                         worker.format(image.getSampleModel().getDataType());
                         image = worker.getRenderedImage();
@@ -946,7 +945,7 @@ class DirectRasterRenderer {
                 : null;
         // apply the mosaic
 
-        iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
+        iw.setRenderingHint(ImageN.KEY_IMAGE_LAYOUT, layout);
         iw.setBackground(bgValues);
         iw.mosaic(
                 new RenderedImage[] {image},
@@ -1060,7 +1059,7 @@ class DirectRasterRenderer {
             tempLayout.setMinY(roiImage.getMinY());
             tempLayout.setHeight(roiHeight);
             tempLayout.setWidth(roiWidth);
-            iw.setRenderingHints(new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+            iw.setRenderingHints(new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, tempLayout));
             iw.lookup(lookupTable);
             return iw.getRenderedImage();
         }
@@ -1070,7 +1069,7 @@ class DirectRasterRenderer {
                 Float.valueOf(width),
                 Float.valueOf(height),
                 new Byte[] {Byte.valueOf((byte) 255)},
-                new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+                new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, tempLayout));
     }
 
     /**
@@ -1133,7 +1132,7 @@ class DirectRasterRenderer {
         @Override
         protected GridCoverage2D readCoverage(GridCoverage2DReader reader, Object readParams, GridGeometry2D readGG)
                 throws IOException {
-            RenderingHints interpolationHints = new RenderingHints(JAI.KEY_INTERPOLATION, interpolation);
+            RenderingHints interpolationHints = new RenderingHints(ImageN.KEY_INTERPOLATION, interpolation);
             final GridCoverageRenderer gcr;
 
             try {

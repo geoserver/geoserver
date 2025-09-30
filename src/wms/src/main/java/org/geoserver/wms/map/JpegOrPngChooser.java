@@ -75,7 +75,7 @@ public class JpegOrPngChooser {
         } else if (renderedImage.getColorModel() instanceof IndexColorModel) {
             // JPEG would still compress a bit better, but in order to figure out
             // if the image has transparency we'd have to expand to RGB or roll
-            // a new JAI image op that looks for the transparent pixels. Out of scope for the moment
+            // a new ImageN image op that looks for the transparent pixels. Out of scope for the moment
             return false;
         } else {
             // otherwise support RGB or gray

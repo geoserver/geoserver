@@ -94,7 +94,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
 
     /**
      * Default constructor. Subclasses may provide its own with a String parameter to establish its desired output
-     * format, if they support more than one (e.g. a JAI based one)
+     * format, if they support more than one (e.g. a ImageN based one)
      */
     public BufferedImageLegendGraphicBuilder() {
         super();

@@ -33,7 +33,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.OperationRegistry;
 import org.eclipse.imagen.RegistryElementDescriptor;
 import org.eclipse.imagen.RegistryMode;
@@ -92,7 +92,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         initJAIDefaultInstance();
 
         // setup concurrent operation registry
-        JAI jaiDef = JAI.getDefaultInstance();
+        ImageN jaiDef = ImageN.getDefaultInstance();
         if (!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
             jaiDef.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
         }
@@ -180,7 +180,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
     /** Sets a custom ImagingListener used to ignore common warnings */
     @SuppressWarnings("PMD.CloseResource")
     public static void initJAIDefaultInstance() {
-        JAI jaiDef = JAI.getDefaultInstance();
+        ImageN jaiDef = ImageN.getDefaultInstance();
         if (!(jaiDef.getImagingListener() instanceof GeoServerImagingListener)) {
             jaiDef.setImagingListener(new GeoServerImagingListener());
         }
@@ -314,7 +314,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 }
             }
 
-            // unload everything that JAI ImageIO can still refer to
+            // unload everything that ImageN ImageIO can still refer to
             // We need to store them and unregister later to avoid concurrent modification
             // exceptions
             final IIORegistry ioRegistry = IIORegistry.getDefaultInstance();
@@ -333,8 +333,8 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 LOGGER.fine("Unregistering Image I/O provider " + provider);
             }
 
-            // unload everything that JAI can still refer to
-            final OperationRegistry opRegistry = JAI.getDefaultInstance().getOperationRegistry();
+            // unload everything that ImageN can still refer to
+            final OperationRegistry opRegistry = ImageN.getDefaultInstance().getOperationRegistry();
             for (String mode : RegistryMode.getModeNames()) {
                 for (Iterator descriptors = opRegistry.getDescriptors(mode).iterator();
                         descriptors != null && descriptors.hasNext(); ) {
@@ -359,7 +359,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                                     String product = (String) products.next();
                                     try {
                                         opRegistry.unregisterFactory(mode, red.getName(), product, factory);
-                                        LOGGER.fine("Unregistering JAI factory " + factory.getClass());
+                                        LOGGER.fine("Unregistering ImageN factory " + factory.getClass());
                                     } catch (Throwable t) {
                                         // may fail due to the factory not being registered against
                                         // that product

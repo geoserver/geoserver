@@ -13,7 +13,7 @@ package org.geoserver.wps.resource;
  * <p>Normally all resources linked to a process have to be kept around as long as one of the resulting feature
  * collections or coverages is eligible to be collected: there is no way to know if the processes are computing the
  * result once, or if they are generating streaming outputs that will recompute the results every time they are queried
- * (the JAI efficient case for coverages would be the latter)
+ * (the ImageN efficient case for coverages would be the latter)
  *
  * @author Andrea Aime - OpenGeo
  */

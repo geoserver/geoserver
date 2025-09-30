@@ -84,7 +84,8 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
                 (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
         Catalog catalog = getCatalog();
         CoverageInfo world = catalog.getCoverageByName(getLayerId(MockData.WORLD));
-        world.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
+        world.getParameters()
+                .put(AbstractGridFormat.USE_IMAGEN_IMAGEREAD.getName().getCode(), Boolean.FALSE);
         catalog.save(world);
 
         // limits for mr cite_noworld: can't access the world layer

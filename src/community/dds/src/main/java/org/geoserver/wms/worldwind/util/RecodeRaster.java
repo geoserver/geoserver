@@ -141,8 +141,8 @@ public class RecodeRaster extends PointOpImage {
     }
 
     /** Register the "RecodeNoData" image operation to the operation registry of the specified ImageN instance. */
-    public static void register(final ImageN jai) {
-        final OperationRegistry registry = jai.getOperationRegistry();
+    public static void register(final ImageN imagen) {
+        final OperationRegistry registry = imagen.getOperationRegistry();
         try {
             registry.registerDescriptor(new Descriptor());
             registry.registerFactory(RenderedRegistryMode.MODE_NAME, OPERATION_NAME, "geotools.org", new CRIF());

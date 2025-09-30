@@ -631,7 +631,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         builder.setStore(storeInfo);
 
         CoverageInfo coverageInfo = coverageView.createCoverageInfo("waterView", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
         coverageInfo = cat.getCoverage(coverageInfo.getId());
         LayerInfo layer = builder.buildLayer(coverageInfo);

@@ -208,7 +208,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
             GridCoverage2DReader gridCoverageReader =
                     (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
             // critical to avoid OOM on large DEMs, the reader might be using immediate reading otherwise
-            ParameterValue<Boolean> useImageRead = AbstractGridFormat.USE_JAI_IMAGEREAD.createValue();
+            ParameterValue<Boolean> useImageRead = AbstractGridFormat.USE_IMAGEN_IMAGEREAD.createValue();
             useImageRead.setValue(true);
             GeneralParameterValue[] readParameters = {useImageRead};
             gridCoverage2D = gridCoverageReader.read(readParameters);

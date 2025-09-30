@@ -114,8 +114,8 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     }
 
     @Override
-    public void setImageProcessing(ImageProcessingInfo jai) {
-        this.imageProcessing = jai;
+    public void setImageProcessing(ImageProcessingInfo imagen) {
+        this.imageProcessing = imagen;
     }
 
     @Override

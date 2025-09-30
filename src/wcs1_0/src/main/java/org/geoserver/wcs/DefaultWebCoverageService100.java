@@ -379,7 +379,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             // work in streaming fashion when ImageN is involved
             readParameters =
-                    WCSUtils.replaceParameter(readParameters, Boolean.TRUE, AbstractGridFormat.USE_JAI_IMAGEREAD);
+                    WCSUtils.replaceParameter(readParameters, Boolean.TRUE, AbstractGridFormat.USE_IMAGEN_IMAGEREAD);
 
             //
             // perform read

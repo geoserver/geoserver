@@ -1296,7 +1296,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         // Reordered bands coverage
         CoverageInfo coverageInfo = multiBandCoverageView.createCoverageInfo("multiband_select", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         catalog.add(coverageInfo);
         final LayerInfo layerInfoView = builder.buildLayer(coverageInfo);
         catalog.add(layerInfoView);

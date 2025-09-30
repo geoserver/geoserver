@@ -19,7 +19,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import org.eclipse.imagen.Histogram;
 import org.eclipse.imagen.ImageN;
-import org.eclipse.imagen.ParameterBlockJAI;
+import org.eclipse.imagen.ParameterBlockImageN;
 import org.eclipse.imagen.RenderedOp;
 import org.eclipse.imagen.media.classbreaks.ClassBreaksDescriptor;
 import org.eclipse.imagen.media.classbreaks.ClassBreaksRIF;
@@ -278,7 +278,7 @@ public class RasterSymbolizerBuilder {
                 .orElse(null);
 
         // setup the call to the operation and create it
-        ParameterBlock pb = new ParameterBlockJAI("ClassBreaks");
+        ParameterBlock pb = new ParameterBlockImageN("ClassBreaks");
         pb.addSource(image);
         pb.set(intervals, 0);
         pb.set(classificationMethod, 1);

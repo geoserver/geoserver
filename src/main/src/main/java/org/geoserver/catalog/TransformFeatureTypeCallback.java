@@ -5,6 +5,7 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -16,12 +17,15 @@ import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.util.InternationalString;
 import org.geotools.data.transform.Definition;
 import org.geotools.data.transform.TransformFactory;
+import org.geotools.feature.FeatureTypes;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
 
 /**
@@ -73,19 +77,44 @@ public class TransformFeatureTypeCallback {
             String name = ati.getName();
             Expression source = ECQL.toExpression(ati.getSource());
             Class<?> binding = ati.getBinding();
-            InternationalString descriptionInternational = ati.getDescription();
-            String description = null;
-            if (descriptionInternational != null) {
-                description = StringUtils.trimToNull(ati.getDescription().toString(GeoServerDefaultLocale.get()));
-                if (description != null) {
-                    descriptionInternational = new SimpleInternationalString(description);
-                } else {
-                    descriptionInternational = null;
-                }
-            }
-            return new Definition(name, source, binding, null, descriptionInternational);
+            InternationalString descriptionInternational = createDescriptionInternationalString(ati);
+            boolean nillable = ati.isNillable();
+            List<Filter> restrictions = createRestrictions(ati);
+
+            return new Definition(name, source, binding, null, descriptionInternational, nillable, restrictions);
         } catch (CQLException e) {
             throw new ServiceException("Failed to parse the attribute source definition to a valid OGC Expression", e);
         }
+    }
+
+    private InternationalString createDescriptionInternationalString(AttributeTypeInfo ati) {
+        InternationalString descriptionInternational = ati.getDescription();
+        String description;
+        if (descriptionInternational != null) {
+            description = StringUtils.trimToNull(ati.getDescription().toString(GeoServerDefaultLocale.get()));
+            if (description != null) {
+                descriptionInternational = new SimpleInternationalString(description);
+            } else {
+                descriptionInternational = null;
+            }
+        }
+        return descriptionInternational;
+    }
+
+    private List<Filter> createRestrictions(AttributeTypeInfo ati) {
+        List<Filter> restrictions = new ArrayList<>();
+
+        NumberRange<? extends Number> range = ati.getRange();
+        if (range != null) {
+            Filter fieldMinMax = FeatureTypes.createFieldRange(range);
+            restrictions.add(fieldMinMax);
+        }
+
+        List<Object> options = ati.getOptions();
+        if (options != null) {
+            Filter fieldOptions = FeatureTypes.createFieldOptions(options);
+            restrictions.add(fieldOptions);
+        }
+        return restrictions;
     }
 }

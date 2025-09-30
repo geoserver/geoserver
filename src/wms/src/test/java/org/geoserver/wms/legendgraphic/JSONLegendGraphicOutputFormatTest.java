@@ -1861,7 +1861,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     }
 
     @Test
-    public void testLayerGroupStyleIngnoredIfTree() throws Exception {
+    public void testLayerGroupStyleIgnoredIfTree() throws Exception {
         Catalog catalog = getCatalog();
         LayerGroupInfo group = null;
         try {

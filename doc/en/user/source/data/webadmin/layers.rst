@@ -195,29 +195,70 @@ Vector layers have a list of the :guilabel:`Feature Type Details`. These include
 
 The :guilabel:`Nillable` option refers to whether the property requires a value or may be flagged as being null. Meanwhile :guilabel:`Min/Max Occurrences` refers to how many values a field is allowed to have. Currently both :guilabel:`Nillable` and :guilabel:`Min/Max Occurrences` are set to ``true`` and ``0/1`` but may be extended with future work on complex features.
 
-The :guilabel:`Customize attributes` checkbox opens an attribute editor allowing customization.
+The :guilabel:`Customize attributes` checkbox activates the attributes customization view.
 
 .. figure:: img/data_layers_feature_customize.png
 
    Attribute customization
 
-It is possible to:
+This view allows to:
 
+* Add a new attribute through the add attribute dialog.
+* Reset the table to the native settings, using the :guilabel:`Reset customization` link.
 * Change the order of attributes, using either the up/down arrows, or dragging the attribute row.
 * Remove an attribute using the "remove" icon at the end of the attribute row.
-* Add a new attribute, which will be computed based on the :guilabel:`Source` CQL expression.
-* Rename an attribute.
-* Add a description of the attribute, which will be visible wherever the feature type is described.
-* Change the nillability of the attribute, for example, making the attribute mandatory even if it's
-  not in the data source, and vice-versa.
-* Change the type of the attribute using the `Type` column. The most common types are available in 
-  a drop-down on editing, but it's possible to indicate any valid Java class, as long as GeoServer
-  has a converter that goes from the value produced by the :guilabel:`Source` expression to the 
-  target type (new converters can be plugged in with some Java programming).
-* Reset the table to the native settings, using the :guilabel:`Reset customization` link.
+* Edit an attribute from the edit attribute dialog, using the "edit" icon.
 
 Some of the feature type edits might result in the layer not being editable anymore, for example,
 by removing an attribute that is marked as mandatory in the data source.
+
+From the :guilabel:`Add attribute dialog` it is possible to define a new attribute for the feature type, specifying:
+
+* The name of the new attribute.
+* The type of the new attribute using the :guilabel:`Type` field. The most common types are available in a drop-down on editing,
+  but it's possible to indicate any valid Java class, as long as GeoServer has a converter that goes from the value produced by the
+  :guilabel:`Source` expression to the target type (new converters can be plugged in with some Java programming).
+* The source for the new attribute, which will be computed based on the :guilabel:`Source` CQL expression in the respective field.
+* A description for the new attribute, which will be visible wherever the feature type is described.
+* The `nillability` of the new attribute, for example, making the attribute mandatory even if it's not in the data source, and vice-versa.
+
+.. figure:: img/data_layers_feature_customize_add_attribute.png
+
+   Add attribute dialog
+
+For numeric or string types, the dialog also allows defining `restrictions` on the attribute value, which will be reported wherever the feature type is described.
+The restrictions set for an attribute are then available to clients, who may enforce them before applying changes to the feature type.
+
+Two kinds of restrictions are available, but only one can be specified at a time for an attribute:
+
+* **Options** (for numeric and string types): when selected, the dialog shows controls to define a set of values; the attribute value must be equal to one of them.
+
+.. figure:: img/data_layers_feature_customize_add_attribute_options.png
+
+   Add attribute dialog with options restriction
+
+* **Range** (for numeric types): when selected, the dialog allows defining a minimum and a maximum as a range for the attribute value, which must fall within the defined bounds.
+
+.. figure:: img/data_layers_feature_customize_add_attribute_range.png
+
+   Add attribute dialog with range restriction
+
+When opening the :guilabel:`Edit attribute dialog` from a row in the attribute table, a dialog is shown, populated with the available details for the attribute.
+From this dialog it is possible to:
+
+* Rename the attribute.
+* Change the type of the attribute.
+* Change the source for the attribute.
+* Edit the description of the attribute.
+* Change the `nillability` of the attribute.
+* Add or edit the restrictions on the attribute value (refer to the :guilabel:`Add attribute dialog` description above).
+
+Whenever an attribute has been edited with property values significantly different from the default, its representation in the :guilabel:`Feature Type Details` table displays these values in the
+:guilabel:`Details` column, as shown in the image below.
+
+.. figure:: img/data_layers_feature_customize_details.png
+
+   Attribute customization showing attribute details
 
 .. note::
 

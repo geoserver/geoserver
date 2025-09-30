@@ -347,7 +347,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             EntityResolverProvider.setEntityResolver(RESOLVE_DISABLED_PROVIDER_DEVMODE);
 
             // Use GeoServer's ImageN ImagingListener
-            GeoserverInitStartupListener.initJAIDefaultInstance();
+            GeoserverInitStartupListener.initImageNDefaultInstance();
 
             getSecurityManager().setAuthenticationCache(new TestingAuthenticationCache());
             onSetUp(testData);

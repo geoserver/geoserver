@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.imagen.ImageLayout;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.PlanarImage;
 import org.eclipse.imagen.media.mosaic.MosaicDescriptor;
 import org.eclipse.imagen.media.range.NoDataContainer;
@@ -192,7 +192,7 @@ class CoverageViewComposer {
                 FillingLayout fillingLayout = entry.getValue();
                 double noDataValue = fillingLayout.noData;
                 final ImageLayout2 il = prepareImageLayout(refImage, gridRange, fillingLayout);
-                final RenderingHints renderingHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, il);
+                final RenderingHints renderingHints = new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, il);
 
                 // Prepare a constant image, filled with nodata value,
                 // consistent with how ImageMosaic handles it

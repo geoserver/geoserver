@@ -28,7 +28,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.spi.ImageOutputStreamSpi;
 import javax.imageio.stream.ImageOutputStream;
 import org.eclipse.imagen.ImageLayout;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.util.logging.Logging;
@@ -133,11 +133,11 @@ final class TurboJpegImageWorker extends ImageWorker {
         // Retrieving/Setting the ImageLayout
         final RenderingHints hints = getRenderingHints();
         ImageLayout layout = null;
-        if (hints.containsKey(JAI.KEY_IMAGE_LAYOUT)) {
-            layout = (ImageLayout) hints.get(JAI.KEY_IMAGE_LAYOUT);
+        if (hints.containsKey(ImageN.KEY_IMAGE_LAYOUT)) {
+            layout = (ImageLayout) hints.get(ImageN.KEY_IMAGE_LAYOUT);
         } else {
             layout = new ImageLayout();
-            hints.put(JAI.KEY_IMAGE_LAYOUT, layout);
+            hints.put(ImageN.KEY_IMAGE_LAYOUT, layout);
         }
 
         // Forcing the colormodel with noAlpha

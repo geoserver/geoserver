@@ -7,7 +7,7 @@ package org.geoserver.config.impl;
 
 import java.io.Serial;
 import java.io.Serializable;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.TileCache;
 import org.geoserver.config.JAIInfo;
 
@@ -121,13 +121,13 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     }
 
     @Override
-    public JAI getJAI() {
-        return JAI.getDefaultInstance();
+    public ImageN getJAI() {
+        return ImageN.getDefaultInstance();
     }
 
     @Override
-    public void setJAI(JAI jai) {
-        // do nothing. REVISIT: we're using the singleton JAI instance and guess there's no way to
+    public void setJAI(ImageN jai) {
+        // do nothing. REVISIT: we're using the singleton ImageN instance and guess there's no way to
         // get a non singleton one, so does this method make sense at all? In any case, this class
         // is meant to be serializable, hence the change in getJAI() to return the singleton
         // directly and avoid NPE's
@@ -140,7 +140,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
 
     @Override
     public void setTileCache(TileCache tileCache) {
-        // do nothing. REVISIT: we're using the singleton JAI instance and guess there's no way to
+        // do nothing. REVISIT: we're using the singleton ImageN instance and guess there's no way to
         // get a non singleton one, so does this method make sense at all? In any case, this class
         // is meant to be serializable, hence the change in getTileCache() to return the singleton
         // directly and avoid NPE's

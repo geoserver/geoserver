@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.imagen.ColorModelFactory;
 import org.eclipse.imagen.ImageLayout;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.NotAColorSpace;
 import org.eclipse.imagen.ROI;
 import org.eclipse.imagen.RasterFactory;
@@ -308,7 +308,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 int numBands = layout.getSampleModel(null).getNumBands();
                 Number[] bandValues = new Number[numBands]; // all zeroes
                 Arrays.fill(bandValues, Double.valueOf(0));
-                ConstantDescriptor.create(width, height, bandValues, new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout));
+                ConstantDescriptor.create(
+                        width, height, bandValues, new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, layout));
             }
         }
 
@@ -391,25 +392,26 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 param.parameter("coverage_idx").setValue(transformationChoice);
             }
             param.parameter("sources").setValue(coverages);
-            localHints.put(JAI.KEY_COLOR_MODEL_FACTORY, (ColorModelFactory) (sampleModel, sources, configuration) -> {
-                final int dataType = sampleModel.getDataType();
-                final int numBands = sampleModel.getNumBands();
+            localHints.put(
+                    ImageN.KEY_COLOR_MODEL_FACTORY, (ColorModelFactory) (sampleModel, sources, configuration) -> {
+                        final int dataType = sampleModel.getDataType();
+                        final int numBands = sampleModel.getNumBands();
 
-                ColorSpace cs;
-                switch (numBands) {
-                    case 1:
-                    case 2:
-                        cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
-                        break;
-                    case 3:
-                        cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-                        break;
-                    default:
-                        cs = new NotAColorSpace(numBands);
-                }
+                        ColorSpace cs;
+                        switch (numBands) {
+                            case 1:
+                            case 2:
+                                cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+                                break;
+                            case 3:
+                                cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+                                break;
+                            default:
+                                cs = new NotAColorSpace(numBands);
+                        }
 
-                return RasterFactory.createComponentColorModel(dataType, cs, false, false, Transparency.OPAQUE);
-            });
+                        return RasterFactory.createComponentColorModel(dataType, cs, false, false, Transparency.OPAQUE);
+                    });
             result = (GridCoverage2D) PROCESSOR.doOperation(param, localHints);
         } else {
             // optimize out, no need to do a band merge
@@ -762,7 +764,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         ImageLayout layout = new ImageLayout();
         ColorModel alphaModel = getColorModelWithAlpha(currentBandCount);
         layout.setColorModel(alphaModel);
-        localHints.put(JAI.KEY_IMAGE_LAYOUT, layout);
+        localHints.put(ImageN.KEY_IMAGE_LAYOUT, layout);
     }
 
     private ColorModel getColorModelWithAlpha(int currentBandCount) {

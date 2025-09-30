@@ -27,7 +27,7 @@ import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.PercentageTextField;
 
-/** Edits the JAI configuration parameters */
+/** Edits the ImageN configuration parameters */
 // TODO WICKET8 - Verify this page works OK
 public class JAIPage extends ServerAdminPage {
     @Serial

@@ -23,8 +23,8 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.imageio.stream.ImageOutputStream;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.Interpolation;
-import org.eclipse.imagen.JAI;
 import org.eclipse.imagen.TiledImage;
 import org.eclipse.imagen.media.range.RangeFactory;
 import org.geoserver.catalog.MetadataMap;
@@ -170,7 +170,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
                         ParameterBlock param = new ParameterBlock().addSource(image);
                         param = param.add(inNoData);
                         param = param.add(outNoData);
-                        transformedImage = JAI.create(RecodeRaster.OPERATION_NAME, param, null);
+                        transformedImage = ImageN.create(RecodeRaster.OPERATION_NAME, param, null);
                     }
                 }
 
@@ -312,6 +312,6 @@ public final class BilMapResponse extends RenderedImageMapResponse {
     }
 
     static {
-        RecodeRaster.register(JAI.getDefaultInstance());
+        RecodeRaster.register(ImageN.getDefaultInstance());
     }
 }

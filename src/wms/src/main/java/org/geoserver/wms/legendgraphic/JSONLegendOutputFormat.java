@@ -21,7 +21,7 @@ public class JSONLegendOutputFormat implements GetLegendGraphicOutputFormat {
 
     public static final String MIME_TYPE = "application/json";
 
-    /** Creates a new JAI based legend producer for creating <code>outputFormat</code> type images. */
+    /** Creates a new ImageN based legend producer for creating <code>outputFormat</code> type images. */
     public JSONLegendOutputFormat() {
         //
     }

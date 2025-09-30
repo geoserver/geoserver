@@ -12,8 +12,8 @@ import org.geoserver.wms.GetLegendGraphicOutputFormat;
 import org.geoserver.wms.GetLegendGraphicRequest;
 
 /**
- * JAI based output format for the WMS {@link GetLegendGraphic} operation that creates legend graphics to be encoded as
- * {@code image/jpeg}.
+ * ImageN based output format for the WMS {@link GetLegendGraphic} operation that creates legend graphics to be encoded
+ * as {@code image/jpeg}.
  *
  * @author Gabriel Roldan
  */

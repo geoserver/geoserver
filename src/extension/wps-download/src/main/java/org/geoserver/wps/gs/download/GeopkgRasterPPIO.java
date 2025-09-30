@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.imagen.ImageLayout;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.media.mosaic.MosaicDescriptor;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.platform.ServiceException;
@@ -245,7 +245,7 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
         ImageLayout layout = new ImageLayout(ri);
         layout.setWidth(TILE_SIZE);
         layout.setHeight(TILE_SIZE);
-        iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
+        iw.setRenderingHint(ImageN.KEY_IMAGE_LAYOUT, layout);
         iw.mosaic(new RenderedImage[] {ri}, MosaicDescriptor.MOSAIC_TYPE_OVERLAY, null, null, thresholds, null);
     }
 

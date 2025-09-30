@@ -90,17 +90,17 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         LOGGER.config("Logging policy: " + policy);
         GeoTools.init((Hints) null);
 
-        initJAIDefaultInstance();
+        initImageNDefaultInstance();
 
         // setup concurrent operation registry
-        ImageN jaiDef = ImageN.getDefaultInstance();
-        if (!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
-            jaiDef.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
+        ImageN imagen = ImageN.getDefaultInstance();
+        if (!(imagen.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
+            imagen.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
         }
 
         // setup the concurrent tile cache (has proper memory limit handling also for small tiles)
-        if (!(jaiDef.getTileCache() instanceof ConcurrentTileCacheMultiMap)) {
-            jaiDef.setTileCache(new ConcurrentTileCacheMultiMap());
+        if (!(imagen.getTileCache() instanceof ConcurrentTileCacheMultiMap)) {
+            imagen.setTileCache(new ConcurrentTileCacheMultiMap());
         }
 
         // make sure we remember if GeoServer controls logging or not
@@ -185,10 +185,10 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
     /** Sets a custom ImagingListener used to ignore common warnings */
     @SuppressWarnings("PMD.CloseResource")
-    public static void initJAIDefaultInstance() {
-        ImageN jaiDef = ImageN.getDefaultInstance();
-        if (!(jaiDef.getImagingListener() instanceof GeoServerImagingListener)) {
-            jaiDef.setImagingListener(new GeoServerImagingListener());
+    public static void initImageNDefaultInstance() {
+        ImageN imagen = ImageN.getDefaultInstance();
+        if (!(imagen.getImagingListener() instanceof GeoServerImagingListener)) {
+            imagen.setImagingListener(new GeoServerImagingListener());
         }
     }
 

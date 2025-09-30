@@ -19,7 +19,7 @@ import org.geoserver.config.ImageProcessingInfo;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-public class JAIInitializer implements GeoServerInitializer {
+public class ImageNInitializer implements GeoServerInitializer {
 
     @Override
     public void initialize(GeoServer geoServer) throws Exception {

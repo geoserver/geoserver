@@ -215,10 +215,16 @@ public class FeatureTypeController extends AbstractCatalogController {
             boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
 
             if (!virtual && !typeExists) {
-                dataStore.createSchema(buildFeatureType(ftInfo));
-                // the attributes created might not match up 1-1 with the actual spec due to
-                // limitations of the data store, have it re-compute them
-                ftInfo.getAttributes().clear();
+                SimpleFeatureType featureType = buildFeatureType(ftInfo);
+                dataStore.createSchema(featureType);
+
+                if (!featureTypeAttributesContainRestrictions(ftInfo)) {
+                    // the attributes created aren't customized with restrictions
+                    // and might not match up 1-1 with the actual spec due to
+                    // limitations of the data store, have it re-compute them
+                    ftInfo.getAttributes().clear();
+                }
+
                 List<String> typeNames = Arrays.asList(dataStore.getTypeNames());
                 // handle Oracle oddities
                 // TODO: use the incoming store capabilites API to better handle the name
@@ -285,6 +291,10 @@ public class FeatureTypeController extends AbstractCatalogController {
         headers.setLocation(uriComponents.toUri());
         headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>("", headers, HttpStatus.CREATED);
+    }
+
+    private boolean featureTypeAttributesContainRestrictions(FeatureTypeInfo ftInfo) {
+        return ftInfo.getAttributes().stream().anyMatch(attr -> attr.getRange() != null || attr.getOptions() != null);
     }
 
     @GetMapping(

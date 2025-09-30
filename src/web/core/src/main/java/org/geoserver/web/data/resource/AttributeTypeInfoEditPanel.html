@@ -1,0 +1,90 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <form id="attributeForm" wicket:id="attributeForm">
+        <fieldset>
+            <legend><span><wicket:message key="AttributeTypeInfoEditPanel.details">Details</wicket:message></span>
+            </legend>
+            <ul>
+                <li>
+                    <label for="name">
+                        <wicket:message key="AttributeTypeInfoEditor.th.name">Name</wicket:message>
+                    </label>
+                    <input id="name" type="text" wicket:id="name" class="text"/>
+                </li>
+                <li>
+                    <label for="type">
+                        <wicket:message key="AttributeTypeInfoEditor.th.binding">Type</wicket:message>
+                    </label>
+                    <input id="type" type="text" wicket:id="type" class="text"/>
+                </li>
+                <li>
+                    <label for="source">
+                        <wicket:message key="AttributeTypeInfoEditPanel.source">Source</wicket:message>
+                    </label>
+                    <textarea id="source" wicket:id="source" class="cql"></textarea>
+                </li>
+                <li>
+                    <label for="description">
+                        <wicket:message key="AttributeTypeInfoEditor.th.description">Description</wicket:message>
+                    </label>
+                    <textarea id="description" wicket:id="description" class="cql"></textarea>
+                </li>
+                <li>
+                    <label for="nillable">
+                        <wicket:message key="AttributeTypeInfoEditPanel.nillable">Nillable</wicket:message>
+                    </label>
+                    <input id="nillable" type="checkbox" wicket:id="nillable"/>
+                </li>
+            </ul>
+        </fieldset>
+        <fieldset wicket:id="restrictionsContainer">
+            <legend><span><wicket:message
+                    key="AttributeTypeInfoEditPanel.restrictions">Restrictions</wicket:message></span>
+            </legend>
+            <ul>
+                <li>
+                    <label for="restrictionType">
+                        <wicket:message key="AttributeTypeInfoEditPanel.restrictionType">Restriction Type
+                        </wicket:message>
+                    </label>
+                    <select id="restrictionType" wicket:id="restrictionType"></select>
+                </li>
+                <li wicket:id="optionsContainer">
+                    <select class="select w-25-em" wicket:id="options" size="7"></select>
+                    <button wicket:id="removeOption">
+                        <wicket:message key="AttributeTypeInfoEditPanel.removeSelected">Remove selected</wicket:message>
+                    </button>
+                    <label for="newOption">
+                        <wicket:message key="AttributeTypeInfoEditPanel.newOption">New Option</wicket:message>
+                    </label>
+                    <input id="newOption" type="text" wicket:id="newOption"/>
+                    <button wicket:id="addOption">
+                        <wicket:message key="AttributeTypeInfoEditPanel.addOption">Add Option</wicket:message>
+                    </button>
+                </li>
+                <li wicket:id="rangeContainer">
+                    <ul class="clearfix">
+                        <li class="float-start">
+                            <label for="rangeMin">
+                                <wicket:message key="AttributeTypeInfoEditPanel.minInclusive">Min inclusive
+                                </wicket:message>
+                            </label>
+                            <input id="rangeMin" type="number" wicket:id="rangeMin"/>
+                        </li>
+                        <li class="float-start">
+                            <label for="rangeMax">
+                                <wicket:message key="AttributeTypeInfoEditPanel.maxInclusive">Max inclusive
+                                </wicket:message>
+                            </label>
+                            <input id="rangeMax" type="number" wicket:id="rangeMax"/>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </fieldset>
+        <div wicket:id="dialogFeedback"></div>
+    </form>
+</wicket:panel>
+</body>
+</html>

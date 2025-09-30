@@ -20,9 +20,9 @@ import org.eclipse.imagen.BorderExtender;
 import org.eclipse.imagen.BorderExtenderConstant;
 import org.eclipse.imagen.GeometricOpImage;
 import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.Interpolation;
 import org.eclipse.imagen.InterpolationNearest;
-import org.eclipse.imagen.JAI;
 import org.eclipse.imagen.PlanarImage;
 import org.eclipse.imagen.RasterAccessor;
 import org.eclipse.imagen.RasterFormatTag;
@@ -160,8 +160,8 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         BorderExtender extender = new BorderExtenderConstant(new double[] {nodata});
 
         // add tile caching to the mix
-        final RenderingHints hints =
-                new RenderingHints(JAI.KEY_TILE_CACHE, JAI.getDefaultInstance().getTileCache());
+        final RenderingHints hints = new RenderingHints(
+                ImageN.KEY_TILE_CACHE, ImageN.getDefaultInstance().getTileCache());
         return new GridCoverage2DRIA(
                 src,
                 dstGridGeometry,
@@ -1205,6 +1205,6 @@ public class GridCoverage2DRIA extends GeometricOpImage {
 
         // remove from cache
         // TODO improve cache management
-        JAI.getDefaultInstance().getTileCache().removeTiles(this);
+        ImageN.getDefaultInstance().getTileCache().removeTiles(this);
     }
 }

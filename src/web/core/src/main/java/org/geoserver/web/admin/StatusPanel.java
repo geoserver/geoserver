@@ -18,7 +18,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.StringResourceModel;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.TileCache;
 import org.eclipse.imagen.media.util.CacheDiagnostics;
 import org.geoserver.catalog.Catalog;
@@ -225,7 +225,7 @@ public class StatusPanel extends Panel {
         GeoServerInfo geoServerInfo = parent.getGeoServer().getGlobal();
         JAIInfo jaiInfo = geoServerInfo.getJAI();
         @SuppressWarnings("PMD.CloseResource")
-        JAI jai = jaiInfo.getJAI();
+        ImageN jai = jaiInfo.getJAI();
         CoverageAccessInfo coverageAccess = geoServerInfo.getCoverageAccess();
         TileCache jaiCache = jaiInfo.getTileCache();
 

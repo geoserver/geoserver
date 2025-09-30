@@ -1722,7 +1722,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     @Test
     public void testJAIImagingListenerException() throws Exception {
         // this style contains a Jiffle script that will cause a JiffleRuntimeException to be thrown and passed to the
-        // JAI ImagingListener set by org.geoserver.GeoserverInitStartupListener
+        // ImageN ImagingListener set by org.geoserver.GeoserverInitStartupListener
         String layer = MockData.TASMANIA_DEM.getPrefix() + ":" + MockData.TASMANIA_DEM.getLocalPart();
         MockHttpServletResponse response = getAsServletResponse(
                 "wms?request=GetMap&format=image/png&width=256&height=256&srs=EPSG:4326&bbox=-180,-90,180,90&layers="

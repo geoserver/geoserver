@@ -16,7 +16,7 @@ import java.awt.image.RenderedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.imagen.ImageLayout;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.PlanarImage;
 import org.eclipse.imagen.ROI;
 import org.eclipse.imagen.ROIShape;
@@ -213,7 +213,7 @@ class CoverageRenderSupport {
                 Float.valueOf(image.getWidth()),
                 Float.valueOf(image.getHeight()),
                 new Byte[] {Byte.valueOf((byte) 255)},
-                new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+                new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, tempLayout));
 
         // Using an ImageWorker
         ImageWorker iw = new ImageWorker(image);
@@ -311,7 +311,7 @@ class CoverageRenderSupport {
                 }
                 : null;
         // apply the mosaic
-        iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
+        iw.setRenderingHint(ImageN.KEY_IMAGE_LAYOUT, layout);
         iw.setBackground(bgValues);
         iw.mosaic(
                 new RenderedImage[] {image},

@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.Interpolation;
-import org.eclipse.imagen.JAI;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -228,7 +228,7 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Interpolation parameter not specified, using default (Nearest Neighbor)");
                 }
-                interpolation = (Interpolation) ImageUtilities.NN_INTERPOLATION_HINT.get(JAI.KEY_INTERPOLATION);
+                interpolation = (Interpolation) ImageUtilities.NN_INTERPOLATION_HINT.get(ImageN.KEY_INTERPOLATION);
             }
 
             // Default behavior is false for backward compatibility

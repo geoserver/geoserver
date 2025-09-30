@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import org.eclipse.imagen.Histogram;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.ParameterBlockJAI;
 import org.eclipse.imagen.RenderedOp;
 import org.eclipse.imagen.media.classbreaks.ClassBreaksDescriptor;
@@ -299,7 +299,7 @@ public class RasterSymbolizerBuilder {
             pb.set(null, 2); /* extrema, no need to precompute for the methods we're using*/
         }
         pb.set(outputPercentages, 10);
-        // direct calls as there are some issues with the JAI op registration, at least in Tomcat
+        // direct calls as there are some issues with the ImageN op registration, at least in Tomcat
         RenderedImage op = new ClassBreaksRIF().create(pb, null);
         // actually extract the classification and its breaks
         Classification c = (Classification) op.getProperty(ClassBreaksDescriptor.CLASSIFICATION_PROPERTY);
@@ -367,7 +367,7 @@ public class RasterSymbolizerBuilder {
             pb.set(iw.getROI(), 2); // ROI
             pb.set(iw.getNoData(), 3); // NoData
             pb.set(stats, 6); // statistic operation
-            final RenderedOp statsImage = JAI.create("Stats", pb, iw.getRenderingHints());
+            final RenderedOp statsImage = ImageN.create("Stats", pb, iw.getRenderingHints());
             // Retrieving the statistics
             Statistics[][] results = (Statistics[][]) statsImage.getProperty(Statistics.STATS_PROPERTY);
             double mean = (double) results[0][0].getResult();

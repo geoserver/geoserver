@@ -6,7 +6,7 @@
 package org.geoserver.jai;
 
 import java.util.List;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.TileCache;
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
@@ -15,7 +15,7 @@ import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.JAIInfo;
 
 /**
- * Initializes JAI functionality from configuration.
+ * Initializes ImageN functionality from configuration.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -39,7 +39,7 @@ public class JAIInitializer implements GeoServerInitializer {
 
                 if (propertyNames.contains("jAI")) { // TODO: check why the propertyname is reported as jAI
                     // instead of JAI
-                    // Make sure to proceed with JAI init
+                    // Make sure to proceed with ImageN init
                     // only in case the global change involved that section
                     initJAI(global.getJAI());
                 }
@@ -49,11 +49,11 @@ public class JAIInitializer implements GeoServerInitializer {
 
     @SuppressWarnings("PMD.CloseResource")
     void initJAI(JAIInfo jai) {
-        JAI jaiDef = JAI.getDefaultInstance();
+        ImageN jaiDef = ImageN.getDefaultInstance();
         jai.setJAI(jaiDef);
 
-        // setting JAI wide hints
-        jaiDef.setRenderingHint(JAI.KEY_CACHED_TILE_RECYCLING_ENABLED, jai.isRecycling());
+        // setting ImageN wide hints
+        jaiDef.setRenderingHint(ImageN.KEY_CACHED_TILE_RECYCLING_ENABLED, jai.isRecycling());
 
         // force the tile cache to be the one provided by GeoServer
         TileCache oldTileCache = jai.getTileCache();
@@ -63,15 +63,15 @@ public class JAIInitializer implements GeoServerInitializer {
         }
 
         // tile factory and recycler
-        if (jai.isRecycling() && !(jaiDef.getRenderingHint(JAI.KEY_TILE_FACTORY) instanceof ConcurrentTileFactory)) {
+        if (jai.isRecycling() && !(jaiDef.getRenderingHint(ImageN.KEY_TILE_FACTORY) instanceof ConcurrentTileFactory)) {
             final ConcurrentTileFactory recyclingFactory = new ConcurrentTileFactory();
-            jaiDef.setRenderingHint(JAI.KEY_TILE_FACTORY, recyclingFactory);
-            jaiDef.setRenderingHint(JAI.KEY_TILE_RECYCLER, recyclingFactory);
+            jaiDef.setRenderingHint(ImageN.KEY_TILE_FACTORY, recyclingFactory);
+            jaiDef.setRenderingHint(ImageN.KEY_TILE_RECYCLER, recyclingFactory);
         } else {
             if (!jai.isRecycling()) {
                 final PassThroughTileFactory passThroughFactory = new PassThroughTileFactory();
-                jaiDef.setRenderingHint(JAI.KEY_TILE_FACTORY, passThroughFactory);
-                jaiDef.setRenderingHint(JAI.KEY_TILE_RECYCLER, passThroughFactory);
+                jaiDef.setRenderingHint(ImageN.KEY_TILE_FACTORY, passThroughFactory);
+                jaiDef.setRenderingHint(ImageN.KEY_TILE_RECYCLER, passThroughFactory);
             }
         }
 

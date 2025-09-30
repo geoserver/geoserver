@@ -29,9 +29,9 @@ import javax.imageio.IIOException;
 import javax.imageio.stream.ImageOutputStream;
 import org.eclipse.imagen.BorderExtender;
 import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.Interpolation;
 import org.eclipse.imagen.InterpolationNearest;
-import org.eclipse.imagen.JAI;
 import org.eclipse.imagen.media.mosaic.MosaicDescriptor;
 import org.eclipse.imagen.media.utilities.ImageLayout2;
 import org.geoserver.catalog.Catalog;
@@ -118,7 +118,7 @@ class RasterDownload {
             BorderExtender.createInstance(BorderExtender.BORDER_COPY);
 
     static final RenderingHints BORDER_EXTENDER_HINTS =
-            new RenderingHints(JAI.KEY_BORDER_EXTENDER, BORDER_EXTENDER_COPY);
+            new RenderingHints(ImageN.KEY_BORDER_EXTENDER, BORDER_EXTENDER_COPY);
 
     /** The application context used to look-up PPIO factories */
     private ApplicationContext context;
@@ -592,22 +592,22 @@ class RasterDownload {
 
     private Hints prepareHints(Interpolation interpolation) {
         // Interpolation
-        Hints hints = new Hints(new RenderingHints(JAI.KEY_INTERPOLATION, interpolation));
+        Hints hints = new Hints(new RenderingHints(ImageN.KEY_INTERPOLATION, interpolation));
         hints.put(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
-        hints.add(
-                new RenderingHints(JAI.KEY_BORDER_EXTENDER, BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
+        hints.add(new RenderingHints(
+                ImageN.KEY_BORDER_EXTENDER, BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
         if (interpolation instanceof InterpolationNearest) {
-            hints.add(new RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL, Boolean.FALSE));
-            hints.add(new RenderingHints(JAI.KEY_TRANSFORM_ON_COLORMAP, Boolean.TRUE));
+            hints.add(new RenderingHints(ImageN.KEY_REPLACE_INDEX_COLOR_MODEL, Boolean.FALSE));
+            hints.add(new RenderingHints(ImageN.KEY_TRANSFORM_ON_COLORMAP, Boolean.TRUE));
         } else {
-            hints.add(new RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL, Boolean.TRUE));
-            hints.add(new RenderingHints(JAI.KEY_TRANSFORM_ON_COLORMAP, Boolean.FALSE));
+            hints.add(new RenderingHints(ImageN.KEY_REPLACE_INDEX_COLOR_MODEL, Boolean.TRUE));
+            hints.add(new RenderingHints(ImageN.KEY_TRANSFORM_ON_COLORMAP, Boolean.FALSE));
         }
 
         // Tile Size
         final ImageLayout layout = new ImageLayout2();
         layout.setTileGridXOffset(0).setTileGridYOffset(0).setTileHeight(512).setTileWidth(512);
-        hints.add(new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout));
+        hints.add(new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, layout));
         return hints;
     }
 
@@ -677,7 +677,7 @@ class RasterDownload {
         layout.setSampleModel(rasterData.getSampleModel().createCompatibleSampleModel(requestedW, requestedH));
         layout.setColorModel(rasterData.getColorModel());
 
-        final RenderingHints jaiHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
+        final RenderingHints jaiHints = new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, layout);
         jaiHints.add(BORDER_EXTENDER_HINTS);
         final RenderedImage mosaic = MosaicDescriptor.create(
                 new RenderedImage[] {rasterData},

@@ -37,9 +37,9 @@ import net.opengis.wcs20.RangeSubsetType;
 import net.opengis.wcs20.ScalingType;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.imagen.BorderExtender;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.Interpolation;
 import org.eclipse.imagen.InterpolationNearest;
-import org.eclipse.imagen.JAI;
 import org.eclipse.imagen.WarpAffine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
@@ -246,9 +246,9 @@ public class GetCoverage {
             final Hints hints = GeoTools.getDefaultHints();
             hints.add(WCSUtils.getReaderHints(wcs));
             hints.add(new RenderingHints(
-                    JAI.KEY_BORDER_EXTENDER, BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
+                    ImageN.KEY_BORDER_EXTENDER, BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
             //            hints.add(new
-            // RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL,Boolean.FALSE));// TODO check
+            // RenderingHints(ImageN.KEY_REPLACE_INDEX_COLOR_MODEL,Boolean.FALSE));// TODO check
             // interpolation
 
             // get a reader for this coverage
@@ -1106,7 +1106,7 @@ public class GetCoverage {
         GeneralParameterValue[] readParameters =
                 CoverageUtils.getParameters(readParametersDescriptor, cinfo.getParameters());
         readParameters = (readParameters != null ? readParameters : new GeneralParameterValue[0]);
-        // work in streaming fashion when JAI is involved
+        // work in streaming fashion when ImageN is involved
         readParameters = WCSUtils.replaceParameter(readParameters, Boolean.TRUE, AbstractGridFormat.USE_JAI_IMAGEREAD);
 
         // handle "time"

@@ -6,7 +6,7 @@
 package org.geoserver.config;
 
 import java.io.Serializable;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.TileCache;
 
 /**
@@ -56,9 +56,9 @@ public interface JAIInfo extends Cloneable, Serializable {
     void setPngEncoderType(PngEncoderType type);
 
     /** The jai instance. */
-    JAI getJAI();
+    ImageN getJAI();
 
-    void setJAI(JAI jai);
+    void setJAI(ImageN jai);
 
     /** The jai tile cache. */
     TileCache getTileCache();

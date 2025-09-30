@@ -20,18 +20,19 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSDescribeFeatureTypeOutputFormat;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.filter.IsBetweenImpl;
+import org.geotools.filter.IsEqualsToImpl;
+import org.geotools.filter.OrImpl;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A DescribeFeatureType output format that generates a JSON schema instead of a XML one
+ * A DescribeFeatureType output format that generates a JSON schema instead of an XML one
  *
  * @author Andrea Aime - GeoSolutions
  * @author Carlo Cancellieri - GeoSolutions
  */
 public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutputFormat {
-
-    // private final static Logger LOGGER =
-    // Logging.getLogger(JSONDescribeFeatureTypeResponse.class);
 
     public JSONDescribeFeatureTypeResponse(GeoServer gs, final String mime) {
         super(gs, mime);
@@ -54,7 +55,7 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
                 outWriter.write(getCallbackFunction() + "(");
             }
 
-            // starting with JSon
+            // starting with JSON
             GeoJSONBuilder jw = new GeoJSONBuilder(outWriter);
             jw.object();
             jw.key("elementFormDefault");
@@ -117,6 +118,11 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
         }
         jw.key("localType").value(mapToJsonType(binding));
 
+        if (ad.getType().getRestrictions() != null
+                && !ad.getType().getRestrictions().isEmpty()) {
+            describePropertyRestrictions(ad, jw);
+        }
+
         jw.endObject(); // end of attribute description
     }
 
@@ -141,6 +147,40 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
         } else {
             return "string";
         }
+    }
+
+    private static void describePropertyRestrictions(AttributeDescriptor ad, GeoJSONBuilder jw) {
+        jw.key("restriction");
+        jw.object();
+
+        for (Filter f : ad.getType().getRestrictions()) {
+            Class<? extends Filter> filterClass = f.getClass();
+            boolean isExpressionNumeric =
+                    Number.class.isAssignableFrom(ad.getType().getBinding());
+
+            if (filterClass == IsBetweenImpl.class) {
+                String lowerBoundary = ((IsBetweenImpl) f).getLowerBoundary().toString();
+                String upperBoundary = ((IsBetweenImpl) f).getUpperBoundary().toString();
+                jw.key("minInclusive").value(renderExpression(isExpressionNumeric, lowerBoundary));
+                jw.key("maxInclusive").value(renderExpression(isExpressionNumeric, upperBoundary));
+            } else if (filterClass == OrImpl.class) {
+                jw.key("enumeration");
+                jw.array();
+                for (Filter eq : ((OrImpl) f).getChildren()) {
+                    String expression = ((IsEqualsToImpl) eq).getExpression2().toString();
+                    jw.value(renderExpression(isExpressionNumeric, expression));
+                }
+                jw.endArray();
+            }
+        }
+        jw.endObject(); // end restriction object
+    }
+
+    private static Object renderExpression(boolean isExpressionNumeric, String expression) {
+        if (!isExpressionNumeric || expression.contains("Infinity") || expression.equals("NaN")) {
+            return expression;
+        }
+        return Double.parseDouble(expression);
     }
 
     @Override

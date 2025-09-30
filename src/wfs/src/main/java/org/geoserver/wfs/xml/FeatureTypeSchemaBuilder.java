@@ -25,9 +25,11 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.xsd.XSDAnnotation;
 import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDCompositor;
+import org.eclipse.xsd.XSDConstrainingFacet;
 import org.eclipse.xsd.XSDDerivationMethod;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDFactory;
@@ -39,6 +41,7 @@ import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDParticle;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDSchemaContent;
+import org.eclipse.xsd.XSDSimpleTypeDefinition;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.eclipse.xsd.impl.XSDSchemaImpl;
 import org.eclipse.xsd.util.XSDConstants;
@@ -65,6 +68,7 @@ import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.api.feature.type.Schema;
+import org.geotools.api.filter.Filter;
 import org.geotools.api.util.InternationalString;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.Types;
@@ -769,6 +773,7 @@ public abstract class FeatureTypeSchemaBuilder {
         group.setCompositor(XSDCompositor.SEQUENCE_LITERAL);
 
         Map<XSDElementDeclaration, InternationalString> annotationCache = new HashMap<>();
+        Map<XSDElementDeclaration, List<Filter>> restrictionsCache = new HashMap<>();
         for (PropertyDescriptor pd : complexType.getDescriptors()) {
             if (pd instanceof AttributeDescriptor) {
                 AttributeDescriptor attribute = (AttributeDescriptor) pd;
@@ -829,6 +834,10 @@ public abstract class FeatureTypeSchemaBuilder {
                 if (attributeType.getDescription() != null) {
                     annotationCache.put(element, attributeType.getDescription());
                 }
+
+                if (attributeType.getRestrictions() != null) {
+                    restrictionsCache.put(element, attributeType.getRestrictions());
+                }
             }
         }
 
@@ -851,7 +860,39 @@ public abstract class FeatureTypeSchemaBuilder {
             annotation.getElement().appendChild(documentation);
         });
 
+        RestrictionToXSDConstrainingFacetVisitor restrictionsVisitor =
+                new RestrictionToXSDConstrainingFacetVisitor(factory);
+        restrictionsCache.forEach((element, restrictions) -> {
+            if (!restrictions.isEmpty()) {
+
+                XSDSimpleTypeDefinition simple = factory.createXSDSimpleTypeDefinition();
+                simple.setBaseTypeDefinition(element.getTypeDefinition().getSimpleType());
+                EList<XSDConstrainingFacet> facets = simple.getFacetContents();
+                restrictions.stream()
+                        .map(filter -> facetsFromFilter(filter, restrictionsVisitor))
+                        .forEach(facets::addAll);
+
+                if (!facets.isEmpty()) {
+                    element.setAnonymousTypeDefinition(simple);
+                }
+            }
+        });
+
         return xsdComplexType;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<XSDConstrainingFacet> facetsFromFilter(
+            Filter filter, RestrictionToXSDConstrainingFacetVisitor restrictionsVisitor) {
+
+        Object visitedFilter = filter.accept(restrictionsVisitor, new ArrayList<>());
+
+        if (filter.equals(visitedFilter)) {
+            /* the filter do not have a matching facet */
+            return List.of();
+        }
+
+        return (List<XSDConstrainingFacet>) visitedFilter;
     }
 
     XSDTypeDefinition resolveTypeInSchema(XSDSchema schema, Name typeName) {

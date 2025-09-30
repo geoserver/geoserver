@@ -836,27 +836,56 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         tester.assertInvisible(attributesPanel + "attributesTable");
         tester.assertVisible(attributesPanel + "attributesEditor");
+
         // check one attribute
-        String edit1 = "publishedinfo:tabs:panel:theList:1:content:attributePanel:attributesEditor:table"
-                + ":listContainer:items:1:itemProperties:";
-        tester.assertModelValue(edit1 + "2:component:text", "description");
-        tester.assertModelValue(edit1 + "3:component:type", java.lang.String.class);
-        tester.assertModelValue(edit1 + "4:component:area", "description");
-        tester.assertModelValue(edit1 + "5:component:description", null);
-        tester.assertModelValue(edit1 + "6:component:check", true);
+        String firstItemProperties = attributesPanel + "attributesEditor:table:listContainer:items:1:itemProperties";
+
+        // check rendering in attributes table
+        tester.assertModelValue(firstItemProperties + ":2:component:name", "description");
+        tester.assertModelValue(firstItemProperties + ":3:component:type", java.lang.String.class);
+        tester.assertModelValue(firstItemProperties + ":4:component:description", null);
+        tester.assertModelValue(firstItemProperties + ":5:component", "Nillable: true\n");
 
         // customize one attribute
-        String formEdit1 = "tabs:panel:theList:1:content:attributePanel:attributesEditor:table"
-                + ":listContainer:items:1:itemProperties:";
-        form.setValue(formEdit1 + "2:component:text", "abstract");
-        String cql = "Concatenate(description, ' and more!')";
-        form.setValue(formEdit1 + "4:component:area", cql);
-        form.setValue(formEdit1 + "5:component:description", "attribute described");
-        form.setValue(formEdit1 + "6:component:check", "false");
+
+        // open the attribute edit modal
+        tester.executeAjaxEvent(firstItemProperties + ":6:component:link", "click");
+
+        tester.assertVisible(attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog");
+
+        String editAttributeForm =
+                "tabs:panel:theList:1:content:attributePanel:attributesEditor:dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:attributeForm";
+
+        // rename the attribute
+        form.setValue(editAttributeForm + ":name", "abstract");
+        // change attribute source CQL
+        String newSource = "Concatenate(description, ' and more!')";
+        form.setValue(editAttributeForm + ":source", newSource);
+        // change attribute description
+        String newDescription = "attribute described";
+        form.setValue(editAttributeForm + ":description", newDescription);
+        // make the attribute not nillable
+        form.setValue(editAttributeForm + ":nillable", "false");
+
+        // click on dialog submit button
+        tester.executeAjaxEvent(
+                attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog:content:content:form:submit",
+                "click");
+
+        tester.assertInvisible(attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog");
 
         // save
         form.submit("apply");
         tester.assertNoErrorMessage();
+
+        // check changes rendering in attributes table
+        tester.assertModelValue(firstItemProperties + ":2:component:name", "abstract");
+        assertEquals(
+                tester.getComponentFromLastRenderedPage(firstItemProperties + ":4:component:description")
+                        .getDefaultModelObjectAsString(),
+                newDescription);
+        tester.assertModelValue(
+                firstItemProperties + ":5:component", "Source: Concatenate(description, ' and more!')\n");
 
         // check saving happened
         FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(layerId);
@@ -865,8 +894,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertEquals(6, attributes.size());
         AttributeTypeInfo att = attributes.get(0);
         assertEquals("abstract", att.getName());
-        assertEquals("attribute described", att.getDescription().toString(GeoServerDefaultLocale.get()));
-        assertEquals(cql, att.getSource());
+        assertEquals(newDescription, att.getDescription().toString(GeoServerDefaultLocale.get()));
+        assertEquals(newSource, att.getSource());
     }
 
     @Test
@@ -963,16 +992,28 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.assertInvisible(attributesPanel + "attributesTable");
         tester.assertVisible(attributesPanel + "attributesEditor");
 
-        // customize one attribute, just rename it
-        String firstItemProperties =
-                "tabs:panel:theList:1:content:attributePanel:attributesEditor:table:listContainer:items:1:itemProperties";
-        form.setValue(firstItemProperties + ":2:component:text", "abstract");
+        // customize one attribute renaming it
+        String firstItemProperties = attributesPanel + "attributesEditor:table:listContainer:items:1:itemProperties";
 
-        // now move it down
-        // - simulate blur happening only in the browser as the editor loses focus)
-        // - simulate click on the down link
-        tester.executeAjaxEvent("publishedinfo:" + firstItemProperties + ":2:component:text", "blur");
-        tester.executeAjaxEvent("publishedinfo:" + firstItemProperties + ":1:component:down:link", "click");
+        // open the attribute edit modal
+        tester.executeAjaxEvent(firstItemProperties + ":6:component:link", "click");
+
+        tester.assertVisible(attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog");
+
+        // rename the attribute
+        form.setValue(
+                "tabs:panel:theList:1:content:attributePanel:attributesEditor:dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:attributeForm:name",
+                "abstract");
+
+        // click on dialog submit button
+        tester.executeAjaxEvent(
+                attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog:content:content:form:submit",
+                "click");
+
+        tester.assertInvisible(attributesPanel + "attributesEditor:dialog:dialog:modal:overlay:dialog");
+
+        // move attribute down clicking on the down link
+        tester.executeAjaxEvent(firstItemProperties + ":1:component:down:link", "click");
 
         // save
         form.submit("apply");

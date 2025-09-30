@@ -11,7 +11,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
@@ -25,14 +25,14 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
     public void reset() {
         geoServer = getGeoServerApplication().getGeoServer();
         GeoServerInfo gsInfo = geoServer.getGlobal();
-        JAIInfo jai = gsInfo.getJAI();
+        ImageProcessingInfo jai = gsInfo.getImageProcessing();
         jai.setTileThreads(2);
         geoServer.save(gsInfo);
     }
 
     @Test
     public void testValues() {
-        JAIInfo info = geoServer.getGlobal().getJAI();
+        ImageProcessingInfo info = geoServer.getGlobal().getImageProcessing();
 
         login();
 
@@ -51,7 +51,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
 
         tester.assertRenderedPage(GeoServerHomePage.class);
-        JAIInfo jai = geoServer.getGlobal().getJAI();
+        ImageProcessingInfo jai = geoServer.getGlobal().getImageProcessing();
         assertEquals(3, jai.getTileThreads());
     }
 
@@ -65,7 +65,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         ft.submit("apply");
 
         tester.assertRenderedPage(JAIPage.class);
-        JAIInfo jai = geoServer.getGlobal().getJAI();
+        ImageProcessingInfo jai = geoServer.getGlobal().getImageProcessing();
         assertEquals(3, jai.getTileThreads());
     }
 }

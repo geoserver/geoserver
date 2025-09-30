@@ -38,9 +38,9 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
 
         // revert global settings
         GeoServerInfo global = getGeoServer().getGlobal();
-        global.getJAI().setAllowInterpolation(false);
-        global.getJAI().setMemoryThreshold(0.75d);
-        global.getJAI().setTilePriority(5);
+        global.getImageProcessing().setAllowInterpolation(false);
+        global.getImageProcessing().setMemoryThreshold(0.75d);
+        global.getImageProcessing().setTilePriority(5);
         global.getCoverageAccess().setQueueType(CoverageAccessInfo.QueueType.UNBOUNDED);
         getGeoServer().save(global);
 

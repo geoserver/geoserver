@@ -9,9 +9,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.TileCache;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 
-public class JAIInfoImpl implements Serializable, JAIInfo {
+public class ImageProcessingInfoImpl implements Serializable, ImageProcessingInfo {
 
     public static final String KEY = "jai.info";
 
@@ -169,7 +169,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        JAIInfoImpl other = (JAIInfoImpl) obj;
+        ImageProcessingInfoImpl other = (ImageProcessingInfoImpl) obj;
         if (allowInterpolation != other.allowInterpolation) return false;
         if (imageIOCache != other.imageIOCache) return false;
         if (Double.doubleToLongBits(memoryCapacity) != Double.doubleToLongBits(other.memoryCapacity)) return false;
@@ -182,9 +182,9 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     }
 
     @Override
-    public JAIInfoImpl clone() {
+    public ImageProcessingInfoImpl clone() {
         try {
-            return (JAIInfoImpl) super.clone();
+            return (ImageProcessingInfoImpl) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }

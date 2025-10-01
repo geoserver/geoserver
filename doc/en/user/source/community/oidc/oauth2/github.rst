@@ -104,4 +104,57 @@ Notes
 
 #. GitHub's Access Token is opaque, so :ref:`configure roles <community_oidc_role_source>`
 #. GitHub is OAUTH2-only (not OIDC) so it does **not** have an ID Token
- 
+#. GitHub does have userinfo
+
+Example GitHub UserInfo:
+
+     .. code-block:: json
+
+        {
+            "login" : "davidblasby",
+            "id" : 4893,
+            "node_id" : "MDQ6VXNlcj",
+            "avatar_url" : "https://avatars.githubusercontent.com/u/48937?v=4",
+            "gravatar_id" : "",
+            "url" : "https://api.github.com/users/davidblasby",
+            "html_url" : "https://github.com/davidblasby",
+            "followers_url" : "https://api.github.com/users/davidblasby/followers",
+            "following_url" : "https://api.github.com/users/davidblasby/following{/other_user}",
+            "gists_url" : "https://api.github.com/users/davidblasby/gists{/gist_id}",
+            "starred_url" : "https://api.github.com/users/davidblasby/starred{/owner}{/repo}",
+            "subscriptions_url" : "https://api.github.com/users/davidblasby/subscriptions",
+            "organizations_url" : "https://api.github.com/users/davidblasby/orgs",
+            "repos_url" : "https://api.github.com/users/davidblasby/repos",
+            "events_url" : "https://api.github.com/users/davidblasby/events{/privacy}",
+            "received_events_url" : "https://api.github.com/users/davidblasby/received_events",
+            "type" : "User",
+            "user_view_type" : "private",
+            "site_admin" : false,
+            "name" : "David Blasby",
+            "company" : "@GeoCat",
+            "blog" : "http://geocat.net",
+            "location" : "BC, CANADA",
+            "email" : "david.blasby+@geocat.net",
+            "hireable" : null,
+            "bio" : "Developer at @GeoCat",
+            "twitter_username" : null,
+            "notification_email" : "david.blasby+@geocat.net",
+            "public_repos" : 23,
+            "public_gists" : 0,
+            "followers" : 4,
+            "following" : 0,
+            "created_at" : "2019-03-26T04:03:17Z",
+            "updated_at" : "2025-10-01T18:36:02Z",
+            "private_gists" : 0,
+            "total_private_repos" : 0,
+            "owned_private_repos" : 0,
+            "disk_usage" : 2095,
+            "collaborators" : 0,
+            "two_factor_authentication" : true,
+            "plan" : {
+                "name" : "free",
+                "space" : 97656,
+                "collaborators" : 0,
+                "private_repos" : 10000
+            }
+        }

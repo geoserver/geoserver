@@ -137,6 +137,13 @@ public abstract class LegendGraphicBuilder {
                 legend.setStyle((Style) remover.getCopy());
             }
         }
+
+        // expand transformation functions into single rules
+        for (LegendRequest legend : request.getLegends()) {
+            Style style = legend.getStyle();
+            Style translated = TransformationFunctionTranslator.translate(style);
+            legend.setStyle(translated);
+        }
     }
 
     public Symbolizer rescaleSymbolizer(Symbolizer symbolizer, double size, double newSize) {

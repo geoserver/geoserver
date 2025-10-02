@@ -6,11 +6,13 @@
 package org.geoserver.wfs.v2_0;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.geoserver.data.test.CiteTestData.LAKES;
 import static org.geoserver.data.test.CiteTestData.PRIMITIVEGEOFEATURE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -21,11 +23,16 @@ import java.io.Serializable;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import javax.xml.namespace.QName;
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.AttributeTypeInfo;
@@ -46,6 +53,7 @@ import org.geotools.api.data.SimpleFeatureStore;
 import org.geotools.api.data.Transaction;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.wfs.v2_0.WFS;
 import org.hamcrest.CoreMatchers;
@@ -224,7 +232,7 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
 
     void assertSchema(Document doc, QName... types) throws Exception {
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathExists("//xsd:import[@namespace='" + GML.NAMESPACE + "']", doc);
+        assertXpathExists("//xsd:import[@namespace='" + GML.NAMESPACE + "']", doc);
 
         for (QName type : types) {
             String eName = type.getLocalPart();
@@ -464,8 +472,8 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
                 + "&typename="
                 + getLayerId(PRIMITIVEGEOFEATURE));
         assertSchema(dom, PRIMITIVEGEOFEATURE);
-        XMLAssert.assertXpathExists("//xsd:element[@name = 'name']", dom);
-        XMLAssert.assertXpathExists("//xsd:element[@name = 'description']", dom);
+        assertXpathExists("//xsd:element[@name = 'name']", dom);
+        assertXpathExists("//xsd:element[@name = 'description']", dom);
     }
 
     @Test
@@ -547,6 +555,107 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='new']/@type", doc);
         assertXpathEvaluatesTo(
                 "attribute description", "//xsd:element[@name='abstract']/xsd:annotation/xsd:documentation", doc);
+    }
+
+    @Test
+    public void testFeatureTypeWithAttributeRestrictions() throws Exception {
+        // customize feature type
+        String layerId = getLayerId(PRIMITIVEGEOFEATURE);
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(layerId);
+        // dynamically compute attributes
+        List<AttributeTypeInfo> attributes = fti.attributes();
+
+        // add restriction and set them statically
+        attributes.get(0).setName("ranged");
+        attributes.get(0).setSource("description");
+        attributes.get(0).setBinding(Double.class);
+        attributes.get(0).setRange(new NumberRange<>(Double.class, Math.E, Math.PI));
+
+        attributes.get(1).setName("optioned");
+        attributes.get(1).setSource("description");
+        attributes.get(1).setBinding(String.class);
+        attributes.get(1).setOptions(new ArrayList<>(Arrays.asList(1, "TWO", 3, "Five", "eight")));
+
+        fti.getAttributes().addAll(attributes);
+        getCatalog().save(fti);
+
+        // check DFT
+        String path = "ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=" + layerId;
+        Document doc = getAsDOM(path);
+
+        // check range restriction
+        assertXpathNotExists("//xsd:element[@name='ranged']/@type", doc);
+        assertXpathExists("//xsd:element[@name='ranged']/xsd:simpleType/xsd:restriction", doc);
+        assertXpathEvaluatesTo("xsd:double", "//xsd:element[@name='ranged']//xsd:restriction/@base", doc);
+        assertXpathEvaluatesTo(String.valueOf(Math.E), "//xsd:element[@name='ranged']//xsd:minInclusive/@value", doc);
+        assertXpathEvaluatesTo(String.valueOf(Math.PI), "//xsd:element[@name='ranged']//xsd:maxInclusive/@value", doc);
+
+        // check options restriction
+        assertXpathNotExists("//xsd:element[@name='optioned']/@type", doc);
+        assertXpathExists("//xsd:element[@name='optioned']/xsd:simpleType/xsd:restriction", doc);
+        assertXpathEvaluatesTo("xsd:string", "//xsd:element[@name='optioned']//xsd:restriction/@base", doc);
+        assertXpathEvaluatesTo("1", "//xsd:element[@name='optioned']//xsd:enumeration[1]/@value", doc);
+        assertXpathEvaluatesTo("TWO", "//xsd:element[@name='optioned']//xsd:enumeration[2]/@value", doc);
+        assertXpathEvaluatesTo("3", "//xsd:element[@name='optioned']//xsd:enumeration[3]/@value", doc);
+        assertXpathEvaluatesTo("Five", "//xsd:element[@name='optioned']//xsd:enumeration[4]/@value", doc);
+        assertXpathEvaluatesTo("eight", "//xsd:element[@name='optioned']//xsd:enumeration[5]/@value", doc);
+    }
+
+    @Test
+    public void testFeatureTypeWithAttributeRestrictionsJsonOutputFormat() throws Exception {
+        // customize feature type
+        String layerId = getLayerId(PRIMITIVEGEOFEATURE);
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(layerId);
+        // dynamically compute attributes
+        List<AttributeTypeInfo> attributes = fti.attributes();
+
+        // add restriction and set them statically
+        attributes.get(0).setName("ranged");
+        attributes.get(0).setSource("description");
+        attributes.get(0).setBinding(Double.class);
+        attributes.get(0).setRange(new NumberRange<>(Double.class, Math.E, Math.PI));
+
+        attributes.get(1).setName("optioned");
+        attributes.get(1).setSource("description");
+        attributes.get(1).setBinding(String.class);
+        attributes.get(1).setOptions(new ArrayList<>(Arrays.asList(1, "TWO", 3, "Five", "eight")));
+
+        attributes.get(2).setName("optioned_int");
+        attributes.get(2).setSource("description");
+        attributes.get(2).setBinding(Integer.class);
+        attributes.get(2).setOptions(new ArrayList<>(Arrays.asList(1, 2, 3, 5, 8)));
+
+        fti.getAttributes().addAll(attributes);
+        getCatalog().save(fti);
+
+        // check DFT
+        String path =
+                "ows?service=WFS&version=2.0.0&request=DescribeFeatureType&outputFormat=application/json&typeName="
+                        + layerId;
+        JSON json = getAsJSON(path);
+
+        JSONArray featureTypes = ((JSONObject) json).getJSONArray("featureTypes");
+        JSONObject featureType = featureTypes.getJSONObject(0);
+        JSONArray properties = featureType.getJSONArray("properties");
+
+        // check range restriction
+        JSONObject rangedJson = properties.getJSONObject(0);
+        JSONObject rangedJsonRestriction = rangedJson.getJSONObject("restriction");
+        assertEquals(Math.E, rangedJsonRestriction.getDouble("minInclusive"), 1e-6);
+        assertEquals(Math.PI, rangedJsonRestriction.getDouble("maxInclusive"), 1e-6);
+
+        // check int options restriction
+        JSONObject optionedJson = properties.getJSONObject(1);
+        JSONObject optionedJsonRestriction = optionedJson.getJSONObject("restriction");
+        JSONArray optionedJsonRestrictionEnumeration = optionedJsonRestriction.getJSONArray("enumeration");
+        assertArrayEquals(
+                new String[] {"1", "TWO", "3", "Five", "eight"}, optionedJsonRestrictionEnumeration.toArray());
+
+        // check int options restriction
+        JSONObject optionedIntJson = properties.getJSONObject(2);
+        JSONObject optionedIntJsonRestriction = optionedIntJson.getJSONObject("restriction");
+        JSONArray optionedIntJsonRestrictionEnumeration = optionedIntJsonRestriction.getJSONArray("enumeration");
+        assertArrayEquals(new Integer[] {1, 2, 3, 5, 8}, optionedIntJsonRestrictionEnumeration.toArray());
     }
 
     @Test

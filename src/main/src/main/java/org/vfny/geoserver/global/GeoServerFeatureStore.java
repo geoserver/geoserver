@@ -7,18 +7,24 @@ package org.vfny.geoserver.global;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Stream;
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.api.data.FeatureReader;
 import org.geotools.api.data.FeatureStore;
 import org.geotools.api.data.SimpleFeatureStore;
 import org.geotools.api.data.Transaction;
+import org.geotools.api.feature.IllegalAttributeException;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.identity.FeatureId;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.complex.feature.type.Types;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.util.Converters;
 
 /**
  * GeoServer wrapper for backend Geotools2 DataStore.
@@ -51,6 +57,9 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
     /** see interface for details. */
     @Override
     public List<FeatureId> addFeatures(FeatureCollection<SimpleFeatureType, SimpleFeature> fc) throws IOException {
+
+        enforceFeatureInsertValidation(fc);
+
         FeatureStore<SimpleFeatureType, SimpleFeature> store = store();
 
         // check if the feature collection needs to be retyped
@@ -59,6 +68,30 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
         }
 
         return store().addFeatures(fc);
+    }
+
+    private void enforceFeatureInsertValidation(FeatureCollection<SimpleFeatureType, SimpleFeature> fc) {
+        try (FeatureIterator<SimpleFeature> features = fc.features()) {
+            while (features.hasNext()) {
+                SimpleFeature feature = features.next();
+                feature.getType()
+                        .getAttributeDescriptors()
+                        .forEach(attributeDescriptor -> validateFeatureAttributeValue(attributeDescriptor, feature));
+            }
+        }
+    }
+
+    private void validateFeatureAttributeValue(AttributeDescriptor attributeDescriptor, SimpleFeature feature) {
+        try {
+            Object value = feature.getAttribute(attributeDescriptor.getName());
+            Types.validate(attributeDescriptor, value);
+        } catch (IllegalAttributeException ex) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Restriction evaluation failed for attribute '%s' of feature '%s' (%s)",
+                            attributeDescriptor.getName(), feature.getID(), ex.getMessage()),
+                    ex);
+        }
     }
 
     /** */
@@ -96,6 +129,9 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
 
     @Override
     public void modifyFeatures(String name, Object attributeValue, Filter filter) throws IOException {
+
+        enforceFeatureUpdateValidation(name, attributeValue);
+
         filter = makeDefinitionFilter(filter);
 
         store().modifyFeatures(name, attributeValue, filter);
@@ -103,6 +139,9 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
 
     @Override
     public void modifyFeatures(String[] names, Object[] attributeValues, Filter filter) throws IOException {
+
+        enforceFeatureUpdateValidation(names, attributeValues);
+
         filter = makeDefinitionFilter(filter);
 
         store().modifyFeatures(names, attributeValues, filter);
@@ -110,6 +149,10 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
 
     @Override
     public void modifyFeatures(Name[] attributeNames, Object[] attributeValues, Filter filter) throws IOException {
+
+        String[] names = Stream.of(attributeNames).map(Name::getLocalPart).toArray(String[]::new);
+        enforceFeatureUpdateValidation(names, attributeValues);
+
         filter = makeDefinitionFilter(filter);
 
         store().modifyFeatures(attributeNames, attributeValues, filter);
@@ -117,8 +160,40 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
 
     @Override
     public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter) throws IOException {
+
+        enforceFeatureUpdateValidation(attributeName.getLocalPart(), attributeValue);
         filter = makeDefinitionFilter(filter);
 
         store().modifyFeatures(attributeName, attributeValue, filter);
+    }
+
+    private void enforceFeatureUpdateValidation(String name, Object attributeValue) {
+        enforceFeatureUpdateValidation(new String[] {name}, new Object[] {attributeValue});
+    }
+
+    private void enforceFeatureUpdateValidation(String[] attributeNames, Object[] attributeValues) {
+        for (int i = 0; i < attributeNames.length; i++) {
+            String name = attributeNames[i];
+            Object value = attributeValues[i];
+
+            AttributeDescriptor attributeDescriptor = schema.getDescriptor(name);
+
+            Class<?> binding = attributeDescriptor.getType().getBinding();
+            Object convertedValue = Converters.convert(value, binding);
+
+            validateAttributeValue(attributeDescriptor, convertedValue);
+        }
+    }
+
+    private void validateAttributeValue(AttributeDescriptor attributeDescriptor, Object value) {
+        try {
+            Types.validate(attributeDescriptor, value);
+        } catch (IllegalAttributeException ex) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Restriction evaluation failed for the value of attribute '%s' (%s)",
+                            attributeDescriptor.getName(), ex.getMessage()),
+                    ex);
+        }
     }
 }

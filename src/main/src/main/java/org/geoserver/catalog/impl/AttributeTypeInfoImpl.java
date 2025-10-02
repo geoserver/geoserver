@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.util.List;
 import java.util.Objects;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -15,6 +16,7 @@ import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.api.util.InternationalString;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.GrowableInternationalString;
+import org.geotools.util.NumberRange;
 
 public class AttributeTypeInfoImpl implements AttributeTypeInfo {
 
@@ -28,6 +30,8 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     protected FeatureTypeInfo featureType;
     protected Class<?> binding;
     protected Integer length;
+    protected NumberRange<? extends Number> range;
+    protected List<Object> options;
     protected String source;
     protected GrowableInternationalString description;
 
@@ -135,6 +139,26 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     }
 
     @Override
+    public NumberRange<? extends Number> getRange() {
+        return range;
+    }
+
+    @Override
+    public void setRange(NumberRange<? extends Number> range) {
+        this.range = range;
+    }
+
+    @Override
+    public List<Object> getOptions() {
+        return options;
+    }
+
+    @Override
+    public void setOptions(List<Object> options) {
+        this.options = options;
+    }
+
+    @Override
     public String getRawSource() {
         return source;
     }
@@ -196,6 +220,8 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
                 binding,
                 length,
                 description,
+                range,
+                options,
                 source);
     }
 
@@ -214,6 +240,8 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
                 && Objects.equals(binding, that.binding)
                 && Objects.equals(length, that.length)
                 && Objects.equals(description, that.description)
+                && Objects.equals(range, that.range)
+                && Objects.equals(options, that.options)
                 // avoid false negatives, source is derived if unset
                 && (Objects.equals(source, that.source) || Objects.equals(getSource(), that.getSource()));
     }

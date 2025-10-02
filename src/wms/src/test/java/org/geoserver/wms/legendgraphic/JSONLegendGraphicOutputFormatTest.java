@@ -1906,4 +1906,38 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         assertEquals(1, rules.size());
         assertEquals("ashton", rules.getJSONObject(0).getString("name"));
     }
+
+    @Test
+    public void testRecode() throws Exception {
+        Style style = getCatalog().getStyleByName("recode").getStyle();
+        assertNotNull(style);
+        GetLegendGraphicRequest req = getRequest(null, style);
+        req.setStrict(false);
+
+        JSONObject resp = this.legendProducer.buildLegendGraphic(req);
+        assertNotNull(resp);
+        print(resp);
+
+        // extract the legend for the first layer
+        JSONArray legend = resp.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
+        assertEquals(1, legend.size());
+        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
+        assertEquals(3, rules.size());
+        JSONObject r0 = rules.getJSONObject(0);
+        assertEquals("Region - First", r0.getString("title"));
+        assertEquals("#6495ED", getPolygonFill(r0));
+        JSONObject r1 = rules.getJSONObject(1);
+        assertEquals("Region - Second", r1.getString("title"));
+        assertEquals("#B0C4DE", getPolygonFill(r1));
+        JSONObject r2 = rules.getJSONObject(2);
+        assertEquals("Region - Third", r2.getString("title"));
+        assertEquals("#00FFFF", getPolygonFill(r2));
+    }
+
+    private static String getPolygonFill(JSONObject rule) {
+        return rule.getJSONArray("symbolizers")
+                .getJSONObject(0)
+                .getJSONObject("Polygon")
+                .getString("fill");
+    }
 }

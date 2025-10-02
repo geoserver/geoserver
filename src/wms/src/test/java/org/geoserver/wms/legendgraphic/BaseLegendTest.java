@@ -48,6 +48,7 @@ public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSuppo
         testData.addStyle("rainfall_classes_nolabels", MockData.class, catalog);
         testData.addStyle("styleWithLegendSelection", this.getClass(), catalog);
         testData.addStyle("styleWithLegendSelectionOnSymbolizer", this.getClass(), catalog);
+        testData.addStyle("recode", "transformation/recode.sld", TransformationFunctionTranslatorTest.class, catalog);
         // add raster layer for rendering transform test
         testData.addRasterLayer(
                 new QName("http://www.opengis.net/wcs/1.1.1", "DEM", "wcs"),

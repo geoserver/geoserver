@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.data.layer;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -13,7 +14,10 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.stream.StreamSupport;
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.jdbc.JDBCDataStore;
@@ -94,5 +98,45 @@ public class SqlViewEditPageTest extends AbstractSqlViewPageTest {
 
         // check the createCRS has been called 50 times with a valid connection
         verify(spy, Mockito.atLeast(50)).createCRS(anyInt(), notNull());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSqlViewLostEdits() throws IOException {
+        login();
+
+        // build a virtual table and configure it
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName("Forests");
+        // no pk and no geometry, so that a refresh will find the same model
+        VirtualTable vt = new VirtualTable("test", "SELECT * FROM \"Forests\"");
+        info.getMetadata().put(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, vt);
+
+        // load the page
+        tester.startPage(new SQLViewEditPage(info, null));
+        tester.assertRenderedPage(SQLViewEditPage.class);
+        tester.assertNoErrorMessage();
+
+        // refresh the attributes
+        tester.clickLink("form:refresh", true);
+
+        // now set the pk (cannot work on the geometry, H2 sql views do not recognize the geometry type)
+        FormTester formTester = tester.newFormTester("form");
+        DataView<SQLViewAttribute> dataView = (DataView<SQLViewAttribute>)
+                tester.getComponentFromLastRenderedPage("form:attributes:listContainer:items");
+        String pkComponentId = StreamSupport.stream(dataView.spliterator(), false)
+                .filter(c -> {
+                    SQLViewAttribute att = (SQLViewAttribute) c.getDefaultModelObject();
+                    return att.getName().equals("fid_1");
+                })
+                .map(c -> c.getId())
+                .findFirst()
+                .orElseThrow();
+        String pkPath = "attributes:listContainer:items:" + pkComponentId + ":itemProperties:3:component:identifier";
+        formTester.setValue(pkPath, true);
+        formTester.submitLink("ok", false);
+
+        // check saving worked (without the fix the list would have been empty
+        vt = info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
+        assertEquals(List.of("fid_1"), vt.getPrimaryKeyColumns());
     }
 }

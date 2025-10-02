@@ -1401,6 +1401,30 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<B
         ImageAssert.assertEquals(new File(result.toURI()), image, 50);
     }
 
+    /** Tests that symbols relative sizes are proportional. */
+    @Test
+    public void testRecode() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+        req.setWidth(20);
+        req.setHeight(20);
+
+        FeatureTypeInfo ftInfo =
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(getCatalog().getStyleByName("recode").getStyle());
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("recode", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // one rule been turned into 3 rules, so 3 squares (we cannot test the labels here, that's done in the JSON
+        // test)
+        assertColorSimilar(new Color(100, 149, 237), getPixelColor(image, 8, 8), 0);
+        assertColorSimilar(new Color(176, 196, 222), getPixelColor(image, 8, 28), 0);
+        assertColorSimilar(new Color(0, 255, 255), getPixelColor(image, 8, 48), 0);
+    }
+
     /** */
     private Style readSLD(String sldName) throws IOException {
         StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);

@@ -28,6 +28,7 @@ import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Fragment;
+import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -273,6 +274,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         attributes.setSortable(false);
         attributes.setPageable(false);
         attributes.setOutputMarkupId(true);
+        attributes.setItemReuseStrategy(new DefaultItemReuseStrategy());
         form.add(attributes);
 
         // save and cancel at the bottom of the page

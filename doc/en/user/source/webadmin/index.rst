@@ -84,7 +84,7 @@ The :guilabel:`Settings` section contains configuration settings that apply to t
 
 * The :ref:`Global Settings <config_globalsettings>` page configures messaging, logging, character and proxy settings for the entire server.
 
-* The :ref:`JAI` page configures several JAI parameters, used by both WMS and WCS operations.
+* The :ref:`Image Processing` page configures several image processing parameters, used by both WMS and WCS operations.
 
 * The :ref:`Coverage Access <config_converageaccess>` page configures settings related to loading and publishing coverages.
 

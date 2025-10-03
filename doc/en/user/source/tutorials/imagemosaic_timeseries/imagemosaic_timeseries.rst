@@ -244,7 +244,7 @@ We specify the directory that contains the property and TIFF files (path must en
    
 Step 3: Set coverage parameters
 ```````````````````````````````
-The relevant parameters are AllowMultithreading and USE_JAI_IMAGEREAD. Do not forget to specify the background value according to your the value in your tif file. If you want to control which granule is displayed when a number of images match the time period specified then set the SORTING parameter to the variable name you want to use for sorting followed by a space and either D or A for descending or ascending. Descending values will mean that the latest image in a series that occurs in the time period requested is shown.
+The relevant parameters are AllowMultithreading and USE_IMAGEN_IMAGEREAD. Do not forget to specify the background value according to your the value in your tif file. If you want to control which granule is displayed when a number of images match the time period specified then set the SORTING parameter to the variable name you want to use for sorting followed by a space and either D or A for descending or ascending. Descending values will mean that the latest image in a series that occurs in the time period requested is shown.
 
 .. figure:: img/step_2_1.png
    :align: center

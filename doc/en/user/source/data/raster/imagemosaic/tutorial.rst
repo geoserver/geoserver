@@ -151,7 +151,7 @@ The configuration parameters are as follows:
      - "no color"
    * - AllowMultiThreading
      - True
-   * - USE_JAI_IMAGEREAD
+   * - USE_IMAGEN_IMAGEREAD
      - True
    * - SUGGESTED_TILE_SIZE
      - 512,512
@@ -214,7 +214,7 @@ The various parameters can be set as follows:
      - "no color"
    * - AllowMultiThreading
      - True
-   * - USE_JAI_IMAGEREAD
+   * - USE_IMAGEN_IMAGEREAD
      - True
    * - SUGGESTED_TILE_SIZE
      - 512,512
@@ -262,7 +262,7 @@ The final configuration parameters are the following:
      - #FFFFFF
    * - AllowMultiThreading
      - True
-   * - USE_JAI_IMAGEREAD
+   * - USE_IMAGEN_IMAGEREAD
      - True
    * - SUGGESTED_TILE_SIZE
      - 512,512

@@ -30,6 +30,31 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+Java 17 and ImageN (GeoServer 2.28.0)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.28.0, Java 17 is now the minimum required Java version to run GeoServer.
+
+Additionally, the image processing engine is now ImageN:
+
+* JAI-Ext related settings are gone from the UI (e.g. configuring if a certain operation should use JAI-Ext or not, from now on, it will use ImageN).
+* JAI native settings have been removed (ImageN is pure Java).
+* One notable change in the configuration is that the ``USE_JAI_IMAGEREAD`` parameter is now called
+  ``USE_IMAGEN_IMAGEREAD``.
+
+This ``USE_IMAGEN_IMAGEREAD``` parameter is used by image mosaic and a few other coverage readers,
+and is normally called "deferred loading" in the UI.
+GeoServer will migrate the parameter name automatically when layers are saved,
+and compatibility with REST scripts using the old name is preserved.
+If you want to migrate the data directory to the new parameter in bulk, look up all the coverage.xml
+files and replace the parameter name in them. For example, on Linux, the following command will
+perform a migration:
+
+.. code-block:: bash
+
+   find <GEOSERVER_DATA_DIR> -name coverage.xml -exec sed -i 's/USE_JAI_IMAGEREAD/USE_IMAGEN_IMAGEREAD/g' {} \;
+
+
 MapML Multi-Layer As Multi-Extent Configuration (GeoServer 2.27 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

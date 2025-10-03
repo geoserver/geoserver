@@ -36,6 +36,9 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
     @Serial
     private static final long serialVersionUID = 659498790758954330L;
 
+    public static final String USE_JAI_IMAGEREAD = "USE_JAI_IMAGEREAD";
+    public static final String USE_IMAGEN_IMAGEREAD = "USE_IMAGEN_IMAGEREAD";
+
     protected String nativeFormat;
 
     protected GridGeometry grid;
@@ -128,6 +131,12 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
 
     @Override
     public Map<String, Serializable> getParameters() {
+        // migrate old JAI parameter to ImageN one
+        if (parameters != null && parameters.containsKey(USE_JAI_IMAGEREAD)) {
+            // upgrade to ImageN
+            parameters.put(USE_IMAGEN_IMAGEREAD, parameters.get(USE_JAI_IMAGEREAD));
+            parameters.remove(USE_JAI_IMAGEREAD);
+        }
         return parameters;
     }
 

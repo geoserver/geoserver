@@ -1,4 +1,5 @@
-/* (c) 2014 - 2025 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -20,7 +21,6 @@ public class Excel2007OutputFormat extends ExcelOutputFormat {
         mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     }
 
-    /** Returns a new SXSSFWorkbook workbook */
     @Override
     protected ExcelWriter.ExcelFormat excelFormat() {
         return ExcelWriter.ExcelFormat.XLSX;

@@ -5,11 +5,9 @@
 
 Image Processing
 ================
-`Eclipse ImageN <https://eclipse-imagen.github.io/imagen/>`_ is an image processing library built by Sun Microsystems as "Java Advanced Imaging" and donated to the Eclispe Foundation.
+`Eclipse ImageN <https://eclipse-imagen.github.io/imagen/>`_ is an image processing library built by Sun Microsystems as "Java Advanced Imaging" and donated to the Eclipse Foundation.
 
-`JAI Image I/O Tools <https://www.oracle.com/java/technologies/install-jai-imageio-1-0-01.html>`_ provides reader, writer, and stream plug-ins for the standard Java Image I/O Framework.
-
-Several ImageN parameters, used by both WMS and WCS operations, can be configured in the Image Processing page. 
+Several ImageN parameters, used by both WMS and WCS operations, can be configured in the Image Processing page.
 
 .. figure:: img/image_processing.png
    
@@ -30,18 +28,9 @@ When supporting large images it is efficient to work on image subsets without lo
 
 **Tile Recycling**—Enable/Disable ImageN Cache Tile Recycling. If selected, Tile Recycling allows ImageN to re-use already loaded tiles, which can provide significant performance improvement. 
 
-**Native Acceleration**—If the Java Virtual Machine (JVM) finds the native code, then that will be used. If the native code is not available, the Java code will be used. As such, the ImageN package is able to provide optimized implementations for different platforms that can take advantage of each platform's capabilities.    
-
-**JPEG Native Acceleration**—Enables/disable JPEG Native Acceleration. When selected, enables JPEG native code, which may speed performance, but compromise security and crash protection. 
-
-**PNG Encoder Type**—Provides a selection of the PNG encoder between the Java own encoder, the ImageIO native one, and a `PNGJ <https://code.google.com/p/pngj/>`_ based one:
+**PNG Encoder Type**—Provides a selection of the PNG encoder between the Java own encoder and a `PNGJ <https://code.google.com/p/pngj/>`_ based one:
 
   * The Java standard encoder is always set to maximum compression. It provides the smallest output images, balanced by a high performance cost (up to six times slower than the other two alternatives).
-  * The ImageIO native encoder, available only when the ImageIO native extensions are installed, provided higher performance, but also generated significantly larger PNG images
-  * The PNGJ based encoder provides the best performance and generated PNG images that are just slightly larger than the Java standard encoder. It is the recommended choice, but it's also newer than the other two, so in case of misbehavior the other two encoders are left as an option for the administrator. 
-
-**Mosaic Native Acceleration**—To reduce the overhead of handling them, large data sets are often split into smaller chunks and then combined to create an image mosaic. An example of this is aerial imagery which usually comprises thousands of small images at very high resolution. Both native and ImageN implementations of mosaic are provided. When selected, Mosaic Native Acceleration use the native implementation for creating mosaics. 
-
-**Warp Native Acceleration**—Also for the Warp operation are provided both native and ImageN implementations. If the checkbox is enabled, then the native operation is used for the warp operation.
+  * The PNGJ based encoder provides the best performance and generated PNG images that are just slightly larger than the Java standard encoder. It is the recommended choice, but it's also newer than the other two, so in case of misbehavior the other two encoders are left as an option for the administrator.
 
 *It is quite important to remember that faster encoders are not necessarily going to visibly improve performance, if data loading and processing/rendering are dominating the response time, choosing a better encoder will likely not provide the expected benefits.*

@@ -16,18 +16,14 @@ In order to install and run this application, follow these steps:
 
 1. Download and install Java:
 
-    * Download Java 11 or Java 17 from:
+    * Download Java 17 from:
 
-        https://adoptium.net
-      
-        or:
-      
-        http://openjdk.java.net/
+      https://adoptium.net/en-GB/temurin/releases?version=17&os=any&arch=any
 
     * Install according to the instructions included with the release.
 
-    * Set an environment variable ``JAVA_HOME`` to the pathname of the directory
-      into which you installed Java.
+    * Check if an environment variable ``JAVA_HOME`` is set to the Java installation,
+      if missing create one and point to the directory into which you installed Java.
 
 2. Download and install the GeoServer binary 
 

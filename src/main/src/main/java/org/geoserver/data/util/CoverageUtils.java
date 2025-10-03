@@ -478,12 +478,6 @@ public class CoverageUtils {
         if (customParameters != null) {
             parameters.putAll(customParameters);
         }
-        String USE_IMAGEN_IMAGEREAD =
-                ImageMosaicFormat.USE_IMAGEN_IMAGEREAD.getName().toString();
-        String USE_JAI_IMAGEREAD = "USE_JAI_IMAGEREAD";
-        if (parameters.keySet().contains(USE_JAI_IMAGEREAD)) {
-            parameters.put(USE_IMAGEN_IMAGEREAD, parameters.get(USE_IMAGEN_IMAGEREAD));
-        }
 
         // make sure mosaics with many superimposed tiles won't blow up with
         // a "too many open files" exception

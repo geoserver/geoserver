@@ -1,3 +1,6 @@
+.. _community_oidc_google:
+
+
 Configure the Google authentication provider
 --------------------------------------------
 
@@ -10,98 +13,161 @@ The first thing to do is to configure the OAuth2 Provider and obtain ``Client ID
    For example, a JavaScript application does not require a secret, but a web server application does.
    
    * Login with a valid Google Account 
+   * Click on ``Create project``
    
-     .. figure:: images/google_api_console001.png
-        :align: center
-
-   * Click on ``APIs & Services``
-   
-     .. figure:: images/google_api_console002.png
-        :align: center
-
-   * Click on ``Credentials``
-   
-     .. figure:: images/google_api_console003.png
+     .. figure:: ../img/google-create-project1.png
         :align: center
         
-     .. note:: The first time you land here, Google will ask to create at least one project
-     
-         .. figure:: images/google_api_console004.png
-            :align: center
-            
-         For the purpose of this tutorial we will create a sample project. You are free to create other projects or update existing ones through the `Google API Console <https://console.developers.google.com/>`_ later.
-         
-         .. figure:: images/google_api_console005.png
-            :align: center
-         
-         If no ``Credentials`` are present, you will be asked to create new one.
-         
-         .. figure:: images/google_api_console006.png
-            :align: center
-
-#. Select an existing (or create a new one) ``OAuth Client ID``
-
-   .. figure:: images/google_api_console007.png
-      :align: center
-
-#. Configure a new ``Web application``
-
-   * If it is the first time you create an ``OAuth Client ID``, you will be asked to create a new ``consent screen``
+   * give the project a name like ``geoserver-oidc`` and press "Create"
    
-     .. figure:: images/google_api_console008.png
+     .. figure:: ../img/google-create-project2.png
         :align: center
 
-   * Customize the ``consent screen``
+   * Click on ``Credencials`` (left column)
+   
+     .. figure:: ../img/google-credentials.png
+        :align: center
+
+   * Click on "+ Create credentials" (top bar)
+   
+     .. figure:: ../img/google-credentials2.png
+        :align: center
+
+   * Choose "OAuth client ID"
+   
+     .. figure:: ../img/google-credentials3.png
+        :align: center
+
+   * Click on "Configure consent Screen"
+   
+     .. figure:: ../img/google-credentials4.png
+        :align: center
+
+   * Press "Get Started"
+   
+     .. figure:: ../img/google-credentials5.png
+        :align: center
+
+   * Type in an "App name" (like "test-gs"), choose your Email address, and then press "Next"
+   
+      .. figure:: ../img/google-credentials6.png
+         :align: center
+
+   * In the Audience section, choose "External" then press "Next"
+   
+      .. figure:: ../img/google-credentials7.png
+         :align: center
+
+   * Type in a contact email, then press "Next"
+   
+      .. figure:: ../img/google-credentials8.png
+         :align: center
+
+   * Agree to the terms, then press "Continue", and then "Create"
+   
+      .. figure:: ../img/google-credentials9.png
+         :align: center
+
+   * Go to Clients (Left Bar), press the 3-vertical-dots ,and then press "+ Create Client"
+   
+      .. figure:: ../img/google-credentials10.png
+         :align: center
+
+   * Choose "Web Application" and name the web application  (i.e. "gs test app")
+   
+      .. figure:: ../img/google-credentials11.png
+         :align: center
+
+   * Go down to "Authorized redirect URIs" and press "+ Add URI", type in "http://localhost:8080/geoserver/web/login/oauth2/code/google", then press "Create"
+   
+      .. figure:: ../img/google-credentials12.png
+         :align: center
+
+   *  Record your Client ID and Client Secret, then press "Ok"
     
-     .. warning:: This step is mandatory only if it's the first time you are defining a ``Web application`` on a new project.
-        If you don't have an organization, you can only choose type External from the screen below.
-
-     .. figure:: images/google_api_console009.png
-        :align: center
-        
-   * Fill the form below and click on ``save and continue`` untill all tabs are filled.
+      * **You will not be able to retreive your client secret once you press "ok"**
    
-     .. figure:: images/google_api_console010.png
-       :align: center
+      .. figure:: ../img/google-credentials13.png
+         :align: center
 
-     .. note:: It can be edited and updated also later (see last point of this section below)
-        
-   * From the credentials page, click on ``CREATE CREDENTIALS``> ``OAuth Client ID`` and select ``Application type`` -> ``Web application``
-   
-     .. warning:: This step is mandatory only if it's the first time you are defining a ``Web application`` on a new project.
 
-     .. figure:: images/google_api_console010a.png
-        :align: center
-
-   * Add a ``Name`` and the ``Authorized redirect URIs`` like shown here below.
-     
-     .. note:: This sample creates a client working on the default local URL ``http://localhost:8080/geoserver``. Of course this will work only on a local instance and can't be used for a production system.
-               
-        However it is possible to add as many ``Authorized redirect URIs`` you need to a new ``Web application``. 
-        
-        It is also possible to create many ``Client credentials`` with customised ``consent screen`` and ``Web application``, depending on your specific needs.
-        Every public GeoServer instance (or cluster of GeoServer belonging to a specific project) should have its own specific ``Client credentials``.
+   *  Go to "Audience" (left bar), go down to "Test Users", press "+Add users", and add your google email as the test user.
        
-     .. figure:: images/google_api_console011.png
-        :align: center
+      .. figure:: ../img/google-credentials14.png
+         :align: center
 
-     .. note:: Always add two entries for each URI. One without the ending ``/`` and another one with it.
+   * Press Save
+
+
+Configure GeoServer
+-------------------
+
+The next step is to configure your Google application as the OIDC IDP for GeoServer.
+
+Create the OIDC Filter
+^^^^^^^^^^^^^^^^^^^^^^
+
+   * Login to GeoServer as an Admin
    
-     .. figure:: images/google_api_console012.png
-        :align: center
+   * On the left bar under "Security", click "Authentication", and then "OpenID Connect Login"
+       
+      .. figure:: ../img/google-gs1.png
+         :align: center
 
-#. Click on ``Create`` and take note of the ``Client ID`` and the ``Client Secret``.
+   * Give the it a name like "test-google", then click the "Google Login" checkbox and copy-and-paste in the Client ID and Client Secret (from when you configured the google client).
+       
+      .. figure:: ../img/google-gs2.png
+         :align: center
 
-   At the end of the procedure Google will show-up a small dialog box with the ``Client ID`` and the ``Client Secret``.
-   That info can be always accessed and updated from the `Google API Console <https://console.developers.google.com/>`_
-   
-   .. figure:: images/google_api_console013.png
-      :align: center
+   * Go down to the bottom and configure the role source (if you want) - see :ref:`role source <community_oidc_role_source>`
 
-#. Optionally customize the ``OAuth consent screen``.
+   * Press "Save" 
 
-   At any time it is possible to update and customize the ``OAuth consent screen``. You can put here your logo, app name, ToS and so on.
+Allow Web Access (Filter Chain)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   .. figure:: images/google_api_console014.png
-      :align: center
+  * On the left bar under "Security", click "Authentication", and then click "Web" under "Filter Chains"
+       
+      .. figure:: ../img/google-filterchain1.png
+         :align: center
 
+   * Scroll down, and move the new Google OIDC Filter to the Selected side by pressing the "->" button.
+       
+      .. figure:: ../img/google-filterchain2.png
+         :align: center
+
+   * Move the new Google OIDC Filter above "anonymous" by pressing the up arrow button.
+       
+      .. figure:: ../img/google-filterchain3.png
+         :align: center
+
+   * Press "Close"
+
+   * Press "Save" 
+
+
+Notes
+=====
+
+1. Google's Access Token is opaque, so :ref:`configure roles <community_oidc_role_source>` via the ID Token
+2. Google's ID Token does not contain very much info
+
+
+      .. code-block:: json
+
+            {
+               "iss": "https://accounts.google.com",
+               "azp": "...",
+               "aud": "...",
+               "sub": "..",
+               "email": "dblasby@gmail.com",
+               "email_verified": true,
+               "at_hash": "1iKn2vPzlGpK-aY2n3",
+               "nonce": "Gi-fBHjrpUdC3o8K6zYhIbEdv1Jz6Zu0IF3sIT",
+               "name": "David Blasby",
+               "picture": "https://lh3.googleusercontent.com/a/ACg8ocLEhY",
+               "given_name": "David",
+               "family_name": "Blasby",
+               "iat": 175,
+               "exp": 175
+            }

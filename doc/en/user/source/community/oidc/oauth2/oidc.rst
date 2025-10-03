@@ -1,3 +1,6 @@
+.. _community_oidc_oidc:
+
+
 OpenID connect authentication
 -----------------------------
 
@@ -21,7 +24,7 @@ The UI allows to set also the ``Post Logout Redirect URI`` which will be used to
 
 In addition, the OpenID connect authentication is able to extract the user roles from either the ID token or the Access Token:
 
-.. figure:: images/openidconnect-roles.png
+.. figure:: ../img/role-source-dropdown.png
    :align: center
 
 The chosen attribute must be present in either the Access Token or in the Id token, and be either a string or an array of strings.

@@ -6,15 +6,15 @@
 package org.geoserver.config;
 
 import java.io.Serializable;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.TileCache;
 
 /**
- * Java Advanced Imaging configuration.
+ * Image processing settings, primarily used to configure Eclipse ImageN.
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public interface JAIInfo extends Cloneable, Serializable {
+public interface ImageProcessingInfo extends Cloneable, Serializable {
 
     static enum PngEncoderType {
         JDK,
@@ -56,14 +56,14 @@ public interface JAIInfo extends Cloneable, Serializable {
     void setPngEncoderType(PngEncoderType type);
 
     /** The jai instance. */
-    JAI getJAI();
+    ImageN getJAI();
 
-    void setJAI(JAI jai);
+    void setJAI(ImageN imagen);
 
     /** The jai tile cache. */
     TileCache getTileCache();
 
     void setTileCache(TileCache tileCache);
 
-    public JAIInfo clone();
+    public ImageProcessingInfo clone();
 }

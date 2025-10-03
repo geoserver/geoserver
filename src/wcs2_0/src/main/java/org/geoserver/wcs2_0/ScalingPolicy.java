@@ -18,9 +18,9 @@ import net.opengis.wcs20.ScalingType;
 import net.opengis.wcs20.TargetAxisExtentType;
 import net.opengis.wcs20.TargetAxisSizeType;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.Interpolation;
 import org.eclipse.imagen.InterpolationNearest;
-import org.eclipse.imagen.JAI;
 import org.eclipse.imagen.Warp;
 import org.eclipse.imagen.WarpAffine;
 import org.eclipse.imagen.media.utilities.ImageLayout2;
@@ -158,8 +158,9 @@ enum ScalingPolicy {
     ScaleToSize {
 
         /**
-         * In this case we must retain the lower bounds by scale the size, hence {@link ScaleDescriptor} JAI operation
-         * cannot be used. Same goes for {@link AffineDescriptor}, the only real option is {@link WarpDescriptor}.
+         * In this case we must retain the lower bounds by scale the size, hence {@link ScaleDescriptor} ImageN
+         * operation cannot be used. Same goes for {@link AffineDescriptor}, the only real option is
+         * {@link WarpDescriptor}.
          */
         @Override
         public GridCoverage2D scale(
@@ -225,7 +226,7 @@ enum ScalingPolicy {
             }
             // impose final
             final ImageLayout2 layout = new ImageLayout2(sourceMinX, sourceMinY, sizeX, sizeY);
-            hints.add(new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
+            hints.add(new Hints(ImageN.KEY_IMAGE_LAYOUT, layout));
             final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
             final ParameterValueGroup parameters = operation.getParameters();
             parameters.parameter("Source").setValue(sourceGC);
@@ -366,7 +367,7 @@ enum ScalingPolicy {
                     destinationRectangle.y,
                     destinationRectangle.width,
                     destinationRectangle.height);
-            hints.add(new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
+            hints.add(new Hints(ImageN.KEY_IMAGE_LAYOUT, layout));
 
             final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
             final ParameterValueGroup parameters = operation.getParameters();

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
@@ -93,8 +93,8 @@ public class PNGMapResponse extends RenderedImageMapResponse {
         // check to see if we have to see a translucent or bitmask quantizer
         image = applyPalette(image, mapContent, f -> f != null && f.contains("png8"), true);
         float quality = (100 - wms.getPngCompression()) / 100.0f;
-        JAIInfo.PngEncoderType encoder = wms.getPNGEncoderType();
-        if (encoder == JAIInfo.PngEncoderType.PNGJ) {
+        ImageProcessingInfo.PngEncoderType encoder = wms.getPNGEncoderType();
+        if (encoder == ImageProcessingInfo.PngEncoderType.PNGJ) {
             image = new PNGJWriter().writePNG(image, outStream, quality, mapContent);
             RasterCleaner.addImage(image);
         } else {

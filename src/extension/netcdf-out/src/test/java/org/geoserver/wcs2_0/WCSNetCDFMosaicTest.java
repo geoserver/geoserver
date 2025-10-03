@@ -559,7 +559,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo("dummyView", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
         final LayerInfo layerInfo = builder.buildLayer(coverageInfo);
         cat.add(layerInfo);

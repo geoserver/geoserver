@@ -23,8 +23,8 @@ public interface GeoServerFactory {
     /** Creates a new contact. */
     ContactInfo createContact();
 
-    /** Creates a new jai. */
-    JAIInfo createJAI();
+    /** Creates a new imagen. */
+    ImageProcessingInfo createJAI();
 
     /** Creates a new metadata link. */
     MetadataLinkInfo createMetadataLink();

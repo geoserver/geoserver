@@ -346,8 +346,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             // Allow resolution of XSDs from local file system
             EntityResolverProvider.setEntityResolver(RESOLVE_DISABLED_PROVIDER_DEVMODE);
 
-            // Use GeoServer's JAI ImagingListener
-            GeoserverInitStartupListener.initJAIDefaultInstance();
+            // Use GeoServer's ImageN ImagingListener
+            GeoserverInitStartupListener.initImageNDefaultInstance();
 
             getSecurityManager().setAuthenticationCache(new TestingAuthenticationCache());
             onSetUp(testData);

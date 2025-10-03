@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.imagen.ImageLayout;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.operator.ConstantDescriptor;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.wps.WPSException;
@@ -166,7 +166,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
                             Float.valueOf(image.getWidth()),
                             Float.valueOf(image.getHeight()),
                             new Byte[] {Byte.valueOf((byte) 255)},
-                            new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+                            new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, tempLayout));
                     iw.addBand(alpha, false);
                     image = iw.getRenderedImage();
                     cm = image.getColorModel();

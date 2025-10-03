@@ -141,7 +141,7 @@ The formats element lists the values formats that the server permits.
 
 The formats the server can produce depends to a large degree on how the Java is configured.
 
-PDF is supported on all systems but for image output formats JAI and ImageIO is used which means both must be on the server for them to be available.  You can get the list of supported formats by running the standalone client with the `--clientConfig` flag enabled (you will need to supply a yaml config file as well).  If you are using the servlet then do a get info request to see the list of formats (with the '*' as the outputFormats parameter in the config file).
+PDF is supported on all systems.  You can get the list of supported formats by running the get info request to see the list of formats (with the '*' as the outputFormats parameter in the config file).
 
 "globalParallelFetches" and "perHostParallelFetches" are used to tune the parallel loading of the map tiles/images. If you want to disable the parallel loading, set "globalParallelFetches" to 1.
 

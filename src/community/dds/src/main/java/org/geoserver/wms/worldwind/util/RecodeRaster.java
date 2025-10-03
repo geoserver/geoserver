@@ -43,7 +43,7 @@ public class RecodeRaster extends PointOpImage {
 
     public RecodeRaster(
             final RenderedImage image, final double srcVal, final double destVal, final RenderingHints hints) {
-        super(image, (ImageLayout) hints.get(JAI.KEY_IMAGE_LAYOUT), hints, false);
+        super(image, (ImageLayout) hints.get(ImageN.KEY_IMAGE_LAYOUT), hints, false);
 
         this.srcVal = srcVal;
         this.destVal = destVal;
@@ -140,9 +140,9 @@ public class RecodeRaster extends PointOpImage {
         }
     }
 
-    /** Register the "RecodeNoData" image operation to the operation registry of the specified JAI instance. */
-    public static void register(final JAI jai) {
-        final OperationRegistry registry = jai.getOperationRegistry();
+    /** Register the "RecodeNoData" image operation to the operation registry of the specified ImageN instance. */
+    public static void register(final ImageN imagen) {
+        final OperationRegistry registry = imagen.getOperationRegistry();
         try {
             registry.registerDescriptor(new Descriptor());
             registry.registerFactory(RenderedRegistryMode.MODE_NAME, OPERATION_NAME, "geotools.org", new CRIF());

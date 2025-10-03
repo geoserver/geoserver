@@ -11,7 +11,7 @@ What's in the Box?
 - `org.geotools.s3.geotiff`: S3 GeoTiff Format/FormatFactory/GridCoverage2dReader implementations
   based off of the GeoTiff versions. Only very minor changes to their parent classes.
 - `org.geotools.s3.cache`: Very basic caching of images from S3 based off of EhCache.
-- `S3ImageInputStreamImpl`: An implementation of ImageInputStream from JAI for reading imagery
+- `S3ImageInputStreamImpl`: An implementation of ImageInputStream from ImageN for reading imagery
   from S3. This class mainly contains the logic of stream position and chunking, while the cache
   package handles the actual S3 reads.
   

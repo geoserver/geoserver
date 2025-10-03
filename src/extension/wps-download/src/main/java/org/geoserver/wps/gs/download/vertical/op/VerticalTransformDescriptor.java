@@ -6,9 +6,9 @@ package org.geoserver.wps.gs.download.vertical.op;
 
 import java.awt.RenderingHints;
 import java.awt.image.RenderedImage;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.OperationDescriptorImpl;
-import org.eclipse.imagen.ParameterBlockJAI;
+import org.eclipse.imagen.ParameterBlockImageN;
 import org.eclipse.imagen.RenderedOp;
 import org.eclipse.imagen.media.range.Range;
 import org.eclipse.imagen.registry.RenderedRegistryMode;
@@ -61,7 +61,7 @@ public class VerticalTransformDescriptor extends OperationDescriptorImpl {
             RenderingHints hints,
             RenderedImage... sources) {
 
-        ParameterBlockJAI pb = new ParameterBlockJAI("verticalTransform", RenderedRegistryMode.MODE_NAME);
+        ParameterBlockImageN pb = new ParameterBlockImageN("verticalTransform", RenderedRegistryMode.MODE_NAME);
         RenderedImage img = sources[0];
         pb.setSource(img, 0);
 
@@ -72,6 +72,6 @@ public class VerticalTransformDescriptor extends OperationDescriptorImpl {
         pb.setParameter("coordinatesTransform", coordinatesTransform);
         pb.setParameter("verticalTransform", verticalTransform);
         pb.setParameter("noData", noData);
-        return JAI.create("verticalTransform", pb, hints);
+        return ImageN.create("verticalTransform", pb, hints);
     }
 }

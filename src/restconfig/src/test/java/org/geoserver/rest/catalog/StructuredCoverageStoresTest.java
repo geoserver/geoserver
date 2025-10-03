@@ -126,7 +126,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(WATER_VIEW, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
 
         // setup the hetero_s2_ovr mosaic
@@ -172,7 +172,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
     }
 

@@ -9,9 +9,9 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.List;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.Interpolation;
 import org.eclipse.imagen.InterpolationNearest;
-import org.eclipse.imagen.JAI;
 import org.eclipse.imagen.Warp;
 import org.eclipse.imagen.WarpAffine;
 import org.eclipse.imagen.media.utilities.ImageLayout2;
@@ -83,7 +83,7 @@ class ScaleToTarget {
         if (this.envelope == null) {
             this.envelope = reader.getOriginalEnvelope();
         }
-        this.interpolation = (Interpolation) ImageUtilities.NN_INTERPOLATION_HINT.get(JAI.KEY_INTERPOLATION);
+        this.interpolation = (Interpolation) ImageUtilities.NN_INTERPOLATION_HINT.get(ImageN.KEY_INTERPOLATION);
         this.overviewPolicy = OverviewPolicy.NEAREST;
     }
 
@@ -270,7 +270,7 @@ class ScaleToTarget {
         // impose final
         final ImageLayout2 layout =
                 new ImageLayout2(sourceMinX, sourceMinY, this.adjustedTargetSizeX, this.adjustedTargetSizeY);
-        hints.add(new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
+        hints.add(new Hints(ImageN.KEY_IMAGE_LAYOUT, layout));
         final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
         final ParameterValueGroup parameters = operation.getParameters();
         parameters.parameter("Source").setValue(sourceGC);

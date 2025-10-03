@@ -121,7 +121,7 @@ public class WCSUtils {
             return coverage;
         }
         // if the intersection is so small that we'll end up reading nothing, return null
-        // instead of failing at the JAI level
+        // instead of failing at the ImageN level
         ReferencedEnvelope intersection = cropBounds.intersection(coverageBounds);
         if (getEnvelopeInRasterSpace(intersection, coverage.getGridGeometry()).isEmpty()) return null;
         Polygon polygon = JTS.toGeometry(cropBounds);
@@ -153,7 +153,7 @@ public class WCSUtils {
         }
 
         // if the intersection is so small that we'll end up reading nothing, return null
-        // instead of failing at the JAI level
+        // instead of failing at the ImageN level
         ReferencedEnvelope intersection = cropBounds.intersection(coverageBounds);
         if (getEnvelopeInRasterSpace(intersection, coverage.getGridGeometry()).isEmpty()) return null;
 
@@ -857,7 +857,7 @@ public class WCSUtils {
     private static GridGeometry2D reprojectGridGeometryFit(GridCoverage2DReader reader, ReferencedEnvelope envelope) {
         // build a fake coverage in the same area as the original one, with
         // the same pixel size and raster size, but without actually pushing it in memory:
-        // ConstantDescriptor is a JAI operation, will produce tiles only on pull.
+        // ConstantDescriptor is a ImageN operation, will produce tiles only on pull.
         AffineTransform2D originalG2W = (AffineTransform2D) reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
         double scale = XAffineTransform.getScale(originalG2W);
         GeneralBounds originalEnvelope = reader.getOriginalEnvelope();
@@ -870,7 +870,7 @@ public class WCSUtils {
         GridCoverage2D sampleCoverage =
                 factory.create("sample", image, originalEnvelope.getCoordinateReferenceSystem(), g2w, null, null, null);
 
-        // reproject to target CRS (again does not really compute pixels, just set up a JAI chain)
+        // reproject to target CRS (again does not really compute pixels, just set up a ImageN chain)
         CoverageProcessor processor = CoverageProcessor.getInstance();
         final Operation operation = processor.getOperation("Resample");
         final ParameterValueGroup param = operation.getParameters().clone();
@@ -904,8 +904,8 @@ public class WCSUtils {
     }
 
     /**
-     * Checks if the coverage rendered image is deferred loaded, that is, if it's a JAI chain originating in a ImageRead
-     * operation
+     * Checks if the coverage rendered image is deferred loaded, that is, if it's a ImageN chain originating in a
+     * ImageRead operation
      */
     public static boolean isDeferredLoaded(GridCoverage2D coverage) {
         RenderedImage ri = coverage.getRenderedImage();
@@ -913,10 +913,10 @@ public class WCSUtils {
     }
 
     /**
-     * Checks if the rendered image is based on a ImageRead operation, or if the potential JAI chain backing it results
-     * in a deferred loading. The method recursively calls itself and check the sources of the rendered image. Naively
-     * assumes that if one source is using ImageRead, then the whole chain is deferred loaded (which is true in all
-     * existing GeoTools readers)
+     * Checks if the rendered image is based on a ImageRead operation, or if the potential ImageN chain backing it
+     * results in a deferred loading. The method recursively calls itself and check the sources of the rendered image.
+     * Naively assumes that if one source is using ImageRead, then the whole chain is deferred loaded (which is true in
+     * all existing GeoTools readers)
      */
     private static boolean isDeferredLoaded(RenderedImage ri) {
         if (ri instanceof RenderedOp rop) {

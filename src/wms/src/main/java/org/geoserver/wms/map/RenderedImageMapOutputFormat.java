@@ -21,12 +21,12 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.Interpolation;
 import org.eclipse.imagen.InterpolationBicubic2;
 import org.eclipse.imagen.InterpolationBilinear;
 import org.eclipse.imagen.InterpolationNearest;
-import org.eclipse.imagen.JAI;
-import org.eclipse.imagen.LookupTableJAI;
+import org.eclipse.imagen.LookupTableImageN;
 import org.eclipse.imagen.media.lookup.LookupTable;
 import org.eclipse.imagen.media.lookup.LookupTableFactory;
 import org.geoserver.catalog.LayerInfo;
@@ -109,7 +109,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private static final int KB = 1024;
 
     /** The lookup table used for data type transformation (it's really the identity one) */
-    private static LookupTableJAI IDENTITY_TABLE = new LookupTableJAI(getTable());
+    private static LookupTableImageN IDENTITY_TABLE = new LookupTableImageN(getTable());
 
     private Function<WMSMapContent, LabelCache> labelCache = null;
 
@@ -334,13 +334,13 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // turn off/on interpolation rendering hint
         if (wms != null) {
             if (WMSInterpolation.Nearest.equals(wms.getInterpolation())) {
-                hintsMap.put(JAI.KEY_INTERPOLATION, NN_INTERPOLATION);
+                hintsMap.put(ImageN.KEY_INTERPOLATION, NN_INTERPOLATION);
                 hintsMap.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             } else if (WMSInterpolation.Bilinear.equals(wms.getInterpolation())) {
-                hintsMap.put(JAI.KEY_INTERPOLATION, BIL_INTERPOLATION);
+                hintsMap.put(ImageN.KEY_INTERPOLATION, BIL_INTERPOLATION);
                 hintsMap.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             } else if (WMSInterpolation.Bicubic.equals(wms.getInterpolation())) {
-                hintsMap.put(JAI.KEY_INTERPOLATION, BIC_INTERPOLATION);
+                hintsMap.put(ImageN.KEY_INTERPOLATION, BIC_INTERPOLATION);
                 hintsMap.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
             }
         }
@@ -687,7 +687,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // when writing the image out...
         layout.setTileWidth(w);
         layout.setTileHeight(h);
-        RenderingHints hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
+        RenderingHints hints = new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, layout);
         LookupTable table = LookupTableFactory.create(IDENTITY_TABLE);
         // TODO SIMONE why not format?
         ImageWorker worker = new ImageWorker(source);

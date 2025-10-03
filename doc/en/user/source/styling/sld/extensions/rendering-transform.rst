@@ -350,7 +350,7 @@ Running map algebra on the fly using Jiffle
 -------------------------------------------
 
 The ``Jiffle`` rendering transformation allows to run map algebra on the bands of an input raster
-layer using the `Jiffle language <https://github.com/geosolutions-it/jai-ext/wiki/Jiffle---language-summary>`_.
+layer using the `Jiffle language <https://eclipse-imagen.github.io/imagen/guide/jiffle/>`_.
 For example, the following style computes the NDVI index from a 13 bands Sentinel 2 image, in which
 the red and NIR bands are the forth and eight bands (Jiffle band indexes are zero based),  
 and then displays the resulting index with a color map:

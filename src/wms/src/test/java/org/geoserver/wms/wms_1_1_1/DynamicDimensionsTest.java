@@ -262,7 +262,8 @@ public class DynamicDimensionsTest extends WMSDimensionsTestSupport {
         di.setUnitSymbol(unitSymbol);
         info.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + metadata, di);
 
-        info.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.FALSE);
+        info.getParameters()
+                .put(AbstractGridFormat.USE_IMAGEN_IMAGEREAD.getName().toString(), Boolean.FALSE);
         getCatalog().save(info);
     }
 

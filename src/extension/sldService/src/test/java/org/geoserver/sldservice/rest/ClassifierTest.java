@@ -211,7 +211,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         // Reordered bands coverage
         CoverageInfo coverageInfo = multiBandCoverageView.createCoverageInfo(MULTIBAND_VIEW, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         catalog.add(coverageInfo);
         final LayerInfo layerInfoView = builder.buildLayer(coverageInfo);
         catalog.add(layerInfoView);
@@ -1397,8 +1397,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Map<GeneralParameterDescriptor, Object> parameters = getParametersMap(reader.getReadParameters());
 
         // expect the bands selection
-        assertThat(parameters.keySet(), Matchers.hasItem(AbstractGridFormat.USE_JAI_IMAGEREAD));
-        Boolean imageRead = (Boolean) parameters.get(AbstractGridFormat.USE_JAI_IMAGEREAD);
+        assertThat(parameters.keySet(), Matchers.hasItem(AbstractGridFormat.USE_IMAGEN_IMAGEREAD));
+        Boolean imageRead = (Boolean) parameters.get(AbstractGridFormat.USE_IMAGEN_IMAGEREAD);
         assertTrue(imageRead);
 
         RenderedImage image = reader.getImage();

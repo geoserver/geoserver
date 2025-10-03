@@ -13,7 +13,6 @@ for the granules have been dropped significantly, including:
 
 * The granules can be in different color models, with an allowance of mixing gray, RGB, RGBA and indexed color granules
   (it is however not possible to mix colored granules with scientific data types like as float/double).
-  In order to benefit of mixed color models JAI-Ext support must be enabled, see :ref:`the JAI-EXT support documentation <JAIEXT>`.
 
 In addition it is worth remarking on the fact that currently the ImageMosaic is able to handle raster data whose grid-to-world transformation is a scale and translate transformation, hence no rotation or skew.
 
@@ -429,7 +428,7 @@ The parameters are as follows:
    * - Accurate resolution computation
      - Boolean value. If ``true``, computes the resolution of the granules in 9 points: the corners of the requested area and the middle points, taking the better one. This will provide better results for cases where there is a lot more deformation on a subregion (top/bottom/sides) of the requested bounding box with respect to others. If ``false``, computes the resolution using a basic affine scale transform.
    * - AllowMultithreading
-     - If ``true``, enables multithreaded tile loading. This allows performing parallelized loading of the granules that compose the mosaic. Setting this to ``true`` makes sense only if you set USE_JAI_IMAGEREAD to ``false`` at the same time to force immediate loading of data into memory.
+     - If ``true``, enables multithreaded tile loading. This allows performing parallelized loading of the granules that compose the mosaic. Setting this to ``true`` makes sense only if you set USE_IMAGEN_IMAGEREAD to ``false`` at the same time to force immediate loading of data into memory.
    * - BackgroundValues
      - Sets the value of the mosaic background. Depending on the nature of the mosaic it is wise to set a value for the "nodata" area (usually -9999). This value is repeated on all the mosaic bands.
    * - Filter
@@ -476,8 +475,8 @@ The parameters are as follows:
      - Controls the tile size of the input granules as well as the tile size of the output mosaic. It consists of two positive integers separated by a comma. Default is ``512,512``. If your data is properly tiled, you might want to set this parameter to blank to avoid unnecessarily reformatting when reading.
    * - SKIP_DUPLICATES
      - Determines whether duplicate granules should be skipped (defaults to false). If set to true, the reader will ignore any granule whose URL is the same as that of a previously added granule.
-   * - USE_JAI_IMAGEREAD
-     - Controls the low-level mechanism used to read the granules. If set to ``true``, GeoServer will use the JAI ImageRead operation and its deferred loading mechanism. If set to ``false``, GeoServer will perform direct ImageIO read calls, which will result in immediate loading.
+   * - USE_IMAGEN_IMAGEREAD
+     - Controls the low-level mechanism used to read the granules. If set to ``true``, GeoServer will use the ImageN ImageRead operation and its deferred loading mechanism. If set to ``false``, GeoServer will perform direct ImageIO read calls, which will result in immediate loading.
    
        .. note::
 

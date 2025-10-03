@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.TreeSet;
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.stream.ImageInputStream;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.PlanarImage;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.parameter.GeneralParameterValue;
@@ -208,7 +208,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     private static synchronized RenderedImage readImage(File inFile) throws IOException {
         final ParameterBlock readParams = new ParameterBlock();
         ImageInputStreamSpi lSpi = ImageIOExt.getImageInputStreamSPI(inFile);
-        @SuppressWarnings("PMD.CloseResource") // stream will be closed along with JAI op
+        @SuppressWarnings("PMD.CloseResource") // stream will be closed along with ImageN op
         ImageInputStream lImgIn = lSpi.createInputStreamInstance(inFile, false, null);
         readParams.add(lImgIn);
         readParams.add(0);
@@ -219,7 +219,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         readParams.add(null);
         readParams.add(null);
         readParams.add(READER_SPI.createReaderInstance());
-        PlanarImage lImage = JAI.create("ImageRead", readParams, null);
+        PlanarImage lImage = ImageN.create("ImageRead", readParams, null);
         final String lFileName = inFile.getName();
         final int lExtIndex = lFileName.lastIndexOf('.');
         final String lFileNameNoExt = lExtIndex < 0 ? lFileName : lFileName.substring(0, lExtIndex);

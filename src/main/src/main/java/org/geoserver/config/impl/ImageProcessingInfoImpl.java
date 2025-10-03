@@ -7,11 +7,11 @@ package org.geoserver.config.impl;
 
 import java.io.Serial;
 import java.io.Serializable;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.TileCache;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 
-public class JAIInfoImpl implements Serializable, JAIInfo {
+public class ImageProcessingInfoImpl implements Serializable, ImageProcessingInfo {
 
     public static final String KEY = "jai.info";
 
@@ -121,13 +121,13 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     }
 
     @Override
-    public JAI getJAI() {
-        return JAI.getDefaultInstance();
+    public ImageN getJAI() {
+        return ImageN.getDefaultInstance();
     }
 
     @Override
-    public void setJAI(JAI jai) {
-        // do nothing. REVISIT: we're using the singleton JAI instance and guess there's no way to
+    public void setJAI(ImageN imagen) {
+        // do nothing. REVISIT: we're using the singleton ImageN instance and guess there's no way to
         // get a non singleton one, so does this method make sense at all? In any case, this class
         // is meant to be serializable, hence the change in getJAI() to return the singleton
         // directly and avoid NPE's
@@ -140,7 +140,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
 
     @Override
     public void setTileCache(TileCache tileCache) {
-        // do nothing. REVISIT: we're using the singleton JAI instance and guess there's no way to
+        // do nothing. REVISIT: we're using the singleton ImageN instance and guess there's no way to
         // get a non singleton one, so does this method make sense at all? In any case, this class
         // is meant to be serializable, hence the change in getTileCache() to return the singleton
         // directly and avoid NPE's
@@ -169,7 +169,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        JAIInfoImpl other = (JAIInfoImpl) obj;
+        ImageProcessingInfoImpl other = (ImageProcessingInfoImpl) obj;
         if (allowInterpolation != other.allowInterpolation) return false;
         if (imageIOCache != other.imageIOCache) return false;
         if (Double.doubleToLongBits(memoryCapacity) != Double.doubleToLongBits(other.memoryCapacity)) return false;
@@ -182,9 +182,9 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     }
 
     @Override
-    public JAIInfoImpl clone() {
+    public ImageProcessingInfoImpl clone() {
         try {
-            return (JAIInfoImpl) super.clone();
+            return (ImageProcessingInfoImpl) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }

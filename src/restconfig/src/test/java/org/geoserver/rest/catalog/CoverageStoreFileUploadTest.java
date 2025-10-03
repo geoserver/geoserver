@@ -630,7 +630,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo("coverageView", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         coverageInfo.getDimensions().get(0).setName("rasterA");
         coverageInfo.getDimensions().get(1).setName("rasterB");
         cat.add(coverageInfo);

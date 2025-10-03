@@ -320,7 +320,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         // Reordered bands coverage
         final CoverageInfo coverageInfoView = coverageView.createCoverageInfo("mosaic_shuffle", storeInfo, builder);
-        coverageInfoView.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfoView.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfoView);
         final LayerInfo layerInfoView = builder.buildLayer(coverageInfoView);
         cat.add(layerInfoView);

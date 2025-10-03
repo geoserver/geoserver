@@ -301,7 +301,7 @@ GeoTools BOM Structure
 
 GeoServer imports two separate GeoTools BOMs to provide fine-grained control over dependency management:
 
-* **gt-platform-dependencies**: Manages versions of third-party libraries (Jackson, Commons libraries, JTS, Guava, ImageIO-Ext, JAI-Ext, etc.)
+* **gt-platform-dependencies**: Manages versions of third-party libraries (Jackson, Commons libraries, JTS, Guava, ImageIO-Ext, ImageN, etc.)
   that are shared across the GeoTools ecosystem. This BOM ensures consistent versions of transitive dependencies.
 
 * **gt-bom**: Provides access to all GeoTools module artifacts without specifying versions, allowing GeoServer to declare GeoTools dependencies cleanly.

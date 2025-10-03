@@ -21,7 +21,7 @@ import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 /**
- * A mapper specifically thought for formats that do have a corresponding JAI image reader
+ * A mapper specifically thought for formats that do have a corresponding ImageN image reader
  *
  * @author Andrea Aime - GeoSolutions
  */

@@ -489,10 +489,10 @@ public class CoverageUtils {
         if (directRead) {
             // Since the read sample image won't be greater than 5x5 pixels and we are limiting the
             // number of granules to 1, we may do direct read instead of using JAI
-            String useJaiImageRead =
-                    ImageMosaicFormat.USE_JAI_IMAGEREAD.getName().toString();
-            if (parameters.keySet().contains(useJaiImageRead)) {
-                parameters.put(useJaiImageRead, false);
+            String useImageNImageRead =
+                    ImageMosaicFormat.USE_IMAGEN_IMAGEREAD.getName().toString();
+            if (parameters.keySet().contains(useImageNImageRead)) {
+                parameters.put(useImageNImageRead, false);
             }
         }
 

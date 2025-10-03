@@ -18,7 +18,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.StringResourceModel;
-import org.eclipse.imagen.JAI;
+import org.eclipse.imagen.ImageN;
 import org.eclipse.imagen.TileCache;
 import org.eclipse.imagen.media.util.CacheDiagnostics;
 import org.geoserver.catalog.Catalog;
@@ -30,7 +30,7 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.api.data.DataAccess;
@@ -155,7 +155,8 @@ public class StatusPanel extends Panel {
 
             @Override
             public void onClick() {
-                TileCache jaiCache = parent.getGeoServer().getGlobal().getJAI().getTileCache();
+                TileCache jaiCache =
+                        parent.getGeoServer().getGlobal().getImageProcessing().getTileCache();
                 final long capacityBefore = jaiCache.getMemoryCapacity();
                 jaiCache.flush();
                 jaiCache.setMemoryCapacity(0); // to be sure we realease all tiles
@@ -223,9 +224,9 @@ public class StatusPanel extends Panel {
                         + ")");
 
         GeoServerInfo geoServerInfo = parent.getGeoServer().getGlobal();
-        JAIInfo jaiInfo = geoServerInfo.getJAI();
+        ImageProcessingInfo jaiInfo = geoServerInfo.getImageProcessing();
         @SuppressWarnings("PMD.CloseResource")
-        JAI jai = jaiInfo.getJAI();
+        ImageN imagen = jaiInfo.getJAI();
         CoverageAccessInfo coverageAccess = geoServerInfo.getCoverageAccess();
         TileCache jaiCache = jaiInfo.getTileCache();
 
@@ -236,10 +237,10 @@ public class StatusPanel extends Panel {
             values.put(KEY_JAI_MEM_USAGE, "-");
         }
         values.put(KEY_JAI_MEM_THRESHOLD, Integer.toString((int) (100.0f * jaiCache.getMemoryThreshold())) + "%");
-        values.put(KEY_JAI_TILE_THREADS, jai.getTileScheduler().getParallelism());
+        values.put(KEY_JAI_TILE_THREADS, imagen.getTileScheduler().getParallelism());
         values.put(
                 KEY_JAI_TILE_THREAD_PRIORITY,
-                Integer.toString(jai.getTileScheduler().getPriority()));
+                Integer.toString(imagen.getTileScheduler().getPriority()));
 
         values.put(KEY_COVERAGEACCESS_CORE_POOL_SIZE, coverageAccess.getCorePoolSize());
         values.put(KEY_COVERAGEACCESS_MAX_POOL_SIZE, coverageAccess.getMaxPoolSize());

@@ -14,7 +14,7 @@
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-dggs-core</artifactId>
+  <artifactId>gs-dggs-rhealpix</artifactId>
 
   <properties>
     <!-- has GeoTools headers, meant to go eventually down in GeoTools -->
@@ -38,16 +38,6 @@
     <!-- Tracking dependency numbers here, they will likely move to GeoTools in the future, 
         nothing else is using them -->
     <dependency>
-      <groupId>com.uber</groupId>
-      <artifactId>h3</artifactId>
-      <version>3.7.3</version>
-    </dependency>
-    <dependency>
-      <groupId>black.ninia</groupId>
-      <artifactId>jep</artifactId>
-      <version>4.2.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
       <scope>test</scope>
@@ -56,6 +46,11 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-shapefile</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.dggs</groupId>
+      <artifactId>gt-dggs-rhealpix</artifactId>
+      <version>${gt.version}</version>
     </dependency>
   </dependencies>
 

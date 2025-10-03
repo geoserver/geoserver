@@ -67,7 +67,7 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         for (MediaType format : zoneFormats) {
             String apiUrl = ResponseUtils.buildURL(
                     baseUrl,
-                    "ogc/dggs/collections/" + collectionId + "/zones",
+                    "ogc/dggs/v1/collections/" + collectionId + "/zones",
                     Collections.singletonMap("f", format.toString()),
                     SERVICE);
             addLink(new Link(
@@ -82,7 +82,7 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
             for (MediaType format : dapaFormats) {
                 String dapaURL = ResponseUtils.buildURL(
                         baseUrl,
-                        "ogc/dggs/collections/" + collectionId + "/processes",
+                        "ogc/dggs/v1/collections/" + collectionId + "/processes",
                         Collections.singletonMap("f", format.toString()),
                         SERVICE);
                 addLink(new Link(
@@ -97,7 +97,7 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
             for (MediaType format : variablesFormats) {
                 String variablesURL = ResponseUtils.buildURL(
                         baseUrl,
-                        "ogc/dggs/collections/" + collectionId + "/variables",
+                        "ogc/dggs/v1/collections/" + collectionId + "/variables",
                         Collections.singletonMap("f", format.toString()),
                         SERVICE);
                 addLink(new Link(

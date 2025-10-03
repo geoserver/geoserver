@@ -243,7 +243,7 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
             writeLink(jw, linkTitle, format.toString(), linkType, href);
         }
         // backpointer to the collection
-        String basePath = "ogc/dggs/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
+        String basePath = "ogc/dggs/v1/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
         for (MediaType format : requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
             String href = ResponseUtils.buildURL(
                     baseUrl, basePath, Collections.singletonMap("f", format.toString()), URLMangler.URLType.SERVICE);

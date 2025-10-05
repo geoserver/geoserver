@@ -1,7 +1,4 @@
-
-.. _ImageN:
-.. _JAIEXT:
-.. _JAI:
+.. _image-processing:
 
 Image Processing
 ================

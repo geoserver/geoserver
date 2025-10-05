@@ -99,8 +99,8 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         }
 
         // setup the concurrent tile cache (has proper memory limit handling also for small tiles)
-        if (!(jaiDef.getTileCache() instanceof ConcurrentTileCacheMultiMap)) {
-            jaiDef.setTileCache(new ConcurrentTileCacheMultiMap());
+        if (!(imagen.getTileCache() instanceof ConcurrentTileCacheMultiMap)) {
+            imagen.setTileCache(new ConcurrentTileCacheMultiMap());
         }
 
         // make sure we remember if GeoServer controls logging or not

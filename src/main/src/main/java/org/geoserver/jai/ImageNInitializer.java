@@ -23,7 +23,7 @@ public class ImageNInitializer implements GeoServerInitializer {
 
     private final GeoServerTileCache tileCache;
 
-    public JAIInitializer(GeoServerTileCache tileCache) {
+    public ImageNInitializer(GeoServerTileCache tileCache) {
         this.tileCache = tileCache;
     }
 
@@ -56,9 +56,9 @@ public class ImageNInitializer implements GeoServerInitializer {
         imageN.setRenderingHint(ImageN.KEY_CACHED_TILE_RECYCLING_ENABLED, imageProcessing.isRecycling());
 
         // force the tile cache to be the one provided by GeoServer
-        TileCache oldTileCache = jai.getTileCache();
+        TileCache oldTileCache = imageProcessing.getTileCache();
         if (oldTileCache != tileCache) {
-            jaiDef.setTileCache(tileCache);
+            imageProcessing.setTileCache(tileCache);
             oldTileCache.flush();
         }
 

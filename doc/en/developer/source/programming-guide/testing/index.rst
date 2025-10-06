@@ -513,7 +513,7 @@ Once the set up code has run you can request the layer as a WMS or WFS request u
 
 
 Other Support Classes
-^^^^^^^^^^^^^^^^^^^^^
+---------------------
 
 GeoServer also has several other test support classes the support specific parts of the project
 such as ``GeoServerSecurityTestSupport`` and ``GeoServerWicketTestSupport.java``. These classes extend the
@@ -777,6 +777,63 @@ during testing of your code as excessive logging slows down the build for everyo
     logging.setLevel("VERBOSE_LOGGING.xml");
     getGeoServer().save(logging);
 
+TEST_LOGGING
+^^^^^^^^^^^^
+
+Tests are run with their own logging profile: ``TEST_LOGGING``:
+
+* logs to standard out only
+* org.geotools: error
+* org.geotools.factory: error
+* org.geoserver: error
+* org.vfny.geoserver: error
+* org.springframework: error
+* org.apache.wicket.util.tester: info
+
+This is used by GeoServerAbstractTestSupport ``getLogConfiguration()`` to initLogging.
+
+You can override this value to make use of your own logging profile, here is an example from OpenLayersMapOutputFormatTest.
+
+.. code-block:: java
+
+    @Override
+    protected String getLogConfiguration() {
+        // needed for a test on logging capabilities
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(testData.getDataDirectoryRoot());
+
+        Resource resource = loader.get("logs/OL_LOGGING.properties");
+        if (resource.getType() == Resource.Type.UNDEFINED) {
+            try {
+                loader.copyFromClassPath("/OL_LOGGING.properties", "logs/OL_LOGGING.properties");
+            } catch (IOException e) {
+                LOGGER.fine("Unable to configure with OL_LOGGING");
+                return "TEST_LOGGING";
+            }
+        }
+        return "OL_LOGGING";
+    }
+
+
+GeoServerBaseTestSupport setUpLogging and quietTests
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The GeoServerBaseTestSupport method ``setUpLogging()`` is marked with ``@BeforeClass`` to configure logging.
+
+This method uses isQuietTests() to check system property ``quietTests``, and changes `org.geoserver`, `org.vfny.geoserver` and `org.geotools` logging level to SEVERE to further suppress logging information.
+
+* logs to standard out only
+* org.geotools: severe
+* org.geotools.factory: error
+* org.geoserver: severe
+* org.vfny.geoserver: severe
+* org.springframework: error
+* org.apache.wicket.util.tester: info
+
+To run a test with normal logging output ``-DquietTests=false``.
+
+
+At the end of testing and GeoServerBaseTestSupport ``doTearDownClass()`` method calls LogManager.shutdown() to return log4j2 to defaults.
+
 Writing Mock Tests
 ------------------
 
@@ -909,3 +966,37 @@ common case of connecting to a database:
 
 In the above example the ``assumeNotNull`` method will throw back an exception telling JUnit 
 to skip execution of the test.
+
+TestContainers
+^^^^^^^^^^^^^^
+
+Use of Docker `Test Containers <https://testcontainers.com/>`__ should be considered online tests, as the developer may not have docker available locally for use.
+
+.. code-block:: java
+
+   assumeTrue(DockerClientFactory.instance().isDockerAvailable());
+
+Using Docker Test Containers can be done by extending an existing test support base class, and managing the test container as shown in KeyCloakIntegrationTestSupport:
+
+.. code-block:: java
+
+    /** keycloak container setup. We bring in 2 realms - master-realm and gs-realm. */
+    static KeycloakContainer keycloakContainer = new KeycloakContainer("quay.io/keycloak/keycloak:26.1")
+            .withCopyToContainer(
+                    MountableFile.forClasspathResource(
+                            "org/geoserver/web/security/oauth2/login/keycloak/master-realm.json"),
+                    "/opt/keycloak//data/import/master-realm.json")
+            .withCopyToContainer(
+                    MountableFile.forClasspathResource(
+                            "org/geoserver/web/security/oauth2/login/keycloak/gs-realm-realm.json"),
+                    "/opt/keycloak//data/import/gs-realm-realm.json")
+            .withVerboseOutput()
+            .withCustomCommand("--log-level=DEBUG"); // useful to see what's going on.  use `docker logs <container>`
+
+    @BeforeClass
+    public static void beforeAll() throws IOException, InterruptedException {
+        assumeTrue(DockerClientFactory.instance().isDockerAvailable());
+        keycloakContainer.start();
+        authServerUrl = keycloakContainer.getAuthServerUrl();
+    } 
+

@@ -62,28 +62,6 @@ jobs:
         echo "VIRTUAL_ENV=$PWD/venv" >> $GITHUB_ENV
         echo "$PWD/venv/bin" >> $GITHUB_PATH
 
-    - name: Create missing config.yml for mkdocs_translate
-      run: |
-        source venv/bin/activate
-        cat > venv/lib/python*/site-packages/mkdocs_translate/config.yml <<'EOL'
-        # Default configuration for mkdocs_translate
-        project_folder: "."
-        rst_folder: "source"
-        docs_folder: "docs"
-        build_folder: "target"
-        anchor_file: "anchors.txt"
-        convert_folder: "convert" 
-        upload_folder: "upload"
-        download_folder: "download"
-        deepl_base_url: "https://api-free.deepl.com"
-        substitutions:
-          project: "GeoServer"
-          author: "GeoServer Project"
-          copyright: "2023, GeoServer Project"
-          project_copyright: "2023, GeoServer Project"
-        extlinks: {}
-        EOL
-
     - name: Validate mkdocs_translate installation
       run: |
         source venv/bin/activate

@@ -28,37 +28,44 @@ GeoServer Property Reference
      - Env
        Variable
    * - GEOSERVER_DATA_DIR
-       <br>:doc:`/datadirectory/setting`
+       <br>
+       :doc:`/datadirectory/setting`
      - x
      - x
      - x
    * - GEOSERVER_MODULE_SYSTEM_ENVIRONMENT_STATUS_ENABLED
-       <br>:ref:`module_status_security_environment_vars`
+       <br>
+       :ref:`module_status_security_environment_vars`
      -  
      -  
      - x
    * - GEOSERVER_MODULE_SYSTEM_PROPERTY_STATUS_ENABLED
-       <br>:ref:`module_status_security_environment_vars`     
+       <br>
+       :ref:`module_status_security_environment_vars`     
      -  
      -  
      - x
    * - GEOWEBCACHE_CACHE_DIR
-       <br>:doc:`/geowebcache/config`
+       <br>
+       :doc:`/geowebcache/config`
      - x
      - x
      - x
    * - GEOSERVER_NODE_OPTS
-       <br>:doc:`/production/identify`
+       <br>
+       :doc:`/production/identify`
      - x
      - x
      - x
    * - serviceStrategy
-       <br>:doc:`/production/config`, default PARTIAL-BUFFER2
+       <br>
+       :doc:`/production/config`, default PARTIAL-BUFFER2
      - x
      - x
      - x
    * - GEOSERVER_CONSOLE_DISABLED
-       <br>:doc:`/production/config`
+       <br>
+       :doc:`/production/config`
      - x
      - 
      - 
@@ -67,345 +74,416 @@ GeoServer Property Reference
      - x
      - x
    * - geoserver.login.autocomplete
-       <br>:doc:`/production/config`, default on.
+       <br>
+       :doc:`/production/config`, default on.
      - x
      - 
      - x
    * - CONFIGURATION_TRYLOCK_TIMEOUT
-       <br>Delay for REST API and Web Administration configuration changes (default 30000 MS)
+       <br>
+       Delay for REST API and Web Administration configuration changes (default 30000 MS)
      - x
      - x
      - x
    * - COMPARISON_TOLERANCE
-       <br>Referencing tolerance when matching PRJ to EPSG code (default 0.00000001)
+       <br>
+       Referencing tolerance when matching PRJ to EPSG code (default 0.00000001)
      - x
      - x
      - x
    * - GEOSERVER_CSRF_DISABLED
-       <br>:doc:`/security/webadmin/csrf`
+       <br>
+       :doc:`/security/webadmin/csrf`
      - x
      - x
      - x
    * - GEOSERVER_CSRF_WHITELIST
-       <br>:doc:`/security/webadmin/csrf`
+       <br>
+       :doc:`/security/webadmin/csrf`
      - x
      - x
      - x
    * - org.geoserver.web.csp.strict
-       <br>:ref:`csp_strict`, default true.
+       <br>
+       :ref:`csp_strict`, default true.
      - x
      -
      - 
    * - org.geoserver.catalog.loadingThreads
-       <br>Number of threads used to load catalogue (Default 4).
+       <br>
+       Number of threads used to load catalogue (Default 4).
      - x
      - x
      - x
    * - CAPABILITIES_CACHE_CONTROL_ENABLED
-       <br>Use false to disable, defaults to true.
+       <br>
+       Use false to disable, defaults to true.
      - x
      - x
      - x
    * - GEOSERVER_FILEBROWSER_HIDEFS
-       <br>When set to true only GEOSERVER_DATA_DIR available to browse.
+       <br>
+       When set to true only GEOSERVER_DATA_DIR available to browse.
      - x
      - x
      - x
    * - GEOSERVER_XSTREAM_WHITELIST
-       <br>Used to restrict catalogue persistence.
+       <br>
+       Used to restrict catalogue persistence.
      - x
      - x
      - x
    * - ENTITY_RESOLUTION_UNRESTRICTED
-       <br>:doc:`/production/config`, default false.
+       <br>
+       :doc:`/production/config`, default false.
      - x
      - x
      - x
    * - ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL
-       <br>:doc:`/production/config`, default false.
+       <br>
+       :doc:`/production/config`, default false.
      - x
      - x
      - x
    * - ENTITY_RESOLUTION_ALLOWLIST
-       <br>:doc:`/production/config`.
+       <br>
+       :doc:`/production/config`.
      - x
      - x
      - x
    * - geoserver.xframe.shouldSetPolicy
-       <br>:doc:`/production/config`, default true.
+       <br>
+       :doc:`/production/config`, default true.
      - x
      - x
      - x
    * - geoserver.xframe.policy
-       <br>:doc:`/production/config`, default SAMEORIGIN
+       <br>
+       :doc:`/production/config`, default SAMEORIGIN
      - x
      - x
      - x
    * - geoserver.xContentType.shouldSetPolicy
-       <br>:doc:`/production/config`, default true
+       <br>
+       :doc:`/production/config`, default true
      - x
      - x
      - x
    * - geoserver.xXssProtection.shouldSetPolicy
-       <br>:doc:`/production/config`, default false
+       <br>
+       :doc:`/production/config`, default false
      - x
      - x
      - x
    * - geoserver.xXssProtection.policy
-       <br>:doc:`/production/config`, default 0
+       <br>
+       :doc:`/production/config`, default 0
      - x
      - x
      - x
    * - geoserver.hsts.shouldSetPolicy
-       <br>:doc:`/production/config`, default false
+       <br>
+       :doc:`/production/config`, default false
      - x
      - x
      - x
    * - geoserver.hsts.policy
-       <br>:doc:`/production/config`, default max-age=31536000 ; includeSubDomains
+       <br>
+       :doc:`/production/config`, default max-age=31536000 ; includeSubDomains
      - x
      - x
      - x
    * - geoserver.csp.remoteResources
-       <br>:doc:`/security/csp`
+       <br>
+       :doc:`/security/csp`
      - x
      - x
      - x
    * - geoserver.csp.frameAncestors
-       <br>:doc:`/security/csp`
+       <br>
+       :doc:`/security/csp`
      - x
      - x
      - x
    * - geoserver.csp.fallbackDirectives
-       <br>:doc:`/security/csp`, default base-uri 'none'; form-action 'none'; default-src 'none'; frame-ancestors 'none';
+       <br>
+       :doc:`/security/csp`, default base-uri 'none'; form-action 'none'; default-src 'none'; frame-ancestors 'none';
      - x
      - x
      - x
    * - GEOSERVER_DISABLE_STATIC_WEB_FILES
-       <br>:ref:`production_config_static_files`, default false
+       <br>
+       :ref:`production_config_static_files`, default false
      - x
      - x
      - x
    * - GEOSERVER_STATIC_WEB_FILES_SCRIPT
-       <br>:doc:`/tutorials/staticfiles`, default UNSAFE
+       <br>
+       :doc:`/tutorials/staticfiles`, default UNSAFE
      - x
      - x
      - x
    * - GEOSERVER_FEATUREINFO_HTML_SCRIPT
-       <br>:ref:`security_csp_featureinfo_html_script`, default SELF
+       <br>
+       :ref:`security_csp_featureinfo_html_script`, default SELF
      - x
      - x
      - x
    * - GEOSERVER_FORCE_FREEMARKER_ESCAPING
-       <br>:doc:`/production/config`, default true
+       <br>
+       :doc:`/production/config`, default true
      - x
      - x
      - x
    * - GEOSERVER_FREEMARKER_ALLOW_LIST
-       <br>:doc:`/tutorials/GetFeatureInfo/html`
+       <br>
+       :doc:`/tutorials/GetFeatureInfo/html`
      - x
      - x
      - x
    * - GEOSERVER_FREEMARKER_BLOCK_LIST
-       <br>:doc:`/tutorials/GetFeatureInfo/html`
+       <br>
+       :doc:`/tutorials/GetFeatureInfo/html`
      - x
      - x
      - x
    * - GEOSERVER_FREEMARKER_API_EXPOSED
-       <br>:doc:`/tutorials/GetFeatureInfo/html`, default false
+       <br>
+       :doc:`/tutorials/GetFeatureInfo/html`, default false
      - x
      - x
      - x
    * - ows10.exception.xml.responsetype
-       <br>:doc:`/production/config`
+       <br>
+       :doc:`/production/config`
      - x
      -
      - 
    * - ows11.exception.xml.responsetype
-       <br>:doc:`/production/config`
+       <br>
+       :doc:`/production/config`
      - x
      -
      - 
    * - ENABLE_MAP_WRAPPING
-       <br>Default if setting unavailable (true)
+       <br>
+       Default if setting unavailable (true)
      - x
      - x
      - x
    * - ENABLE_ADVANCED_PROJECTION
-       <br>Default if setting unavailable (true)
+       <br>
+       Default if setting unavailable (true)
      - x
      - x
      - x
    * - OPTIMIZE_LINE_WIDTH
-       <br>:doc:`/services/wms/global`, default true (can be set false.)
+       <br>
+       :doc:`/services/wms/global`, default true (can be set false.)
      - x
      - x
      - x
    * - MAX_FILTER_RULES
-       <br>:doc:`/services/wms/global`, default 20
+       <br>
+       :doc:`/services/wms/global`, default 20
      - x
      - x
      - x
    * - USE_GLOBAL_RENDERING_POOL
-       <br>Default is true, can be set false
+       <br>
+       Default is true, can be set false
      - x
      - x
      - x
    * - org.geoserver.render.raster.direct.disable
-       <br>Used to bypass direct raster rendering
+       <br>
+       Used to bypass direct raster rendering
      - x
      - 
      - 
    * - wms.raster.disableGutter
-       <br>Disable gutter used to request larger area when reprojecting raster content.
+       <br>
+       Disable gutter used to request larger area when reprojecting raster content.
      - x
      - 
      - 
    * - wms.raster.enableRasterChainDebug
-       <br>Trouble shoot raster rendering
+       <br>
+       Trouble shoot raster rendering
      - x
      - 
      - 
    * - GEOSERVER_GLOBAL_LAYER_GROUP_INHERIT
-       <br>Should workspaces include layer groups from the global workspace, default true.
+       <br>
+       Should workspaces include layer groups from the global workspace, default true.
      - x
      - x
      - x
    * - PROXY_BASE_URL
-       <br>Supply PROXY_BASE_URL, overriding settings.
+       <br>
+       Supply PROXY_BASE_URL, overriding settings.
      - x
      - x
      - x
    * - PROXY_BASE_URL_HEADER
-       <br>Enables PROXY_BASE_URL to use headers variables if set to true, overriding GeoServer datadir settings.  Default false.
+       <br>
+       Enables PROXY_BASE_URL to use headers variables if set to true, overriding GeoServer datadir settings.  Default false.
      - x
      - x
      - x
    * - org.geoserver.service.disabled
-       <br>:ref:`Layer service <data_webadmin_layers_services>` default comma separated list of disabled services.
+       <br>
+       :ref:`Layer service <data_webadmin_layers_services>` default comma separated list of disabled services.
      - x
      - x
      - x
    * - GEOSERVER_DEFAULT_CACHE_PROVIDER
-       <br>Request custom cache implementation for catalog.
+       <br>
+       Request custom cache implementation for catalog.
      - x
      - x
      - x
    * - org.geoserver.wfs.xml.WFSURIHandler.disabled
-       <br>Flag to disable internal handling of references to GeoServer.
-       <br>Force reflective references such as DescribeFeatureType to be handled as separate request.
+       <br>
+       Flag to disable internal handling of references to GeoServer.
+       <br>
+       Force reflective references such as DescribeFeatureType to be handled as separate request.
      - x
      - 
      - 
    * - org.geoserver.wfs.xml.WFSURIHandler.additionalHostnames
-       <br>default localhost.
+       <br>
+       default localhost.
      - x
      - 
      - 
    * - force200
-       <br>Use true to force the http return code to always be 200.
-       <br>Required for WCS2.0, breaks OWS2 and WCS2 standards.
+       <br>
+       Use true to force the http return code to always be 200.
+       <br>
+       Required for WCS2.0, breaks OWS2 and WCS2 standards.
      - x
      - 
      - 
    * - GS_SHAPEFILE_CHARSET
-       <br>Supply default for shapefile datastore
+       <br>
+       Supply default for shapefile datastore
      - x
      - x
      - x
    * - GEOSERVER_GEOJSON_LEGACY_CRS
-       <br>true to enable legacy GeoJSON output.
+       <br>
+       true to enable legacy GeoJSON output.
      - x
      - x
      - x
    * - ENABLE_JSONP
-       <br>:doc:`/services/wms/global`
+       <br>
+       :doc:`/services/wms/global`
      - x
      - x
      - x
    * - XML_LOOKAHEAD
-       <br>Number of bytes read to determine XML POST request (default 8192).
+       <br>
+       Number of bytes read to determine XML POST request (default 8192).
      - x
      - x
      - x
    * - org.geoserver.wfs.getfeature.cachelimit
-       <br>:doc:`/production/config`, default 0 (disabled)
+       <br>
+       :doc:`/production/config`, default 0 (disabled)
      - x
      - 
      - 
    * - org.geoserver.wfs.xml.entityExpansionLimit
-       <br>Default 100.
+       <br>
+       Default 100.
      - x
      - x
      - x
    * - org.geoserver.htmlTemplates.staticMemberAccess
-       <br>:doc:`/tutorials/GetFeatureInfo/html`
+       <br>
+       :doc:`/tutorials/GetFeatureInfo/html`
      - x
      - x
      - x
    * - ENABLE_OL3
-       <br>Default true.
+       <br>
+       Default true.
      - x
      - x
      - x
    * - GEOSERVER_LOG_LOCATION
-       <br>:doc:`/configuration/logging`
+       <br>
+       :doc:`/configuration/logging`
      - x
      - x
      - x
    * - RELINQUISH_LOG4J_CONTROL
-       <br>:doc:`/configuration/logging`
+       <br>
+       :doc:`/configuration/logging`
      - x
      - x
      - x
    * - GT2_LOGGING_REDIRECTION
-       <br>:doc:`/configuration/logging`
+       <br>
+       :doc:`/configuration/logging`
      - x
      - x
      - x
    * - wicket.configuration
-       <br>Wicket RuntimeConfigurationType (DEPLOYMENT or DEVELOPMENT)
+       <br>
+       Wicket RuntimeConfigurationType (DEPLOYMENT or DEVELOPMENT)
      - x
      - x
      - x
    * - GEOSERVER_FILESYSTEM_SANDBOX
-       <br>:doc:`/security/sandbox`
+       <br>
+       :doc:`/security/sandbox`
      - x
      - x
      - x
    * - GEOSERVER_ROOT_LOGIN_ENABLED
-       <br>:ref:`security_root`
+       <br>
+       :ref:`security_root`
      - x
      - x
      - x
    * - ALLOW_ENV_PARAMETRIZATION
-       <br>:doc:`/datadirectory/configtemplate`
+       <br>
+       :doc:`/datadirectory/configtemplate`
      - x
      - 
      - 
    * - ENV_PROPERTIES
-       <br>:doc:`/datadirectory/configtemplate`
+       <br>
+       :doc:`/datadirectory/configtemplate`
      - x
      - x
      - x
    * - WORKSPACE_ADMIN_SERVICE_ACCESS
-       <br>:ref:`Workspaces <data_webadmin_workspaces_service_settings>`
+       <br>
+       :ref:`Workspaces <data_webadmin_workspaces_service_settings>`
      - x
      - x
      - x
    * - GEOSERVER_DATA_DIR_LOADER_ENABLED
-       <br>:doc:`/datadirectory/setting`
+       <br>
+       :doc:`/datadirectory/setting`
      - x
      - 
      - x
    * - GEOSERVER_DATA_DIR_LOADER_THREADS
-       <br>:doc:`/datadirectory/setting`
+       <br>
+       :doc:`/datadirectory/setting`
      - x
      - 
      - x
    * - TRACK_USER
-       <br>Flag to enable user tracking in GeoServer.
-       <br>Allows to store the username of user that performed creation/modification of layer, layergroup, store, style, workspace. Has precedence over "Display the user who performed last modification" option in global settings.
+       <br>
+       Flag to enable user tracking in GeoServer.
+       <br>
+       Allows to store the username of user that performed creation/modification of layer, layergroup, store, style, workspace. Has precedence over "Display the user who performed last modification" option in global settings.
      - x
      -
      -

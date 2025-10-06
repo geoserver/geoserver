@@ -199,11 +199,14 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
         assertEquals("8", settings.get("numDecimals").toString().trim());
         assertEquals("https://geoserver.org", settings.get("onlineResource"));
 
-        JSONObject jaiInfo = global.getJSONObject("jai");
-        assertNotNull(jaiInfo);
-        assertEquals("false", jaiInfo.get("allowInterpolation").toString().trim());
-        assertEquals("0.75", jaiInfo.get("memoryThreshold").toString().trim());
-        assertEquals("5", jaiInfo.get("tilePriority").toString().trim());
+        JSONObject ImageProcessingInfo = global.getJSONObject("jai");
+        assertNotNull(ImageProcessingInfo);
+        assertEquals(
+                "false",
+                ImageProcessingInfo.get("allowInterpolation").toString().trim());
+        assertEquals(
+                "0.75", ImageProcessingInfo.get("memoryThreshold").toString().trim());
+        assertEquals("5", ImageProcessingInfo.get("tilePriority").toString().trim());
 
         JSONObject covInfo = global.getJSONObject("coverageAccess");
         assertEquals("UNBOUNDED", covInfo.get("queueType"));
@@ -282,10 +285,13 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
         assertNotNull(contact);
         assertEquals("Claudius Ptolomaeus", contact.get("contactPerson"));
 
-        JSONObject jaiInfo = global.getJSONObject("jai");
-        assertNotNull(jaiInfo);
-        assertEquals("false", jaiInfo.get("allowInterpolation").toString().trim());
-        assertEquals("0.75", jaiInfo.get("memoryThreshold").toString().trim());
+        JSONObject ImageProcessingInfo = global.getJSONObject("jai");
+        assertNotNull(ImageProcessingInfo);
+        assertEquals(
+                "false",
+                ImageProcessingInfo.get("allowInterpolation").toString().trim());
+        assertEquals(
+                "0.75", ImageProcessingInfo.get("memoryThreshold").toString().trim());
 
         JSONObject covInfo = global.getJSONObject("coverageAccess");
         assertEquals("UNBOUNDED", covInfo.get("queueType"));

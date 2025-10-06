@@ -102,7 +102,7 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
-import org.geoserver.config.impl.JAIInfoImpl;
+import org.geoserver.config.impl.ImageProcessingInfoImpl;
 import org.geoserver.jdbcloader.JDBCLoaderProperties;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.ExtensionPriority;
@@ -1486,8 +1486,8 @@ public class ConfigDatabase implements ApplicationContextAware {
             if (global.getCoverageAccess() == null) {
                 global.setCoverageAccess(new CoverageAccessInfoImpl());
             }
-            if (global.getJAI() == null) {
-                global.setJAI(new JAIInfoImpl());
+            if (global.getImageProcessing() == null) {
+                global.setImageProcessing(new ImageProcessingInfoImpl());
             }
         }
         if (info instanceof ServiceInfo serviceInfo) {

@@ -19,7 +19,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.SettingsInfo;
 
 /** @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it */
@@ -91,7 +91,7 @@ public class JMSGeoServerHandler extends JMSConfigurationHandler<JMSGlobalModify
         localObject.setCoverageAccess(localizeCoverageAccessInfo(geoServer, deserGeoServerInfo.getCoverageAccess()));
 
         // localize JAI
-        localObject.setJAI(localizeJAIInfo(geoServer, deserGeoServerInfo.getJAI()));
+        localObject.setImageProcessing(localizeImageProcessingInfo(geoServer, deserGeoServerInfo.getImageProcessing()));
 
         // localize settings
         localObject.setSettings(localizeSettingsInfo(geoServer, deserGeoServerInfo.getSettings()));
@@ -102,21 +102,22 @@ public class JMSGeoServerHandler extends JMSConfigurationHandler<JMSGlobalModify
     }
 
     /**
-     * Return the local JAIInfo updating its member with the ones coming from the passed JAIInfo
+     * Return the local ImageProcessingInfo updating its member with the ones coming from the passed ImageProcessingInfo
      *
      * @param geoServer the local GeoServer instance
-     * @param deserInfo the de-serialized JAIInfo instance
-     * @return the updated and local JAIInfo
+     * @param deserInfo the de-serialized ImageProcessingInfo instance
+     * @return the updated and local ImageProcessingInfo
      * @throws IllegalAccessException {@link BeanUtilsBean.copyProperties}
      * @throws InvocationTargetException {@link BeanUtilsBean.copyProperties}
      * @throws IllegalArgumentException if arguments are null
      */
-    private static JAIInfo localizeJAIInfo(final GeoServer geoServer, final JAIInfo deserInfo)
+    private static ImageProcessingInfo localizeImageProcessingInfo(
+            final GeoServer geoServer, final ImageProcessingInfo deserInfo)
             throws IllegalAccessException, InvocationTargetException {
         if (geoServer == null || deserInfo == null)
             throw new IllegalArgumentException("Wrong passed arguments are null");
         // get local instance
-        final JAIInfo info = geoServer.getGlobal().getJAI();
+        final ImageProcessingInfo info = geoServer.getGlobal().getImageProcessing();
         // temporarily store tyleCache reference
         final TileCache sunTyleCache = info.getTileCache();
         // overwrite all members
@@ -128,11 +129,11 @@ public class JMSGeoServerHandler extends JMSConfigurationHandler<JMSGlobalModify
     }
 
     /**
-     * Return the local SettingsInfo updating its member with the ones coming from the passed JAIInfo
+     * Return the local SettingsInfo updating its member with the ones coming from the passed ImageProcessingInfo
      *
      * @param geoServer the local GeoServer instance
-     * @param deserInfo the de-serialized JAIInfo instance
-     * @return the updated and local JAIInfo
+     * @param deserInfo the de-serialized ImageProcessingInfo instance
+     * @return the updated and local ImageProcessingInfo
      * @throws IllegalAccessException {@link BeanUtilsBean.copyProperties}
      * @throws InvocationTargetException {@link BeanUtilsBean.copyProperties}
      * @throws IllegalArgumentException if arguments are null
@@ -166,7 +167,7 @@ public class JMSGeoServerHandler extends JMSConfigurationHandler<JMSGlobalModify
      * ContactInfo
      *
      * @param geoServer the local GeoServer instance
-     * @param deserInfo the de-serialized JAIInfo instance
+     * @param deserInfo the de-serialized ImageProcessingInfo instance
      * @return the updated local ContactInfo.
      * @throws IllegalArgumentException if arguments are null
      */
@@ -188,7 +189,7 @@ public class JMSGeoServerHandler extends JMSConfigurationHandler<JMSGlobalModify
      * CoverageAccessInfo
      *
      * @param geoServer the local GeoServer instance
-     * @param deserInfo the de-serialized JAIInfo instance
+     * @param deserInfo the de-serialized ImageProcessingInfo instance
      * @return the updated local CoverageAccessInfo.
      * @throws IllegalArgumentException if arguments are null
      */

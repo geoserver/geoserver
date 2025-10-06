@@ -121,21 +121,21 @@ public class ImageProcessingInfoImpl implements Serializable, ImageProcessingInf
     }
 
     @Override
-    public ImageN getJAI() {
+    public ImageN getImageProcessing() {
         return ImageN.getDefaultInstance();
     }
 
     @Override
-    public void setJAI(ImageN imagen) {
+    public void setImageProcessing(ImageN imagen) {
         // do nothing. REVISIT: we're using the singleton ImageN instance and guess there's no way to
         // get a non singleton one, so does this method make sense at all? In any case, this class
-        // is meant to be serializable, hence the change in getJAI() to return the singleton
+        // is meant to be serializable, hence the change in getImageProcessing() to return the singleton
         // directly and avoid NPE's
     }
 
     @Override
     public TileCache getTileCache() {
-        return getJAI().getTileCache();
+        return getImageProcessing().getTileCache();
     }
 
     @Override

@@ -50,7 +50,7 @@ public class ImageNInitializer implements GeoServerInitializer {
     @SuppressWarnings("PMD.CloseResource")
     void initJAI(ImageProcessingInfo imageProcessing) {
         ImageN imageN = ImageN.getDefaultInstance();
-        imageProcessing.setJAI(imageN);
+        imageProcessing.setImageProcessing(imageN);
 
         // setting ImageN wide hints
         imageN.setRenderingHint(ImageN.KEY_CACHED_TILE_RECYCLING_ENABLED, imageProcessing.isRecycling());

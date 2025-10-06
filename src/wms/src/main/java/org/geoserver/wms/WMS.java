@@ -449,11 +449,11 @@ public class WMS implements ApplicationContextAware {
     }
 
     public ImageProcessingInfo.PngEncoderType getPNGEncoderType() {
-        ImageProcessingInfo jaiInfo = getJaiInfo();
-        return jaiInfo.getPngEncoderType();
+        ImageProcessingInfo ImageProcessingInfo = getImageProcessingInfo();
+        return ImageProcessingInfo.getPngEncoderType();
     }
 
-    private ImageProcessingInfo getJaiInfo() {
+    private ImageProcessingInfo getImageProcessingInfo() {
         GeoServer geoServer = getGeoServer();
         GeoServerInfo global = geoServer.getGlobal();
         return global.getImageProcessing();

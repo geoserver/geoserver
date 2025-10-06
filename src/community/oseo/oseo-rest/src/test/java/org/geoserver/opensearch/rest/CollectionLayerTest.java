@@ -42,7 +42,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo.PngEncoderType;
+import org.geoserver.config.ImageProcessingInfo.PngEncoderType;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geotools.api.data.Query;
@@ -99,7 +99,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
 
         GeoServer gs = getGeoServer();
         GeoServerInfo gsInfo = gs.getGlobal();
-        gsInfo.getJAI().setPngEncoderType(PngEncoderType.JDK);
+        gsInfo.getImageProcessing().setPngEncoderType(PngEncoderType.JDK);
         gs.save(gsInfo);
     }
 

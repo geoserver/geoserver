@@ -224,11 +224,11 @@ public class StatusPanel extends Panel {
                         + ")");
 
         GeoServerInfo geoServerInfo = parent.getGeoServer().getGlobal();
-        ImageProcessingInfo jaiInfo = geoServerInfo.getImageProcessing();
+        ImageProcessingInfo ImageProcessingInfo = geoServerInfo.getImageProcessing();
         @SuppressWarnings("PMD.CloseResource")
-        ImageN imagen = jaiInfo.getJAI();
+        ImageN imagen = ImageProcessingInfo.getImageProcessing();
         CoverageAccessInfo coverageAccess = geoServerInfo.getCoverageAccess();
-        TileCache jaiCache = jaiInfo.getTileCache();
+        TileCache jaiCache = ImageProcessingInfo.getTileCache();
 
         values.put(KEY_JAI_MAX_MEM, formatMemory(jaiCache.getMemoryCapacity()));
         if (jaiCache instanceof CacheDiagnostics diagnostics) {

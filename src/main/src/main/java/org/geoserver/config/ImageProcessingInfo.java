@@ -56,9 +56,9 @@ public interface ImageProcessingInfo extends Cloneable, Serializable {
     void setPngEncoderType(PngEncoderType type);
 
     /** The jai instance. */
-    ImageN getJAI();
+    ImageN getImageProcessing();
 
-    void setJAI(ImageN imagen);
+    void setImageProcessing(ImageN imagen);
 
     /** The jai tile cache. */
     TileCache getTileCache();

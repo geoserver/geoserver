@@ -48,12 +48,12 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         // is actually setting the same object reference, and hence the
         // modificationproxy does not count it as a change.
 
-        ImageProcessingInfo currJaiInfo = getGeoServerApplication()
+        ImageProcessingInfo currImageProcessingInfo = getGeoServerApplication()
                 .getGeoServer()
                 .getGlobal()
                 .getImageProcessing()
                 .clone();
-        return new Model<>(currJaiInfo);
+        return new Model<>(currImageProcessingInfo);
     }
 
     public IModel<CoverageAccessInfo> getCoverageAccessModel() {

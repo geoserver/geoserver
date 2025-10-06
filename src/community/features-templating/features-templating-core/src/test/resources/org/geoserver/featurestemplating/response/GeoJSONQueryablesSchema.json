@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MappedFeatureGeoJSON Queryables Override",
+  "type": "object",
+  "properties": {
+    "testPropertyForSchemaOverrideGeoJSON": {
+      "type": "string",
+      "title": "Test Property for GeoJSON Schema Override"
+    }
+  }
+}

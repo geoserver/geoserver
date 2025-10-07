@@ -137,7 +137,7 @@ jobs:
             # Generate navigation structure
             mkdocs_translate nav || echo "Navigation generation failed"
             
-            mkdocs_translate migrate source || echo "Migration failed, creating fallback"
+            mkdocs_translate migrate || echo "Migration failed, creating fallback"
             
             # Ensure docs directory exists
             [ ! -d "docs" ] && mkdir -p docs && echo "# GeoServer $doc_type Documentation" > docs/index.md
@@ -210,7 +210,7 @@ jobs:
             # Generate navigation structure
             mkdocs_translate nav || echo "Navigation generation failed"
             
-            mkdocs_translate migrate source || echo "Migration failed, creating fallback"
+            mkdocs_translate migrate || echo "Migration failed, creating fallback"
             
             # Ensure docs directory exists
             [ ! -d "docs" ] && mkdir -p docs && echo "# GeoServer $doc_type Documentation (中文)" > docs/index.md
@@ -436,12 +436,12 @@ jobs:
             **Preview URL**: ${{ steps.deployment.outputs.page_url }}
             
             **Available Documentation:**
-            - [English User Guide](${{ steps.deployment.outputs.page_url }}en/user/)
-            - [English Developer Guide](${{ steps.deployment.outputs.page_url }}en/developer/)  
-            - [English Documentation Guide](${{ steps.deployment.outputs.page_url }}en/docguide/)
-            - [Chinese User Guide](${{ steps.deployment.outputs.page_url }}zhCN/user/)
-            - [Chinese Developer Guide](${{ steps.deployment.outputs.page_url }}zhCN/developer/)
-            - [Chinese Documentation Guide](${{ steps.deployment.outputs.page_url }}zhCN/docguide/)
+            - [English User Guide](${{ steps.deployment.outputs.page_url }}en/user/) _compare to https://docs.geoserver.org/latest/en/user/_
+            - [English Developer Guide](${{ steps.deployment.outputs.page_url }}en/developer/) _compare to https://docs.geoserver.org/latest/en/developer/_
+            - [English Documentation Guide](${{ steps.deployment.outputs.page_url }}en/docguide/) _compare to https://docs.geoserver.org/latest/en/docguide/_
+            - [Chinese User Guide](${{ steps.deployment.outputs.page_url }}zhCN/user/) _compare to https://docs.geoserver.org/latest/zhCN/user/_
+            - [~~Chinese Developer Guide~~](${{ steps.deployment.outputs.page_url }}zhCN/developer/)
+            - [~~Chinese Documentation Guide~~](${{ steps.deployment.outputs.page_url }}zhCN/docguide/)
             
-            _This preview will be updated automatically with each new commit to this PR that has the \`mkdocs\` label._`
+            _This preview will be updated automatically with each new commit to this **and other** PRs that have the \`mkdocs\` label._`
           });

@@ -727,8 +727,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * <i>"The bounding box metadata in Capabilities XML specify the minimum enclosing rectangle for the layer as a
          * whole."</i>
          *
-         * @task TODO: manage this differently when we have the layer list of the WMS service decoupled from the feature
-         *     types configured for the server instance. (This involves nested layers, gridcoverages, etc)
+         * @todo manage this differently when we have the layer list of the WMS service decoupled from the feature types
+         *     configured for the server instance. (This involves nested layers, gridcoverages, etc)
          */
         private void handleLayers(List<LayerInfo> layers, List<LayerGroupInfo> groups) {
             // get filtered and ordered layers:
@@ -994,7 +994,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * Calls super.handleFeatureType to add common FeatureType content such as Name, Title and LatLonBoundingBox,
          * and then writes WMS specific layer properties as Styles, Scale Hint, etc.
          *
-         * @task TODO: write wms specific elements.
+         * @todo write wms specific elements.
          */
         protected void handleLayer(final LayerInfo layer, boolean isRoot) throws IOException {
 
@@ -1019,7 +1019,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             handleKeywordList(layer.getResource().getKeywords());
 
             /**
-             * @task REVISIT: should getSRS() return the full URL? no - the spec says it should be a set of
+             * @revist should getSRS() return the full URL? no - the spec says it should be a set of
              *     <SRS>EPSG:#</SRS>...
              */
             final String srs = layer.getResource().getSRS();
@@ -1439,7 +1439,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          *     operation will be automatically created.
          * @param style The style for the layer.
          * @param sampleStyle The style to use for sample sizing.
-         * @task TODO: figure out how to unhack legend parameters such as WIDTH, HEIGHT and FORMAT
+         * @todo figure out how to unhack legend parameters such as WIDTH, HEIGHT and FORMAT
          */
         protected void handleLegendURL(String layerName, LegendInfo legend, StyleInfo style, StyleInfo sampleStyle) {
             // add CapabilityUtil.validateLegendInfo

@@ -24,7 +24,6 @@ import org.geotools.util.factory.Hints;
  * @author Oliver Gottwald
  * @author Jody
  * @author Andrea Aime - GeoSolutions
- * @source $URL$
  */
 @SuppressWarnings("unchecked")
 class ListComplexFeatureCollection extends BaseFeatureCollection {

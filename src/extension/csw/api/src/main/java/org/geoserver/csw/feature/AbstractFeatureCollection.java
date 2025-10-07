@@ -23,7 +23,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
  *
  * @author Jody Garnett (Refractions Research Inc)
  * @author Andrea Aime - GeoSolutions
- * @source $URL$
  */
 public abstract class AbstractFeatureCollection<T extends FeatureType, F extends Feature>
         implements FeatureCollection<T, F> {

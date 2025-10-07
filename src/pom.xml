@@ -1554,7 +1554,7 @@
           <links>
             <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
             <link>https://docs.oracle.com/javaee/7/api/</link>
-            <link>https://javadoc.io/doc/org.jscience/jscience/4.3.1</link>
+            <link>https://unitsofmeasurement.github.io/unit-api/apidocs/</link>
             <link>https://locationtech.github.io/jts/javadoc/</link>
             <link>https://docs.geotools.org/latest/javadocs/</link>
             <link>https://xmlgraphics.apache.org/batik/javadoc/</link>
@@ -1688,6 +1688,7 @@
         <configuration>
           <release>17</release>
           <!-- Force non-modular mode for projects without module-info.java -->
+          <stylesheetfile>${geoserverBaseDir}/release/src/stylesheet.css</stylesheetfile>
           <legacyMode>true</legacyMode>
           <version>false</version>
           <noqualifier>all</noqualifier>
@@ -1709,34 +1710,19 @@
               <head>TODO:</head>
             </tag>
             <tag>
-              <name>task</name>
-              <placement>tfmc</placement>
-              <head>TODO:</head>
-            </tag>
-            <tag>
               <name>revisit</name>
               <placement>tfmc</placement>
               <head>TODO:</head>
-            </tag>
-            <tag>
-              <name>source</name>
-              <placement>Xt</placement>
-              <head>Source:</head>
-            </tag>
-            <tag>
-              <name>tutorial</name>
-              <placement>Xt</placement>
-              <head>Tutorial:</head>
             </tag>
           </tags>
 
           <links>
             <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
-            <link>https://docs.oracle.com/javaee/7/api/</link>
-            <link>https://javadoc.io/doc/org.jscience/jscience/4.3.1</link>
+            <link>https://javaee.github.io/javaee-spec/javadocs/</link>
+            <link>https://unitsofmeasurement.github.io/unit-api/apidocs/</link>
             <link>https://locationtech.github.io/jts/javadoc/</link>
+            <link>http://xmlgraphics.apache.org/batik/javadoc/</link>
             <link>https://docs.geotools.org/latest/javadocs/</link>
-            <link>https://xmlgraphics.apache.org/batik/javadoc/</link>
             <link>https://freemarker.sourceforge.io/docs/api/</link>
             <link>https://nightlies.apache.org/wicket/apidocs/9.x/</link>
           </links>
@@ -1842,6 +1828,7 @@
           <plugin>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
+              <stylesheetfile>${geoserverBaseDir}/release/src/stylesheet.css</stylesheetfile>
               <doclet>gr.spinellis.umlgraph.doclet.UmlGraphDoc</doclet>
               <docletArtifact>
                 <groupId>gr.spinellis</groupId>
@@ -1851,19 +1838,17 @@
               <additionalparam>-inferrel -inferdep -quiet -hide java.* -collpackages java.util.* -qualify
           -postfixpackage -nodefontsize 9
           -nodefontpackagesize 7
-          -link http://java.sun.com/j2se/1.5/docs/api
-          -link http://java.sun.com/j2ee/1.4/docs/api
-          -link http://java.sun.com/products/java-media/jai/forDevelopers/jai-apidocs
-           -link http://java.sun.com/products/java-media/3D/forDevelopers/j3dapi
-           -link http://jsr-108.sourceforge.net/javadoc
-           -link http://www.jump-project.org/docs/jts/1.7/api
-           -link http://www.geotools.fr/javadoc/2.2/
-           -link http://xmlgraphics.apache.org/batik/javadoc
-           -tag todo:tfmc:TODO:
-           -tag task:tfmc:TODO:
-           -tag revisit:tfmc:TODO:
-           -tag source:Xt:Source:
-           -tag tutorial:Xt:Tutorial:</additionalparam>
+          -link https://docs.oracle.com/en/java/javase/17/docs/api/
+          -link https://javaee.github.io/javaee-spec/javadocs/
+          -link https://unitsofmeasurement.github.io/unit-api/apidocs/
+          -link https://locationtech.github.io/jts/javadoc/
+          -link http://xmlgraphics.apache.org/batik/javadoc/
+          -link https://docs.geotools.org/latest/javadocs/
+          -link https://freemarker.sourceforge.io/docs/api/
+          -link https://nightlies.apache.org/wicket/apidocs/9.x/
+          -tag generated:tfmc:
+          -tag todo:tfmc:TODO:
+          -tag revisit:tfmc:TODO:GENERATED:</additionalparam>
             </configuration>
           </plugin>
         </plugins>

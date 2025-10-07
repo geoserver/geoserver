@@ -119,7 +119,7 @@ public class StreamingSVGMap extends WebMap {
         writer.write("<defs>\n\t<circle id='point' cx='0' cy='0' r='0.25%' fill='blue'/>\n</defs>\n");
     }
 
-    /** @task TODO: respect layer filtering given by their Styles */
+    /** @todo respect layer filtering given by their Styles */
     private void writeLayers() throws IOException {
         List<Layer> layers = mapContent.layers();
         FilterFactory ff = CommonFactoryFinder.getFilterFactory();

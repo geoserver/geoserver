@@ -792,7 +792,7 @@ public class ResourcePool {
      * @return Processed parameters with relative file URLs resolved
      * @param m a map of data store connection parameters
      * @parm loader
-     * @task REVISIT: cache these?
+     * @revist cache these?
      */
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> getParams(Map<K, V> m, GeoServerResourceLoader loader) {

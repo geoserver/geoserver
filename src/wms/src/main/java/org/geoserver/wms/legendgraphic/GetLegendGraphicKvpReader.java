@@ -436,7 +436,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * @param req The request to set the properties to.
      * @param infoObj a {@link LayerInfo layer} or a {@link LayerGroupInfo layerGroup} for which the legend graphic is
      *     to be produced, from where to extract the style information.
-     * @task TODO: validate EXCEPTIONS parameter
+     * @todo validate EXCEPTIONS parameter
      */
     private void parseOptionalParameters(GetLegendGraphicRequest req, Object infoObj, Map rawKvp) throws IOException {
         parseStyleAndRule(req, infoObj, rawKvp);

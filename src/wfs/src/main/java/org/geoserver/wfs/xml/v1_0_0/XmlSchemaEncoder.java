@@ -232,11 +232,11 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
      *
      * @param infos The requested table names.
      * @return A string of the types printed.
-     * @task REVISIT: We need a way to make sure the extension bases are correct. should likely add a field to the
-     *     info.xml in the featureTypes folder, that optionally references an extension base (should it be same
-     *     namespace? we could also probably just do an import on the extension base). This function then would see if
-     *     the typeInfo has an extension base, and would add or import the file appropriately, and put the correct
-     *     substitution group in this function.
+     * @revist We need a way to make sure the extension bases are correct. should likely add a field to the info.xml in
+     *     the featureTypes folder, that optionally references an extension base (should it be same namespace? we could
+     *     also probably just do an import on the extension base). This function then would see if the typeInfo has an
+     *     extension base, and would add or import the file appropriately, and put the correct substitution group in
+     *     this function.
      */
     private String generateSpecifiedTypes(FeatureTypeInfo[] infos) {
         // TypeRepository repository = TypeRepository.getInstance();
@@ -294,8 +294,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
      * Transforms a FeatureTypeInfo into gml, with no headers.
      *
      * @param schema the schema to transform.
-     * @task REVISIT: when this class changes to writing directly to out this can just take a writer and write directly
-     *     to it.
+     * @revist when this class changes to writing directly to out this can just take a writer and write directly to it.
      */
     private String generateFromSchema(FeatureType schema) throws IOException {
         try {

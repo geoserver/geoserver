@@ -12,12 +12,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -38,10 +40,12 @@ public class MSGraphRolesResolver {
     private static final Logger LOGGER = Logging.getLogger(MSGraphRolesResolver.class);
 
     static URL memberOfEndpoint;
+    static URL appRoleAssignmentsEndpoint;
 
     static {
         try {
             memberOfEndpoint = new URL("https://graph.microsoft.com/v1.0/me/memberOf");
+            appRoleAssignmentsEndpoint = new URL("https://graph.microsoft.com/v1.0/me/appRoleAssignments");
         } catch (MalformedURLException e) {
             // this shouldn't happen (unless typo in above line)
             LOGGER.log(Level.WARNING, "Error parsing MS GRAPH API URL", e);
@@ -51,7 +55,7 @@ public class MSGraphRolesResolver {
     // for testing, we make this package readable
     String authorizationHeaderName = "Authorization";
 
-    public HttpURLConnection createHTTPRequest(String accessToken) throws IOException {
+    public HttpURLConnection createMemberOfHTTPRequest(String accessToken) throws IOException {
         String tokenHeaderValue = "Bearer " + accessToken;
 
         HttpURLConnection http = (HttpURLConnection) memberOfEndpoint.openConnection();
@@ -69,9 +73,9 @@ public class MSGraphRolesResolver {
      * @return
      * @throws IOException
      */
-    private String resolveUrl(String accessToken) throws IOException {
+    private String resolveMemberOfUrl(String accessToken) throws IOException {
 
-        HttpURLConnection http = createHTTPRequest(accessToken);
+        HttpURLConnection http = createMemberOfHTTPRequest(accessToken);
         try (BufferedReader lReader = new BufferedReader(new InputStreamReader(http.getInputStream()))) {
             String result = lReader.lines().collect(Collectors.joining("\n"));
             return result;
@@ -82,7 +86,7 @@ public class MSGraphRolesResolver {
 
     // parses the resulting json from the user's group memberships json result.
     // returns a list of the groups (object id) that the user is a member of.
-    public List<String> parseJson(String jsonString) throws JSONException {
+    public List<String> parseMemberOfJson(String jsonString) throws JSONException {
         List<String> result = new ArrayList<>();
         JSONObject json = JSONObject.fromObject(jsonString);
         JSONArray values = json.getJSONArray("value");
@@ -102,9 +106,63 @@ public class MSGraphRolesResolver {
      * @return list of groups (guid strings) the user is a member of
      * @throws IOException
      */
-    public List<String> resolveRoles(String accessToken) throws IOException {
-        String jsonStr = resolveUrl(accessToken);
-        List<String> result = parseJson(jsonStr);
+    public List<String> resolveRoles(
+            String accessToken, Boolean getMemberOf, Boolean getAppRoles, String enterpriseAppObjectId)
+            throws Exception {
+        if (getMemberOf == null) {
+            getMemberOf = Boolean.FALSE;
+        }
+        if (getAppRoles == null) {
+            getAppRoles = Boolean.FALSE;
+        }
+        List<String> result = new ArrayList<>();
+        if (getMemberOf) {
+            String jsonStr = resolveMemberOfUrl(accessToken);
+            List<String> resultMemberOf = parseMemberOfJson(jsonStr);
+            result.addAll(resultMemberOf);
+        }
+        if (getAppRoles) {
+            if (StringUtils.isEmpty(enterpriseAppObjectId)) {
+                throw new Exception("enterpriseAppObjectId is null!");
+            }
+            UUID uuid = UUID.fromString(enterpriseAppObjectId);
+            String json = resolveAppRoles(accessToken, uuid);
+            List<String> resultAppRoles = parseAppRolesJson(json);
+            result.addAll(resultAppRoles);
+        }
         return result;
+    }
+
+    private List<String> parseAppRolesJson(String jsonString) {
+        List<String> result = new ArrayList<>();
+        JSONObject json = JSONObject.fromObject(jsonString);
+        JSONArray values = json.getJSONArray("value");
+
+        for (Object value : values) {
+            JSONObject object = (JSONObject) value;
+            result.add(object.get("appRoleId").toString());
+        }
+        return result;
+    }
+
+    private String resolveAppRoles(String accessToken, UUID uuid) throws IOException {
+        HttpURLConnection http = createAppRolesHTTPRequest(accessToken, uuid);
+        try (BufferedReader lReader = new BufferedReader(new InputStreamReader(http.getInputStream()))) {
+            String result = lReader.lines().collect(Collectors.joining("\n"));
+            return result;
+        } finally {
+            http.disconnect();
+        }
+    }
+
+    public HttpURLConnection createAppRolesHTTPRequest(String accessToken, UUID uuid) throws IOException {
+        String tokenHeaderValue = "Bearer " + accessToken;
+
+        URL url = new URL(appRoleAssignmentsEndpoint.toString() + "?$filter=resourceId+eq+" + uuid.toString());
+        HttpURLConnection http = (HttpURLConnection) url.openConnection();
+        http.setRequestProperty("Accept", "application/json");
+        http.setRequestProperty(authorizationHeaderName, tokenHeaderValue);
+
+        return http;
     }
 }

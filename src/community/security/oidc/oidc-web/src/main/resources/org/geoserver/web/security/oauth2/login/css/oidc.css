@@ -55,6 +55,18 @@
     display: flex;
 }
 
+.flex-column {
+    flex-direction: column;
+}
+
+.pad-checkbox {
+    padding-left: 22px;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
 ul.horizontal div {
     display: inline;
 }

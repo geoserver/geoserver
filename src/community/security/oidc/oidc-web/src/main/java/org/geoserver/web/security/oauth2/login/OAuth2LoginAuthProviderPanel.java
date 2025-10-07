@@ -179,10 +179,35 @@ public class OAuth2LoginAuthProviderPanel
 
             // add js script
             response.render(JavaScriptContentHeaderItem.forScript(oidcPanelJS, "oidcAuthFilterPanelJS"));
+
+            // this will attach a change listener to the checkbox
+            // the state of the checkbox will then display:block/display:none the panel
+            // this is used while the user is working with the page
+            script += "$('#msGraphAppRoleAssignments').on('change',function() { \n"
+                    // + " debugger;\n"
+                    + "    var checkbox = $('#msGraphAppRoleAssignments')[0];\n"
+                    + "    var div = $('#msGraphObjectIdDiv');\n"
+                    + "    if (checkbox.checked) {\n"
+                    + "        div.addClass('display-block');\n"
+                    + "        div.removeClass('display-none');\n"
+                    + "    } else {\n"
+                    + "        div.addClass('display-none');\n"
+                    + "        div.removeClass('display-block');\n"
+                    + "   }\n"
+                    + "} \n);\n\n";
+
+            script += "$('#msGraphAppRoleAssignments').trigger(\"change\"); // ensure in correct state";
+
+            script += "\n";
+            response.render(OnDomReadyHeaderItem.forScript(script));
         }
 
         public MSGraphPanel(String id, RoleSource model) {
             super(id, new Model<>());
+            add(new CheckBox("msGraphMemberOf").setRequired(false));
+            add(new CheckBox("msGraphAppRoleAssignments").setRequired(false));
+            add(new TextField<String>("msGraphAppRoleAssignmentsObjectId").setRequired(false));
+
             add(new TextField<String>("tokenRolesClaim").setRequired(false));
             add(new TextField<String>("roleConverterString").setRequired(false));
             add(new CheckBox("onlyExternalListedRoles").setRequired(false));

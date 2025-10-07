@@ -111,6 +111,17 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     private String postLogoutRedirectUri;
     private boolean enableRedirectAuthenticationEntryPoint;
 
+    // MSGraph
+
+    /** true -> get roles from MSGraph's memberOf endpoint (usually for groups) */
+    private boolean msGraphMemberOf;
+
+    /** true -> get roles from MSGraph's appRoleAssignments endpoint (for app roles associated with the user) */
+    private boolean msGraphAppRoleAssignments;
+
+    /** if msGraphAppRoleAssignments is true, then what is the Enterprise App's Object ID (NOT the Client Id). */
+    private String msGraphAppRoleAssignmentsObjectId;
+
     // for role extraction
     private String roleConverterString;
     private boolean onlyExternalListedRoles;
@@ -595,5 +606,29 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
 
     public void setOnlyExternalListedRoles(boolean onlyExternalListedRoles) {
         this.onlyExternalListedRoles = onlyExternalListedRoles;
+    }
+
+    public boolean isMsGraphMemberOf() {
+        return msGraphMemberOf;
+    }
+
+    public void setMsGraphMemberOf(boolean msGraphMemberOf) {
+        this.msGraphMemberOf = msGraphMemberOf;
+    }
+
+    public boolean isMsGraphAppRoleAssignments() {
+        return msGraphAppRoleAssignments;
+    }
+
+    public void setMsGraphAppRoleAssignments(boolean msGraphAppRoleAssignments) {
+        this.msGraphAppRoleAssignments = msGraphAppRoleAssignments;
+    }
+
+    public String getMsGraphAppRoleAssignmentsObjectId() {
+        return msGraphAppRoleAssignmentsObjectId;
+    }
+
+    public void setMsGraphAppRoleAssignmentsObjectId(String msGraphAppRoleAssignmentsObjectId) {
+        this.msGraphAppRoleAssignmentsObjectId = msGraphAppRoleAssignmentsObjectId;
     }
 }

@@ -140,6 +140,41 @@ jobs:
             # Ensure docs directory exists
             [ ! -d "docs" ] && mkdir -p docs && echo "# GeoServer $doc_type Documentation" > docs/index.md
             
+            # Create mkdocs.yml configuration
+            cat > mkdocs.yml <<EOL
+        site_name: GeoServer $doc_type Documentation (English)
+        site_description: GeoServer $doc_type documentation in English
+        site_author: GeoServer Project
+        
+        theme:
+          name: material
+          language: en
+          features:
+            - navigation.tabs
+            - navigation.sections
+            - navigation.expand
+            - navigation.top
+            - search.highlight
+            - search.share
+        
+        nav:
+          - Home: index.md
+        
+        markdown_extensions:
+          - admonition
+          - pymdownx.details
+          - pymdownx.superfences
+          - pymdownx.tabbed:
+              alternate_style: true
+          - def_list
+          - tables
+          - toc:
+              permalink: true
+        
+        plugins:
+          - search
+        EOL
+            
             cd ../../..
           else
             echo "No source directory found for English $doc_type"
@@ -178,58 +213,10 @@ jobs:
             # Ensure docs directory exists
             [ ! -d "docs" ] && mkdir -p docs && echo "# GeoServer $doc_type Documentation (中文)" > docs/index.md
             
-            cd ../../..
-          else
-            echo "No source directory found for Chinese $doc_type"
-          fi
-        done
-    
-    - name: Create MkDocs configuration files
-      run: |
-        source venv/bin/activate
-        
-        # Create mkdocs.yml for each English documentation type
-        for doc_type in user developer docguide; do
-          cat > doc/en/mkdocs_$doc_type/mkdocs.yml <<EOL
-        site_name: GeoServer Documentation (English)
-        site_description: GeoServer documentation in English
-        site_author: GeoServer Project
-        
-        theme:
-          name: material
-          language: en
-          features:
-            - navigation.tabs
-            - navigation.sections
-            - navigation.expand
-            - navigation.top
-            - search.highlight
-            - search.share
-        
-        nav:
-          - Home: index.md
-        
-        markdown_extensions:
-          - admonition
-          - pymdownx.details
-          - pymdownx.superfences
-          - pymdownx.tabbed:
-              alternate_style: true
-          - def_list
-          - tables
-          - toc:
-              permalink: true
-        
-        plugins:
-          - search
-        EOL
-        done
-        
-        # Create mkdocs.yml for each Chinese documentation type
-        for doc_type in user developer docguide; do
-          cat > doc/zhCN/mkdocs_$doc_type/mkdocs.yml <<EOL
-        site_name: GeoServer 文档 (中文)
-        site_description: GeoServer 中文文档
+            # Create mkdocs.yml configuration
+            cat > mkdocs.yml <<EOL
+        site_name: GeoServer $doc_type 文档 (中文)
+        site_description: GeoServer $doc_type 中文文档
         site_author: GeoServer Project
         
         theme:
@@ -260,6 +247,11 @@ jobs:
         plugins:
           - search
         EOL
+            
+            cd ../../..
+          else
+            echo "No source directory found for Chinese $doc_type"
+          fi
         done
     
     - name: Build all MkDocs sites

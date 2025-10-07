@@ -287,8 +287,9 @@ Process
 
    *Extensions*
 
-   #. Create a new directory under ``release/extensions`` which matches the
+   #. Create a new directory under ``release/src/extensions`` which matches the
       name of the extension
+      
    #. Add the following to the new directory:
   
       #. A license called :file:`<module>-LICENSE.md` which contains the license notice
@@ -315,7 +316,7 @@ Process
          
          An example would be data files or a proprietary driver not available for download via maven.
 
-   #. Create a release assembly called :file:`ext-<module>.xml` under the release directory.
+   #. Create a release assembly called :file:`ext-<module>.xml` under the release `src/assembly` directory.
       
       Follow the example of :download:`ext-h2-xml </../../../../src/release/ext-h2.xml>`:
       
@@ -365,13 +366,40 @@ Process
            </configuration>
          </plugin>
 
-    #. Update the documentation
+    #. Update the `/doc/en/user/source/community` documentation:
 
-       Add a page to the user manual for the new module. 
-
-       .. todo:: 
+       * Add a section  to the user manual for the new module:
+       
+         Create a folder: 
+         
+         * `community/%module%`
+         * `community/%module%/files` - example files
+         * `community/%module%/img` - screen snaps
+         * `community/%module%/index.rst`
+         * `community/%module%/installing.rst` 
+         * `community/%module%/usage.rst`
+       
+       * Include module in `community/index.rst` toctree:
+       
+          .. code-block:: rst
+             
+             .. toctree::
+                :maxdepth: 1
+             
+                backuprestore/index
+                cog/index
+                ...
+                %module%/index.rst
  
-          Finish this by linking somewhere...
+       * When writing `installing.rst` use the sphinx external link `download_community` to generate a download link for the current release.
+         
+         .. code-block:: rst
+         
+            To install the JDBCConfig module:
+
+            #. Visit the :website:`website download <download>` page and download :download_community:`jdbcconfig`.
+ 
+       For more information see :docguide:`documentaion guide <>`.
 
     #. Download and a contributor license agreement as pdf for txt file:
 

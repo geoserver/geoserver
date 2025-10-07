@@ -62,6 +62,27 @@ jobs:
         echo "VIRTUAL_ENV=$PWD/venv" >> $GITHUB_ENV
         echo "$PWD/venv/bin" >> $GITHUB_PATH
 
+    - name: Create minimal config for mkdocs_translate
+      run: |
+        source venv/bin/activate
+        # Find the exact path and create minimal config
+        PACKAGE_PATH=$(python -c "import mkdocs_translate; import os; print(os.path.dirname(mkdocs_translate.__file__))")
+        mkdir -p "$PACKAGE_PATH"
+        cat > "$PACKAGE_PATH/config.yml" <<'EOL'
+        # Minimal configuration for mkdocs_translate
+        project_folder: "."
+        rst_folder: "source"
+        docs_folder: "docs"
+        build_folder: "target"
+        anchor_file: "anchors.txt"
+        convert_folder: "convert" 
+        upload_folder: "upload"
+        download_folder: "download"
+        deepl_base_url: "https://api-free.deepl.com"
+        substitutions: {}
+        extlinks: {}
+        EOL
+
     - name: Validate mkdocs_translate installation
       run: |
         source venv/bin/activate

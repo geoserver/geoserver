@@ -975,7 +975,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-wps-xlsx-ppio</artifactId>
+          <artifactId>gs-excel-wps</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

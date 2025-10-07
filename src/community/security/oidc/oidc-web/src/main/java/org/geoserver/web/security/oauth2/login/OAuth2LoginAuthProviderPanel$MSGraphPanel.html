@@ -5,6 +5,36 @@
 <wicket:panel>
    <br>
 
+
+    <div class="display-flex">
+        <input class="field checkbox autoTopBottom" id="msGraphMemberOf"
+               type="checkbox" wicket:id="msGraphMemberOf"/>
+        <label class="padLeftSmall"  >
+            <wicket:message key="msGraphMemberOf"></wicket:message>
+        </label>
+    </div>
+    <div class="display-flex">
+        <input class="field checkbox autoTopBottom" id="msGraphAppRoleAssignments"
+               type="checkbox" wicket:id="msGraphAppRoleAssignments"/>
+        <label class="padLeftSmall"  >
+            <wicket:message key="msGraphAppRoleAssignments"></wicket:message>
+        </label>
+    </div>
+    <div class="" id="msGraphObjectIdDiv">
+        <div class="display-flex flex-column pad-checkbox">
+            <input class="field text autoTopBottom" id="msGraphAppRoleAssignmentsObjectId"
+                     wicket:id="msGraphAppRoleAssignmentsObjectId"/>
+            <label class="padLeftSmall"  >
+                <wicket:message key="msGraphAppRoleAssignmentsObjectId"></wicket:message>
+            </label>
+        </div>
+    </div>
+
+
+
+
+    <br>
+
     <label class="padTopLarge" >
         <wicket:message key="roleConverterTitle"></wicket:message>
     </label>

@@ -251,7 +251,7 @@ public class GeoServerOAuth2RoleResolverTest {
      * @throws IOException
      */
     @Test
-    public void testGetRolesFromMsGraphAPIWithIdpNotMs() throws IOException {
+    public void testGetRolesFromMsGraphAPIWithIdpNotMs() throws Exception {
         // given
         context = newResolverContext(OpenIdRoleSource.MSGraphAPI);
         OAuth2ResolverParam lParam = new OAuth2ResolverParam(PRINCIPAL_NAME, mockRequest, context, userRequest);
@@ -262,12 +262,12 @@ public class GeoServerOAuth2RoleResolverTest {
         List<String> lRoleNames = List.of("ROLE1", "ROLE2");
 
         // when
-        when(mock.resolveRoles(any())).thenReturn(lRoleNames);
+        when(mock.resolveRoles(any(), any(), any(), any())).thenReturn(lRoleNames);
         Collection<GeoServerRole> lRoles = sut.convert(lParam);
 
         // then
         assertThat(lRoles, containsInAnyOrder(equalTo(ROLE_NAME_AUTHENTICATED)));
-        verify(mock, times(0)).resolveRoles(any());
+        verify(mock, times(0)).resolveRoles(any(), any(), any(), any());
     }
 
     /**
@@ -276,7 +276,7 @@ public class GeoServerOAuth2RoleResolverTest {
      * @throws IOException
      */
     @Test
-    public void testGetRolesFromMsGraphAPIWithIdpMs() throws IOException {
+    public void testGetRolesFromMsGraphAPIWithIdpMs() throws Exception {
         // given
         context = newResolverContext(OpenIdRoleSource.MSGraphAPI);
         OAuth2ResolverParam lParam = new OAuth2ResolverParam(PRINCIPAL_NAME, mockRequest, context, userRequest);
@@ -288,7 +288,7 @@ public class GeoServerOAuth2RoleResolverTest {
 
         // when
         when(mockClientReg.getRegistrationId()).thenReturn(REG_ID_MICROSOFT);
-        when(mock.resolveRoles(any())).thenReturn(lRoleNames);
+        when(mock.resolveRoles(any(), any(), any(), any())).thenReturn(lRoleNames);
         Collection<GeoServerRole> lRoles = sut.convert(lParam);
 
         // then

@@ -27,7 +27,7 @@ public class MSGraphRolesResolverTest {
         // HttpURLConnection treats "Authorization" request header as private so we cannot verify
         // it.  We change its name so we can access it!
         resolver.authorizationHeaderName = "AuthorizationZZZ";
-        HttpURLConnection http = resolver.createHTTPRequest("accesstoken");
+        HttpURLConnection http = resolver.createMemberOfHTTPRequest("accesstoken");
         try {
 
             assertEquals(
@@ -129,7 +129,7 @@ public class MSGraphRolesResolverTest {
     public void testParse() {
         MSGraphRolesResolver resolver = new MSGraphRolesResolver();
 
-        List<String> groups = resolver.parseJson(json1);
+        List<String> groups = resolver.parseMemberOfJson(json1);
 
         assertEquals(2, groups.size());
         assertEquals("d93c6444-feee-4b67-8c0f-15d6796370cb", groups.get(0));

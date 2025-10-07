@@ -6,6 +6,13 @@
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
+  <bean id="WFSExcelExtension" class="org.geoserver.platform.ModuleStatusImpl">
+    <property name="module" value="gs-excel-wfs" />
+    <property name="name" value="Excel WFS output extension"/>
+    <property name="component" value="Excel WFS output extension"/>
+    <property name="available" value="true"/>
+    <property name="enabled" value="true"/>
+  </bean>
   <bean id="Excel97OutputFormat" class="org.geoserver.wfs.response.Excel97OutputFormat">
     <constructor-arg ref="geoServer"/>
   </bean>

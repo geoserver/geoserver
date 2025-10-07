@@ -10,6 +10,6 @@ import org.junit.Test;
 public class ModuleStatusTest extends GeoServerSystemTestSupport {
     @Test
     public void test() {
-        assertModuleStatus("gs-excel", "Excel Output Extension");
+        assertModuleStatus("gs-excel-core", "Excel Output Extension");
     }
 }

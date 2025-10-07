@@ -278,9 +278,9 @@ public class Log4JFormatter extends Formatter {
      * A {@link ConsoleHandler} sending output to {@link System#out} instead of {@link System#err} This handler will use
      * a {@link Log4JFormatter} writting log message on a single line.
      *
-     * @task TODO: This class should subclass {@link ConsoleHandler}. Unfortunatly, this is currently not possible
-     *     because {@link ConsoleHandler#setOutputStream} close {@link System#err}. If this bug get fixed, then
-     *     {@link #close} no longer need to be overriden.
+     * @todo This class should subclass {@link ConsoleHandler}. Unfortunatly, this is currently not possible because
+     *     {@link ConsoleHandler#setOutputStream} close {@link System#err}. If this bug get fixed, then {@link #close}
+     *     no longer need to be overriden.
      */
     private static final class Stdout extends StreamHandler {
         public Stdout() {

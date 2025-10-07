@@ -389,8 +389,8 @@ class SVGWriter extends OutputStreamWriter {
          * appropriate codes. e.g. '&lt;' is changed to '&amp;lt;'
          *
          * @param inData The string to encode into xml.
-         * @task REVISIT: Once we write directly to out, as we should, this method should be simpler, as we can just
-         *     write strings with escapes directly to out, replacing as we iterate of chars to write them.
+         * @revist Once we write directly to out, as we should, this method should be simpler, as we can just write
+         *     strings with escapes directly to out, replacing as we iterate of chars to write them.
          */
         private void encodeAttribute(String inData) throws IOException {
             // return null, if null is passed as argument

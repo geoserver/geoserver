@@ -18,7 +18,7 @@ In order to install and run this application, follow these steps:
 
     * Download Java 17 from:
 
-      https://adoptium.net/en-GB/temurin/releases?version=17&os=any&arch=any
+      https://adoptium.net/temurin/releases?version=17
 
     * Install according to the instructions included with the release.
 

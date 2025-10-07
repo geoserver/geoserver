@@ -751,8 +751,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * <i>"The bounding box metadata in Capabilities XML specify the minimum enclosing rectangle for the layer as a
          * whole."</i>
          *
-         * @task TODO: manage this differently when we have the layer list of the WMS service decoupled from the feature
-         *     types configured for the server instance. (This involves nested layers, gridcoverages, etc)
+         * @todo manage this differently when we have the layer list of the WMS service decoupled from the feature types
+         *     configured for the server instance. (This involves nested layers, gridcoverages, etc)
          */
         private void handleLayers(List<LayerInfo> layers, List<LayerGroupInfo> layerGroups) {
 

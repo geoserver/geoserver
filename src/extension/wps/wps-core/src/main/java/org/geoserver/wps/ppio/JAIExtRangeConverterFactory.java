@@ -20,7 +20,6 @@ import org.geotools.util.factory.Hints;
  * ConverterFactory for trading between strings and JAIExt ranges
  *
  * @author Andrea Aime - GeoSolutions
- * @source $URL$
  */
 public class JAIExtRangeConverterFactory implements ConverterFactory {
 

@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Xmx1024m -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Xmx1024m -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
 
 jobs:
   mkdocs-build-and-deploy:
@@ -329,7 +329,7 @@ jobs:
             <p>Welcome to the GeoServer documentation portal. Choose your language and documentation type below.</p>
             
             <div class="lang-section">
-                <h2>🇺🇸 English Documentation</h2>
+                <h2>English Documentation</h2>
                 <div class="doc-grid">
                     <a href="en/user/" class="doc-link">
                         <strong>User Guide</strong><br>
@@ -347,7 +347,7 @@ jobs:
             </div>
             
             <div class="lang-section">
-                <h2>🇨🇳 中文文档</h2>
+                <h2>中文文档</h2>
                 <div class="doc-grid">
                     <a href="zhCN/user/" class="doc-link">
                         <strong>用户指南</strong><br>
@@ -372,10 +372,16 @@ jobs:
       if: github.event_name == 'pull_request'
       run: |
         # Check if mkdocs label exists
+        echo "Checking for 'mkdocs' label on this PR..."
         LABELS=$(echo '${{ toJSON(github.event.pull_request.labels) }}' | jq -r '.[].name')
+        echo "Found labels: $LABELS"
+        
         if echo "$LABELS" | grep -q "mkdocs"; then
+          echo "SUCCESS: 'mkdocs' label found - will deploy to Pages"
           echo "has-mkdocs-label=true" >> $GITHUB_OUTPUT
         else
+          echo "SKIPPING: 'mkdocs' label not found - no deployment"
+          echo "To enable deployment preview, add the 'mkdocs' label to this PR"
           echo "has-mkdocs-label=false" >> $GITHUB_OUTPUT
         fi
     
@@ -405,9 +411,14 @@ jobs:
     - name: Skip deployment (no mkdocs label)
       if: github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'false'
       run: |
-        echo "Skipping GitHub Pages deployment - no 'mkdocs' label found"
-        echo "To enable deployment preview, add the 'mkdocs' label to this PR"
+        echo "=== DEPLOYMENT SKIPPED ==="
+        echo "Reason: No 'mkdocs' label found on this PR"
+        echo "To enable deployment preview:"
+        echo "   1. Go to this PR on GitHub"
+        echo "   2. Add the 'mkdocs' label"
+        echo "   3. Push a new commit to trigger deployment"
         echo "Documentation was built successfully and is ready for deployment"
+        echo "=== END SKIP MESSAGE ==="
     
     - name: Comment PR with deployment URL
       if: github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true'
@@ -418,13 +429,13 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `📚 **Documentation Preview Deployed!**
+            body: `**Documentation Preview Deployed!**
             
             The MkDocs documentation has been built and deployed successfully.
             
-            🔗 **Preview URL**: ${{ steps.deployment.outputs.page_url }}
+            **Preview URL**: ${{ steps.deployment.outputs.page_url }}
             
-            📖 **Available Documentation:**
+            **Available Documentation:**
             - [English User Guide](${{ steps.deployment.outputs.page_url }}en/user/)
             - [English Developer Guide](${{ steps.deployment.outputs.page_url }}en/developer/)  
             - [English Documentation Guide](${{ steps.deployment.outputs.page_url }}en/docguide/)

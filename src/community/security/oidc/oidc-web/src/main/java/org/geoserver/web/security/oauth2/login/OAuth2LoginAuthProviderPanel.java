@@ -6,6 +6,7 @@ package org.geoserver.web.security.oauth2.login;
 
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.AccessToken;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.IdToken;
+import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.MSGraphAPI;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource.UserInfo;
 
 import com.google.common.io.CharStreams;
@@ -153,6 +154,36 @@ public class OAuth2LoginAuthProviderPanel
         public TokenClaimPanel(String id, RoleSource model) {
             super(id, new Model<>());
             add(new TextField<String>("tokenRolesClaim").setRequired(true));
+            add(new TextField<String>("roleConverterString").setRequired(false));
+            add(new CheckBox("onlyExternalListedRoles").setRequired(false));
+        }
+    }
+
+    static class MSGraphPanel extends Panel {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void renderHead(IHeaderResponse response) {
+            super.renderHead(response);
+
+            // when wicket loads the page, we want this to fire AFTER the
+            // elements are in the dom.  This is so the converter is run
+            // when the page first loads (and table is updated).
+            String script = " roleConverterStringChanged();\n";
+            script += "$('#roleConverterString').on('input',function() { roleConverterStringChanged(this); } \n);\n\n";
+
+            response.render(OnDomReadyHeaderItem.forScript(script));
+
+            // add css
+            response.render(CssHeaderItem.forCSS(oidcPanelCSS, "oidcPanelCSS"));
+
+            // add js script
+            response.render(JavaScriptContentHeaderItem.forScript(oidcPanelJS, "oidcAuthFilterPanelJS"));
+        }
+
+        public MSGraphPanel(String id, RoleSource model) {
+            super(id, new Model<>());
+            add(new TextField<String>("tokenRolesClaim").setRequired(false));
             add(new TextField<String>("roleConverterString").setRequired(false));
             add(new CheckBox("onlyExternalListedRoles").setRequired(false));
         }
@@ -319,6 +350,9 @@ public class OAuth2LoginAuthProviderPanel
     protected Panel getRoleSourcePanel(RoleSource model) {
         if (IdToken.equals(model) || AccessToken.equals(model) || UserInfo.equals(model)) {
             return new TokenClaimPanel("panel", model);
+        }
+        if (MSGraphAPI.equals(model)) {
+            return new MSGraphPanel("panel", model);
         }
         return super.getRoleSourcePanel(model);
     }

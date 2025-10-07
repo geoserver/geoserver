@@ -77,12 +77,8 @@ URL: ``/gwc/rest/layers/<layer>.xml``
      - Return the XML representation of the layer
      - 200
      - XML
-   * - POST
-     - Modify the definition/configuration of the layer
-     - 200
-     - XML
    * - PUT
-     - Add a new layer
+     - Add a new layer, or modify an existing one
      - 200
      - XML
    * - DELETE

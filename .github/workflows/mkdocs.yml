@@ -365,14 +365,6 @@ jobs:
         </html>
         EOL
     
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-    
-    - name: Upload to GitHub Pages
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: gh-pages-output
-    
     - name: Check for mkdocs label
       id: check-label
       if: github.event_name == 'pull_request'
@@ -385,12 +377,35 @@ jobs:
           echo "has-mkdocs-label=false" >> $GITHUB_OUTPUT
         fi
     
+    - name: Setup Pages
+      if: |
+        (github.ref == 'refs/heads/main') || 
+        (github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true')
+      uses: actions/configure-pages@v4
+      with:
+        enablement: true
+    
+    - name: Upload to GitHub Pages
+      if: |
+        (github.ref == 'refs/heads/main') || 
+        (github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true')
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: gh-pages-output
+    
     - name: Deploy to GitHub Pages
       if: |
         (github.ref == 'refs/heads/main') || 
         (github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true')
       uses: actions/deploy-pages@v4
       id: deployment
+    
+    - name: Skip deployment (no mkdocs label)
+      if: github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'false'
+      run: |
+        echo "Skipping GitHub Pages deployment - no 'mkdocs' label found"
+        echo "To enable deployment preview, add the 'mkdocs' label to this PR"
+        echo "Documentation was built successfully and is ready for deployment"
     
     - name: Comment PR with deployment URL
       if: github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true'

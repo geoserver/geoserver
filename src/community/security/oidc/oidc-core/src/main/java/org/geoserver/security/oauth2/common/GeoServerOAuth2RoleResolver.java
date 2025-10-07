@@ -269,7 +269,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
             LOGGER.log(SEVERE, format(lMsg, REG_ID_MICROSOFT, lClientReg.getClientName()));
             return new ArrayList<>();
         }
-        Collection<String> lRoles = new ArrayList<>();
+        List<String> lRoles = new ArrayList<>();
         try {
             String accessToken = lUsrRequest.getAccessToken().getTokenValue();
             MSGraphRolesResolver resolver = msGraphRolesResolverSupplier.get();
@@ -283,6 +283,12 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
             String lMsg = "Resolving roles from Microsoft Graph API failed for user '%s'.";
             LOGGER.log(SEVERE, format(lMsg, lUsr), e);
         }
+
+        lRoles = this.roleConverter.convert(lRoles);
+        if (!lRoles.contains("ROLE_AUTHENTICATED")) {
+            lRoles.add("ROLE_AUTHENTICATED");
+        }
+
         return lRoles.stream().map(r -> new GeoServerRole(r)).collect(toList());
     }
 

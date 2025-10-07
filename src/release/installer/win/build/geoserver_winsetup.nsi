@@ -16,26 +16,26 @@
 !pragma warning disable 6020 ; disable warning about unused uninstaller script code
 
 ; Constants (VERSION should be updated by a script!)
-!define APPNAME "GeoServer"                                     ; application name
+!define APPNAME "GeoServer"                                       ; application name
 !ifndef VERSION
   !searchparse /file ..\source\VERSION.txt `version = ` VERSION   ; Read version from VERSION.txt
 !endif
-!define FULLNAME "${APPNAME} ${VERSION}"                        ; app name and version combined
-!define FULLKEY "${APPNAME}-${VERSION}"                         ; app name and version combined (delimited)
-!define INSTNAME "${APPNAME}-${VERSION}-winsetup.exe"           ; installer exe name
-!define UNINNAME "${APPNAME}-uninstall.exe"                     ; uninstaller exe name
-!define HOMEPAGE "https://geoserver.org"                        ; resource URL
-!define TIMESTAMPURL "http://timestamp.comodoca.com/rfc3161"    ; URL used to timestamp certificates
-!define REQJREVERSION "11.0"                                   ; required Java runtime version (i.e. 11.0)
-!define REQJREVERSIONNAME "11"                                   ; required Java runtime display version (i.e. 11)
-!define ALTJREVERSION "17.0"                                    ; alternative Java runtime version (i.e. 17.0)
-!define ALTJREVERSIONNAME "17"                                  ; alternative Java runtime display version (i.e. 17)
-!define JDKNAME "Adoptium OpenJDK"                              ; Name of the OpenJDK provider (e.g. AdoptOpenJDK)
-!define JDKURL "https://adoptium.net"                           ; OpenJDK URL
-!define EMAIL "geoserver-users@lists.sourceforge.net"           ; support email address
-!define COPYRIGHT "Copyright (c) 1999-2021 Open Source Geospatial Foundation"
-!define CERT_DOMAIN "https://www.osgeo.org"                     ; Certificate domain (URL)
-!define CERT_SUBJECT "The Open Source Geospatial Foundation"    ; Certificate subject
+!define FULLNAME "${APPNAME} ${VERSION}"                          ; app name and version combined
+!define FULLKEY "${APPNAME}-${VERSION}"                           ; app name and version combined (delimited)
+!define INSTNAME "${APPNAME}-${VERSION}-winsetup.exe"             ; installer exe name
+!define UNINNAME "${APPNAME}-uninstall.exe"                       ; uninstaller exe name
+!define HOMEPAGE "https://geoserver.org"                          ; resource URL
+!define TIMESTAMPURL "http://timestamp.comodoca.com/rfc3161"      ; URL used to timestamp certificates
+!define REQJREVERSION "17.0"                                      ; required Java runtime version (i.e. 17.0)
+!define REQJREVERSIONNAME "17"                                    ; required Java runtime display version (i.e. 17)
+!define ALTJREVERSION "21.0"                                      ; alternative Java runtime version (i.e. 21.0)
+!define ALTJREVERSIONNAME "21"                                    ; alternative Java runtime display version (i.e. 21)
+!define JDKNAME "Adoptium OpenJDK"                                ; Name of the OpenJDK provider (e.g. AdoptOpenJDK)
+!define JDKURL "https://adoptium.net/temurin/releases?version=17" ; OpenJDK URL
+!define EMAIL "geoserver-user@discourse.osgeo.org "             ; support email address
+!define COPYRIGHT "Copyright (c) 1999-2025 Open Source Geospatial Foundation"
+!define CERT_DOMAIN "https://www.osgeo.org"                       ; Certificate domain (URL)
+!define CERT_SUBJECT "The Open Source Geospatial Foundation"      ; Certificate subject
 
 ; CODE SIGNING
 ; ----------------------------------------------------------------------------

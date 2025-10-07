@@ -139,7 +139,7 @@
     <profile>
       <id>excel</id>
       <modules>
-        <module>excel</module>
+        <module>excel-core</module>
       </modules>
     </profile>
 
@@ -429,7 +429,9 @@
         <module>gdal</module>
         <module>jp2k</module>
         <module>ogr</module>
-        <module>excel</module>
+        <module>excel-core</module>
+        <module>excel-wfs</module>
+        <module>excel-wps</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
         <module>control-flow</module>
@@ -482,7 +484,9 @@
         <module>gdal</module>
         <module>jp2k</module>
         <module>ogr</module>
-        <module>excel</module>
+        <module>excel-core</module>
+        <module>excel-wfs</module>
+        <module>excel-wps</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
         <module>control-flow</module>

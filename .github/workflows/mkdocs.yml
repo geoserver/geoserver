@@ -128,8 +128,8 @@ jobs:
             # Copy conf.py if it exists
             [ -f "../$doc_type/conf.py" ] && cp "../$doc_type/conf.py" ./ || true
             
-            # Initialize mkdocs structure with proper folder arguments
-            mkdocs_translate init --rst-folder ./source --docs-folder ./docs
+            # Initialize mkdocs structure
+            mkdocs_translate init ./source
             
             # Scan and migrate the documentation
             mkdocs_translate scan || true
@@ -201,8 +201,8 @@ jobs:
             # Copy conf.py if it exists
             [ -f "../$doc_type/conf.py" ] && cp "../$doc_type/conf.py" ./ || true
             
-            # Initialize mkdocs structure with proper folder arguments
-            mkdocs_translate init --rst-folder ./source --docs-folder ./docs
+            # Initialize mkdocs structure
+            mkdocs_translate init ./source
             
             # Scan and migrate the documentation
             mkdocs_translate scan || true

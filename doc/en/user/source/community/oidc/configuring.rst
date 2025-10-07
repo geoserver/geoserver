@@ -29,7 +29,7 @@ OAUTH2/OIDC configuration
 
    * :ref:`Google <community_oidc_google>`
    * :ref:`GitHub <community_oidc_github>`
-   * :ref:`Generic OpenID Connect recommended <community_oidc_oidc>`
+   * :ref:`Generic OpenID Connect recommended <community_oidc_oidc>` (also see :ref:`Keycloak <community_oidc_keycloak>`_)
 
 #. Configure the :ref:`role source <community_oidc_role_source>` (access)
 

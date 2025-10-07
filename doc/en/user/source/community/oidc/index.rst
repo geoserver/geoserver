@@ -13,6 +13,7 @@ The `oidc` module is a security module that accepts users (and roles) from exter
    configuring
    oauth2/google
    oauth2/github
+   oauth2/azure
    oauth2/oidc
    oauth2/keycloak
    role-config

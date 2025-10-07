@@ -85,9 +85,11 @@ jobs:
         extlinks: {}
         EOL
 
-    - name: Validate mkdocs_translate installation
+    - name: Validate mkdocs_translate installation and check version
       run: |
         source venv/bin/activate
+        echo "Checking mkdocs_translate version..."
+        mkdocs_translate --version || echo "Version check not available"
         mkdocs_translate --help || (echo "mkdocs_translate validation failed" && exit 1)
         echo "mkdocs_translate is working correctly"
 

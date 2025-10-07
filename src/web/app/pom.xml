@@ -976,6 +976,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>xlsxppio</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-excel-wps</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>gpxppio</id>
       <dependencies>
         <dependency>
@@ -1208,16 +1218,6 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-wps-remote</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>excel</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-excel</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

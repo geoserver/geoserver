@@ -1,5 +1,5 @@
 <assembly>
-  <id>excel-plugin</id>
+  <id>wps-excel-plugin</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -9,14 +9,16 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
+        <include>gs-wps-core-*.jar</include>
+        <include>gs-wps-download-*.jar</include>
         <include>gs-excel-core-*.jar</include>
-        <include>gs-excel-wfs-*.jar</include>
+        <include>gs-excel-wps-*.jar</include>
+        <include>gt-xsd-wps-*.jar</include>
+        <include>net.opengis.wps-*.jar</include>
+        <include>jcodec-*.jar</include>
         <include>poi-*.jar</include>
-        <include>xmlbeans-*.jar</include>
-        <include>dom4j-*.jar</include>
         <include>commons-compress-*.jar</include>
-        <include>commons-math3-*.jar</include>
-        <include>curvesapi*.jar</include>
+        <include>xmlbeans-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

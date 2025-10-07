@@ -180,7 +180,12 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-excel</artifactId>
+      <artifactId>gs-excel-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-excel-wfs</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -406,6 +411,11 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-wps-kml-ppio</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-excel-wps</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

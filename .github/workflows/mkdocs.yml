@@ -110,117 +110,41 @@ jobs:
         fi
         mvn -B -ntp compile
     
-    - name: Convert RST to Markdown for English docs
+    - name: Convert RST to Markdown using directory-based approach
       run: |
         source venv/bin/activate
         
-        for doc_type in user developer docguide; do
-          echo "Converting English $doc_type documentation..."
+        # Array of documentation directories to process
+        declare -a DOC_DIRS=(
+          "doc/en/user:user:en"
+          "doc/en/developer:developer:en" 
+          "doc/en/docguide:docguide:en"
+          "doc/zhCN/user:user:zhCN"
+        )
+        
+        # Process each directory
+        for DIR_INFO in "${DOC_DIRS[@]}"; do
+          IFS=':' read -r DOC_DIR DOC_TYPE LANG <<< "$DIR_INFO"
           
-          if [ -d "doc/en/$doc_type/source" ]; then
-            # Create working directory
-            mkdir -p doc/en/mkdocs_$doc_type
-            cd doc/en/mkdocs_$doc_type
+          if [ -d "$DOC_DIR" ] && [ -d "$DOC_DIR/source" ]; then
+            echo "Converting $LANG $DOC_TYPE documentation..."
+            echo "   Working directory: $DOC_DIR"
             
-            # Copy RST source files from the correct location
-            cp -r ../$doc_type/source ./
+            # Count RST files
+            RST_COUNT=$(find "$DOC_DIR/source" -name "*.rst" 2>/dev/null | wc -l)
+            echo "   Found $RST_COUNT RST files"
             
-            # Copy conf.py if it exists
-            [ -f "../$doc_type/conf.py" ] && cp "../$doc_type/conf.py" ./ || true
+            # Change to the documentation directory
+            cd "$DOC_DIR"
             
-            # Initialize mkdocs structure
-            mkdocs_translate init ./source
-            
-            # Scan and migrate the documentation
-            mkdocs_translate scan || true
-            
-            # Generate navigation structure
-            mkdocs_translate nav || echo "Navigation generation failed"
-            
-            mkdocs_translate migrate || echo "Migration failed, creating fallback"
-            
-            # Ensure docs directory exists
-            [ ! -d "docs" ] && mkdir -p docs && echo "# GeoServer $doc_type Documentation" > docs/index.md
-            
-            # Create mkdocs.yml configuration
-            cat > mkdocs.yml <<EOL
-        site_name: GeoServer $doc_type Documentation (English)
-        site_description: GeoServer $doc_type documentation in English
+            # Create mkdocs.yml if it doesn't exist
+            if [ ! -f "mkdocs.yml" ]; then
+              echo "   Creating mkdocs.yml configuration..."
+              if [ "$LANG" = "zhCN" ]; then
+                cat > mkdocs.yml << EOF
+        site_name: GeoServer $DOC_TYPE 文档 (中文)
+        site_description: GeoServer $DOC_TYPE 中文文档
         site_author: GeoServer Project
-        
-        theme:
-          name: material
-          language: en
-          features:
-            - navigation.tabs
-            - navigation.sections
-            - navigation.expand
-            - navigation.top
-            - search.highlight
-            - search.share
-        
-        nav:
-          - Home: index.md
-        
-        markdown_extensions:
-          - admonition
-          - pymdownx.details
-          - pymdownx.superfences
-          - pymdownx.tabbed:
-              alternate_style: true
-          - def_list
-          - tables
-          - toc:
-              permalink: true
-        
-        plugins:
-          - search
-        EOL
-            
-            cd ../../..
-          else
-            echo "No source directory found for English $doc_type"
-          fi
-        done
-    
-    - name: Convert RST to Markdown for Chinese docs
-      run: |
-        source venv/bin/activate
-        
-        for doc_type in user developer docguide; do
-          echo "Converting Chinese $doc_type documentation..."
-          
-          if [ -d "doc/zhCN/$doc_type/source" ]; then
-            # Create working directory  
-            mkdir -p doc/zhCN/mkdocs_$doc_type
-            cd doc/zhCN/mkdocs_$doc_type
-            
-            # Copy RST source files from the correct location
-            cp -r ../$doc_type/source ./
-            
-            # Copy conf.py if it exists
-            [ -f "../$doc_type/conf.py" ] && cp "../$doc_type/conf.py" ./ || true
-            
-            # Initialize mkdocs structure
-            mkdocs_translate init ./source
-            
-            # Scan and migrate the documentation
-            mkdocs_translate scan || true
-            
-            # Generate navigation structure
-            mkdocs_translate nav || echo "Navigation generation failed"
-            
-            mkdocs_translate migrate || echo "Migration failed, creating fallback"
-            
-            # Ensure docs directory exists
-            [ ! -d "docs" ] && mkdir -p docs && echo "# GeoServer $doc_type Documentation (中文)" > docs/index.md
-            
-            # Create mkdocs.yml configuration
-            cat > mkdocs.yml <<EOL
-        site_name: GeoServer $doc_type 文档 (中文)
-        site_description: GeoServer $doc_type 中文文档
-        site_author: GeoServer Project
-        
         theme:
           name: material
           language: zh
@@ -231,30 +155,83 @@ jobs:
             - navigation.top
             - search.highlight
             - search.share
-        
         nav:
           - 首页: index.md
-        
         markdown_extensions:
           - admonition
           - pymdownx.details
           - pymdownx.superfences
-          - pymdownx.tabbed:
-              alternate_style: true
-          - def_list
           - tables
           - toc:
               permalink: true
-        
         plugins:
           - search
-        EOL
+        site_dir: ../../gh-pages-output/$LANG/$DOC_TYPE
+        EOF
+              else
+                cat > mkdocs.yml << EOF
+        site_name: GeoServer $DOC_TYPE Documentation (English)
+        site_description: GeoServer $DOC_TYPE documentation in English
+        site_author: GeoServer Project
+        theme:
+          name: material
+          language: en
+          features:
+            - navigation.tabs
+            - navigation.sections
+            - navigation.expand
+            - navigation.top
+            - search.highlight
+            - search.share
+        nav:
+          - Home: index.md
+        markdown_extensions:
+          - admonition
+          - pymdownx.details
+          - pymdownx.superfences
+          - tables
+          - toc:
+              permalink: true
+        plugins:
+          - search
+        site_dir: ../../gh-pages-output/$LANG/$DOC_TYPE
+        EOF
+              fi
+            fi
             
-            cd ../../..
+            echo "   Step 1: Initializing docs directory..."
+            mkdocs_translate init || echo "Init failed, continuing anyway..."
+            
+            echo "   Step 2: Scanning RST files..."
+            mkdocs_translate scan || echo "Scan failed, continuing anyway..."
+            
+            echo "   Step 3: Converting RST to Markdown..."
+            mkdocs_translate migrate || echo "Migration failed, continuing anyway..."
+            
+            echo "   Step 4: Generating navigation..."
+            mkdocs_translate nav > nav_generated.yml || echo "Nav generation failed, continuing anyway..."
+            
+            # Ensure docs directory exists with fallback content
+            if [ ! -d "docs" ]; then
+              echo "   Creating fallback docs directory..."
+              mkdir -p docs
+              if [ "$LANG" = "zhCN" ]; then
+                echo "# GeoServer $DOC_TYPE 文档" > docs/index.md
+              else
+                echo "# GeoServer $DOC_TYPE Documentation" > docs/index.md
+              fi
+            fi
+            
+            # Return to project root
+            cd - > /dev/null
+            
+            echo "   Conversion complete for $LANG $DOC_TYPE"
           else
-            echo "No source directory found for Chinese $doc_type"
+            echo "   Skipping $LANG $DOC_TYPE (directory not found: $DOC_DIR)"
           fi
         done
+    
+
     
     - name: Build all MkDocs sites
       run: |
@@ -263,45 +240,58 @@ jobs:
         # Create main output directory
         mkdir -p gh-pages-output
         
-        # Build each documentation set
-        for lang in en zhCN; do
-          for doc_type in user developer docguide; do
-            if [ -d "doc/$lang/mkdocs_$doc_type" ]; then
-              echo "Building $lang $doc_type documentation..."
-              cd doc/$lang/mkdocs_$doc_type
-              
-              # Ensure docs directory exists
-              if [ ! -d "docs" ]; then
-                mkdir -p docs
-                echo "# GeoServer $doc_type Documentation" > docs/index.md
-                echo "Documentation build in progress." >> docs/index.md
-              fi
-              
-              # Update site_dir to output to our gh-pages directory
-              sed -i "/^site_dir:/d" mkdocs.yml || true
-              echo "site_dir: ../../../gh-pages-output/$lang/$doc_type" >> mkdocs.yml
-              
-              # Build the site with error handling
-              if mkdocs build --clean; then
-                echo "Successfully built $lang/$doc_type"
+        # Array of documentation directories to build
+        declare -a MKDOCS_DIRS=(
+          "doc/en/user:user:en"
+          "doc/en/developer:developer:en" 
+          "doc/en/docguide:docguide:en"
+          "doc/zhCN/user:user:zhCN"
+        )
+        
+        # Build each MkDocs site
+        for DIR_INFO in "${MKDOCS_DIRS[@]}"; do
+          IFS=':' read -r DOC_DIR DOC_TYPE LANG <<< "$DIR_INFO"
+          
+          if [ -d "$DOC_DIR" ] && [ -f "$DOC_DIR/mkdocs.yml" ]; then
+            echo "Building $LANG $DOC_TYPE documentation..."
+            
+            # Change to the documentation directory
+            cd "$DOC_DIR"
+            
+            # Ensure docs directory exists
+            if [ ! -d "docs" ]; then
+              mkdir -p docs
+              if [ "$LANG" = "zhCN" ]; then
+                echo "# GeoServer $DOC_TYPE 文档" > docs/index.md
               else
-                echo "MkDocs build failed for $lang/$doc_type, creating fallback"
-                mkdir -p "../../../gh-pages-output/$lang/$doc_type"
-                cat > "../../../gh-pages-output/$lang/$doc_type/index.html" <<EOF
+                echo "# GeoServer $DOC_TYPE Documentation" > docs/index.md
+              fi
+              echo "Documentation build in progress." >> docs/index.md
+            fi
+            
+            # Build the site with error handling (site_dir already set in mkdocs.yml)
+            if mkdocs build --clean; then
+              echo "Successfully built $LANG/$DOC_TYPE"
+            else
+              echo "MkDocs build failed for $LANG/$DOC_TYPE, creating fallback"
+              mkdir -p "../../gh-pages-output/$LANG/$DOC_TYPE"
+              cat > "../../gh-pages-output/$LANG/$DOC_TYPE/index.html" <<EOF
         <!DOCTYPE html>
         <html>
-        <head><title>GeoServer $doc_type Documentation</title></head>
+        <head><title>GeoServer $DOC_TYPE Documentation</title></head>
         <body>
-          <h1>GeoServer $doc_type Documentation ($lang)</h1>
+          <h1>GeoServer $DOC_TYPE Documentation ($LANG)</h1>
           <p><em>Build failed - fallback content</em></p>
         </body>
         </html>
         EOF
-              fi
-              
-              cd ../../..
             fi
-          done
+            
+            # Return to project root
+            cd - > /dev/null
+          else
+            echo "Skipping $LANG $DOC_TYPE (directory or mkdocs.yml not found: $DOC_DIR)"
+          fi
         done
     
     - name: Create main index page for gh-pages

@@ -41,7 +41,6 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
 
     protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
 
-
     public static final String URL_AFTER_LOGOUT = "/web/";
     public static final String LOGOUT_REDIRECT_ATTR = "_logout_redirect";
 
@@ -96,9 +95,11 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
             for (LogoutHandler h : logoutHandlers) {
                 try {
                     h.logout(request, response, authentication);
-                }
-                catch (Exception e) {
-                    LOGGER.log(Level.WARNING,"Exception during logout handler: " + h.getClass().getName(),e);
+                } catch (Exception e) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Exception during logout handler: " + h.getClass().getName(),
+                            e);
                 }
             }
 

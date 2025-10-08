@@ -82,13 +82,15 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null) {
+
+            // first we tell the client that the `remember-me` token shouldn't be used
+            RememberMeServices rms = securityManager.getRememberMeService();
+            ((LogoutHandler) rms).logout(request, response, authentication);
+
             List<LogoutHandler> logoutHandlers = calculateActiveLogoutHandlers(skipHandlerName);
             for (LogoutHandler h : logoutHandlers) {
                 h.logout(request, response, authentication);
             }
-
-            RememberMeServices rms = securityManager.getRememberMeService();
-            ((LogoutHandler) rms).logout(request, response, authentication);
 
             logoutHandler.logout(request, response, authentication);
         }

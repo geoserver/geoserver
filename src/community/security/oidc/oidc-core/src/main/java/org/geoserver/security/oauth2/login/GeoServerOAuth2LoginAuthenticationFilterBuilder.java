@@ -7,6 +7,7 @@ package org.geoserver.security.oauth2.login;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
+import static org.geoserver.security.filter.GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2UserServices.newOAuth2UserService;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2UserServices.newOidcUserService;
 import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent.disableButtonEvent;
@@ -16,12 +17,14 @@ import static org.springframework.security.oauth2.core.AuthorizationGrantType.AU
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_POST;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
@@ -61,6 +64,7 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.RequestMatcherRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -351,6 +355,17 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
             OidcClientInitiatedLogoutSuccessHandler lLogoutSuccessHandler =
                     new OidcClientInitiatedLogoutSuccessHandler(getClientRegistrationRepository());
             lLogoutSuccessHandler.setPostLogoutRedirectUri(configuration.getPostLogoutRedirectUri());
+
+            // trivial redirect strategy that just sets the LOGOUT_REDIRECT_ATTR attribute on the request
+            // This is handled by the main GS Logout system, which does a redirect.
+            lLogoutSuccessHandler.setRedirectStrategy(new RedirectStrategy() {
+                @Override
+                public void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url)
+                        throws IOException {
+                    request.setAttribute(LOGOUT_REDIRECT_ATTR, url);
+                }
+            });
+
             logoutSuccessHandler = lLogoutSuccessHandler;
         }
         return logoutSuccessHandler;

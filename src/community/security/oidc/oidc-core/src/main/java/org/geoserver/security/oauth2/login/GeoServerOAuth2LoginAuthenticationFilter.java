@@ -15,6 +15,7 @@ import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerCompositeFilter;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
@@ -67,6 +68,9 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
         // already.
         if (logoutSuccessHandler == null) {
             return;
+        }
+        if (!(pAuthentication instanceof OAuth2AuthenticationToken)) {
+            return; // dont do anything - user isn't signed on as oidc
         }
         try {
             logoutSuccessHandler.onLogoutSuccess(pRequest, pResponse, pAuthentication);

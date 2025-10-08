@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -36,6 +38,9 @@ import org.springframework.util.StringUtils;
  * @author christian
  */
 public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
+
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
+
 
     public static final String URL_AFTER_LOGOUT = "/web/";
     public static final String LOGOUT_REDIRECT_ATTR = "_logout_redirect";
@@ -89,7 +94,12 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
 
             List<LogoutHandler> logoutHandlers = calculateActiveLogoutHandlers(skipHandlerName);
             for (LogoutHandler h : logoutHandlers) {
-                h.logout(request, response, authentication);
+                try {
+                    h.logout(request, response, authentication);
+                }
+                catch (Exception e) {
+                    LOGGER.log(Level.WARNING,"Exception during logout handler: " + h.getClass().getName(),e);
+                }
             }
 
             logoutHandler.logout(request, response, authentication);

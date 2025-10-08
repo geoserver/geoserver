@@ -6,8 +6,12 @@
 
 package org.geoserver.security.rememberme;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -37,21 +41,21 @@ public class GeoServerTokenBasedRememberMeServicesTest {
     public void testLogout() {
         GeoServerTokenBasedRememberMeServices sut =
                 new GeoServerTokenBasedRememberMeServices("key", mock(UserDetailsService.class));
-        var spy = Mockito.spy(sut);
+        GeoServerTokenBasedRememberMeServices spy = Mockito.spy(sut);
 
         // this token can be decoded.
-        var realToken = "YWRtaW4lNDBkZWZhdWx0OjE3NjExNTQzMzI0NDA6TUQ1OmY4ZWZmYzMyZTllMTlmYTEzZTdjMWQyY2ZhZDczNTQ0";
+        String realToken = "YWRtaW4lNDBkZWZhdWx0OjE3NjExNTQzMzI0NDA6TUQ1OmY4ZWZmYzMyZTllMTlmYTEzZTdjMWQyY2ZhZDczNTQ0";
 
         // create a request with a remember-me cookie token
-        var request = mock(HttpServletRequest.class);
-        var cookie = new Cookie("remember-me", realToken);
-        var cookies = new Cookie[] {cookie};
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        Cookie cookie = new Cookie("remember-me", realToken);
+        Cookie[] cookies = {cookie};
         when(request.getCookies()).thenReturn(cookies);
         when(request.getContextPath()).thenReturn("/");
 
         // response and capture the addCookie(cookie) cookie argument
         // this will be the cancel remember-me cookie sent to the browser
-        var response = mock(HttpServletResponse.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
         ArgumentCaptor<Cookie> argumentCaptor = ArgumentCaptor.forClass(Cookie.class);
 
         // we havent logged out yet, so we should be able to decode the token

@@ -1,4 +1,4 @@
-.. community_oidc_keycloak:
+.. _community_oidc_keycloak:
 
 
 Configuring with Keycloak

@@ -2,9 +2,9 @@
 
 
 Configure the Microsoft Azure authentication provider
------------------------------------------------------
+=====================================================
 
-We will use Microsoft Entra (Microsoft Azure) for login and use Microsoft Graph to provide roles.
+We will use Microsoft Entra (Microsoft Azure) for login and either the Azure/Entra ID Token or Microsoft Graph to provide roles.
 
 Configure Microsoft Entra
 -------------------------
@@ -192,6 +192,8 @@ You will need:
 
 Notes
 -----
+
+See :ref:`troubleshooting <community_oidc_troubleshooting>`.
 
 1. Typical MS ID Token.  Note that the roles have been put in the "roles" claim. 
 

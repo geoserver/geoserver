@@ -2,9 +2,12 @@
 
 
 Configure the Google authentication provider
---------------------------------------------
+============================================
 
 The first thing to do is to configure the OAuth2 Provider and obtain ``Client ID`` and ``Client Secret`` keys.
+
+Configure the Google IDP
+------------------------
 
 #. Obtain OAuth 2.0 credentials from the Google API Console.
 
@@ -147,7 +150,9 @@ Allow Web Access (Filter Chain)
 
 
 Notes
-=====
+-----
+
+See :ref:`troubleshooting <community_oidc_troubleshooting>`.
 
 1. Google's Access Token is opaque, so :ref:`configure roles <community_oidc_role_source>` via the ID Token
 2. Google's ID Token does not contain very much info

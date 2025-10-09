@@ -9,6 +9,9 @@ You can configure role sources from two main groups:
     * :ref:`The standard GeoServer role source  <security_rolesystem>`
     * From OIDC-specific sources (see below)
 
+For more examples, see the IDP-specific configuration examples - :ref:`Google <community_oidc_google>`, :ref:`GitHub <community_oidc_github>`, :ref:`Keycloak <community_oidc_keycloak>`, :ref:`MS Azure and Entra <community_oidc_azure>`, :ref:`Generic OpenID Connect <community_oidc_generic>`.
+
+
 Extracting Roles from the OIDC IDP
 ----------------------------------
 
@@ -30,7 +33,7 @@ The `oidc` module allows for providing user roles with the standard GeoServer ro
 
 
 Role Configuration Overview
-===========================
+---------------------------
 
 1. Choose a role source - typically `ID Token`, but can also be `Access Token` or `UserInfo`.
 
@@ -137,11 +140,11 @@ Both of these techniques are advanced - and should only be used if you **must** 
 Configuring  Microsoft Graph
 ----------------------------
 
-TODO
+See the :ref:`Azure/Entra Configuration <community_oidc_azure>`
 
 
 External-Internal Role Translation
-==================================
+----------------------------------
 
 The `oidc` module provides an easy what to convert the name of an external IDP's role to a local GeoServer role.
 

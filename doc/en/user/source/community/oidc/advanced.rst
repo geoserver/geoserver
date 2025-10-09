@@ -1,41 +1,59 @@
-.. _community_oidc_oidc:
+.. _community_oidc_advanced:
 
 
-OpenID connect authentication
------------------------------
+Advanced Information
+====================
 
-The OAuth2 OpenID Connect (OIDC) authentication is working in a way quite similar to Google (and GitHub) 
-authentications, the only difference is that the authentication page cannot propose default
-values for the various endpoints, which have to be configured manually.
+.. _community_oidc_troubleshooting:
 
-In case the web login will not be used, the ``client ID`` and ``client secret`` are not actually
-needed, and can be filled with two made up values (the validation just checks they are present,
-but they will be used only in the "authorisation flow", but not when doing OGC requests
-where the client is supposed to have autonomously retrieved a valid bearer token).
+Troubleshooting
+---------------
 
-The configuration GUI supports OpenID Discovery documents.  If the server supports them
-it's sufficient to provide the path to the document, or to the authentication service root,
-and the GUI will auto-fill itself based on the document contents:
+There are a lot of little problems that can occur - here are some troubleshooting tips.
 
-.. figure:: images/discovery.png
-   :align: center
+#. Turn on GeoServer's "VERBOSE_LOGGING" configuration
+#. In your OIDC Security Filter, turn on "Log Sensitive Information (do not use in production)"
+#. Open the developer tools for your Browser and look at the requests and see if any of them have error/warning message
+#. If you can login, but don't have the correct rights, ensure that your IDP is putting roles in its ID Token, Access Token, or userinfo
+#. View the ID Token, Access Token, and userinfo that the IDP is generating.  It maybe difficult to access these.  Use `JWT.io <https://jwt.io>`__ to decode your JWT tokens.
+#. Look at the bottom and top of the GeoServer configuration screens - there might be an error message (in red)
 
-The UI allows to set also the ``Post Logout Redirect URI`` which will be used to populate the  ``post_logout_redirect_uri`` request param, when doing the global logout from the GeoServer UI. The OpenId provider will use the URI to redirect to the desired app page.
+Common mistakes:
 
-In addition, the OpenID connect authentication is able to extract the user roles from either the ID token or the Access Token:
+    * Not putting the correct GeoServer callbacks in your IDP
+    * Not putting the user roles in the IDP's ID Token, Access Token, or userinfo
+    * Setting the wrong "JSON path" to find the roles in the ID Token, Access Token, or userinfo
+    * Not putting in a "Role Conversion" that maps your IDPs role name to GeoServer's role name (especially "ROLE_ADMINISTRATOR")
 
-.. figure:: ../img/role-source-dropdown.png
-   :align: center
+If you are still having issues, you might need to attach a Java debugger to GeoServer.  The standard OIDC process is as follows:
 
-The chosen attribute must be present in either the Access Token or in the Id token, and be either a string or an array of strings.
+#. User clicks on the "login" button in GeoServer and is redirected to the External OIDC IDP
 
-From the UI it is also possible to set the ``Response Mode`` value. The field can be kept empty, but it is needed when the OpenId server is used, as the Identity Provider doesn't send the authorization code by default as a query string (that is mandatory in order to allow GeoServer and OpenId integration to work properly).
+    * This will rarely be problematic
+    * If there is a problem, its most likely that:
 
-Finally, the admin can allow the sending of the ``client_secret`` during an access_token request through the ``Send Client Secret in Token Request``. Some OpenId implementations requires it for the Authorization Code flow when the client app is a confidential client and can safely store the client_secret.
+        * GeoServer is configured with the wrong "User Authorization URI"
+        * The IDP is not configured to allow "http://localhost:8080/geoserver/web/login/oauth2/code/oidc" as the redirect URL
+
+#. User logs into the IDP (if this is problematic, consult your IDP's administrator)
+
+#. The user is then redirected back to GeoServer (http://localhost:8080/geoserver/web/login/oauth2/code/oidc) with an attached `?code=...`.  GeoServer will make a web request to the IDP to hand this "code" in for the Access/ID Token.
+
+    * You should see this request in the Browser Network Logs (see your Browsers DevTools)
+    * In the debugger, you can put a breakpoint in `GeoServerOauth2AccessTokenResponseClient#getTokenResponse()` to see this exchange
+    
+#. View the ID Token, Access Token, and userinfo. Use `JWT.io <https://jwt.io>`__ to decode your JWT tokens.
+
+    * The easiest way to see this is in `GeoServerOAuth2RoleResolver#convert()` (`pParam`)
+
+#. Ensure that the roles are being correctly accessed
+
+    * The easiest way to see this is in `GeoServerOAuth2RoleResolver#convert()`
+
 
 
 Logging OAuth2 Activity
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 The plugin includes an ``OIDC_LOGGING`` profile which is installed on startup. This logging profile quiets most GeoServer logging activity, while enabling trace logging for OAuth2 functionality.
 
@@ -68,57 +86,11 @@ To setup for troubleshooting OIDC activity:
       DEBUG  [security.oauth2] - OIDC: Geoserver Roles: ADMIN
       DEBUG  [security.oauth2] - OIDC: Geoserver Roles: ROLE_ADMINISTRATOR
 
-OpenID Connect With Attached Access Bearer Tokens
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The OpenID Connect plugin allows the use of Attached Bearer Access Tokens. This is typically used by automated (i.e. desktop or external Web Service) to access the Geoserver REST API.
-
-.. figure:: images/bearer_tokens.png
-
-   Bearer Tokens
-
-The setup process is as follows:
-
-#. Setup your OAuth2 OpenID Connect configuration as normal
-#. On the OpenID Connect configuration screen (bottom), makes sure "Allow Attached Bearer Tokens" is checked
-#. You cannot use ID Tokens as a Role Source for the attached Bearer Tokens (see below)
-
-To Use:
-
-#. Obtain an Access Token from the underlying IDP
-#. Attach the access token to your HTTP request headers
-
-`Authorization: Bearer <token>`
-
-The Access Token (JWT) is validated;
-
-#. The Access Token is used to get the "userinfo" endpoint.  The underlying IDP will verify the token (i.e. signature and expiry)
-#. The Audience of the Token is checked that it contains the GeoServer configured Client Id. This make sure an Access Token for another application is not being inappropriately reused in GeoServer (cf. `AudienceAccessTokenValidator.java`).
-#. The Subject of the `userinfo` and Access Token are verified to be about the same person. The OpenID specification recommends checking this (cf. `SubjectTokenValidator.java`).
 
 
-For KeyCloak, consider using the "userinfo endpoint" role source and configure Keycloak to put groups in the "userinfo."
-
-For Azure AD, configure Azure to allow access to the MS Graph API (memberOf) and use the "Microsoft Graph API (Azure AD)" role source. 
-
-To configure Azure AD for "memberOf" ("GroupMember.Read.All" permission) access;
-
-#. Go to your application in Azure AD (in the portal) 
-#. On the left, go to "API permissions" 
-#. Click "Add a permission" 
-#. press "Microsoft Graph" 
-#. press "Delegated permission" 
-#. Scroll down to "GroupMember" 
-#. Choose "GroupMember.Read.All" 
-#. Press "Add permission" 
-#. On the API Permission screen, press the "Grant admin consent for ..." text
-
-This has been tested with KeyCloak (with groups in the `userinfo` endpoint response), and with MS Azure AD (with the groups from the GraphAPI). This should work with other IDPs - however, make sure that the Subject and Audience token verification works with their tokens.
-  
-If you do not need Bearer Token functionality, it is recommended to turn this off.
 
 Proof Key of Code Exchange (PKCE) 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 
 The OpenID Connect plugin allows the use of Proof Key of Code Exchange (PKCE).
 
@@ -154,15 +126,17 @@ Reference:
 
 * `rfc7636 Proof Key for Code Exchange by OAuth Public Clients <https://datatracker.ietf.org/doc/html/rfc7636>`_
 
+
+
 JSON Web Key set URI
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 The ``JSON Web Key set URI`` provides the location of a document of public keys that can be used to check the signature of the provided accessToken.
 
 Optional: It is no longer required to use ``Check Token Endpoint URL`` - if you leave that field blank you may rely only on the ``JSON Web Key set URI`` signature check. When use in this manner roles cannot be extracted from access token.
 
 Enforce Token Validation
-^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 
 `True` by default.
 
@@ -176,16 +150,10 @@ Reference:
 
 * `RFC 7517: JSON Web Key (JWK) <https://www.rfc-editor.org/rfc/rfc7517#section-4.5>`_
 
-Azure AD and ADFS setup
-^^^^^^^^^^^^^^^^^^^^^^^
-To make the OpenIdConnect filter to work properly with an Azure AD or ADFS server via the OpenId protocol, the user must set, in addition to the other configuration parameters, the ``Response Mode`` to query (otherwise by default ADFS will return a url fragment) and check the checkbox ``Send Client Secret in Token Request`` (the client_secret is mandatory in token request according to the `Microsoft documentation <https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/overview/ad-fs-openid-connect-oauth-flows-scenarios#request-an-access-token>`_).
-
-   .. figure:: images/adfs-setup.png
-      :align: center
 
 
 Opaque tokens supports
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 The OpenID Connect plugin allows the use of opaque tokens. These tokens have a payload that cannot be read
 by the client, and are validated by the authorization server.

@@ -2,10 +2,12 @@
 
 
 Configure the GitHub authentication provider
---------------------------------------------
+============================================
 
 The first thing to do is to configure the OAuth2 Provider and obtain ``Client ID`` and ``Client Secret`` keys.
 
+Configure the GitHub IDP
+------------------------
 
 #. Go to your `GitHub settings <https://github.com/settings/profile>`_
 
@@ -95,7 +97,9 @@ Allow Web Access (Filter Chain)
 
 
 Notes
-=====
+-----
+
+See :ref:`troubleshooting <community_oidc_troubleshooting>`.
 
 #. When you login, your username will be a number.  For privacy reasons, GitHub does not usually include the email address of the user!
 

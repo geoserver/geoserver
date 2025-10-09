@@ -456,7 +456,9 @@ Allow Web Access (Filter Chain)
 
 
 Testing
-=======
+-------
+
+See :ref:`troubleshooting <community_oidc_troubleshooting>`.
 
 #. log out of GeoServer (or open an incognito tab)
 

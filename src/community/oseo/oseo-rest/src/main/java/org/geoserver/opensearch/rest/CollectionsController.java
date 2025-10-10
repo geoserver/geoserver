@@ -51,7 +51,6 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -448,14 +447,10 @@ public class CollectionsController extends AbstractOpenSearchController {
                         HttpStatus.BAD_REQUEST);
             }
         }
-        // right now the mosaic can only be in 4326 because the granule table is in that CRS
+        // check the mosaic CRS is valid, if present
         if (layer.getMosaicCRS() != null) {
             try {
-                if (!CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, CRS.decode(layer.getMosaicCRS()))) {
-                    throw new RestException(
-                            "Invalid mosaicCRS value, can only be EPSG:4326 for the time being",
-                            HttpStatus.BAD_REQUEST);
-                }
+                CRS.decode(layer.getMosaicCRS());
             } catch (FactoryException e) {
                 throw new RestException(
                         "Invalid mosaicCRS value, cannot be decoded: " + e.getMessage(), HttpStatus.BAD_REQUEST);

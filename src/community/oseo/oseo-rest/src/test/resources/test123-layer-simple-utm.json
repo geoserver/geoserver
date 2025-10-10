@@ -1,0 +1,6 @@
+{
+	"workspace": "gs",
+	"layer": "test123",
+	"separateBands": false,
+	"mosaicCRS": "EPSG:32660"
+}

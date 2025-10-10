@@ -40,6 +40,7 @@ import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -183,6 +184,13 @@ class CollectionLayerManager {
         final FeatureType schema = collectionSource.getSchema();
         final String nsURI = schema.getName().getNamespaceURI();
 
+        // check we have a target CRS, if it is not 4326 we'll have to take care of setting up in the coverage
+        boolean targetCRS4326 = true;
+        if (layerConfiguration.getMosaicCRS() != null) {
+            CoordinateReferenceSystem targetCRS = CRS.decode(layerConfiguration.getMosaicCRS());
+            targetCRS4326 = CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, targetCRS);
+        }
+
         // image mosaic won't automatically create the mosaic config for us in this case,
         // we have to setup both the mosaic property file and sample image for all bands
         for (String band : layerConfiguration.getBands()) {
@@ -210,7 +218,7 @@ class CollectionLayerManager {
                 throw new RestException(
                         "Unable to setup a supported source from granule " + location, HttpStatus.PRECONDITION_FAILED);
             }
-            AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(source, EXCLUDE_MOSAIC_HINTS);
+            AbstractGridFormat format = GridFormatFinder.findFormat(source, EXCLUDE_MOSAIC_HINTS);
             if (format == null) {
                 throw new RestException(
                         "Could not find a coverage reader able to process " + location, HttpStatus.PRECONDITION_FAILED);
@@ -256,10 +264,10 @@ class CollectionLayerManager {
             if (spi != null) {
                 mosaicConfig.put("SuggestedSPI", spi.getClass().getName());
             }
-            // TODO: the index is now always in 4326, so the mosaic has to be heterogeneous
-            // in general, unless we know the data is uniformly in something else, in that
-            // case we could reproject the view reporting the footprints...
-            if (layerConfiguration.isHeterogeneousCRS()) {
+            // if the mosaic is heterogeneous in CRS, or not in 4326, we need to switch the
+            // mosaic to heterogeneous mode, while still maintaining 4326 as the mosaic CRS as the granule
+            // table is in 4326 anyways (we'll reproject the layer instead, mosaic can do reprojection on their own)
+            if (layerConfiguration.isHeterogeneousCRS() || !targetCRS4326) {
                 mosaicConfig.put("HeterogeneousCRS", "true");
                 mosaicConfig.put("MosaicCRS", "EPSG:4326");
                 mosaicConfig.put("CrsAttribute", "crs");
@@ -278,7 +286,7 @@ class CollectionLayerManager {
 
         // this is ridiculous, but for the moment, multi-crs mosaics won't work if there
         // is no indexer.properties around, even if no collection is actually done
-        buildIndexer(collection, layerConfiguration, mosaicDirectory);
+        buildIndexer(collection, layerConfiguration, mosaicDirectory, targetCRS4326);
 
         // mosaic datastore connection
         createDataStoreProperties(collection, mosaicDirectory);
@@ -293,6 +301,11 @@ class CollectionLayerManager {
         final CoverageView coverageView = new CoverageView(coverageName, coverageBands);
         CoverageInfo coverageInfo = coverageView.createCoverageInfo(coverageName, mosaicStoreInfo, cb);
         timeEnableResource(coverageInfo);
+        if (!targetCRS4326) {
+            coverageInfo.setNativeCRS(DefaultGeographicCRS.WGS84);
+            coverageInfo.setSRS(layerConfiguration.getMosaicCRS());
+            coverageInfo.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+        }
         final LayerInfo layerInfo = cb.buildLayer(coverageInfo);
 
         catalog.add(coverageInfo);
@@ -477,7 +490,14 @@ class CollectionLayerManager {
                     HttpStatus.PRECONDITION_FAILED);
         }
 
-        buildIndexer(collection, layerConfiguration, mosaic);
+        // check we have a target CRS, if it is not 4326 we'll have to take care of setting up in the coverage
+        boolean targetCRS4326 = true;
+        if (layerConfiguration.getMosaicCRS() != null) {
+            CoordinateReferenceSystem targetCRS = CRS.decode(layerConfiguration.getMosaicCRS());
+            targetCRS4326 = CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, targetCRS);
+        }
+
+        buildIndexer(collection, layerConfiguration, mosaic, targetCRS4326);
 
         createDataStoreProperties(collection, mosaic);
 
@@ -488,6 +508,11 @@ class CollectionLayerManager {
         CoverageInfo coverageInfo = cb.buildCoverage(layerConfiguration.getLayer());
         coverageInfo.setName(layerConfiguration.getLayer());
         timeEnableResource(coverageInfo);
+        if (!targetCRS4326) {
+            coverageInfo.setNativeCRS(DefaultGeographicCRS.WGS84);
+            coverageInfo.setSRS(layerConfiguration.getMosaicCRS());
+            coverageInfo.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+        }
         catalog.add(coverageInfo);
         LayerInfo layerInfo = cb.buildLayer(coverageInfo);
         catalog.add(layerInfo);
@@ -496,7 +521,8 @@ class CollectionLayerManager {
         createStyle(layerConfiguration, layerInfo, mosaicStore);
     }
 
-    private void buildIndexer(String collection, CollectionLayer layerConfiguration, Resource mosaic)
+    private void buildIndexer(
+            String collection, CollectionLayer layerConfiguration, Resource mosaic, boolean targetCRS4326)
             throws IOException {
         // prepare the mosaic configuration
         Properties indexer = new Properties();
@@ -511,10 +537,7 @@ class CollectionLayerManager {
         }
         // TODO: should we setup also a end time and prepare a interval based time setup?
 
-        // TODO: the index is now always in 4326, so the mosaic has to be heterogeneous
-        // in general, unless we know the data is uniformly in something else, in that
-        // case we could reproject the view reporting the footprints...
-        if (layerConfiguration.isHeterogeneousCRS()) {
+        if (layerConfiguration.isHeterogeneousCRS() || !targetCRS4326) {
             indexer.put("HeterogeneousCRS", "true");
             indexer.put("MosaicCRS", "EPSG:4326");
             indexer.put("CrsAttribute", "crs");

@@ -141,6 +141,7 @@
         <module>jdbcstore</module>
         <module>gdal</module>
         <module>gwc-azure-blob</module>
+        <module>gwc-gcs-blob</module>
         <module>backup-restore</module>
         <module>ncwms</module>
         <module>gwc-sqlite</module>
@@ -304,6 +305,12 @@
       <id>gwc-azure-blob</id>
       <modules>
         <module>gwc-azure-blob</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>gwc-gcs-blob</id>
+      <modules>
+        <module>gwc-gcs-blob</module>
       </modules>
     </profile>
     <profile>

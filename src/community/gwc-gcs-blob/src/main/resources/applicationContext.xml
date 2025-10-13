@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2025 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <description>
+   Bean configuration file for the gwc-gcs-blob module
+  </description>
+
+  <bean id="GcsBlobStoreConfigProvider" class="org.geowebcache.storage.blobstore.gcs.GoogleCloudStorageConfigProvider" depends-on="gwcSynchEnv" >
+    <description>
+      Contributes XStream configuration settings to org.geowebcache.config.XMLConfiguration to encode GoogleCloudStorageBlobStoreInfo instances
+    </description>
+  </bean>
+
+  <bean class="org.geoserver.gwc.blob.gcs.web.GcsBlobStoreType" />
+</beans>

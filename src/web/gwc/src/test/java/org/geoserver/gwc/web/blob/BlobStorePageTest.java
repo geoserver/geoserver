@@ -6,6 +6,9 @@ package org.geoserver.gwc.web.blob;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,12 +20,15 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.config.ConfigurationPersistenceException;
 import org.geowebcache.config.FileBlobStoreInfo;
 import org.geowebcache.config.FileBlobStoreInfo.PathGeneratorType;
 import org.geowebcache.layer.TileLayer;
+import org.geowebcache.storage.StorageException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Test for the BlobStorePage
@@ -211,5 +217,100 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
             assertEquals(type, config.getPathGeneratorType());
             GWC.get().removeBlobStores(Arrays.asList(config.getName()));
         }
+    }
+
+    /**
+     * Checks that the error messages are added when save() calls {@link GWC#addBlobStore(BlobStoreInfo)} and it throws
+     * either {@link ConfigurationException}, or {@link ConfigurationPersistenceException} which is a
+     * {@code RuntimeException} and resulted in losing the page and a stack trace printed instead.
+     */
+    @Test
+    public void testNewBlobStoreExceptionHandling() throws ConfigurationException {
+        GWC gwc = Mockito.spy(GWC.get());
+
+        BlobStorePage page = new BlobStorePage() {
+            @Override
+            GWC getGWC() {
+                return gwc;
+            }
+        };
+        tester.startPage(page);
+        executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "0");
+
+        FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
+        formTester.setValue("name", "myblobstore");
+        formTester.setValue("enabled", false);
+        formTester.setValue("blobSpecificPanel:baseDirectory:fileInput:border:border_body:paramValue", "/mydir");
+
+        // force GWC.addBlobStore() to throw ConfigurationException
+        doThrow(new ConfigurationException("forced ConfigurationException"))
+                .when(gwc)
+                .addBlobStore(Mockito.any());
+
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
+        tester.assertErrorMessages("forced ConfigurationException");
+
+        // now force GWC.addBlobStore() to throw ConfigurationPersistenceException
+        doThrow(new ConfigurationPersistenceException(
+                        "forced ConfigurationPersistenceException",
+                        new StorageException("expected error message is root cause's")))
+                .when(gwc)
+                .addBlobStore(Mockito.any());
+
+        tester.cleanupFeedbackMessages();
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
+        tester.assertErrorMessages("expected error message is root cause's");
+    }
+
+    /**
+     * Checks that the error messages are added when save() calls {@link GWC#modifyBlobStore(String, BlobStoreInfo)} and
+     * it throws either {@link ConfigurationException}, or {@link ConfigurationPersistenceException} which is a
+     * {@code RuntimeException} and resulted in losing the page and a stack trace printed instead.
+     */
+    @Test
+    public void testModifyBlobStoreExceptionHandling() throws ConfigurationException {
+        FileBlobStoreInfo fconfig = new FileBlobStoreInfo("myblobstore");
+        fconfig.setFileSystemBlockSize(1024);
+        fconfig.setBaseDirectory("/mydir");
+        GWC.get().addBlobStore(fconfig);
+        TileLayer layer = GWC.get().getTileLayerByName("cite:Lakes");
+        layer.setBlobStoreId("myblobstore");
+        GWC.get().save(layer);
+
+        GWC gwc = Mockito.spy(GWC.get());
+
+        BlobStorePage page = new BlobStorePage(fconfig) {
+            @Override
+            GWC getGWC() {
+                return gwc;
+            }
+        };
+
+        tester.startPage(page);
+        tester.assertVisible("blobConfigContainer:blobStoreForm");
+        tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);
+
+        FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
+        formTester.setValue("name", "yourblobstore");
+        formTester.setValue("blobSpecificPanel:baseDirectory:fileInput:border:border_body:paramValue", "/yourdir");
+
+        // force GWC.modifyBlobStore() to throw ConfigurationException
+        doThrow(new ConfigurationException("forced ConfigurationException"))
+                .when(gwc)
+                .modifyBlobStore(anyString(), any());
+
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
+        tester.assertErrorMessages("forced ConfigurationException");
+
+        // now force GWC.addBlobStore() to throw ConfigurationPersistenceException
+        doThrow(new ConfigurationPersistenceException(
+                        "forced ConfigurationPersistenceException",
+                        new StorageException("expected error message is root cause's")))
+                .when(gwc)
+                .modifyBlobStore(anyString(), any());
+
+        tester.cleanupFeedbackMessages();
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
+        tester.assertErrorMessages("expected error message is root cause's");
     }
 }

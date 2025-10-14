@@ -1,4 +1,4 @@
-name: Run CITE Tests - in fork
+name: Run CITE Tests
 
 on:
   pull_request:
@@ -14,26 +14,32 @@ jobs:
   build-war:
     runs-on: ubuntu-latest
     name: Build GeoServer WAR
+    strategy:
+      fail-fast: false
+      matrix:
+        java-version: [11, 17, 21, 25] # Java versions to build/test against
     steps:
       - name: Checkout repository (shallow clone)
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Setup Java
+      - name: Setup Java ${{ matrix.java-version }}
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: ${{ matrix.java-version }}
+
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
           maven-version: 3.9.8
+
       - name: Maven repository caching
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-java-${{ matrix.java-version }}
           restore-keys: |
             gs-${{ runner.os }}-maven-
 
@@ -44,7 +50,7 @@ jobs:
       - name: Upload geoserver.war as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: geoserver-war
+          name: geoserver-war-java-${{ matrix.java-version }}
           path: build/cite/geoserver/geoserver.war
 
   run-cite-tests:
@@ -56,17 +62,17 @@ jobs:
       matrix:
         #suite: [ogcapi-features10, wcs10, wcs11, wfs10, wfs11, wms10, wms11, wms13]
         suite: [ogcapi-features10, wms11, wms13, wfs10, wfs11, wcs11]
-
+        java-version: [11, 17, 21, 25] # Match Java versions from build-war
     steps:
       - name: Checkout repository (shallow clone)
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Download geoserver.war artifact
+      - name: Download geoserver.war artifact for Java ${{ matrix.java-version }}
         uses: actions/download-artifact@v4
         with:
-          name: geoserver-war
+          name: geoserver-war-java-${{ matrix.java-version }}
           path: build/cite/geoserver/
 
       - name: Print services and images used for the ${{ matrix.suite }} test run
@@ -93,7 +99,7 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y xmlstarlet
 
-      - name: Run the ${{ matrix.suite }} CITE test suite
+      - name: Run the ${{ matrix.suite }} CITE test suite (Java ${{ matrix.java-version }})
         working-directory: build/cite
         run: |
           chmod o+w logs
@@ -123,5 +129,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cite-${{ matrix.suite }}-logs
+          name: cite-${{ matrix.suite }}-java-${{ matrix.java-version }}-logs
           path: build/cite/logs/

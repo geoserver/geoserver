@@ -63,6 +63,8 @@ Configuring a SQL Server data store
      - The password to use when connecting to the database. Leave blank for no password.
    * - ``max connections`` ``min connections``
      - Connection pool configuration parameters. See the :ref:`connection_pooling` section for details. If you are connecting to SQL Azure make sure to set the ``validate connections`` flag as SQL Azure closes inactive connections after a very short delay.
+   * - ``encrypt``
+     - Whether to use SSL when connecting to the database. This may require extra setup steps such as adding a public key.
 
 .. _port_notes:
 

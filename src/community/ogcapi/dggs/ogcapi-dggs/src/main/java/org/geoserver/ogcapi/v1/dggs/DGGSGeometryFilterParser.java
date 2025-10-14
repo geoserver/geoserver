@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIException;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.referencing.FactoryException;
@@ -37,6 +38,7 @@ class DGGSGeometryFilterParser {
     Geometry geometry;
     FilterFactory ff;
     DGGSInstance dggs;
+    AttributeDescriptor zoneIdAttribute;
     Class<? extends Geometry> geometryType = Polygon.class;
 
     public DGGSGeometryFilterParser(FilterFactory ff, DGGSInstance dggs) {
@@ -44,10 +46,19 @@ class DGGSGeometryFilterParser {
         this.dggs = dggs;
     }
 
-    public DGGSGeometryFilterParser(FilterFactory ff, DGGSInstance dggs, Class<? extends Geometry> geometryType) {
+    public DGGSGeometryFilterParser(FilterFactory ff, DGGSInstance dggs, AttributeDescriptor zoneIdAttribute) {
+        this(ff, dggs, null, zoneIdAttribute);
+    }
+
+    public DGGSGeometryFilterParser(
+            FilterFactory ff,
+            DGGSInstance dggs,
+            Class<? extends Geometry> geometryType,
+            AttributeDescriptor zoneIdAttribute) {
         this.ff = ff;
         this.dggs = dggs;
         this.geometryType = geometryType;
+        this.zoneIdAttribute = zoneIdAttribute;
     }
 
     public void setBBOX(String bbox) throws FactoryException {
@@ -99,7 +110,7 @@ class DGGSGeometryFilterParser {
             this.geometry = null;
             Iterator<Zone> zoneIterator =
                     Arrays.stream(identifiers).map(id -> dggs.getZone(id)).iterator();
-            this.filter = DGGSFilterTransformer.getFilterFrom(dggs, zoneIterator, resolution);
+            this.filter = DGGSFilterTransformer.getFilterFrom(dggs, zoneIterator, resolution, zoneIdAttribute);
             this.geometry = CascadedPolygonUnion.union(Arrays.stream(identifiers)
                     .map(id -> dggs.getZone(id).getBoundary())
                     .collect(Collectors.toList()));

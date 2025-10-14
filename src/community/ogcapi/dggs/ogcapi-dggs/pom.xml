@@ -18,11 +18,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-dggs-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogcapi-core</artifactId>
       <version>${project.version}</version>
@@ -63,6 +58,21 @@
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-dggs-core</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-dggs-rhealpix</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-dggs-h3</artifactId>
+      <version>${gt.version}</version>
     </dependency>
   </dependencies>
 

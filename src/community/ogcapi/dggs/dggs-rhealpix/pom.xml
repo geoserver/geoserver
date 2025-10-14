@@ -14,54 +14,43 @@
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-dggs-clickhouse</artifactId>
+  <artifactId>gs-dggs-rhealpix</artifactId>
 
   <properties>
-    <errorProneFlags>-Xep:BanJNDI:WARN</errorProneFlags>
     <!-- has GeoTools headers, meant to go eventually down in GeoTools -->
     <checkstyle.skip>true</checkstyle.skip>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-dggs-core</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-ows</artifactId>
+      <version>${gs.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-jdbc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.clickhouse</groupId>
-      <artifactId>clickhouse-jdbc</artifactId>
-      <version>0.6.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.lz4</groupId>
-      <artifactId>lz4-java</artifactId>
-      <version>1.8.0</version>
+      <artifactId>gt-main</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-jdbc</artifactId>
-      <classifier>tests</classifier>
-      <scope>test</scope>
+      <artifactId>gt-render</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-sample-data</artifactId>
-      <scope>test</scope>
-    </dependency>
+    <!-- Tracking dependency numbers here, they will likely move to GeoTools in the future, 
+        nothing else is using them -->
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-shapefile</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-dggs-rhealpix</artifactId>
+      <version>${gt.version}</version>
     </dependency>
   </dependencies>
 

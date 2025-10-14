@@ -36,12 +36,12 @@ public class CollectionDAPA extends AbstractDocument {
     DAPAVariables variables;
     List<String> functions = new ArrayList<>(AggregateConverter.getAggregates().keySet());
 
-    public CollectionDAPA(String collectionId, FeatureTypeInfo info) throws IOException {
+    public CollectionDAPA(String collectionId, FeatureTypeInfo info, String zoneColumnName) throws IOException {
         this.id = collectionId;
         this.description = "The following endpoints are available to retrieve and process the "
                 + collectionId
                 + " zones in addition to the standard DGGS queries.\n The endpoints are described in the API definition and the links point to the specification of the operation in the OpenAPI definition with the available input parameters and the response schema";
-        this.variables = new DAPAVariables(collectionId, info);
+        this.variables = new DAPAVariables(collectionId, info, zoneColumnName);
         this.variables.getLinks().clear();
         this.minResolution = getMinResolution(info);
         this.center = getCenter(info);
@@ -155,7 +155,7 @@ public class CollectionDAPA extends AbstractDocument {
 
     private Link getExecuteLink(String collectionId, String operation, String... extraKVP) {
         String baseURL = APIRequestInfo.get().getBaseURL();
-        String path = appendPath("ogc/dggs/collections", collectionId, operation);
+        String path = appendPath("ogc/dggs/v1/collections", collectionId, operation);
         Map<String, String> kvp = new LinkedHashMap<>();
         kvp.put("resolution", String.valueOf(minResolution));
         // TODO: let is use HTML if/when an HTML representation for the DAPA resources is produced

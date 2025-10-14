@@ -243,7 +243,8 @@ public class DGGSService {
             throws Exception {
         // handle possible geometry filters
         AttributeDescriptor zoneId = getZoneColumnDescriptor(collectionId);
-        DGGSGeometryFilterParser geometryParser = new DGGSGeometryFilterParser(FF, getDGGSInstance(collectionId), zoneId);
+        DGGSGeometryFilterParser geometryParser =
+                new DGGSGeometryFilterParser(FF, getDGGSInstance(collectionId), zoneId);
         geometryParser.setBBOX(bbox);
         geometryParser.setGeometry(wkt);
         geometryParser.setZoneIds(zones, resolution);

@@ -48,7 +48,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.geotools.dggs</groupId>
+      <groupId>org.geotools</groupId>
       <artifactId>gt-dggs-rhealpix</artifactId>
       <version>${gt.version}</version>
     </dependency>

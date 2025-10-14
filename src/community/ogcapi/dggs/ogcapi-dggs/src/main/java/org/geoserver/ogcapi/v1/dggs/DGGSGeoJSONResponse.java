@@ -69,7 +69,7 @@ public class DGGSGeoJSONResponse extends RFCGeoJSONFeaturesResponse {
         // backpointer to the collection
         FeatureTypeInfo featureType = getFeatureType(request);
         if (featureType != null) {
-            String basePath = "ogc/dggs/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
+            String basePath = "ogc/dggs/v1/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
             for (MediaType format : requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
                 String href = ResponseUtils.buildURL(
                         baseUrl,
